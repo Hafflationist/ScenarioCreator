@@ -2,6 +2,8 @@ package de.mrobohm.data.column;
 
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.dataset.Value;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;
@@ -23,6 +25,7 @@ public final class ColumnConstraintUnique implements ColumnConstraint {
         };
     }
 
+    @Contract(pure = true)
     private <T> double kickedRatio(List<Value> values, Function<String, T> converter) {
         var distinctValuesCount = values
                 .stream()

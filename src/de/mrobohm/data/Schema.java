@@ -1,8 +1,9 @@
 package de.mrobohm.data;
 
 import de.mrobohm.data.table.Table;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Set;
 
 public record Schema(int id,
@@ -10,18 +11,26 @@ public record Schema(int id,
                      Context context,
                      Set<Table> tableSet) {
 
-    public Schema withId(int newId){
+    @Contract(pure = true)
+    @NotNull
+    public Schema withId(int newId) {
         return new Schema(newId, name, context, tableSet);
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Schema withName(String newName) {
         return new Schema(id, newName, context, tableSet);
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Schema withContext(Context newContext) {
         return new Schema(id, name, newContext, tableSet);
     }
 
+    @Contract(pure = true)
+    @NotNull
     public Schema withTables(Set<Table> newTableSet) {
         return new Schema(id, name, context, newTableSet);
     }

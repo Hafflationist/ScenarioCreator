@@ -1,13 +1,17 @@
 package de.mrobohm.operations.linguistic;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.stream.IntStream;
 
 public class LinguisticDistances {
 
+    @Contract(pure = true)
     public static int zeroOne(String a, String b) {
         return a.equalsIgnoreCase(b) ? 0 : 1;
     }
 
+    @Contract(pure = true)
     public static int levenshtein(String a, String b) {
         int[][] memMatrix = new int[a.length() + 1][b.length() + 1];
 
