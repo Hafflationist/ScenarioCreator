@@ -11,7 +11,7 @@ public class RemoveTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet) {
         return new HashSet<>();
     }
 

@@ -52,7 +52,7 @@ public class TransformationExecuter {
     public Schema executeTransformationTable(Schema schema, TableTransformation transformation)
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()));
-        var newTableSet = transformation.transform(targetTable);
+        var newTableSet = transformation.transform(targetTable, schema.tableSet());
         return executeTransformationTable(schema, targetTable, newTableSet);
     }
 

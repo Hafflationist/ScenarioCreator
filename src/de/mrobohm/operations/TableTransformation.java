@@ -10,7 +10,7 @@ public interface TableTransformation {
 
     @Contract(pure = true)
     @NotNull
-    Set<Table> transform(Table table);
+    Set<Table> transform(Table table, Set<Table> otherTableSet);
 
 
     @Contract(pure = true)

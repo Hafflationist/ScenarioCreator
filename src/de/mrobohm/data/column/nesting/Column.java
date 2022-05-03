@@ -1,6 +1,6 @@
 package de.mrobohm.data.column.nesting;
 
-import de.mrobohm.data.column.ColumnConstraint;
+import de.mrobohm.data.column.constraint.ColumnConstraint;
 
 import java.util.Set;
 

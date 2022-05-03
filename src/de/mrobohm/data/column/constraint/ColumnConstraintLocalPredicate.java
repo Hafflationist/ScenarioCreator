@@ -1,4 +1,4 @@
-package de.mrobohm.data.column;
+package de.mrobohm.data.column.constraint;
 
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.dataset.Value;
