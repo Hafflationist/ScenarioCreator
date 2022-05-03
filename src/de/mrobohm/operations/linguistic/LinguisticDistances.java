@@ -38,4 +38,7 @@ public class LinguisticDistances {
     // TODO: Vllt noch mehr implementiere?
     // Synonyme Wörter können eine hohe Levenshtein-Distanz aufweise, jedoch semantisch identisch sein... :thinking:
 
+    // Man könnte semantische Netze wie GermaNet oder WordNet nutzen. Beide bieten Java-APIs an:
+
+
 }

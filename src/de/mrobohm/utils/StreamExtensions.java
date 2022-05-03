@@ -20,8 +20,8 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
-    public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception) throws TException {
-
+    public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception)
+            throws TException {
         var randomPickOption = stream
                 .skip(new Random().nextLong(stream.count()))
                 .findFirst();

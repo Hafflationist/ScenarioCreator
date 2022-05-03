@@ -49,7 +49,8 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationTable(Schema schema, TableTransformation transformation) throws NoTableFoundException {
+    public Schema executeTransformationTable(Schema schema, TableTransformation transformation)
+            throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()));
         var newTableSet = transformation.transform(targetTable);
         return executeTransformationTable(schema, targetTable, newTableSet);
@@ -58,7 +59,8 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation) throws NoTableFoundException, NoColumnFoundException {
+    public Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation)
+            throws NoTableFoundException, NoColumnFoundException {
         assert schema != null;
 
         var target = chooseColumn(schema, transformation::getCandidates);
@@ -78,7 +80,8 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private Pair<Table, Column> chooseColumn(Schema schema, Function<List<Column>, List<Column>> getCandidates) throws NoColumnFoundException, NoTableFoundException {
+    private Pair<Table, Column> chooseColumn(Schema schema, Function<List<Column>, List<Column>> getCandidates)
+            throws NoColumnFoundException, NoTableFoundException {
         assert schema.tableSet().size() > 0;
 
         var candidateTableSet = schema.tableSet()
