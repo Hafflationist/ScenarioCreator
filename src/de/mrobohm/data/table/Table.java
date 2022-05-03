@@ -2,7 +2,7 @@ package de.mrobohm.data.table;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.Column;
+import de.mrobohm.data.column.nesting.Column;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 

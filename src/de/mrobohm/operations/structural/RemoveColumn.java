@@ -1,6 +1,6 @@
 package de.mrobohm.operations.structural;
 
-import de.mrobohm.data.column.Column;
+import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.operations.ColumnTransformation;
 import org.jetbrains.annotations.NotNull;
 

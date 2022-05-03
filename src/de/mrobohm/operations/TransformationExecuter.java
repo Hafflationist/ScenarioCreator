@@ -2,7 +2,7 @@ package de.mrobohm.operations;
 
 
 import de.mrobohm.data.Schema;
-import de.mrobohm.data.column.Column;
+import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.exceptions.NoColumnFoundException;
 import de.mrobohm.operations.exceptions.NoTableFoundException;
