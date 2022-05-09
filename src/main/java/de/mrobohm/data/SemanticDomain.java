@@ -1,4 +1,5 @@
 package de.mrobohm.data;
 
-public enum SemanticDomain {
+public record SemanticDomain(int value) {
+
 }

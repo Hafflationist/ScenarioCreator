@@ -7,13 +7,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Set;
 
 public record Table(int id,
                     String name,
                     List<Column> columnList,
                     Language language,
                     Context context,
-                    List<TableConstraint> tableConstraintList) {
+                    Set<TableConstraint> tableConstraintList) {
 
     @Contract(pure = true)
     @NotNull
@@ -47,7 +48,7 @@ public record Table(int id,
 
     @Contract(pure = true)
     @NotNull
-    public Table withTableConstraintList(List<TableConstraint> newTableConstraints) {
+    public Table withTableConstraintList(Set<TableConstraint> newTableConstraints) {
         return new Table(id, name, columnList, language, context, newTableConstraints);
     }
 }
