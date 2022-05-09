@@ -6,11 +6,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class RemoveColumn implements ColumnTransformation {
     @Override
     @NotNull
-    public List<Column> transform(Column column) {
+    public List<Column> transform(Column column, Random random) {
         return new ArrayList<>();
     }
 

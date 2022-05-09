@@ -13,6 +13,8 @@ import java.util.stream.Stream;
 
 public final class StreamExtensions {
 
+    private StreamExtensions() {}
+
     @Contract(pure = true)
     @NotNull
     public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElements) {
@@ -24,10 +26,10 @@ public final class StreamExtensions {
     }
 
     @NotNull
-    public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception)
+    public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception, Random random)
             throws TException {
         var randomPickOption = stream
-                .skip(new Random().nextLong(stream.count()))
+                .skip(random.nextLong(stream.count()))
                 .findFirst();
         if (randomPickOption.isEmpty())
             throw exception;

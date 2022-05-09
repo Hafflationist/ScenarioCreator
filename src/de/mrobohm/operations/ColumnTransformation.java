@@ -5,13 +5,14 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Random;
 
 
 public interface ColumnTransformation {
 
     @Contract(pure = true)
     @NotNull
-    List<Column> transform(Column column);
+    List<Column> transform(Column column, Random random);
 
 
     @Contract(pure = true)

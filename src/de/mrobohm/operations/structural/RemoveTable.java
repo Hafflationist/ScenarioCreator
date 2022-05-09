@@ -5,13 +5,14 @@ import de.mrobohm.operations.TableTransformation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class RemoveTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         return new HashSet<>();
     }
 

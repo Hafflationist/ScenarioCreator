@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -29,9 +30,9 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private Table chooseTable(Set<Table> tableSet) throws NoTableFoundException {
+    private Table chooseTable(Set<Table> tableSet, Random random) throws NoTableFoundException {
         var tableStream = tableSet.stream();
-        return StreamExtensions.pickRandomOrThrow(tableStream, new NoTableFoundException());
+        return StreamExtensions.pickRandomOrThrow(tableStream, new NoTableFoundException(), random);
     }
 
     @Contract(pure = true)
@@ -49,24 +50,24 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationTable(Schema schema, TableTransformation transformation)
+    public Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
             throws NoTableFoundException {
-        var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()));
-        var newTableSet = transformation.transform(targetTable, schema.tableSet());
+        var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
+        var newTableSet = transformation.transform(targetTable, schema.tableSet(), random);
         return executeTransformationTable(schema, targetTable, newTableSet);
     }
 
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation)
+    public Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
             throws NoTableFoundException, NoColumnFoundException {
         assert schema != null;
 
-        var target = chooseColumn(schema, transformation::getCandidates);
+        var target = chooseColumn(schema, transformation::getCandidates, random);
         var targetTable = target.first();
         var targetColumn = target.second();
-        var newPartialColumnStream = transformation.transform(targetColumn).stream();
+        var newPartialColumnStream = transformation.transform(targetColumn, random).stream();
 
         var oldColumnStream = targetTable.columnList().stream();
         var newColumnList = StreamExtensions
@@ -80,7 +81,7 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private Pair<Table, Column> chooseColumn(Schema schema, Function<List<Column>, List<Column>> getCandidates)
+    private Pair<Table, Column> chooseColumn(Schema schema, Function<List<Column>, List<Column>> getCandidates, Random random)
             throws NoColumnFoundException, NoTableFoundException {
         assert schema.tableSet().size() > 0;
 
@@ -89,9 +90,9 @@ public class TransformationExecuter {
                 .filter(table -> getCandidates.apply(table.columnList()).size() > 0)
                 .collect(Collectors.toSet());
 
-        var targetTable = chooseTable(candidateTableSet);
+        var targetTable = chooseTable(candidateTableSet, random);
         var columnStream = targetTable.columnList().stream();
-        var targetColumn = StreamExtensions.pickRandomOrThrow(columnStream, new NoColumnFoundException());
+        var targetColumn = StreamExtensions.pickRandomOrThrow(columnStream, new NoColumnFoundException(), random);
         return new Pair<>(targetTable, targetColumn);
     }
 }

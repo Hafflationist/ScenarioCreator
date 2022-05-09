@@ -7,14 +7,12 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.linguistic.LinguisticUtils;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,9 +20,9 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         var pair = getMergeableColumns(table, otherTableSet);
-        var newColumn = generateNewColumn(pair.first(), pair.second(), table, otherTableSet);
+        var newColumn = generateNewColumn(pair.first(), pair.second(), table, otherTableSet, random);
         var filteredOldColumnStream = table.columnList().stream()
                 .filter(c -> !c.equals(pair.first()))
                 .filter(c -> !c.equals(pair.second()));
@@ -43,20 +41,19 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
         return new Pair<>(firstColumn, secondColumn);
     }
 
-    private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Table table, Set<Table> otherTableSet) {
+    private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Table table, Set<Table> otherTableSet, Random random) {
         // TODO this method can be improved dramatically!
         var newId = StreamExtensions.getColumnId(otherTableSet);
-        var newName = columnA.name() + "_and_" + columnB;
-        var newColumn = new ColumnLeaf(newId, newName, DataType.NVARCHAR, null, new HashSet<>());
-        return newColumn;
+        var mergedLanguage = LinguisticUtils.merge(columnA.context().language(), columnB.context().language());
+        var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), mergedLanguage , random);
+        return new ColumnLeaf(newId, newName, DataType.NVARCHAR, null, new HashSet<>());
     }
 
     @Override
     @NotNull
     public Set<Table> getCandidates(Set<Table> tableSet) {
         var referencedColumnIdSet = getReferencedColumnIdSet(tableSet);
-        return tableSet
-                .stream()
+        return tableSet.stream()
                 .filter(t -> checkTable(t, referencedColumnIdSet))
                 .collect(Collectors.toSet());
     }
@@ -87,9 +84,7 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
     }
 
     private boolean checkConstraintSet(Set<ColumnConstraint> constraints) {
-        var hasBadConstraints = constraints.stream()
-                .anyMatch(this::isObstacle);
-        return !hasBadConstraints;
+        return constraints.stream().noneMatch(this::isObstacle);
     }
 
     @SuppressWarnings("DuplicateBranchesInSwitch")
