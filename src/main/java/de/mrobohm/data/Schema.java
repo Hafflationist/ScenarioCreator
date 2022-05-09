@@ -4,12 +4,13 @@ import de.mrobohm.data.table.Table;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Set;
 
 public record Schema(int id,
                      String name,
                      Context context,
-                     Set<Table> tableSet) {
+                     Set<Table> tableSet) implements Serializable {
 
     @Contract(pure = true)
     @NotNull
