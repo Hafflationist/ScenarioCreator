@@ -17,10 +17,10 @@ public class RemoveColumn implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> getCandidates(List<Column> tableSet) {
-        if (tableSet.size() == 1) {
+    public List<Column> getCandidates(List<Column> columnList) {
+        if (columnList.size() == 1) {
             return new ArrayList<>();
         }
-        return tableSet;
+        return columnList;
     }
 }

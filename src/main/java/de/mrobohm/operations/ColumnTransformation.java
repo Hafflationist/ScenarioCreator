@@ -17,5 +17,5 @@ public interface ColumnTransformation {
 
     @Contract(pure = true)
     @NotNull
-    List<Column> getCandidates(List<Column> tableSet);
+    List<Column> getCandidates(List<Column> columnList);
 }
