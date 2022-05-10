@@ -14,7 +14,9 @@ public enum UnitOfMeasure {
     Milli(-3),
     Micro(-6),
     Nano(-9),
-    Pico(-12);
+    Pico(-12),
+    None(0);
+
 
     private final int _factorLog10;
 
