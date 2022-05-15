@@ -39,6 +39,7 @@ public final class LinguisticUtils {
         return switch (language) {
             case German -> "und";
             case English, Mixed -> "and";
+            case Technical -> "et";
         };
     }
 }
