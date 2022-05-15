@@ -1,5 +1,6 @@
 package de.mrobohm.data;
 
+import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.Table;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +9,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 public record Schema(int id,
-                     String name,
+                     StringPlus name,
                      Context context,
                      Set<Table> tableSet) implements Serializable {
 
@@ -20,7 +21,7 @@ public record Schema(int id,
 
     @Contract(pure = true)
     @NotNull
-    public Schema withName(String newName) {
+    public Schema withName(StringPlus newName) {
         return new Schema(id, newName, context, tableSet);
     }
 
@@ -37,4 +38,3 @@ public record Schema(int id,
     }
 
 }
-

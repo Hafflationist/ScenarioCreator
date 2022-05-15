@@ -58,7 +58,7 @@ public class RandomSchemaGenerator {
     public static Schema generateRandomSchema(Random random) {
         var context = generateRandomContext(random);
         var tableSet = generateRandomSet(1, 8, RandomSchemaGenerator::generateRandomTable, random);
-        return new Schema(random.nextInt(), "Schema" + random.nextInt(), context, tableSet);
+        return new Schema(random.nextInt(), new StringPlus("Schema" + random.nextInt(), pickRandomLanguage(random)), context, tableSet);
     }
 
     private static <T> List<T> generateRandomList(int min, int max, Function<Random, T> elementGenerator, Random random) {

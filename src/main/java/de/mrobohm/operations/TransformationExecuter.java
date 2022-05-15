@@ -23,8 +23,8 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationSchema(Schema schema, SchemaTransformation transformation) {
-        return transformation.transform(schema);
+    public Schema executeTransformationSchema(Schema schema, SchemaTransformation transformation, Random random) {
+        return transformation.transform(schema, random);
     }
 
 

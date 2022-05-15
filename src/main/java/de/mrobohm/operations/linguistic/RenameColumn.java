@@ -32,6 +32,7 @@ public class RenameColumn implements ColumnTransformation {
     @NotNull
     private StringPlus getNewName(StringPlus name, Random random) {
         // TODO: Hier könnte WordNet oder GermaNet verwendet werden, um in den Synsets nach Synonamen zu schauen...
+        // Erweitern ließe sich das Vorgehen mithilfe von Tokenisierung.
         // Solange dies noch nicht implmentiert ist, wird hier erstmal eine zufällige Zeichenkette gewählt:
         return new StringPlus("Spalte" + random.nextInt(), Language.Technical);
     }
