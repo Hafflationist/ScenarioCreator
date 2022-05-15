@@ -32,7 +32,7 @@ public record ColumnNode(int id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnNode withContext(Set<ColumnConstraint> newConstraintSet) {
+    public ColumnNode withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
         return new ColumnNode(id, name, columnList, newConstraintSet);
     }
 }

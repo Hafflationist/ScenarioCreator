@@ -28,7 +28,7 @@ public record ColumnCollection(List<Column> columnList,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnCollection withContext(Set<ColumnConstraint> newConstraintSet) {
+    public ColumnCollection withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
         return new ColumnCollection(columnList, newConstraintSet);
     }
 }

@@ -1,5 +1,39 @@
 package de.mrobohm.operations.constraintBased;
 
-public class ForeignKeyRemover {
+import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
+import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
+import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.operations.ColumnTransformation;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+public class ForeignKeyRemover implements ColumnTransformation {
+
+    @Override
+    @NotNull
+    public List<Column> transform(Column column, Random random) {
+        var newConstraintSet = column.constraintSet().stream()
+                .filter( c -> !(c instanceof ColumnConstraintForeignKey))
+                .collect(Collectors.toSet());
+
+        return switch (column) {
+            case ColumnCollection c -> List.of(c.withConstraintSet(newConstraintSet));
+            case ColumnLeaf c -> List.of(c.withConstraintSet(newConstraintSet));
+            case ColumnNode c -> List.of(c.withConstraintSet(newConstraintSet));
+        };
+    }
+
+    @Override
+    @NotNull public List<Column> getCandidates(List<Column> columnList) {
+        return columnList.stream().filter(this::hasForeignKeyConstraint).toList();
+    }
+
+    private boolean hasForeignKeyConstraint(Column column) {
+        return column.constraintSet().stream().anyMatch(c -> c instanceof ColumnConstraintForeignKey);
+    }
 }
