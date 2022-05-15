@@ -6,6 +6,7 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.operations.ColumnTransformation;
+import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -17,6 +18,11 @@ public class ForeignKeyRemover implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
+        var isIdentityFunction = column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
+        if (isIdentityFunction) {
+            throw new TransformationCouldNotBeExecutedException("No foreign key constraint found! Expected a column with a foreign key constraint!");
+        }
+
         var newConstraintSet = column.constraintSet().stream()
                 .filter( c -> !(c instanceof ColumnConstraintForeignKey))
                 .collect(Collectors.toSet());
