@@ -18,8 +18,7 @@ public class ForeignKeyRemover implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
-        var hasForeignKeyConstraint = hasForeignKeyConstraint(column);
-        if (hasForeignKeyConstraint) {
+        if (!hasForeignKeyConstraint(column)) {
             throw new TransformationCouldNotBeExecutedException("No foreign key constraint found! Expected a column with a foreign key constraint!");
         }
 
