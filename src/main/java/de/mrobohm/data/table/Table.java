@@ -3,6 +3,7 @@ package de.mrobohm.data.table;
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 public record Table(int id,
-                    String name,
+                    StringPlus name,
                     List<Column> columnList,
                     Language language,
                     Context context,
@@ -24,7 +25,7 @@ public record Table(int id,
 
     @Contract(pure = true)
     @NotNull
-    public Table withName(String newName) {
+    public Table withName(StringPlus newName) {
         return new Table(id, newName, columnList, language, context, tableConstraintList);
     }
 

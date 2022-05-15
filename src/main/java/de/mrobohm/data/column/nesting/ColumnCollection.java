@@ -1,6 +1,8 @@
 package de.mrobohm.data.column.nesting;
 
+import de.mrobohm.data.Language;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
+import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +18,8 @@ public record ColumnCollection(List<Column> columnList,
     }
 
     @Override
-    public String name() {
-        return "[<Collection>]";
+    public StringPlus name() {
+        return new StringPlus("[<Collection>]", Language.Mixed);
     }
 
     @Contract(pure = true)

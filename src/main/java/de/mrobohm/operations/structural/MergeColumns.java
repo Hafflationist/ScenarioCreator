@@ -44,8 +44,7 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
     private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Table table, Set<Table> otherTableSet, Random random) {
         // TODO this method can be improved dramatically!
         var newId = StreamExtensions.getColumnId(otherTableSet);
-        var mergedLanguage = LinguisticUtils.merge(columnA.context().language(), columnB.context().language());
-        var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), mergedLanguage , random);
+        var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
         return new ColumnLeaf(newId, newName, DataType.NVARCHAR, null, new HashSet<>());
     }
 

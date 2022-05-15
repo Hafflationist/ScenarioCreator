@@ -3,13 +3,14 @@ package de.mrobohm.data.column.nesting;
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
 public record ColumnLeaf(int id,
-                         String name,
+                         StringPlus name,
                          DataType dataType,
                          ColumnContext context,
                          Set<ColumnConstraint> constraintSet) implements Column {
@@ -22,7 +23,7 @@ public record ColumnLeaf(int id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnLeaf withName(String newName) {
+    public ColumnLeaf withName(StringPlus newName) {
         return new ColumnLeaf(id, newName, dataType, context, constraintSet);
     }
 
