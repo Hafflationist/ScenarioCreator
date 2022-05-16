@@ -13,7 +13,8 @@ import java.util.stream.Stream;
 
 public final class StreamExtensions {
 
-    private StreamExtensions() {}
+    private StreamExtensions() {
+    }
 
     @Contract(pure = true)
     @NotNull
