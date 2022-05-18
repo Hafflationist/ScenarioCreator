@@ -4,6 +4,7 @@ package de.mrobohm.operations;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.integrity.IntegrityChecker;
 import de.mrobohm.operations.exceptions.NoColumnFoundException;
 import de.mrobohm.operations.exceptions.NoTableFoundException;
 import de.mrobohm.utils.Pair;
@@ -24,7 +25,9 @@ public class TransformationExecuter {
     @Contract(pure = true)
     @NotNull
     public Schema executeTransformationSchema(Schema schema, SchemaTransformation transformation, Random random) {
-        return transformation.transform(schema, random);
+        var newSchema = transformation.transform(schema, random);
+        IntegrityChecker.assertValidSchema(newSchema);
+        return newSchema;
     }
 
 
@@ -54,7 +57,9 @@ public class TransformationExecuter {
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
         var newTableSet = transformation.transform(targetTable, schema.tableSet(), random);
-        return executeTransformationTable(schema, targetTable, newTableSet);
+        var newSchema = executeTransformationTable(schema, targetTable, newTableSet);
+        IntegrityChecker.assertValidSchema(newSchema);
+        return newSchema;
     }
 
 
@@ -75,7 +80,9 @@ public class TransformationExecuter {
                 .toList();
         var newTableSet = Collections.singleton(targetTable.withColumnList(newColumnList));
 
-        return executeTransformationTable(schema, target.first(), newTableSet);
+        var newSchema = executeTransformationTable(schema, target.first(), newTableSet);
+        IntegrityChecker.assertValidSchema(newSchema);
+        return newSchema;
     }
 
 
