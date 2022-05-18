@@ -7,6 +7,7 @@ import java.util.List;
 
 public sealed interface ColumnConstraint permits
         ColumnConstraintForeignKey,
+        ColumnConstraintForeignKeyInverse,
         ColumnConstraintLocalPredicate,
         ColumnConstraintUnique {
 
