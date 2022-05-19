@@ -89,8 +89,9 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
     @SuppressWarnings("DuplicateBranchesInSwitch")
     private boolean isObstacle(ColumnConstraint constraint) {
         return switch (constraint) {
-            case ColumnConstraintForeignKey ignored2 -> keepForeignKeyIntegrity;
-            case ColumnConstraintLocalPredicate ignored1 -> false;
+            case ColumnConstraintForeignKey ignored -> keepForeignKeyIntegrity;
+            case ColumnConstraintForeignKeyInverse ignored -> keepForeignKeyIntegrity;
+            case ColumnConstraintLocalPredicate ignored -> false;
             case ColumnConstraintPrimaryKey ignored -> true;
             case ColumnConstraintUnique ignored -> false;
         };
