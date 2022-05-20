@@ -47,7 +47,7 @@ public class RandomSchemaGenerator {
     private static Table generateRandomTable(Random random) {
         var context = generateRandomContext(random);
         return new Table(random.nextInt(),
-            new StringPlus("Spalte" + random.nextInt(), pickRandomLanguage(random)),
+            new StringPlus("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
             generateRandomList(2, 8, RandomSchemaGenerator::generateRandomColumn, random),
             context,
             new HashSet<>()
