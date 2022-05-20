@@ -1,4 +1,4 @@
-package de.mrobohm.operations.linguistic;
+package de.mrobohm.operations.linguistic.helpers;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.NamingConvention;

@@ -5,9 +5,9 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
-import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.linguistic.helpers.Translation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

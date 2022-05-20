@@ -1,18 +1,12 @@
 package de.mrobohm.operations.linguistic;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.nesting.Column;
-import de.mrobohm.data.column.nesting.ColumnCollection;
-import de.mrobohm.data.column.nesting.ColumnLeaf;
-import de.mrobohm.data.column.nesting.ColumnNode;
-import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.linguistic.helpers.Translation;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;

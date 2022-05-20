@@ -1,4 +1,4 @@
-package de.mrobohm.operations.linguistic;
+package de.mrobohm.operations.linguistic.helpers;
 
 import org.jetbrains.annotations.Contract;
 

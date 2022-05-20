@@ -4,6 +4,7 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.linguistic.helpers.Translation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;

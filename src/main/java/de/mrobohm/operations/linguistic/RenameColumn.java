@@ -8,6 +8,7 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -15,11 +16,19 @@ import java.util.Random;
 
 public class RenameColumn implements ColumnTransformation {
 
+    private static final TransformationCouldNotBeExecutedException TRANSFORMATION_EXCEPTION =
+            new TransformationCouldNotBeExecutedException("Column does not have a valid name, which could be changed!");
+    private final UnifiedLanguageCorpus _unifiedLanguageCorpus;
+
+    public RenameColumn(UnifiedLanguageCorpus unifiedLanguageCorpus) {
+        _unifiedLanguageCorpus = unifiedLanguageCorpus;
+    }
+
     @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
         if (!hasMeaningfulName(column)) {
-            throw new TransformationCouldNotBeExecutedException("Column does not have a valid name, which could be changed!");
+            throw TRANSFORMATION_EXCEPTION;
         }
         var newName = getNewName(column.name(), random);
         return switch (column) {
@@ -31,11 +40,13 @@ public class RenameColumn implements ColumnTransformation {
 
     @NotNull
     private StringPlus getNewName(StringPlus name, Random random) {
-        // TODO: Hier könnte WordNet oder GermaNet verwendet werden, um in den Synsets nach Synonamen zu schauen...
-        // Erweitern ließe sich das Vorgehen mithilfe von Tokenisierung.
-        // Solange dies noch nicht implmentiert ist, wird hier erstmal eine zufällige Zeichenkette gewählt:
-        return new StringPlus("Spalte" + random.nextInt(), Language.Technical);
+        var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
+        if (newNameOptional.isEmpty()) {
+            return new StringPlus("Spalte" + random.nextInt(), Language.Technical);
+        }
+        return newNameOptional.get();
     }
+
 
     @Override
     @NotNull

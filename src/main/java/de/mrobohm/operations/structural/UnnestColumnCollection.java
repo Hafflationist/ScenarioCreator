@@ -16,7 +16,7 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
-import de.mrobohm.operations.linguistic.LinguisticUtils;
+import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
