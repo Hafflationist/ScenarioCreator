@@ -30,6 +30,4 @@ class GermaNetInterface implements LanguageCorpus {
         var synonymes = _germanet.getSynsets(word).stream().flatMap(ss -> ss.getAllOrthForms().stream());
         return synonymes.collect(Collectors.toSet());
     }
-
-
 }
