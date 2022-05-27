@@ -2,6 +2,7 @@ package de.mrobohm.operations.linguistic.helpers;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -17,18 +18,18 @@ public final class Translation {
             case English:
                 var germanRawString = translate(name.rawString(), Language.German, random);
                 // TODO: get translation
-                yield new StringPlus(germanRawString, Language.German);
+                yield new StringPlusNaked(germanRawString, Language.German);
 
             case German:
                 var englishRawString = translate(name.rawString(), Language.English, random);
                 // TODO: get translation
-                yield new StringPlus(englishRawString, Language.English);
+                yield new StringPlusNaked(englishRawString, Language.English);
 
             case Mixed:
                 var newLanguage = (random.nextInt() % 2 == 0) ? Language.German : Language.English;
                 var newRawString = name.rawString();
                 // TODO: get translation
-                yield new StringPlus(newRawString, newLanguage);
+                yield new StringPlusNaked(newRawString, newLanguage);
 
             default:
                 throw new IllegalStateException("Unexpected value: " + name.language());

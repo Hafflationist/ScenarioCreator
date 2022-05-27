@@ -7,6 +7,7 @@ import de.mrobohm.data.column.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 
 import java.util.HashSet;
@@ -37,7 +38,7 @@ public class RandomSchemaGenerator {
         var columnContext = new ColumnContext(context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random));
         return new ColumnLeaf(
                 random.nextInt(),
-                new StringPlus("Spalte" + random.nextInt(), pickRandomLanguage(random)),
+                new StringPlusNaked("Spalte" + random.nextInt(), pickRandomLanguage(random)),
                 DataType.NVARCHAR,
                 columnContext,
                 new HashSet<>()
@@ -47,7 +48,7 @@ public class RandomSchemaGenerator {
     private static Table generateRandomTable(Random random) {
         var context = generateRandomContext(random);
         return new Table(random.nextInt(),
-            new StringPlus("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
+            new StringPlusNaked("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
             generateRandomList(2, 8, RandomSchemaGenerator::generateRandomColumn, random),
             context,
             new HashSet<>()
@@ -57,7 +58,7 @@ public class RandomSchemaGenerator {
     public static Schema generateRandomSchema(Random random) {
         var context = generateRandomContext(random);
         var tableSet = generateRandomSet(1, 8, RandomSchemaGenerator::generateRandomTable, random);
-        return new Schema(random.nextInt(), new StringPlus("Schema" + random.nextInt(), pickRandomLanguage(random)), context, tableSet);
+        return new Schema(random.nextInt(), new StringPlusNaked("Schema" + random.nextInt(), pickRandomLanguage(random)), context, tableSet);
     }
 
     private static <T> List<T> generateRandomList(int min, int max, Function<Random, T> elementGenerator, Random random) {

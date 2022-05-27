@@ -3,6 +3,7 @@ package de.mrobohm.operations.linguistic.helpers;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.NamingConvention;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -118,7 +119,7 @@ public final class LinguisticUtils {
         var rawString = useConjunction
                 ? merge(namingConvention, a, generateConjunction(language), b)
                 : merge(namingConvention, a, b);
-        return new StringPlus(rawString, language);
+        return new StringPlusNaked(rawString, language);
     }
 
     @NotNull

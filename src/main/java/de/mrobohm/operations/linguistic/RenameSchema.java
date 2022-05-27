@@ -3,6 +3,7 @@ package de.mrobohm.operations.linguistic;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import org.jetbrains.annotations.NotNull;
@@ -28,7 +29,7 @@ public class RenameSchema implements SchemaTransformation {
     private StringPlus getNewName(StringPlus name, Random random) {
         var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
-            return new StringPlus("Schema" + random.nextInt(), Language.Technical);
+            return new StringPlusNaked("Schema" + random.nextInt(), Language.Technical);
         }
         return newNameOptional.get();
     }

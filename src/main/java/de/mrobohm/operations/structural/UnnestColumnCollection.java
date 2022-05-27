@@ -13,6 +13,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -74,7 +75,7 @@ public class UnnestColumnCollection implements TableTransformation {
     private ColumnLeaf createNewIdColumn(int columnId, ColumnCollection columnCollection, Set<ColumnConstraint> newConstraintSet) {
         var nc = columnCollection.name().guessNamingConvention();
         var newNameRawString = LinguisticUtils.merge(nc, columnCollection.name().rawString(), "id");
-        var newName = new StringPlus(newNameRawString, columnCollection.name().language());
+        var newName = new StringPlusNaked(newNameRawString, columnCollection.name().language());
         var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
         return new ColumnLeaf(columnId, newName, DataType.INT64, newColumnContext, newConstraintSet);
     }

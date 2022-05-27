@@ -2,6 +2,7 @@ package de.mrobohm.operations.linguistic.helpers.biglingo;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
@@ -56,7 +57,7 @@ public class UnifiedLanguageCorpus {
             var newWordTokenStream = wordTokenList.stream()
                     .map(t -> (t.equals(pickedToken)) ? pickedSynonyme : t);
             var newWord = LinguisticUtils.merge(nc, newWordTokenStream.toArray(String[]::new));
-            return Optional.of(new StringPlus(newWord, newLanguage));
+            return Optional.of(new StringPlusNaked(newWord, newLanguage));
         } catch (LocalException e) {
             throw new RuntimeException(e);
         }

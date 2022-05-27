@@ -3,21 +3,24 @@ package de.mrobohm.data.primitives;
 import de.mrobohm.data.Language;
 
 
-public record StringPlus(String rawString, Language language) {
+public interface StringPlus {
+    String rawString();
+    Language language();
 
-    public NamingConvention guessNamingConvention() {
-        var isScreaming = capitalizationRatio(rawString) > 0.5;
-        var isNumerical = letterRatio(rawString) < 0.7;
 
-        if (rawString.equals("")) {
+    default NamingConvention guessNamingConvention() {
+        var isScreaming = capitalizationRatio(rawString()) > 0.5;
+        var isNumerical = letterRatio(rawString()) < 0.7;
+
+        if (rawString().equals("")) {
             return NamingConvention.UNDEFINED;
         } else if (isNumerical) {
             return NamingConvention.TECHNICAL;
-        } else if (rawString.contains("_")) {
+        } else if (rawString().contains("_")) {
             return isScreaming ? NamingConvention.SCREAMINGSNAKECASE : NamingConvention.SNAKECASE;
-        } else if (rawString.contains("-")) {
+        } else if (rawString().contains("-")) {
             return isScreaming ? NamingConvention.SCREAMINGKEBABCASE : NamingConvention.KEBABCASE;
-        } else if (Character.isUpperCase(rawString.charAt(0))) {
+        } else if (Character.isUpperCase(rawString().charAt(0))) {
             return NamingConvention.PASCALCASE;
         } else {
             return NamingConvention.CAMELCASE;

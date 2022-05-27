@@ -6,6 +6,7 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
@@ -42,7 +43,7 @@ public class RenameColumn implements ColumnTransformation {
     private StringPlus getNewName(StringPlus name, Random random) {
         var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
-            return new StringPlus("Spalte" + random.nextInt(), Language.Technical);
+            return new StringPlusNaked("Spalte" + random.nextInt(), Language.Technical);
         }
         return newNameOptional.get();
     }

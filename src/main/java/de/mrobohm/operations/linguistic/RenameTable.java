@@ -2,6 +2,7 @@ package de.mrobohm.operations.linguistic;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
@@ -31,7 +32,7 @@ public class RenameTable implements TableTransformation {
     private StringPlus getNewName(StringPlus name, Random random) {
         var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
-            return new StringPlus("Spalte" + random.nextInt(), Language.Technical);
+            return new StringPlusNaked("Spalte" + random.nextInt(), Language.Technical);
         }
         return newNameOptional.get();
     }

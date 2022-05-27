@@ -3,6 +3,7 @@ package de.mrobohm.data.column.nesting;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +20,7 @@ public record ColumnCollection(List<Column> columnList,
 
     @Override
     public StringPlus name() {
-        return new StringPlus("[<Collection>]", Language.Mixed);
+        return new StringPlusNaked("[<Collection>]", Language.Mixed);
     }
 
     @Contract(pure = true)
