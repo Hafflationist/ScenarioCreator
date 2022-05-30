@@ -28,7 +28,6 @@ public class WordNetInterface implements LanguageCorpus {
         var url = new URL("file", null, path);
         _dict = new RAMDictionary(url, ILoadPolicy.NO_LOAD);
         _dict.open();
-        System.out.println("HUGUOBERT!!!");
     }
 
     public Set<String> getSynonymes(String wordStr) {

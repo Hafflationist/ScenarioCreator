@@ -30,8 +30,6 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     public Set<String> getSynonymes(String word) {
-        // TODO: Man köntne durch andere Namen der Tabelle eingrenzen, welches Synset genau die richtige Bedeutung hat.
-        // Sonst können Wörter wie "Bank" (Sitzgelegenheit vs Finanzinstitut?) komplett falsch synonymisiert werde!
         var synonymes = _germanet.getSynsets(word).stream().flatMap(ss -> ss.getAllOrthForms().stream());
         return synonymes.collect(Collectors.toSet());
     }
