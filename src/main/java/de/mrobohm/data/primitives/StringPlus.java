@@ -3,7 +3,7 @@ package de.mrobohm.data.primitives;
 import de.mrobohm.data.Language;
 
 
-public interface StringPlus {
+public sealed interface StringPlus permits StringPlusNaked, StringPlusSemantical {
     String rawString();
     Language language();
 

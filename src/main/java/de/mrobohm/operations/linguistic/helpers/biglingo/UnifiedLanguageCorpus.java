@@ -3,6 +3,7 @@ package de.mrobohm.operations.linguistic.helpers.biglingo;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
@@ -26,7 +27,7 @@ public class UnifiedLanguageCorpus {
     }
 
 
-    public Optional<Pair<String, Language>> synonymize(String word, Random random) {
+    private Optional<Pair<String, Language>> synonymize(String word, Random random) {
         var synonymesByLanguage = synonymizeFully(word);
         var synonymes = synonymesByLanguage.values().stream().flatMap(Collection::stream);
         try {
@@ -61,6 +62,16 @@ public class UnifiedLanguageCorpus {
         } catch (LocalException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Set<Integer> estimateSynsetId(StringPlus word, Set<String> context) {
+        return switch (word) {
+            case StringPlusSemantical semantical -> semantical.estimatedSynsetIdSet();
+            case StringPlusNaked ignore -> (_corpora.containsKey(word.language()))
+                    ? _corpora.get(word.language()).estimateSynset(word.rawString(), context)
+                    : Set.of();
+        };
+
     }
 
     private static class LocalException extends Exception {

@@ -58,8 +58,18 @@ public class WordNetInterface implements LanguageCorpus {
     @Override
     public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
         // TODO: Diese Methode funktioniert zurzeit nicht richtig.
-        // Weshalb man nicht zwischen Synsets die semantische Ähnlichkeit bestimmten kann, verstehen ich nicht.
+        // Weshalb man nicht zwischen Synsets die semantische Ähnlichkeit bestimmen kann, verstehen ich nicht.
+        if (_dict.getIndexWord(word, POS.NOUN) == null)
+        {
+            return Set.of();
+        }
 
+        var possibleSynsets = _dict
+                .getIndexWord(word, POS.NOUN)
+                .getWordIDs().stream()
+                .map(_dict::getWord)
+                .map(IWord::getLemma)
+                .collect(Collectors.toSet());
         var otherSynsets = otherWordSet.stream()
                 .filter(w -> _dict.getIndexWord(w, POS.NOUN) != null)
                 .flatMap(w -> _dict
@@ -67,12 +77,6 @@ public class WordNetInterface implements LanguageCorpus {
                         .getWordIDs().stream()
                         .map(_dict::getWord)
                         .map(IWord::getLemma))
-                .collect(Collectors.toSet());
-        var possibleSynsets = _dict
-                .getIndexWord(word, POS.NOUN)
-                .getWordIDs().stream()
-                .map(_dict::getWord)
-                .map(IWord::getLemma)
                 .collect(Collectors.toSet());
 
         var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
