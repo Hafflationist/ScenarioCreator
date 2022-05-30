@@ -3,7 +3,6 @@ package de.mrobohm.operations.linguistic.helpers.biglingo;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
-import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
@@ -64,14 +63,12 @@ public class UnifiedLanguageCorpus {
         }
     }
 
-    public Set<Integer> estimateSynsetId(StringPlus word, Set<String> context) {
-        return switch (word) {
-            case StringPlusSemantical semantical -> semantical.estimatedSynsetIdSet();
-            case StringPlusNaked ignore -> (_corpora.containsKey(word.language()))
-                    ? _corpora.get(word.language()).estimateSynset(word.rawString(), context)
-                    : Set.of();
-        };
-
+    public Set<Integer> estimateSynsetId(String word, Set<String> context) {
+        return _corpora.keySet().stream()
+                .map(language -> new Pair<>(language, _corpora.get(language).estimateSynset(word, context)))
+                .max(Comparator.comparingInt(pair -> pair.second().size()))
+                .map(Pair::second)
+                .orElse(Set.of());
     }
 
     private static class LocalException extends Exception {

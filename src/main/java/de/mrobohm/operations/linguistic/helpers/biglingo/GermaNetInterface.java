@@ -1,12 +1,14 @@
 package de.mrobohm.operations.linguistic.helpers.biglingo;
 
 import de.tuebingen.uni.sfs.germanet.api.GermaNet;
+import de.tuebingen.uni.sfs.germanet.api.IliRecord;
 import de.tuebingen.uni.sfs.germanet.api.SemRelMeasure;
 import de.tuebingen.uni.sfs.germanet.api.Synset;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +29,28 @@ public class GermaNetInterface implements LanguageCorpus {
         _germanet = new GermaNet(data_path, true);
         _germanetFreq = new GermaNet(data_path, nounFreqListPath, verbFreqListPath, adjFreqListPath);
         System.out.println("Germanet loaded.");
+    }
+
+    private static String interLingoRecordToString(InterLingoRecord interLingoRecord) {
+        var posString = switch (interLingoRecord.partOfSpeech()) {
+            case NOUN -> "n";
+            case VERB -> "v";
+            case ADJECTIVE -> "a";
+        };
+        return ("eng30-" + String.format("%07d", interLingoRecord.num()) + "-" + posString).toLowerCase();
+    }
+
+    private static InterLingoRecord stringToInterLingoRecord(String str) {
+        var strPartArray = str.split("-");
+        assert strPartArray.length == 3 : "Invalid interlingorecord string!";
+        var num = Integer.parseInt(strPartArray[1]);
+        var pos = switch (strPartArray[2].toLowerCase()) {
+            case "n" -> InterLingoRecord.PartOfSpeech.NOUN;
+            case "v" -> InterLingoRecord.PartOfSpeech.VERB;
+            case "a" -> InterLingoRecord.PartOfSpeech.ADJECTIVE;
+            default -> throw new IllegalStateException("Unexpected value: " + strPartArray[2].toLowerCase());
+        };
+        return new InterLingoRecord(num, pos);
     }
 
     public Set<String> getSynonymes(String word) {
@@ -78,5 +102,23 @@ public class GermaNetInterface implements LanguageCorpus {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord) {
+        var ilId = interLingoRecordToString(interLingoRecord);
+        return _germanet.getIliRecords().stream()
+                .filter(ili -> ili.getPwn30Id().toLowerCase().equals(ilId))
+                .findFirst()
+                .map(ili -> {
+                    var synset = _germanet.getLexUnitByID(ili.getLexUnitId()).getSynset();
+                    return (Set<String>) new HashSet<>(synset.getAllOrthForms());
+                }).orElse(Set.of());
+    }
+
+    public Set<InterLingoRecord> synsetIdToInterLingoRecord(int synsetId) {
+        return _germanet.getSynsetByID(synsetId).getIliRecords().stream()
+                .map(IliRecord::getPwn30Id)
+                .map(GermaNetInterface::stringToInterLingoRecord)
+                .collect(Collectors.toSet());
     }
 }

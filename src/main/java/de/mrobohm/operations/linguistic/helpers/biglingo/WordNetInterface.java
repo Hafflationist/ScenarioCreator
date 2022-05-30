@@ -58,8 +58,7 @@ public class WordNetInterface implements LanguageCorpus {
     public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
         // TODO: Diese Methode funktioniert zurzeit nicht richtig.
         // Weshalb man nicht zwischen Synsets die semantische Ähnlichkeit bestimmen kann, verstehen ich nicht.
-        if (_dict.getIndexWord(word, POS.NOUN) == null)
-        {
+        if (_dict.getIndexWord(word, POS.NOUN) == null) {
             return Set.of();
         }
 
@@ -108,5 +107,17 @@ public class WordNetInterface implements LanguageCorpus {
                 .mapToDouble(ss -> 1 - relatednessCalculator.calcRelatednessOfWords(synset, ss))
                 .average()
                 .orElse(2.0);
+    }
+
+    @Override
+    public Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord) {
+        var pos = switch (interLingoRecord.partOfSpeech()) {
+            case NOUN -> POS.NOUN;
+            case VERB -> POS.VERB;
+            case ADJECTIVE -> POS.ADJECTIVE;
+        };
+        return _dict.getSynset(new SynsetID(interLingoRecord.num(), pos)).getWords().stream()
+                .map(IWord::getLemma)
+                .collect(Collectors.toSet());
     }
 }
