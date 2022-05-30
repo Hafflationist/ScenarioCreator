@@ -13,7 +13,7 @@ public class Main {
 
     private static void WriteRandomSchema(String path) {
         var random = new Random();
-        var schema = RandomSchemaGenerator.generateRandomSchema(random);
+        var schema = RandomSchemaGenerator.generateRandomSchema(random, 8, 8);
         try {
             SchemaFileHandler.save(schema, path);
             System.out.println("Saved schema in \"" + path + "\"");
@@ -114,8 +114,8 @@ public class Main {
 
     public static void main(String[] args) {
         var path = args[0];
-//        WriteRandomSchema(path);
+        WriteRandomSchema(path);
 //        TestGermaNetInterface();
-        TestWordNetInterface();
+//        TestWordNetInterface();
     }
 }

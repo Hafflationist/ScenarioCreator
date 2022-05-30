@@ -45,19 +45,19 @@ public class RandomSchemaGenerator {
         );
     }
 
-    private static Table generateRandomTable(Random random) {
+    private static Table generateRandomTable(Random random, int maxColumns) {
         var context = generateRandomContext(random);
         return new Table(random.nextInt(),
             new StringPlusNaked("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
-            generateRandomList(2, 8, RandomSchemaGenerator::generateRandomColumn, random),
+            generateRandomList(2, maxColumns, RandomSchemaGenerator::generateRandomColumn, random),
             context,
             new HashSet<>()
         );
     }
 
-    public static Schema generateRandomSchema(Random random) {
+    public static Schema generateRandomSchema(Random random, int maxTables, int maxColumn) {
         var context = generateRandomContext(random);
-        var tableSet = generateRandomSet(1, 8, RandomSchemaGenerator::generateRandomTable, random);
+        var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn), random);
         return new Schema(random.nextInt(), new StringPlusNaked("Schema" + random.nextInt(), pickRandomLanguage(random)), context, tableSet);
     }
 
