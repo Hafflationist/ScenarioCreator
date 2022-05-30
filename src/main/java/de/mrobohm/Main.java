@@ -1,23 +1,30 @@
 package de.mrobohm;
 
+import de.mrobohm.data.Language;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
+import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.operations.linguistic.helpers.biglingo.WordNetInterface;
+import de.mrobohm.preprocessing.SemanticSaturation;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Main {
 
     private static void WriteRandomSchema(String path) {
         var random = new Random();
-        var schema = RandomSchemaGenerator.generateRandomSchema(random, 8, 8);
         try {
+            var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, new GermaNetInterface(), Language.English, new WordNetInterface()));
+            var saturator = new SemanticSaturation(ulc);
+            var schema = saturator.saturateSemantically(RandomSchemaGenerator.generateRandomSchema(random, 8, 8));
             SchemaFileHandler.save(schema, path);
             System.out.println("Saved schema in \"" + path + "\"");
-        } catch (IOException e) {
+        } catch (XMLStreamException | IOException e) {
             System.out.println(e.getMessage());
         }
 
@@ -26,42 +33,58 @@ public class Main {
     private static void TestGermaNetInterface() {
         try {
             var germaNetInterface = new GermaNetInterface();
-            var synsetIdSet1 = germaNetInterface
-                    .estimateSynset("Bank", Set.of("Institut", "Datum", "Id", "hfuzd89we"));
-            var synonymes1 = germaNetInterface.getSynonymes(synsetIdSet1);
 
-            var synsetIdSet2 = germaNetInterface
-                    .estimateSynset("Bank", Set.of("Stuhl", "Datum", "Id", "hfuzd89we"));
-            var synonymes2 = germaNetInterface.getSynonymes(synsetIdSet2);
+            var transWord = "gehen";
+            var synsetIdSet = germaNetInterface
+                    .estimateSynset(transWord, Set.of())
+                    .stream().map(x -> Integer.toString(x))
+                    .collect(Collectors.toSet());
+            var pwnIds = germaNetInterface
+                    .estimateSynset(transWord, Set.of()).stream()
+                    .flatMap(synsetId -> germaNetInterface.synsetIdToInterLingoRecord(synsetId).stream())
+                    .collect(Collectors.toSet());
+            System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
+            System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
+            var reTranslation = pwnIds.stream()
+                    .flatMap(pwnId -> germaNetInterface.interLingoRecord2Word(pwnId).stream()).toList();
+            System.out.println("Rückübersetzungen von " + transWord + ":" + String.join(". ", reTranslation));
 
-            var synsetIdSet3 = germaNetInterface
-                    .estimateSynset("Bank", Set.of("Datum", "Id", "hfuzd89we"));
-            var synonymes3 = germaNetInterface.getSynonymes(synsetIdSet3);
-
-            System.out.println("possible synonyms for BANK(\"Institut\", \"Datum\", \"Id\", \"hfuzd89we\"):");
-            System.out.println(synsetIdSet1.size());
-            for (String s : synonymes1) {
-                System.out.println(s);
-            }
-            System.out.println("--------------------------------------");
-            System.out.println("possible synonyms for BANK(\"Stuhl\", \"Datum\", \"Id\", \"hfuzd89we\"):");
-            System.out.println(synsetIdSet2.size());
-            for (String s : synonymes2) {
-                System.out.println(s);
-            }
-            System.out.println("--------------------------------------");
-            System.out.println("this synonyms for BANK(\"Datum\", \"Id\", \"hfuzd89we\"):");
-            System.out.println(synsetIdSet3.size());
-            for (String s : synonymes3) {
-                System.out.println(s);
-            }
-            System.out.println("--------------------------------------");
-
-            var synsGerman = germaNetInterface.getSynonymes("Bank");
-            System.out.println("All synonyms for BANK:");
-            for (String s : synsGerman) {
-                System.out.println(s);
-            }
+            //            var synsetIdSet1 = germaNetInterface
+//                    .estimateSynset("Bank", Set.of("Institut", "Datum", "Id", "hfuzd89we"));
+//            var synonymes1 = germaNetInterface.getSynonymes(synsetIdSet1);
+//
+//            var synsetIdSet2 = germaNetInterface
+//                    .estimateSynset("Bank", Set.of("Stuhl", "Datum", "Id", "hfuzd89we"));
+//            var synonymes2 = germaNetInterface.getSynonymes(synsetIdSet2);
+//
+//            var synsetIdSet3 = germaNetInterface
+//                    .estimateSynset("Bank", Set.of("Datum", "Id", "hfuzd89we"));
+//            var synonymes3 = germaNetInterface.getSynonymes(synsetIdSet3);
+//
+//            System.out.println("possible synonyms for BANK(\"Institut\", \"Datum\", \"Id\", \"hfuzd89we\"):");
+//            System.out.println(synsetIdSet1.size());
+//            for (String s : synonymes1) {
+//                System.out.println(s);
+//            }
+//            System.out.println("--------------------------------------");
+//            System.out.println("possible synonyms for BANK(\"Stuhl\", \"Datum\", \"Id\", \"hfuzd89we\"):");
+//            System.out.println(synsetIdSet2.size());
+//            for (String s : synonymes2) {
+//                System.out.println(s);
+//            }
+//            System.out.println("--------------------------------------");
+//            System.out.println("this synonyms for BANK(\"Datum\", \"Id\", \"hfuzd89we\"):");
+//            System.out.println(synsetIdSet3.size());
+//            for (String s : synonymes3) {
+//                System.out.println(s);
+//            }
+//            System.out.println("--------------------------------------");
+//
+//            var synsGerman = germaNetInterface.getSynonymes("Bank");
+//            System.out.println("All synonyms for BANK:");
+//            for (String s : synsGerman) {
+//                System.out.println(s);
+//            }
         } catch (IOException | XMLStreamException e) {
             throw new RuntimeException(e);
         }
