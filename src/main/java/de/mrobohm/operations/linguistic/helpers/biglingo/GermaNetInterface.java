@@ -115,8 +115,11 @@ public class GermaNetInterface implements LanguageCorpus {
                 }).orElse(Set.of());
     }
 
-    public Set<InterLingoRecord> synsetIdToInterLingoRecord(int synsetId) {
-        return _germanet.getSynsetByID(synsetId).getIliRecords().stream()
+    @Override
+    public Set<InterLingoRecord> synsetId2InterLingoRecord(String word, Set<String> context) {
+        return estimateSynset(word, context).stream()
+                .map(_germanet::getSynsetByID)
+                .flatMap(ss -> ss.getIliRecords().stream())
                 .map(IliRecord::getPwn30Id)
                 .map(GermaNetInterface::stringToInterLingoRecord)
                 .collect(Collectors.toSet());
