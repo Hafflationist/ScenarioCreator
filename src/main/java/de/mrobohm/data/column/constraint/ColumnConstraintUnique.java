@@ -11,6 +11,16 @@ import java.util.function.Function;
 
 public sealed class ColumnConstraintUnique implements ColumnConstraint permits ColumnConstraintPrimaryKey {
 
+    private final int _uniqueGroupId;
+
+    public ColumnConstraintUnique(int uniqueGroupId){
+        _uniqueGroupId = uniqueGroupId;
+    }
+
+    public int getUniqueGroupId() {
+        return _uniqueGroupId;
+    }
+
     @Override
     public double estimateRatioOfKickedValues(List<Value> values, DataType dataType) {
         return switch (dataType) {
