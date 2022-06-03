@@ -12,6 +12,11 @@ import java.util.Random;
 public class ChangeLanguageOfSchemaName implements SchemaTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
         if (schema.name().language() == Language.Technical) {

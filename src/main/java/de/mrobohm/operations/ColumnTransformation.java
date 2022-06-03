@@ -11,6 +11,9 @@ import java.util.Random;
 public interface ColumnTransformation {
 
     @Contract(pure = true)
+    boolean conservesFlatRelations();
+
+    @Contract(pure = true)
     @NotNull
     List<Column> transform(Column column, Random random);
 

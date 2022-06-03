@@ -12,7 +12,6 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
-import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
@@ -28,6 +27,11 @@ import java.util.stream.Stream;
 
 public class UnnestColumnCollection implements TableTransformation {
     @Override
+    public boolean conservesFlatRelations() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
@@ -37,8 +41,8 @@ public class UnnestColumnCollection implements TableTransformation {
         var column = StreamExtensions.pickRandomOrThrow(columnCollectionStream, exception, random);
         assert column instanceof ColumnCollection : "BUG!";
 
-        var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 3);
-        var newIds = new NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
+        var newIds = new NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
         var newTable = createNewTable((ColumnCollection) column, newIds);
         var modifiedTable = createModifiedTable(table, (ColumnCollection) column, newIds);
         return Set.of(newTable, modifiedTable);
@@ -66,7 +70,7 @@ public class UnnestColumnCollection implements TableTransformation {
 
     private ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, ColumnCollection columnCollection) {
         var newConstraintSet = Set.of(
-                new ColumnConstraintPrimaryKey(),
+                new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
                 new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), Set.of()));
         return createNewIdColumn(newIds.targetColumn, columnCollection, newConstraintSet);
     }
@@ -90,6 +94,6 @@ public class UnnestColumnCollection implements TableTransformation {
         return table.columnList().stream().anyMatch(c -> c instanceof ColumnCollection);
     }
 
-    private record NewIds(int targetTable, int targetColumn, int sourceColumn) {
+    private record NewIds(int targetTable, int targetColumn, int sourceColumn, int constraintGroupId) {
     }
 }

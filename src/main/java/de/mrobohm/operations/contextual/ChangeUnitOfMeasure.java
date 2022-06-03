@@ -19,6 +19,11 @@ import java.util.stream.Stream;
 public class ChangeUnitOfMeasure implements ColumnTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Column invalid! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");

@@ -10,6 +10,9 @@ import java.util.Set;
 public interface TableTransformation {
 
     @Contract(pure = true)
+    boolean conservesFlatRelations();
+
+    @Contract(pure = true)
     @NotNull
     Set<Table> transform(Table table, Set<Table> otherTableSet, Random random);
 

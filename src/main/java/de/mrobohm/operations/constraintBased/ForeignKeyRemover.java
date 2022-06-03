@@ -16,6 +16,11 @@ import java.util.stream.Collectors;
 public class ForeignKeyRemover implements ColumnTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
         if (!hasForeignKeyConstraint(column)) {

@@ -19,6 +19,11 @@ import java.util.stream.Stream;
 public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         var pair = getMergeableColumns(table, otherTableSet);

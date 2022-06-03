@@ -22,6 +22,11 @@ public class RenameTable implements TableTransformation {
 
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         var newName = getNewName(table.name(), random);

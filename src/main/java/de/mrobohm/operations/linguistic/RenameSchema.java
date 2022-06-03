@@ -19,6 +19,11 @@ public class RenameSchema implements SchemaTransformation {
     }
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var newName = getNewName(schema.name(), random);

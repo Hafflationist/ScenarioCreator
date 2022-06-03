@@ -6,8 +6,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-@FunctionalInterface
 public interface SchemaTransformation {
+
+    @Contract(pure = true)
+    boolean conservesFlatRelations();
 
     @Contract(pure = true)
     @NotNull

@@ -16,6 +16,11 @@ import java.util.Random;
 public class ChangeLanguageOfColumnName implements ColumnTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public List<Column> transform(Column column, Random random) {
         if (!canBeTranslated(column)) {

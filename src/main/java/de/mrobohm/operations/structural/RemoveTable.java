@@ -11,6 +11,11 @@ import java.util.Set;
 public class RemoveTable implements TableTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         return new HashSet<>();

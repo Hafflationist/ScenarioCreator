@@ -14,6 +14,11 @@ import java.util.stream.Collectors;
 public class ChangeLanguageOfTableName implements TableTransformation {
 
     @Override
+    public boolean conservesFlatRelations() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
         if (!canBeTranslated(table)) {
