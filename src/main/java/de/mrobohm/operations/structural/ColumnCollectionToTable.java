@@ -1,22 +1,10 @@
 package de.mrobohm.operations.structural;
 
-import de.mrobohm.data.Context;
-import de.mrobohm.data.DataType;
-import de.mrobohm.data.Language;
-import de.mrobohm.data.column.ColumnContext;
-import de.mrobohm.data.column.Encoding;
-import de.mrobohm.data.column.UnitOfMeasure;
-import de.mrobohm.data.column.constraint.ColumnConstraint;
-import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
-import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
-import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnCollection;
-import de.mrobohm.data.column.nesting.ColumnLeaf;
-import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
-import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.operations.structural.base.NewTableBase;
 import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +13,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ColumnCollectionToTable implements TableTransformation {
     @Override
@@ -42,49 +29,15 @@ public class ColumnCollectionToTable implements TableTransformation {
         var columnCollectionStream = table.columnList().stream()
                 .filter(c -> c instanceof ColumnCollection);
         var column = StreamExtensions.pickRandomOrThrow(columnCollectionStream, exception, random);
-        assert column instanceof ColumnCollection : "BUG!";
+        if (!(column instanceof ColumnCollection collection)) {
+            throw new RuntimeException("Should never happen");
+        }
 
         var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
-        var newIds = new NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
-        var newTable = createNewTable((ColumnCollection) column, newIds);
-        var modifiedTable = createModifiedTable(table, (ColumnCollection) column, newIds);
+        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
+        var newTable = NewTableBase.createNewTable(column.name(), collection.columnList(), newIds, false);
+        var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
         return Set.of(newTable, modifiedTable);
-    }
-
-    private Table createModifiedTable(Table oldTable, ColumnCollection oldColumnCollection, NewIds newIds) {
-        var reducedColumnList = oldTable.columnList().stream().filter(c -> c != oldColumnCollection);
-        var newForeignKeyColumn = createNewForeignKeyColumn(newIds, oldColumnCollection);
-        var newColumnList = Stream.concat(reducedColumnList, Stream.of(newForeignKeyColumn)).toList();
-        return oldTable.withColumnList(newColumnList);
-    }
-
-    private ColumnLeaf createNewForeignKeyColumn(NewIds newIds, ColumnCollection columnCollection) {
-        var newConstraintSet = Set.of(
-                (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn, Set.of()));
-        return createNewIdColumn(newIds.sourceColumn, columnCollection, newConstraintSet);
-    }
-
-    private Table createNewTable(ColumnCollection columnCollection, NewIds newIds) {
-        var primaryKeyColumn = createNewPrimaryKeyColumn(newIds, columnCollection);
-        var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnCollection.columnList().stream()).toList();
-        var newContext = Context.getDefault();
-        return new Table(newIds.targetTable, columnCollection.name(), newColumnList, newContext, Set.of());
-    }
-
-    private ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, ColumnCollection columnCollection) {
-        var newConstraintSet = Set.of(
-                new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
-                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), Set.of()));
-        return createNewIdColumn(newIds.targetColumn, columnCollection, newConstraintSet);
-    }
-
-
-    private ColumnLeaf createNewIdColumn(int columnId, ColumnCollection columnCollection, Set<ColumnConstraint> newConstraintSet) {
-        var nc = columnCollection.name().guessNamingConvention();
-        var newNameRawString = LinguisticUtils.merge(nc, columnCollection.name().rawString(), "id");
-        var newName = new StringPlusNaked(newNameRawString, columnCollection.name().language());
-        var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
-        return new ColumnLeaf(columnId, newName, DataType.INT64, newColumnContext, newConstraintSet);
     }
 
     @Override
@@ -95,8 +48,5 @@ public class ColumnCollectionToTable implements TableTransformation {
 
     private boolean hasColumnCollection(Table table) {
         return table.columnList().stream().anyMatch(c -> c instanceof ColumnCollection);
-    }
-
-    private record NewIds(int targetTable, int targetColumn, int sourceColumn, int constraintGroupId) {
     }
 }

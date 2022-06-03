@@ -1,16 +1,15 @@
 package de.mrobohm.data.column.nesting;
 
-import de.mrobohm.data.Language;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.primitives.StringPlus;
-import de.mrobohm.data.primitives.StringPlusNaked;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Set;
 
-public record ColumnCollection(List<Column> columnList,
+public record ColumnCollection(StringPlus name,
+                               List<Column> columnList,
                                Set<ColumnConstraint> constraintSet) implements Column {
 
     @Override
@@ -18,20 +17,21 @@ public record ColumnCollection(List<Column> columnList,
         return -1;
     }
 
-    @Override
-    public StringPlus name() {
-        return new StringPlusNaked("[<Collection>]", Language.Mixed);
+    @Contract(pure = true)
+    @NotNull
+    public ColumnCollection withName(StringPlus newName) {
+        return new ColumnCollection(newName, columnList, constraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
     public ColumnCollection withColumnList(List<Column> newColumnList) {
-        return new ColumnCollection(newColumnList, constraintSet);
+        return new ColumnCollection(name, newColumnList, constraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
     public ColumnCollection withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
-        return new ColumnCollection(columnList, newConstraintSet);
+        return new ColumnCollection(name, columnList, newConstraintSet);
     }
 }
