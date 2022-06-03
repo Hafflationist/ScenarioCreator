@@ -26,13 +26,13 @@ public class GroupColumnLeafsToNode implements TableTransformation {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
 
-        var groupableColumns = GroupColumnLeafsToNodeBase.findGroupableColumns(table.columnList(), random);
+        var groupableColumnList = GroupColumnLeafsToNodeBase.findGroupableColumns(table.columnList(), random);
         var newIds = idGenerator.apply(1);
-        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumns, random);
+        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
         var newColumnList = StreamExtensions.replaceInStream(
                 table.columnList().stream(),
-                groupableColumns.stream(),
+                groupableColumnList.stream(),
                 newColumn).toList();
 
         return Set.of(table.withColumnList(newColumnList));

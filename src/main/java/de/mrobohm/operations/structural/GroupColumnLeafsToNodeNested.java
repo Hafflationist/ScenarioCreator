@@ -35,13 +35,13 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
             default -> throw transEx;
         };
 
-        var groupableColumns = GroupColumnLeafsToNodeBase.findGroupableColumns(columnList, random);
+        var groupableColumnList = GroupColumnLeafsToNodeBase.findGroupableColumns(columnList, random);
         var newIds = idGenerator.apply(1);
-        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumns, random);
+        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
         var newColumnList = StreamExtensions.replaceInStream(
                 columnList.stream(),
-                groupableColumns.stream(),
+                groupableColumnList.stream(),
                 newColumn).toList();
 
         return List.of(switch (column) {
