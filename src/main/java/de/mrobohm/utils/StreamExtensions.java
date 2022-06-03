@@ -18,12 +18,25 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElements) {
-        var firstHalf = iterable.takeWhile(e -> !e.equals(originalElement));
+    public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElementStream) {
+        return replaceInStream(iterable, Stream.of(originalElement), newElementStream);
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public static <T> Stream<T> replaceInStream(Stream<T> iterable, Stream<T> originalElementStream, T newElement) {
+        return replaceInStream(iterable, originalElementStream, Stream.of(newElement));
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public static <T> Stream<T> replaceInStream(Stream<T> iterable, Stream<T> originalElementStream, Stream<T> newElementStream) {
+        var originalElementSet = originalElementStream.collect(Collectors.toSet());
+        var firstHalf = iterable.takeWhile(e -> ! originalElementSet.contains(e));
         var secondHalf = iterable
-                .dropWhile(e -> !e.equals(originalElement))
-                .filter(e -> !e.equals(originalElement));
-        return Stream.concat(Stream.concat(firstHalf, newElements), secondHalf);
+                .dropWhile(e -> !originalElementSet.contains(e))
+                .filter(originalElementSet::contains);
+        return Stream.concat(Stream.concat(firstHalf, newElementStream), secondHalf);
     }
 
     @NotNull

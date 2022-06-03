@@ -17,15 +17,17 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class UnnestColumnCollection implements TableTransformation {
+public class ColumnCollectionToTable implements TableTransformation {
     @Override
     public boolean conservesFlatRelations() {
         return false;
@@ -33,7 +35,8 @@ public class UnnestColumnCollection implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet,
+                                Function<Integer, int[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
 
         var columnCollectionStream = table.columnList().stream()

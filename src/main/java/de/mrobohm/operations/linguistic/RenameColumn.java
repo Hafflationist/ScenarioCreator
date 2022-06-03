@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 
 public class RenameColumn implements ColumnTransformation {
 
@@ -32,7 +33,7 @@ public class RenameColumn implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Random random) {
+    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
         if (!hasMeaningfulName(column)) {
             throw TRANSFORMATION_EXCEPTION;
         }

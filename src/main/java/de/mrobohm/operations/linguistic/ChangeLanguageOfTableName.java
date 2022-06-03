@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ChangeLanguageOfTableName implements TableTransformation {
@@ -20,7 +21,8 @@ public class ChangeLanguageOfTableName implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet,
+                                Function<Integer, int[]> idGenerator, Random random) {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }

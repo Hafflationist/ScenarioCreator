@@ -1,4 +1,4 @@
-package de.mrobohm.operations.structural;
+package de.mrobohm.operations.structural.generator;
 
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.column.constraint.ColumnConstraintUnique;

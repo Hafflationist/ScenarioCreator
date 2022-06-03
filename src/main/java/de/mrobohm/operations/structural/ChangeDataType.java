@@ -10,10 +10,9 @@ import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import org.jetbrains.annotations.NotNull;
 
-import javax.xml.crypto.Data;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 public class ChangeDataType implements ColumnTransformation {
@@ -24,7 +23,7 @@ public class ChangeDataType implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Random random) {
+    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
         if (!(column instanceof ColumnLeaf leaf)) {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnLeaf!");
         }

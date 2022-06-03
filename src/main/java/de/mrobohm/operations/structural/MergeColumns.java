@@ -13,6 +13,7 @@ import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,9 +26,10 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet,
+                                Function<Integer, int[]> idGenerator, Random random) {
         var pair = getMergeableColumns(table, otherTableSet);
-        var newColumn = generateNewColumn(pair.first(), pair.second(), table, otherTableSet, random);
+        var newColumn = generateNewColumn(pair.first(), pair.second(), otherTableSet, random);
         var filteredOldColumnStream = table.columnList().stream()
                 .filter(c -> !c.equals(pair.first()))
                 .filter(c -> !c.equals(pair.second()));
@@ -46,7 +48,7 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
         return new Pair<>(firstColumn, secondColumn);
     }
 
-    private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Table table, Set<Table> otherTableSet, Random random) {
+    private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Set<Table> otherTableSet, Random random) {
         // TODO this method can be improved dramatically!
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
         var newId = StreamExtensions.getColumnId(otherTableSet);

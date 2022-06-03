@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,7 +26,7 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Random random) {
+    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Column invalid! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
         if (!(column instanceof ColumnLeaf columnLeaf)) {
             throw exception;

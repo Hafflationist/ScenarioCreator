@@ -4,6 +4,7 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.NamingConvention;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.data.primitives.StringPlusSemantical;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -110,6 +111,10 @@ public final class LinguisticUtils {
 
     @NotNull
     public static StringPlus merge(StringPlus aPlus, StringPlus bPlus, Random random) {
+        if (aPlus instanceof StringPlusSemantical aSem && bPlus instanceof StringPlusSemantical bSem){
+            return merge(aSem, bSem, random);
+        }
+
         var a = aPlus.rawString();
         var b = bPlus.rawString();
         var language = merge(aPlus.language(), bPlus.language());
@@ -120,6 +125,12 @@ public final class LinguisticUtils {
                 ? merge(namingConvention, a, generateConjunction(language), b)
                 : merge(namingConvention, a, b);
         return new StringPlusNaked(rawString, language);
+    }
+
+    @NotNull
+    public static StringPlus merge(StringPlusSemantical aPlus, StringPlusSemantical bPlus, Random random) {
+        // TODO: Implement me!
+        return merge(aPlus, (StringPlus)bPlus, random);
     }
 
     @NotNull

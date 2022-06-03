@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 
 public class RenameTable implements TableTransformation {
 
@@ -28,7 +29,8 @@ public class RenameTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet, Random random) {
+    public Set<Table> transform(Table table, Set<Table> otherTableSet,
+                                Function<Integer, int[]> idGenerator, Random random) {
         var newName = getNewName(table.name(), random);
         return Collections.singleton(table.withName(newName));
     }
