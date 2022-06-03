@@ -11,5 +11,5 @@ public interface LanguageCorpus {
 
     Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord);
 
-    Set<InterLingoRecord> synsetId2InterLingoRecord(String word, Set<String> context);
+    Set<InterLingoRecord> word2InterLingoRecord(String word, Set<String> context);
 }

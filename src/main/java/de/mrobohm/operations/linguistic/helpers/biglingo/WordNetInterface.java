@@ -122,7 +122,7 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<InterLingoRecord> synsetId2InterLingoRecord(String word, Set<String> context) {
+    public Set<InterLingoRecord> word2InterLingoRecord(String word, Set<String> context) {
         return estimateSynset(word, context).stream()
                 .map(ss -> new InterLingoRecord(ss, InterLingoRecord.PartOfSpeech.NOUN))
                 .collect(Collectors.toSet());

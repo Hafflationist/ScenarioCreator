@@ -9,6 +9,7 @@ import de.mrobohm.preprocessing.SemanticSaturation;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -39,10 +40,7 @@ public class Main {
                     .estimateSynset(transWord, Set.of())
                     .stream().map(x -> Integer.toString(x))
                     .collect(Collectors.toSet());
-            var pwnIds = germaNetInterface
-                    .estimateSynset(transWord, Set.of()).stream()
-                    .flatMap(synsetId -> germaNetInterface.synsetIdToInterLingoRecord(synsetId).stream())
-                    .collect(Collectors.toSet());
+            var pwnIds = new HashSet<>(germaNetInterface.word2InterLingoRecord(transWord, Set.of()));
             System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
             System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
             var reTranslation = pwnIds.stream()
