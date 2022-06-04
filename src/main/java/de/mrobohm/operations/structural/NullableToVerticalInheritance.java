@@ -39,9 +39,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
             throw exception;
         }
 
-        var extractableColumnList = chooseExtendingColumn(table.columnList());
-        var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size() + 5);
+        var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
         var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList());
+        var newIds = idGenerator.apply(primaryKeyColumnList.size() + 5);
         var primaryKeyColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
                 .limit(primaryKeyColumnList.size())
@@ -141,8 +141,10 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .withColumnList(newColumnList);
         } else {
             // otherwise we take the primary key columns (with reassigned id and modified constraints)
-            var newColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
-                    .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex))
+            var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
+                    .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex));
+            var newColumnList = Stream
+                    .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
                     .toList();
             return baseTable.withColumnList(newColumnList);
         }
@@ -154,8 +156,17 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 .toList();
     }
 
-    private List<Column> chooseExtendingColumn(List<Column> columnList) {
-        return columnList;
+    private List<Column> chooseExtendingColumns(List<Column> columnList, Random random) {
+        var candidateColumnList = columnList.stream()
+                .filter(column -> column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey))
+                .filter(Column::isNullable)
+                .toList();
+        assert !candidateColumnList.isEmpty();
+        var num = random.nextInt(1, candidateColumnList.size());
+        var runtimeException = new RuntimeException("Should not happen! (BUG)");
+        return StreamExtensions
+                .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException)
+                .toList();
     }
 
     @Override
