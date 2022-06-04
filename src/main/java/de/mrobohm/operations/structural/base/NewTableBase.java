@@ -64,10 +64,10 @@ public final class NewTableBase {
                 new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
                 new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), Set.of()));
         var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
-        return NewTableBase.createNewIdColumn(newIds.targetColumn, tableName, newConstraintSet);
+        return createNewIdColumn(newIds.targetColumn, tableName, newConstraintSet);
     }
 
-    private static ColumnLeaf createNewIdColumn(int columnId,
+    public static ColumnLeaf createNewIdColumn(int columnId,
                                                 StringPlus tableName,
                                                 Set<ColumnConstraint> newConstraintSet) {
         var nc = tableName.guessNamingConvention();

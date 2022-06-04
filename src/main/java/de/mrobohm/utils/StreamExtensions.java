@@ -18,6 +18,12 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
+    public static <T> Stream<T> prepend(Stream<T> tail, T head) {
+        return Stream.concat(Stream.of(head), tail);
+    }
+
+    @Contract(pure = true)
+    @NotNull
     public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElementStream) {
         return replaceInStream(iterable, Stream.of(originalElement), newElementStream);
     }
