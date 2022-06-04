@@ -34,7 +34,7 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
         var filteredOldColumnStream = table.columnList().stream()
                 .filter(c -> !c.equals(pair.first()))
                 .filter(c -> !c.equals(pair.second()));
-        var newColumnList = Stream.concat(filteredOldColumnStream, Stream.of(newColumn)).toList();
+        var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
         return Collections.singleton(table.withColumnList(newColumnList));
     }
 

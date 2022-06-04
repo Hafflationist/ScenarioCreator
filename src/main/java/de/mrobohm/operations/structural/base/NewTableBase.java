@@ -32,9 +32,9 @@ public final class NewTableBase {
 
     public static Table createModifiedTable(Table oldTable, StringPlus otherTablesName,
                                             List<Column> oldColumnList, NewIds newIds, boolean oneToOne) {
-        var reducedColumnList = oldTable.columnList().stream().filter(c -> !oldColumnList.contains(c));
+        var reducedColumnStream = oldTable.columnList().stream().filter(c -> !oldColumnList.contains(c));
         var newForeignKeyColumn = createNewForeignKeyColumn(newIds, otherTablesName, oneToOne);
-        var newColumnList = Stream.concat(reducedColumnList, Stream.of(newForeignKeyColumn)).toList();
+        var newColumnList = Stream.concat(reducedColumnStream, Stream.of(newForeignKeyColumn)).toList();
         return oldTable.withColumnList(newColumnList);
     }
 

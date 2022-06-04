@@ -91,7 +91,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     newIdComplex.primaryKeyColumnId(),
                     originalTable.name(),
                     newPrimaryColumnConstraintSet);
-            return originalTable.withColumnList(Stream.concat(Stream.of(newPrimaryColumn), newColumnList.stream()).toList());
+            return originalTable.withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList());
         }
         return originalTable.withColumnList(newColumnList);
     }

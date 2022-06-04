@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.utils.StreamExtensions;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -34,7 +35,7 @@ public final class IdentificationNumberGenerator {
                             constraintIdStream,
                             collection.columnList().stream().flatMap(IdentificationNumberGenerator::columnToIdStream))
                     .flatMap(Function.identity());
-            case ColumnLeaf leaf -> Stream.concat(Stream.of(leaf.id()), constraintIdStream);
+            case ColumnLeaf leaf -> StreamExtensions.prepend(constraintIdStream, leaf.id());
             case ColumnNode node -> Stream.of(
                             Stream.of(node.id()),
                             constraintIdStream,
