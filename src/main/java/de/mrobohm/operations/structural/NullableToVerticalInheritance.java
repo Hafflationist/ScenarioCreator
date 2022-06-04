@@ -138,6 +138,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .toList();
             return baseTable
                     .withId(newIdComplex.derivingTableId)
+                    .withName(newName)
                     .withColumnList(newColumnList);
         } else {
             // otherwise we take the primary key columns (with reassigned id and modified constraints)
@@ -146,7 +147,10 @@ public class NullableToVerticalInheritance implements TableTransformation {
             var newColumnList = Stream
                     .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
                     .toList();
-            return baseTable.withColumnList(newColumnList);
+            return baseTable
+                    .withId(newIdComplex.derivingTableId)
+                    .withName(newName)
+                    .withColumnList(newColumnList);
         }
     }
 
