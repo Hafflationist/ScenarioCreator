@@ -27,7 +27,7 @@ public class GroupingColumnsBase {
         assert columnList.size() > 0 : "createNewColumnNode wurde mit 0 Spalten aufgerufen!";
 
         var newName = mergeNames(columnList, random);
-        return new ColumnNode(newId, newName, columnList, Set.of());
+        return new ColumnNode(newId, newName, columnList, Set.of(), false);
     }
 
     public static StringPlus mergeNames(List<Column> columnList, Random random){
