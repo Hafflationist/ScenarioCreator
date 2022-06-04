@@ -10,7 +10,8 @@ import java.util.Set;
 
 public record ColumnCollection(StringPlus name,
                                List<Column> columnList,
-                               Set<ColumnConstraint> constraintSet) implements Column {
+                               Set<ColumnConstraint> constraintSet,
+                               boolean isNullable) implements Column {
 
     @Override
     public int id() {
@@ -20,18 +21,24 @@ public record ColumnCollection(StringPlus name,
     @Contract(pure = true)
     @NotNull
     public ColumnCollection withName(StringPlus newName) {
-        return new ColumnCollection(newName, columnList, constraintSet);
+        return new ColumnCollection(newName, columnList, constraintSet, isNullable);
     }
 
     @Contract(pure = true)
     @NotNull
     public ColumnCollection withColumnList(List<Column> newColumnList) {
-        return new ColumnCollection(name, newColumnList, constraintSet);
+        return new ColumnCollection(name, newColumnList, constraintSet, isNullable);
     }
 
     @Contract(pure = true)
     @NotNull
     public ColumnCollection withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
-        return new ColumnCollection(name, columnList, newConstraintSet);
+        return new ColumnCollection(name, columnList, newConstraintSet, isNullable);
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public ColumnCollection withIsNullable(boolean newIsNullable) {
+        return new ColumnCollection(name, columnList, constraintSet, newIsNullable);
     }
 }

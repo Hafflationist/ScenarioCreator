@@ -11,4 +11,6 @@ public sealed interface Column permits ColumnCollection, ColumnLeaf, ColumnNode 
     StringPlus name();
 
     Set<ColumnConstraint> constraintSet();
+
+    boolean isNullable();
 }

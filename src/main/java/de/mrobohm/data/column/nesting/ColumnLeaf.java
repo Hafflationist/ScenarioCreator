@@ -15,6 +15,11 @@ public record ColumnLeaf(int id,
                          ColumnContext context,
                          Set<ColumnConstraint> constraintSet) implements Column {
 
+    @Override
+    public boolean isNullable() {
+        return dataType().isNullable();
+    }
+
     @Contract(pure = true)
     @NotNull
     public ColumnLeaf withId(int newId) {
