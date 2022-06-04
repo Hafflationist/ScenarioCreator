@@ -2,6 +2,7 @@ package de.mrobohm.operations.structural.base;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.DataType;
+import de.mrobohm.data.DataTypeEnum;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.Encoding;
@@ -73,7 +74,8 @@ public final class NewTableBase {
         var newNameRawString = LinguisticUtils.merge(nc, tableName.rawString(), "id");
         var newName = new StringPlusNaked(newNameRawString, tableName.language());
         var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
-        return new ColumnLeaf(columnId, newName, DataType.INT64, newColumnContext, newConstraintSet);
+        var newDataType = new DataType(DataTypeEnum.INT64, false);
+        return new ColumnLeaf(columnId, newName, newDataType, newColumnContext, newConstraintSet);
     }
 
     public record NewIds(int targetTable, int targetColumn, int sourceColumn, int constraintGroupId) {

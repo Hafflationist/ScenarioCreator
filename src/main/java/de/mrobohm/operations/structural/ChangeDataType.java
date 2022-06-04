@@ -1,6 +1,7 @@
 package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.DataType;
+import de.mrobohm.data.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -32,12 +33,13 @@ public class ChangeDataType implements ColumnTransformation {
         return List.of(leaf.withDataType(newDataType));
     }
 
-    private DataType generateNewDataType(DataType dt, Random random ) {
-        return Stream
-                .generate(() -> DataType.getRandom(random))
-                .dropWhile(proposal -> !dt.isSmallerThan(proposal))
+    private DataType generateNewDataType(DataType dt, Random random) {
+        var newDte = Stream
+                .generate(() -> DataTypeEnum.getRandom(random))
+                .dropWhile(proposal -> !dt.dataTypeEnum().isSmallerThan(proposal))
                 .findFirst()
-                .orElse(DataType.NVARCHAR);
+                .orElse(DataTypeEnum.NVARCHAR);
+        return dt.withDataTypeEnum(newDte);
     }
 
     @Override
@@ -51,7 +53,7 @@ public class ChangeDataType implements ColumnTransformation {
         var noPrimaryKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
         var noForeignKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintForeignKey);
         var noForeignKeyInverse = constraintStream.noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
-        var canBeWidened = column instanceof ColumnLeaf leaf && leaf.dataType() != DataType.NVARCHAR;
+        var canBeWidened = column instanceof ColumnLeaf leaf && leaf.dataType().dataTypeEnum() != DataTypeEnum.NVARCHAR;
         return noPrimaryKey && noForeignKey && noForeignKeyInverse && canBeWidened;
     }
 }

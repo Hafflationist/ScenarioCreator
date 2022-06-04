@@ -1,6 +1,7 @@
 package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.DataType;
+import de.mrobohm.data.DataTypeEnum;
 import de.mrobohm.data.column.constraint.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -53,7 +54,8 @@ public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTran
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
         var newId = StreamExtensions.getColumnId(otherTableSet);
         var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
-        return new ColumnLeaf(newId, newName, DataType.NVARCHAR, null, new HashSet<>());
+        var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
+        return new ColumnLeaf(newId, newName, newDataType, null, new HashSet<>());
     }
 
     @Override

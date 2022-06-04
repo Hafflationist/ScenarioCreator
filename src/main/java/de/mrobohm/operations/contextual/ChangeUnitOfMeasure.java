@@ -1,6 +1,6 @@
 package de.mrobohm.operations.contextual;
 
-import de.mrobohm.data.DataType;
+import de.mrobohm.data.DataTypeEnum;
 import de.mrobohm.data.column.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -73,12 +73,12 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
 
     private boolean hasValidDataType(ColumnLeaf column) {
         return Set.of(
-                DataType.FLOAT16,
-                DataType.FLOAT32,
-                DataType.FLOAT64,
-                DataType.INT8,
-                DataType.INT16,
-                DataType.INT32,
-                DataType.INT64).contains(column.dataType());
+                DataTypeEnum.FLOAT16,
+                DataTypeEnum.FLOAT32,
+                DataTypeEnum.FLOAT64,
+                DataTypeEnum.INT8,
+                DataTypeEnum.INT16,
+                DataTypeEnum.INT32,
+                DataTypeEnum.INT64).contains(column.dataType().dataTypeEnum());
     }
 }

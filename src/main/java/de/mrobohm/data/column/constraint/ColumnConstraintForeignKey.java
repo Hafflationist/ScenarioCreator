@@ -15,7 +15,7 @@ public record ColumnConstraintForeignKey(int foreignColumnId, Set<Value> foreign
 
     @Override
     public double estimateRatioOfKickedValues(List<Value> values, DataType dataType) {
-        return switch (dataType) {
+        return switch (dataType.dataTypeEnum()) {
             case FLOAT16, FLOAT32, FLOAT64 -> kickedRatio(values, Double::valueOf);
             case DECIMAL -> kickedRatio(values, BigDecimal::new);
             case INT1 -> kickedRatio(values, Boolean::valueOf);
