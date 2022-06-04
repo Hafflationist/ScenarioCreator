@@ -3,7 +3,7 @@ package de.mrobohm.operations.structural;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
-import de.mrobohm.operations.structural.base.GroupColumnLeafsToNodeBase;
+import de.mrobohm.operations.structural.base.GroupingColumnsBase;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,9 +26,9 @@ public class GroupColumnLeafsToNode implements TableTransformation {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
 
-        var groupableColumnList = GroupColumnLeafsToNodeBase.findGroupableColumns(table.columnList(), random);
+        var groupableColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
         var newIds = idGenerator.apply(1);
-        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumnList, random);
+        var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
         var newColumnList = StreamExtensions.replaceInStream(
                 table.columnList().stream(),
@@ -45,6 +45,6 @@ public class GroupColumnLeafsToNode implements TableTransformation {
     }
 
     private boolean hasTableGroupableColumns(Table table) {
-        return table.columnList().stream().anyMatch(GroupColumnLeafsToNodeBase::areConstraintsFine);
+        return table.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
     }
 }

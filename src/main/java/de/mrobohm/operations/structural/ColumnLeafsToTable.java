@@ -3,7 +3,7 @@ package de.mrobohm.operations.structural;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
-import de.mrobohm.operations.structural.base.GroupColumnLeafsToNodeBase;
+import de.mrobohm.operations.structural.base.GroupingColumnsBase;
 import de.mrobohm.operations.structural.base.NewTableBase;
 import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import org.jetbrains.annotations.NotNull;
@@ -27,8 +27,8 @@ public class ColumnLeafsToTable implements TableTransformation {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
 
-        var newColumnList = GroupColumnLeafsToNodeBase.findGroupableColumns(table.columnList(), random);
-        var newName = GroupColumnLeafsToNodeBase.mergeNames(newColumnList, random);
+        var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
+        var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
         var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
         var newTable = NewTableBase.createNewTable(newName, newColumnList, newIds, true);
@@ -44,6 +44,6 @@ public class ColumnLeafsToTable implements TableTransformation {
     }
 
     private boolean hasTableGroupableColumns(Table table) {
-        return table.columnList().stream().anyMatch(GroupColumnLeafsToNodeBase::areConstraintsFine);
+        return table.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
     }
 }

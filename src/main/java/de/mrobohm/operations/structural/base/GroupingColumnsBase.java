@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-public class GroupColumnLeafsToNodeBase {
+public class GroupingColumnsBase {
 
     public static List<Column> findGroupableColumns(List<Column> columnList, Random random) {
-        var validColumnList = columnList.stream().filter(GroupColumnLeafsToNodeBase::areConstraintsFine).toList();
+        var validColumnList = columnList.stream().filter(GroupingColumnsBase::areConstraintsFine).toList();
         var validColumnCount = validColumnList.size();
         var groupSize = random.nextInt(1 + validColumnCount);
         var ex = new RuntimeException("This should never happen.");

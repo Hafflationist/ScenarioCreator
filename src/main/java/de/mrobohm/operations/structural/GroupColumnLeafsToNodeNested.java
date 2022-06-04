@@ -6,7 +6,7 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
-import de.mrobohm.operations.structural.base.GroupColumnLeafsToNodeBase;
+import de.mrobohm.operations.structural.base.GroupingColumnsBase;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,9 +35,9 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
             default -> throw transEx;
         };
 
-        var groupableColumnList = GroupColumnLeafsToNodeBase.findGroupableColumns(columnList, random);
+        var groupableColumnList = GroupingColumnsBase.findGroupableColumns(columnList, random);
         var newIds = idGenerator.apply(1);
-        var newColumn = GroupColumnLeafsToNodeBase.createNewColumnNode(newIds[0], groupableColumnList, random);
+        var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
         var newColumnList = StreamExtensions.replaceInStream(
                 columnList.stream(),
@@ -59,9 +59,9 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
 
     private boolean hasColumnNodeOrCollectionGroupableColumns(Column column) {
         return switch (column) {
-            case ColumnNode node -> node.columnList().stream().anyMatch(GroupColumnLeafsToNodeBase::areConstraintsFine);
+            case ColumnNode node -> node.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
             case ColumnCollection collection ->
-                    collection.columnList().stream().anyMatch(GroupColumnLeafsToNodeBase::areConstraintsFine);
+                    collection.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
             case ColumnLeaf ignore -> false;
         };
     }
