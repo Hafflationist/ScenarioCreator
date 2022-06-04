@@ -3,6 +3,7 @@ package de.mrobohm.operations.structural.base;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.StreamExtensions;
 
@@ -25,12 +26,16 @@ public class GroupColumnLeafsToNodeBase {
     public static ColumnNode createNewColumnNode(int newId, List<Column> columnList, Random random) {
         assert columnList.size() > 0 : "createNewColumnNode wurde mit 0 Spalten aufgerufen!";
 
+        var newName = mergeNames(columnList, random);
+        return new ColumnNode(newId, newName, columnList, Set.of());
+    }
+
+    public static StringPlus mergeNames(List<Column> columnList, Random random){
         // TODO: Vllt könnte man hier ein besseren neuen Namen finden...
         var allNames = columnList.stream().map(Column::name).toList();
-        var newName = allNames.stream()
+        return allNames.stream()
                 .reduce((a, b) -> LinguisticUtils.merge(a, b, random))
                 .orElse(allNames.get(0));
-        return new ColumnNode(newId, newName, columnList, Set.of());
     }
 
     public static boolean areConstraintsFine(Column column) {

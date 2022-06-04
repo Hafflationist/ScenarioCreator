@@ -26,8 +26,13 @@ public final class NewTableBase {
     }
 
     public static Table createModifiedTable(Table oldTable, Column oldColumn, NewIds newIds, boolean oneToOne) {
-        var reducedColumnList = oldTable.columnList().stream().filter(c -> c != oldColumn);
-        var newForeignKeyColumn = createNewForeignKeyColumn(newIds, oldColumn.name(), oneToOne);
+        return createModifiedTable(oldTable, oldColumn.name(), List.of(oldColumn), newIds, oneToOne);
+    }
+
+    public static Table createModifiedTable(Table oldTable, StringPlus otherTablesName,
+                                            List<Column> oldColumnList, NewIds newIds, boolean oneToOne) {
+        var reducedColumnList = oldTable.columnList().stream().filter(c -> !oldColumnList.contains(c));
+        var newForeignKeyColumn = createNewForeignKeyColumn(newIds, otherTablesName, oneToOne);
         var newColumnList = Stream.concat(reducedColumnList, Stream.of(newForeignKeyColumn)).toList();
         return oldTable.withColumnList(newColumnList);
     }
@@ -39,7 +44,7 @@ public final class NewTableBase {
         var constraintSetOneToMany = Set.of(
                 (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn, Set.of()));
         var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
-        return NewTableBase.createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
+        return createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
     }
 
     public static Table createNewTable(StringPlus tableName, List<Column> columnList, NewIds newIds, boolean oneToOne) {
