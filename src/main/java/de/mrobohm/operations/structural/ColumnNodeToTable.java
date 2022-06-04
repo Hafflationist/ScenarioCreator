@@ -1,6 +1,5 @@
 package de.mrobohm.operations.structural;
 
-import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
@@ -31,7 +30,7 @@ public class ColumnNodeToTable implements TableTransformation {
         var columnNodeStream = table.columnList().stream()
                 .filter(c -> c instanceof ColumnNode);
         var column = StreamExtensions.pickRandomOrThrow(columnNodeStream, exception, random);
-        if(!(column instanceof ColumnNode node)){
+        if (!(column instanceof ColumnNode node)) {
             throw new RuntimeException("Should never happen");
         }
 
@@ -51,8 +50,5 @@ public class ColumnNodeToTable implements TableTransformation {
 
     private boolean hasColumnNode(Table table) {
         return table.columnList().stream().anyMatch(c -> c instanceof ColumnNode);
-    }
-
-    public record NewIds(int targetTable, int targetColumn, int sourceColumn, int constraintGroupId) {
     }
 }
