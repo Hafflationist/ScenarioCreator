@@ -25,4 +25,11 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
         var newName = Translation.translate(schema.name(), random);
         return schema.withName(newName);
     }
+
+    @Override
+    public boolean isExecutable(Schema schema) {
+        var lang = schema.name().language();
+        return !lang.equals(Language.Technical)
+                && !lang.equals(Language.Mixed);
+    }
 }

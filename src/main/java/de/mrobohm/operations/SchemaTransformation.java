@@ -14,4 +14,7 @@ public interface SchemaTransformation {
     @Contract(pure = true)
     @NotNull
     Schema transform(Schema schema, Random random);
+
+    @Contract(pure = true)
+    boolean isExecutable(Schema schema);
 }

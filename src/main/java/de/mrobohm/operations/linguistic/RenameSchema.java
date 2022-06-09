@@ -38,4 +38,9 @@ public class RenameSchema implements SchemaTransformation {
         }
         return newNameOptional.get();
     }
+
+    @Override
+    public boolean isExecutable(Schema schema) {
+        return !schema.name().language().equals(Language.Technical);
+    }
 }
