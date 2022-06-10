@@ -24,6 +24,12 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
+    public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, T newElement) {
+        return replaceInStream(iterable, Stream.of(originalElement), newElement);
+    }
+
+    @Contract(pure = true)
+    @NotNull
     public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElementStream) {
         return replaceInStream(iterable, Stream.of(originalElement), newElementStream);
     }
