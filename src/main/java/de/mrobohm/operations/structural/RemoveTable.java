@@ -24,6 +24,7 @@ public class RemoveTable implements TableTransformation {
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
                                 Function<Integer, int[]> idGenerator, Random random) {
+        assert freeOfRelationships(table) : "Table had foreign key constraints!";
         return new HashSet<>();
     }
 
@@ -31,16 +32,15 @@ public class RemoveTable implements TableTransformation {
     @NotNull
     public Set<Table> getCandidates(Set<Table> tableSet) {
         return tableSet.stream()
-                .filter(t -> !doesHaveForeignKeyRelationships(t))
+                .filter(this::freeOfRelationships)
                 .collect(Collectors.toSet());
     }
 
-    private boolean doesHaveForeignKeyRelationships(Table table) {
+    private boolean freeOfRelationships(Table table) {
         var ownColumnIdSet = table.columnList().stream()
                 .map(Column::id)
                 .collect(Collectors.toSet());
-        return table.columnList().stream().anyMatch(column -> {
-
+        return table.columnList().stream().noneMatch(column -> {
             var hasForeignKeys = column.constraintSet().stream()
                     .filter(c -> c instanceof ColumnConstraintForeignKey)
                     .map(c -> (ColumnConstraintForeignKey) c)
