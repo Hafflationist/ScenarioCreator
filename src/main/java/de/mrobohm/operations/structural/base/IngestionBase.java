@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,58 +23,52 @@ public final class IngestionBase {
 
     public static <TException extends Throwable> Schema fullRandomIngestion(
             Schema schema,
-            Function<Table, Stream<Column>> columnGenerator,
-            boolean insistOnOneToOne,
+            BiFunction<Table, Boolean, Stream<Column>> columnGenerator,
+            IngestionFlags flags,
             TException ex,
             Random random) throws TException {
         var expandableTableStream = schema.tableSet().stream()
-                .filter(t -> IngestionBase.canIngest(t, schema.tableSet(), insistOnOneToOne));
+                .filter(t -> IngestionBase.canIngest(t, schema.tableSet(), flags));
         var chosenTable = StreamExtensions.pickRandomOrThrow(expandableTableStream, ex, random);
-        var ingestionCandidates = IngestionBase.getIngestionCandidates(chosenTable, schema.tableSet(), insistOnOneToOne);
+        var ingestionCandidates = IngestionBase.getIngestionCandidates(
+                chosenTable, schema.tableSet(), flags
+        );
         var ingestingColumnStream = ingestionCandidates.keySet().stream();
         var chosenColumn = StreamExtensions.pickRandomOrThrow(ingestingColumnStream, ex, random);
         var ingestableTableStream = ingestionCandidates.get(chosenColumn).stream();
         var chosenIngestableTable = StreamExtensions.pickRandomOrThrow(ingestableTableStream, ex, random);
-        var newTable = ingest(chosenTable, chosenIngestableTable, columnGenerator);
+        var newTable = ingest(chosenTable, chosenColumn, chosenIngestableTable, columnGenerator);
         var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), Stream.of(chosenTable, chosenIngestableTable), newTable)
                 .collect(Collectors.toSet());
         return schema.withTables(newTableSet);
     }
 
-
-    public static Table ingest(Table ingestingTable, Table ingestedTable, Function<Table, Stream<Column>> columnGenerator) {
-        var ingestingColumnOpt = IngestionBase.getIngestingColumn(ingestingTable, ingestedTable);
-        assert ingestingColumnOpt.isPresent() : "REEE!!";
-        var ingestingColumn = ingestingColumnOpt.get();
-        var newColumnStream = columnGenerator.apply(ingestedTable);
+    public static Table ingest(
+            Table ingestingTable,
+            Column ingestingColumn,
+            Table ingestedTable,
+            BiFunction<Table, Boolean, Stream<Column>> columnGenerator) {
+        assert ingestingTable.columnList().contains(ingestingColumn) : "ingesting column should be part of the ingesting table!";
+        // if the ingesting column can be null, no records from the ingested table will reference the ingesting column.
+        // That's why we use the nullability of the ingesting column to determine the nullability of the new columns.
+        var newColumnStream = columnGenerator.apply(ingestedTable, ingestingColumn.isNullable());
         var newColumnList = StreamExtensions
                 .replaceInStream(ingestingTable.columnList().stream(), ingestingColumn, newColumnStream)
                 .toList();
         return ingestedTable.withColumnList(newColumnList);
     }
 
-    private static Optional<Column> getIngestingColumn(Table ingestingTable, Table ingestedTable) {
-        assert ingestingTable != ingestedTable : "Table cannot ingest itself!";
-        return ingestingTable.columnList().stream()
-                .filter(column -> column.constraintSet().stream()
-                        .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
-                        .map(c -> (ColumnConstraintForeignKeyInverse) c)
-                        .map(ColumnConstraintForeignKeyInverse::foreignColumnId)
-                        .anyMatch(cid -> ingestedTable.columnList().stream()
-                                .anyMatch(columnB -> columnB.constraintSet().stream()
-                                        .filter(c -> c instanceof ColumnConstraintForeignKey)
-                                        .anyMatch(c -> ((ColumnConstraintForeignKey) c).foreignColumnId() == cid))))
-                .findFirst();
-    }
-
-    public static boolean canIngest(Table table, Set<Table> tableSet, boolean insistOnOneToOne) {
-        var ingestionCandidates = getIngestionCandidates(table, tableSet, insistOnOneToOne);
+    public static boolean canIngest(Table table, Set<Table> tableSet, IngestionFlags flags) {
+        var ingestionCandidates = getIngestionCandidates(table, tableSet, flags);
         return ingestionCandidates.keySet().size() > 0;
     }
 
     @NotNull
-    public static Map<Column, Set<Table>> getIngestionCandidates(Table table, Set<Table> tableSet, boolean insistOnOneToOne) {
+    private static Map<Column, Set<Table>> getIngestionCandidates(
+            Table table,
+            Set<Table> tableSet,
+            IngestionFlags flags) {
         var otherTableSet = tableSet.stream().filter(t -> t != table).collect(Collectors.toSet());
         var ingestionCandidates = table.columnList().stream().collect(Collectors.toMap(
                 Function.identity(),
@@ -81,13 +76,13 @@ public final class IngestionBase {
                 column -> column.constraintSet().stream()
                         .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
                         .map(c -> ((ColumnConstraintForeignKeyInverse) c).foreignColumnId())
-                        .filter(cid -> !insistOnOneToOne || column.constraintSet().stream()
+                        .filter(cid -> !flags.insistOnOneToOne() || column.constraintSet().stream()
                                 .filter(c -> c instanceof ColumnConstraintForeignKey)
-                                .anyMatch(c -> ((ColumnConstraintForeignKey) c).foreignColumnId() == cid ))
+                                .anyMatch(c -> ((ColumnConstraintForeignKey) c).foreignColumnId() == cid))
                         .map(cid -> columnIdToTable(cid, otherTableSet))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
-                        .filter(t -> hasSimpleRelationship(table, t))
+                        .filter(t -> hasSimpleRelationship(table, t, flags.shouldConserveAllRecords()))
                         .collect(Collectors.toSet())));
 
         return table.columnList().stream()
@@ -100,7 +95,7 @@ public final class IngestionBase {
         return tableSet.stream().filter(t -> t.columnList().stream().anyMatch(c -> c.id() == columnId)).findFirst();
     }
 
-    private static boolean hasSimpleRelationship(Table tableA, Table tableB) {
+    private static boolean hasSimpleRelationship(Table tableA, Table tableB, boolean tableBNonNull) {
         var constraints = tableA.columnList().stream()
                 .flatMap(column -> column.constraintSet().stream())
                 .toList();
@@ -112,11 +107,16 @@ public final class IngestionBase {
                 .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
                 .map(c -> (ColumnConstraintForeignKeyInverse) c)
                 .map(ColumnConstraintForeignKeyInverse::foreignColumnId);
-        var connectionCount = Stream.concat(foreignColumnIdSet1, foreignColumnIdSet2)
+        var cidExistingInB = Stream.concat(foreignColumnIdSet1, foreignColumnIdSet2)
                 .distinct()
                 .map(cid -> columnIdToTable(cid, Set.of(tableB)))
-                .filter(Optional::isPresent)
-                .count();
-        return connectionCount <= 1;
+                .filter(Optional::isPresent);
+        var nonNull = tableB.columnList().stream().noneMatch(Column::isNullable);
+        return cidExistingInB.count() <= 1 && (!tableBNonNull || nonNull);
     }
+
+    public record IngestionFlags(boolean insistOnOneToOne, boolean shouldConserveAllRecords) {
+
+    }
+
 }

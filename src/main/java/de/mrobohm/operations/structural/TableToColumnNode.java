@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 
 public class TableToColumnNode implements SchemaTransformation {
 
-    private final boolean _shouldStayNormalized;
+    private final IngestionBase.IngestionFlags _flags;
 
-    public TableToColumnNode(boolean shouldStayNormalized) {
-        _shouldStayNormalized = shouldStayNormalized;
+    public TableToColumnNode(boolean shouldStayNormalized, boolean shouldConserveAllRecords) {
+        _flags = new IngestionBase.IngestionFlags(shouldStayNormalized, shouldConserveAllRecords);
     }
 
 
@@ -32,23 +32,23 @@ public class TableToColumnNode implements SchemaTransformation {
     public Schema transform(Schema schema, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
         return IngestionBase.fullRandomIngestion(
-                schema, this::columnGenerator, _shouldStayNormalized, exception, random
+                schema, this::columnGenerator, _flags, exception, random
         );
     }
 
-    private Stream<Column> columnGenerator(Table ingestedTable) {
+    private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {
         return Stream.of(new ColumnNode(
                 ingestedTable.id(),
                 ingestedTable.name(),
                 ingestedTable.columnList(),
                 Set.of(),
-                false
+                isNullable
         ));
     }
 
     @Override
     public boolean isExecutable(Schema schema) {
         var tableSet = schema.tableSet();
-        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _shouldStayNormalized));
+        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _flags));
     }
 }

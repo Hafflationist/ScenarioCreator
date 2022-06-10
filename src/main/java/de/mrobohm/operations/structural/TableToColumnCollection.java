@@ -15,6 +15,13 @@ import java.util.stream.Stream;
 
 
 public class TableToColumnCollection implements SchemaTransformation {
+
+    private final IngestionBase.IngestionFlags _flags;
+
+    public TableToColumnCollection(boolean shouldConserveAllRecords) {
+        _flags = new IngestionBase.IngestionFlags(false, shouldConserveAllRecords);
+    }
+
     @Override
     public boolean conservesFlatRelations() {
         return false;
@@ -24,22 +31,22 @@ public class TableToColumnCollection implements SchemaTransformation {
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
-        return IngestionBase.fullRandomIngestion(schema, this::columnGenerator, false, exception, random);
+        return IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, exception, random);
     }
 
-    private Stream<Column> columnGenerator(Table ingestedTable) {
+    private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {
         return Stream.of(new ColumnCollection(
                 ingestedTable.id(),
                 ingestedTable.name(),
                 ingestedTable.columnList(),
                 Set.of(),
-                false
+                isNullable
         ));
     }
 
     @Override
     public boolean isExecutable(Schema schema) {
         var tableSet = schema.tableSet();
-        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, false));
+        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _flags));
     }
 }

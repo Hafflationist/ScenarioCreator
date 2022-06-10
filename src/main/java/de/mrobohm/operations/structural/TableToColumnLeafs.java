@@ -2,6 +2,9 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
+import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -14,10 +17,10 @@ import java.util.stream.Stream;
 // equivalent to vertical merge
 public class TableToColumnLeafs implements SchemaTransformation {
 
-    private final boolean _shouldStayNormalized;
+    private final IngestionBase.IngestionFlags _flags;
 
-    public TableToColumnLeafs(boolean shouldStayNormalized) {
-        _shouldStayNormalized = shouldStayNormalized;
+    public TableToColumnLeafs(boolean shouldStayNormalized, boolean shouldConserveAllRecords) {
+        _flags = new IngestionBase.IngestionFlags(shouldStayNormalized, shouldConserveAllRecords);
     }
 
 
@@ -32,17 +35,21 @@ public class TableToColumnLeafs implements SchemaTransformation {
         var exception = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
         // table name could be updated...
         return IngestionBase.fullRandomIngestion(
-                schema, this::columnGenerator, _shouldStayNormalized, exception, random
+                schema, this::columnGenerator, _flags, exception, random
         );
     }
 
-    private Stream<Column> columnGenerator(Table ingestedTable) {
-        return ingestedTable.columnList().stream();
+    private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {
+        return ingestedTable.columnList().stream().map(column -> switch (column) {
+            case ColumnLeaf leaf -> leaf.withDataType(leaf.dataType().withIsNullable(isNullable));
+            case ColumnNode node -> node.withIsNullable(isNullable);
+            case ColumnCollection col -> col.withIsNullable(isNullable);
+        });
     }
 
     @Override
     public boolean isExecutable(Schema schema) {
         var tableSet = schema.tableSet();
-        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _shouldStayNormalized));
+        return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _flags));
     }
 }
