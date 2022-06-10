@@ -9,9 +9,6 @@ import java.util.Random;
 public non-sealed interface SchemaTransformation extends Transformation {
 
     @Contract(pure = true)
-    boolean conservesFlatRelations();
-
-    @Contract(pure = true)
     @NotNull
     Schema transform(Schema schema, Random random);
 

@@ -11,9 +11,6 @@ import java.util.function.Function;
 public non-sealed interface TableTransformation extends Transformation  {
 
     @Contract(pure = true)
-    boolean conservesFlatRelations();
-
-    @Contract(pure = true)
     @NotNull
     Set<Table> transform(Table table, Set<Table> otherTableSet, Function<Integer, int[]> idGenerator, Random random);
 

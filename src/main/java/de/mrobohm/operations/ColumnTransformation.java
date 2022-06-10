@@ -12,9 +12,6 @@ import java.util.function.Function;
 public non-sealed interface ColumnTransformation extends Transformation {
 
     @Contract(pure = true)
-    boolean conservesFlatRelations();
-
-    @Contract(pure = true)
     @NotNull
     List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random);
 
