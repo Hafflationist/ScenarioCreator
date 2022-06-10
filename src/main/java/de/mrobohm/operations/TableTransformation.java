@@ -8,7 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 
-public interface TableTransformation {
+public interface TableTransformation extends Transformation  {
 
     @Contract(pure = true)
     boolean conservesFlatRelations();

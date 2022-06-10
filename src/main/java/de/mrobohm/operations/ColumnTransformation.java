@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.function.Function;
 
 
-public interface ColumnTransformation {
+public interface ColumnTransformation extends Transformation {
 
     @Contract(pure = true)
     boolean conservesFlatRelations();
