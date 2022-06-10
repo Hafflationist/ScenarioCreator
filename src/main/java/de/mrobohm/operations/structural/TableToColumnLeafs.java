@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.stream.Stream;
 
 // equivalent to vertical merge
+// equivalent to flattening of vertical inheritance
 public class TableToColumnLeafs implements SchemaTransformation {
 
     private final IngestionBase.IngestionFlags _flags;
