@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -44,7 +45,7 @@ public final class StreamExtensions {
     @NotNull
     public static <T> Stream<T> replaceInStream(Stream<T> iterable, Stream<T> originalElementStream, Stream<T> newElementStream) {
         var originalElementSet = originalElementStream.collect(Collectors.toSet());
-        var firstHalf = iterable.takeWhile(e -> ! originalElementSet.contains(e));
+        var firstHalf = iterable.takeWhile(e -> !originalElementSet.contains(e));
         var secondHalf = iterable
                 .dropWhile(e -> !originalElementSet.contains(e))
                 .filter(originalElementSet::contains);
@@ -88,4 +89,17 @@ public final class StreamExtensions {
                 .toList()
                 .get(0);
     }
+
+    @Contract(pure = true)
+    public static <T> Partition<T> partition(Stream<T> stream, Function<T, Boolean> predicate) {
+        var list = stream.toList();
+        var yes = list.stream().filter(predicate::apply);
+        var no = list.stream().filter(e -> !predicate.apply(e));
+        return new Partition<>(yes, no);
+    }
+
+    public record Partition<T>(Stream<T> yes, Stream<T> no) {
+    }
+
+
 }

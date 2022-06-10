@@ -9,11 +9,9 @@ import de.mrobohm.preprocessing.SemanticSaturation;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Main {
 
@@ -132,11 +130,35 @@ public class Main {
         }
     }
 
+    private static void Equality() {
+        var list1 = Set.of(1, 2, 3, 4);
+        var list2 = Stream.of(2, 3, 4, 1).collect(Collectors.toSet());
+
+        var tr1 = new TestRecord(0, list1);
+        var tr2 = new TestRecord(1, list1);
+        var tr3 = new TestRecord(1, list2);
+
+        var cr1 = new ContainerRecord(1, Set.of(tr1, tr2));
+        var cr2 = new ContainerRecord(1, Set.of(tr1, tr2));
+
+
+        System.out.println("tr1 == tr2: " + (cr1 == cr2));
+        System.out.println("tr1.equals(tr2): " + cr1.equals(cr2));
+
+    }
+
 
     public static void main(String[] args) {
         var path = args[0];
-        WriteRandomSchema(path);
+//        WriteRandomSchema(path);
 //        TestGermaNetInterface();
 //        TestWordNetInterface();
+//        Equality();
+    }
+
+    record TestRecord(int id, Set<Integer> things) {
+    }
+
+    record ContainerRecord(int id, Set<TestRecord> testis) {
     }
 }

@@ -96,6 +96,11 @@ public final class IngestionBase {
     }
 
     private static boolean hasSimpleRelationship(Table tableA, Table tableB, boolean tableBNonNull) {
+        var nonNull = tableB.columnList().stream().noneMatch(Column::isNullable);
+        return getRelationshipCount(tableA, tableB) <= 1 && (!tableBNonNull || nonNull);
+    }
+
+    public static long getRelationshipCount(Table tableA, Table tableB){
         var constraints = tableA.columnList().stream()
                 .flatMap(column -> column.constraintSet().stream())
                 .toList();
@@ -111,8 +116,7 @@ public final class IngestionBase {
                 .distinct()
                 .map(cid -> columnIdToTable(cid, Set.of(tableB)))
                 .filter(Optional::isPresent);
-        var nonNull = tableB.columnList().stream().noneMatch(Column::isNullable);
-        return cidExistingInB.count() <= 1 && (!tableBNonNull || nonNull);
+        return cidExistingInB.count();
     }
 
     public record IngestionFlags(boolean insistOnOneToOne, boolean shouldConserveAllRecords) {
