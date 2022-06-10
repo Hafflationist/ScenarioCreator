@@ -23,9 +23,22 @@ import java.util.stream.Stream;
 
 public class TransformationExecuter {
 
+
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationSchema(Schema schema, SchemaTransformation transformation, Random random) {
+    public Schema executeTransformation(Schema schema, Transformation transformation, Random random)
+            throws NoTableFoundException, NoColumnFoundException {
+        return switch (transformation) {
+            case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
+            case TableTransformation tt -> executeTransformationTable(schema, tt, random);
+            case SchemaTransformation st -> executeTransformationSchema(schema, st, random);
+        };
+    }
+
+
+    @Contract(pure = true)
+    @NotNull
+    private Schema executeTransformationSchema(Schema schema, SchemaTransformation transformation, Random random) {
         var newSchema = transformation.transform(schema, random);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;
@@ -54,7 +67,7 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
+    private Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
         Function<Integer, int[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema.tableSet(), n);
@@ -67,7 +80,7 @@ public class TransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
+    private Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
             throws NoTableFoundException, NoColumnFoundException {
         assert schema != null;
 

@@ -1,4 +1,4 @@
 package de.mrobohm.operations;
 
-public interface Transformation {
+public sealed interface Transformation permits ColumnTransformation, TableTransformation, SchemaTransformation {
 }

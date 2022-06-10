@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public interface SchemaTransformation extends Transformation {
+public non-sealed interface SchemaTransformation extends Transformation {
 
     @Contract(pure = true)
     boolean conservesFlatRelations();
