@@ -1,5 +1,8 @@
 package de.mrobohm.operations.structural;
 
+import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
+import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
+import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.operations.ColumnTransformation;
 import org.jetbrains.annotations.NotNull;
@@ -18,6 +21,7 @@ public class RemoveColumn implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+        assert !hasCriticalConstraints(column) : "Column had critical constraints!";
         return new ArrayList<>();
     }
 
@@ -28,5 +32,15 @@ public class RemoveColumn implements ColumnTransformation {
             return new ArrayList<>();
         }
         return columnList;
+    }
+
+    public boolean hasCriticalConstraints(Column column) {
+        var hasPrimaryKeyConstraint = column.constraintSet().stream()
+                .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey);
+        var hasForeignKeyConstraint = column.constraintSet().stream()
+                .anyMatch(c -> c instanceof ColumnConstraintForeignKey);
+        var hasForeignKeyInversConstraint = column.constraintSet().stream()
+                .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
+        return hasPrimaryKeyConstraint || hasForeignKeyConstraint || hasForeignKeyInversConstraint;
     }
 }
