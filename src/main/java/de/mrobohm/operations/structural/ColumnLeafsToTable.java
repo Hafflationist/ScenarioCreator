@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+// equivalent to vertical split
 public class ColumnLeafsToTable implements TableTransformation {
     @Override
     public boolean conservesFlatRelations() {

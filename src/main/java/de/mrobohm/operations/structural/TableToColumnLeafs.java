@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Random;
 import java.util.stream.Stream;
 
+// equivalent to vertical merge
 public class TableToColumnLeafs implements SchemaTransformation {
 
     private final boolean _shouldStayNormalized;
@@ -29,6 +30,7 @@ public class TableToColumnLeafs implements SchemaTransformation {
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
+        // table name could be updated...
         return IngestionBase.fullRandomIngestion(
                 schema, this::columnGenerator, _shouldStayNormalized, exception, random
         );
