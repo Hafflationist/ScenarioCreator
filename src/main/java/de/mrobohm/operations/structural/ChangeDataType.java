@@ -48,7 +48,7 @@ public class ChangeDataType implements ColumnTransformation {
         return columnList.stream().filter(this::isValid).toList();
     }
 
-    public boolean isValid(Column column) {
+    private boolean isValid(Column column) {
         var constraintStream = column.constraintSet().stream();
         var noPrimaryKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
         var noForeignKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintForeignKey);

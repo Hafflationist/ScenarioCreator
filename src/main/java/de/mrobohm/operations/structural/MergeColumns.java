@@ -16,9 +16,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public record MergeColumns(boolean keepForeignKeyIntegrity) implements TableTransformation {
+public final class MergeColumns implements TableTransformation {
+    private final boolean keepForeignKeyIntegrity;
+
+    public MergeColumns(boolean keepForeignKeyIntegrity) {
+        this.keepForeignKeyIntegrity = keepForeignKeyIntegrity;
+    }
 
     @Override
     public boolean conservesFlatRelations() {

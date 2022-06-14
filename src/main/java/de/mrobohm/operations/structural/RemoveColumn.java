@@ -34,7 +34,7 @@ public class RemoveColumn implements ColumnTransformation {
         return columnList;
     }
 
-    public boolean hasCriticalConstraints(Column column) {
+    private boolean hasCriticalConstraints(Column column) {
         var hasPrimaryKeyConstraint = column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey);
         var hasForeignKeyConstraint = column.constraintSet().stream()

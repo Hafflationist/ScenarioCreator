@@ -40,7 +40,7 @@ public class DeNullification implements ColumnTransformation {
         return columnList.stream().filter(this::isValid).toList();
     }
 
-    public boolean isValid(Column column) {
+    private boolean isValid(Column column) {
         return !(column instanceof ColumnNode) && column.isNullable();
     }
 }
