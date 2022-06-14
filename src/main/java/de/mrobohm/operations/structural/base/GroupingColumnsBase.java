@@ -4,6 +4,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.StreamExtensions;
 
@@ -16,10 +17,11 @@ public class GroupingColumnsBase {
     public static List<Column> findGroupableColumns(List<Column> columnList, Random random) {
         var validColumnList = columnList.stream().filter(GroupingColumnsBase::areConstraintsFine).toList();
         var validColumnCount = validColumnList.size();
-        var groupSize = random.nextInt(1 + validColumnCount);
+        assert validColumnCount > 0;
+        var groupSize = random.nextInt(validColumnCount) + 1;
         var ex = new RuntimeException("This should never happen.");
         return StreamExtensions
-                .pickRandomOrThrowMultiple(validColumnList.stream(), groupSize, ex)
+                .pickRandomOrThrowMultiple(validColumnList.stream(), groupSize, ex, random)
                 .toList();
     }
 
@@ -38,7 +40,11 @@ public class GroupingColumnsBase {
                 .orElse(allNames.get(0));
     }
 
-    public static boolean areConstraintsFine(Column column) {
+    private static boolean areConstraintsFine(Column column) {
         return column.constraintSet().stream().noneMatch(constraint -> constraint instanceof ColumnConstraintPrimaryKey);
+    }
+
+    public static boolean containsGroupableColumns(List<Column> columnList) {
+        return columnList.stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
     }
 }

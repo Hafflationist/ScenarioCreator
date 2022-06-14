@@ -24,11 +24,12 @@ public class ColumnLeafsToTable implements TableTransformation {
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
                                 Function<Integer, int[]> idGenerator, Random random) {
-        if (!(hasTableGroupableColumns(table))) {
+        if (!(GroupingColumnsBase.containsGroupableColumns(table.columnList()))) {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
 
         var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
+        assert newColumnList.size() > 0;
         var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
         var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
@@ -41,10 +42,8 @@ public class ColumnLeafsToTable implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> getCandidates(Set<Table> tableSet) {
-        return tableSet.stream().filter(this::hasTableGroupableColumns).collect(Collectors.toSet());
-    }
-
-    private boolean hasTableGroupableColumns(Table table) {
-        return table.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
+        return tableSet.stream()
+                .filter(t -> GroupingColumnsBase.containsGroupableColumns(t.columnList()))
+                .collect(Collectors.toSet());
     }
 }

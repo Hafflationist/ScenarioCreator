@@ -33,7 +33,7 @@ public final class MergeColumns implements TableTransformation {
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
                                 Function<Integer, int[]> idGenerator, Random random) {
-        var pair = getMergeableColumns(table, otherTableSet);
+        var pair = getMergeableColumns(table, otherTableSet, random);
         var newColumn = generateNewColumn(pair.first(), pair.second(), otherTableSet, random);
         var filteredOldColumnStream = table.columnList().stream()
                 .filter(c -> !c.equals(pair.first()))
@@ -42,11 +42,13 @@ public final class MergeColumns implements TableTransformation {
         return Collections.singleton(table.withColumnList(newColumnList));
     }
 
-    private Pair<ColumnLeaf, ColumnLeaf> getMergeableColumns(Table table, Set<Table> otherTableSet) {
+    private Pair<ColumnLeaf, ColumnLeaf> getMergeableColumns(Table table, Set<Table> otherTableSet, Random random) {
         var referencedColumnIdSet = getReferencedColumnIdSet(otherTableSet);
         var validColumnStream = getValidColumns(table.columnList(), referencedColumnIdSet).stream();
         var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
-        var twoColumns = StreamExtensions.pickRandomOrThrowMultiple(validColumnStream, 2, exception);
+        var twoColumns = StreamExtensions.pickRandomOrThrowMultiple(
+                validColumnStream, 2, exception, random
+        );
         var twoColumnsList = twoColumns.toList();
         var firstColumn = twoColumnsList.get(0);
         var secondColumn = twoColumnsList.get(1);

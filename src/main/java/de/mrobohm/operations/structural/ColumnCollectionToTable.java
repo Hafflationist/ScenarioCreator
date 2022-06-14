@@ -26,9 +26,10 @@ public class ColumnCollectionToTable implements TableTransformation {
                                 Function<Integer, int[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
 
-        var columnCollectionStream = table.columnList().stream()
-                .filter(c -> c instanceof ColumnCollection);
-        var column = StreamExtensions.pickRandomOrThrow(columnCollectionStream, exception, random);
+        var columnCollectionList = table.columnList().stream()
+                .filter(c -> c instanceof ColumnCollection)
+                .toList();
+        var column = StreamExtensions.pickRandomOrThrow(columnCollectionList.stream(), exception, random);
         if (!(column instanceof ColumnCollection collection)) {
             throw new RuntimeException("Should never happen");
         }

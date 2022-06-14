@@ -59,9 +59,8 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
 
     private boolean hasColumnNodeOrCollectionGroupableColumns(Column column) {
         return switch (column) {
-            case ColumnNode node -> node.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
-            case ColumnCollection collection ->
-                    collection.columnList().stream().anyMatch(GroupingColumnsBase::areConstraintsFine);
+            case ColumnNode node -> GroupingColumnsBase.containsGroupableColumns(node.columnList());
+            case ColumnCollection col -> GroupingColumnsBase.containsGroupableColumns(col.columnList());
             case ColumnLeaf ignore -> false;
         };
     }

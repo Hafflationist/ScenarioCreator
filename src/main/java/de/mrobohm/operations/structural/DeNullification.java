@@ -1,5 +1,6 @@
 package de.mrobohm.operations.structural;
 
+import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -41,6 +42,9 @@ public class DeNullification implements ColumnTransformation {
     }
 
     private boolean isValid(Column column) {
-        return !(column instanceof ColumnNode) && column.isNullable();
+        var isNotNode = !(column instanceof ColumnNode);
+        var isNullable = column.isNullable();
+        var isNotForeignKey = column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
+        return isNotNode && isNullable && isNotForeignKey;
     }
 }

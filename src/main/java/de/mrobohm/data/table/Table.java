@@ -13,35 +13,35 @@ public record Table(int id,
                     StringPlus name,
                     List<Column> columnList,
                     Context context,
-                    Set<TableConstraint> tableConstraintList) {
+                    Set<TableConstraint> tableConstraintSet) {
 
     @Contract(pure = true)
     @NotNull
     public Table withId(int newId) {
-        return new Table(newId, name, columnList, context, tableConstraintList);
+        return new Table(newId, name, columnList, context, tableConstraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withName(StringPlus newName) {
-        return new Table(id, newName, columnList, context, tableConstraintList);
+        return new Table(id, newName, columnList, context, tableConstraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withColumnList(List<Column> newColumnList) {
-        return new Table(id, name, newColumnList, context, tableConstraintList);
+        return new Table(id, name, newColumnList, context, tableConstraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withContext(Context newContext) {
-        return new Table(id, name, columnList, newContext, tableConstraintList);
+        return new Table(id, name, columnList, newContext, tableConstraintSet);
     }
 
     @Contract(pure = true)
     @NotNull
-    public Table withTableConstraintList(Set<TableConstraint> newTableConstraints) {
+    public Table withTableConstraintSet(Set<TableConstraint> newTableConstraints) {
         return new Table(id, name, columnList, context, newTableConstraints);
     }
 }

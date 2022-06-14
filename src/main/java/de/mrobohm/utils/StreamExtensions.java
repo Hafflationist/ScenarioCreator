@@ -44,20 +44,23 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> iterable, Stream<T> originalElementStream, Stream<T> newElementStream) {
+    public static <T> Stream<T> replaceInStream(Stream<T> stream, Stream<T> originalElementStream, Stream<T> newElementStream) {
         var originalElementSet = originalElementStream.collect(Collectors.toSet());
-        var firstHalf = iterable.takeWhile(e -> !originalElementSet.contains(e));
-        var secondHalf = iterable
+        var list = stream.toList();
+        var firstHalf = list.stream().takeWhile(e -> !originalElementSet.contains(e)).toList();
+        var secondHalf = list.stream()
                 .dropWhile(e -> !originalElementSet.contains(e))
-                .filter(originalElementSet::contains);
-        return Stream.concat(Stream.concat(firstHalf, newElementStream), secondHalf);
+                .filter(e -> !originalElementSet.contains(e))
+                .toList();
+        return Stream.concat(Stream.concat(firstHalf.stream(), newElementStream), secondHalf.stream());
     }
 
     @NotNull
     public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception, Random random)
             throws TException {
-        var randomPickOption = stream
-                .skip(random.nextLong(stream.count()))
+        var list = stream.toList();
+        var randomPickOption = list.stream()
+                .skip(random.nextLong(list.size()))
                 .findFirst();
         if (randomPickOption.isEmpty())
             throw exception;
@@ -75,10 +78,11 @@ public final class StreamExtensions {
     public static <T, TException extends Throwable> Stream<T> pickRandomOrThrowMultiple(
             Stream<T> stream,
             int n,
-            TException exception)
+            TException exception,
+            Random random)
             throws TException {
         var list = stream.collect(Collectors.toList());
-        Collections.shuffle(list); // Seltsame Magie (Unvorhersehbare SEITENEFFEKTE!) passiert hier.
+        Collections.shuffle(list, random); // Seltsame Magie (Unvorhersehbare SEITENEFFEKTE!) passiert hier.
         if (n > list.size()) {
             throw exception;
         }

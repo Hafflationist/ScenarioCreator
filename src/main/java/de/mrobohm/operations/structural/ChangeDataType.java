@@ -49,10 +49,10 @@ public class ChangeDataType implements ColumnTransformation {
     }
 
     private boolean isValid(Column column) {
-        var constraintStream = column.constraintSet().stream();
-        var noPrimaryKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
-        var noForeignKey = constraintStream.noneMatch(c -> c instanceof ColumnConstraintForeignKey);
-        var noForeignKeyInverse = constraintStream.noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
+        var constraintSet = column.constraintSet();
+        var noPrimaryKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
+        var noForeignKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
+        var noForeignKeyInverse = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
         var canBeWidened = column instanceof ColumnLeaf leaf && leaf.dataType().dataTypeEnum() != DataTypeEnum.NVARCHAR;
         return noPrimaryKey && noForeignKey && noForeignKeyInverse && canBeWidened;
     }

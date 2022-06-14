@@ -98,7 +98,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         var num = random.nextInt(1, candidateColumnList.size());
         var runtimeException = new RuntimeException("Should not happen! (BUG)");
         return StreamExtensions
-                .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException)
+                .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException, random)
                 .toList();
     }
 

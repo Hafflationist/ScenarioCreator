@@ -31,4 +31,8 @@ public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure un
         return new ColumnContext(context, encoding, unitOfMeasure, newLanguage);
     }
 
+    public static ColumnContext getDefault() {
+        return new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.Pure, Language.Technical);
+    }
+
 }
