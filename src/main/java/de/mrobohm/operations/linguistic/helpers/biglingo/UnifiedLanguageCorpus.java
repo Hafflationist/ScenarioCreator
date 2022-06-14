@@ -29,38 +29,33 @@ public class UnifiedLanguageCorpus {
     private Optional<Pair<String, Language>> synonymize(String word, Random random) {
         var synonymesByLanguage = synonymizeFully(word);
         var synonymes = synonymesByLanguage.values().stream().flatMap(Collection::stream);
-        try {
-            var pickedSynonyme = StreamExtensions.pickRandomOrThrow(synonymes, new LocalException(), random);
-            var newLanguage = synonymesByLanguage.keySet().stream()
-                    .filter(language -> synonymesByLanguage.get(language).contains(pickedSynonyme))
-                    .findFirst()
-                    .orElse(Language.Technical);
-            return Optional.of(new Pair<>(pickedSynonyme, newLanguage));
-        } catch (LocalException e) {
-            return Optional.empty();
-        }
+        return StreamExtensions
+                .tryPickRandom(synonymes, random)
+                .map(pickedSynonyme -> {
+                    var newLanguage = synonymesByLanguage.keySet().stream()
+                        .filter(language -> synonymesByLanguage.get(language).contains(pickedSynonyme))
+                        .findFirst()
+                        .orElse(Language.Technical);
+                    return new Pair<>(pickedSynonyme, newLanguage);
+                });
     }
 
 
     public Optional<StringPlus> synonymizeRandomToken(StringPlus word, Random random) {
         var nc = word.guessNamingConvention();
         var wordTokenList = LinguisticUtils.tokenize(word);
-        try {
-            var pickedToken = StreamExtensions.pickRandomOrThrow(wordTokenList.stream(), new LocalException(), random);
-            var pairOptional = synonymize(pickedToken, random);
-            if (pairOptional.isEmpty()) {
-                return Optional.empty();
-            }
-            var pickedSynonyme = pairOptional.get().first();
-            var introducedLanguage = pairOptional.get().second();
-            var newLanguage = word.language() != introducedLanguage ? Language.Mixed : introducedLanguage;
-            var newWordTokenStream = wordTokenList.stream()
-                    .map(t -> (t.equals(pickedToken)) ? pickedSynonyme : t);
-            var newWord = LinguisticUtils.merge(nc, newWordTokenStream.toArray(String[]::new));
-            return Optional.of(new StringPlusNaked(newWord, newLanguage));
-        } catch (LocalException e) {
-            throw new RuntimeException(e);
+        var pickedToken = StreamExtensions.pickRandomOrThrow(wordTokenList.stream(), new RuntimeException(), random);
+        var pairOptional = synonymize(pickedToken, random);
+        if (pairOptional.isEmpty()) {
+            return Optional.empty();
         }
+        var pickedSynonyme = pairOptional.get().first();
+        var introducedLanguage = pairOptional.get().second();
+        var newLanguage = word.language() != introducedLanguage ? Language.Mixed : introducedLanguage;
+        var newWordTokenStream = wordTokenList.stream()
+                .map(t -> (t.equals(pickedToken)) ? pickedSynonyme : t);
+        var newWord = LinguisticUtils.merge(nc, newWordTokenStream.toArray(String[]::new));
+        return Optional.of(new StringPlusNaked(newWord, newLanguage));
     }
 
     public Set<Integer> estimateSynsetId(String word, Set<String> context) {

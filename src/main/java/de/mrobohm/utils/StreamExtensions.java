@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
@@ -61,6 +62,13 @@ public final class StreamExtensions {
         if (randomPickOption.isEmpty())
             throw exception;
         return randomPickOption.get();
+    }
+
+    @NotNull
+    public static <T> Optional<T> tryPickRandom(Stream<T> stream, Random random) {
+        return stream
+                .skip(random.nextLong(stream.count()))
+                .findFirst();
     }
 
     @NotNull
