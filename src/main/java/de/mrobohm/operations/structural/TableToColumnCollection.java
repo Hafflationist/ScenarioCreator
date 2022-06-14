@@ -5,7 +5,6 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
-import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.structural.base.IngestionBase;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,8 +29,7 @@ public class TableToColumnCollection implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
-        return IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, exception, random);
+        return IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, random);
     }
 
     private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {

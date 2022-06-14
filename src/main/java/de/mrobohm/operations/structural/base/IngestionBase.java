@@ -5,6 +5,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,12 +22,12 @@ public final class IngestionBase {
     private IngestionBase() {
     }
 
-    public static <TException extends Throwable> Schema fullRandomIngestion(
+    public static Schema fullRandomIngestion(
             Schema schema,
             BiFunction<Table, Boolean, Stream<Column>> columnGenerator,
             IngestionFlags flags,
-            TException ex,
-            Random random) throws TException {
+            Random random) {
+        var ex = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
         var expandableTableStream = schema.tableSet().stream()
                 .filter(t -> IngestionBase.canIngest(t, schema.tableSet(), flags));
         var chosenTable = StreamExtensions.pickRandomOrThrow(expandableTableStream, ex, random);
