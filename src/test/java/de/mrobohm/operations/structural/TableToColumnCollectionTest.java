@@ -40,7 +40,7 @@ class TableToColumnCollectionTest {
                         new ColumnConstraintForeignKeyInverse(3, Set.of()))
         );
 
-        var table = new Table(10, name, List.of(column2), Context.getDefault(), Set.of());
+        var table = new Table(12, name, List.of(column2), Context.getDefault(), Set.of());
         var ingestingTable = new Table(10, name, List.of(ingestingColumn), Context.getDefault(), Set.of());
         var ingestedTable = new Table(11, name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable, table);

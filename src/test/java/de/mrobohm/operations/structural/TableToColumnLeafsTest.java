@@ -5,13 +5,10 @@ import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
-import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
-import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
-import junit.framework.AssertionFailedError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -21,9 +18,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TableToColumnLeafsTest {
 
@@ -42,7 +36,7 @@ class TableToColumnLeafsTest {
                         new ColumnConstraintForeignKeyInverse(3, Set.of()))
         );
 
-        var table = new Table(10, name, List.of(column2), Context.getDefault(), Set.of());
+        var table = new Table(12, name, List.of(column2), Context.getDefault(), Set.of());
         var ingestingTable = new Table(10, name, List.of(ingestingColumn), Context.getDefault(), Set.of());
         var ingestedTable = new Table(11, name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable, table);
@@ -129,7 +123,7 @@ class TableToColumnLeafsTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {true, false})
-    void isExecutableShouldReturnFalse2(boolean shouldConserveAllRecords){
+    void isExecutableShouldReturnFalse2(boolean shouldConserveAllRecords) {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
@@ -157,7 +151,7 @@ class TableToColumnLeafsTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0b00, 0b01, 0b10, 0b11})
-    void isExecutableShouldReturnTrue(int flags){
+    void isExecutableShouldReturnTrue(int flags) {
         var shouldStayNormalized = (flags & 0b10) > 0;
         var shouldConserveAllRecords = (flags & 0b01) > 0;
 
@@ -169,13 +163,13 @@ class TableToColumnLeafsTest {
         var ingestedColumn = new ColumnLeaf(2, name, dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
                 shouldStayNormalized
                         ? Set.of(new ColumnConstraintForeignKey(4, Set.of()),
-                                 new ColumnConstraintForeignKeyInverse(4, Set.of()))
+                        new ColumnConstraintForeignKeyInverse(4, Set.of()))
                         : Set.of(new ColumnConstraintForeignKeyInverse(4, Set.of()))
         );
         var ingestingColumn = new ColumnLeaf(4, name, dataType.withIsNullable(true), ColumnContext.getDefault(),
                 shouldStayNormalized
                         ? Set.of(new ColumnConstraintForeignKeyInverse(2, Set.of()),
-                                 new ColumnConstraintForeignKey(2, Set.of()))
+                        new ColumnConstraintForeignKey(2, Set.of()))
                         : Set.of(new ColumnConstraintForeignKeyInverse(2, Set.of()))
         );
 

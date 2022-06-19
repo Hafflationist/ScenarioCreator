@@ -10,6 +10,8 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.utils.Pair;
 
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public final class IntegrityChecker {
@@ -62,7 +64,11 @@ public final class IntegrityChecker {
         assert problematicConstraints2.isEmpty()
                 : "Invalid foreign key constraint found! (source missing : " + problematicConstraints2 + ")";
 
-        // TODO: check uniqueness of ids!!!
+        var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
+        var nonUniqueIdSet = allIdList.stream()
+                .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
+                .collect(Collectors.toSet());
+        assert nonUniqueIdSet.isEmpty() : "Non unique ids found: " + nonUniqueIdSet;
     }
 
     private static Stream<Pair<Integer, ColumnConstraint>> extractConstraints(Column column) {

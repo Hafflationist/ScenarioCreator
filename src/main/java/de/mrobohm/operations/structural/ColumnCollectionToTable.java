@@ -5,7 +5,6 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.structural.base.NewTableBase;
-import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +33,7 @@ public class ColumnCollectionToTable implements TableTransformation {
             throw new RuntimeException("Should never happen");
         }
 
-        var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
+        var newIdArray = idGenerator.apply(4);
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
         var newTable = NewTableBase.createNewTable(column.name(), collection.columnList(), newIds, false);
         var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);

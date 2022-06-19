@@ -40,7 +40,7 @@ public final class MergeColumns implements SchemaTransformation {
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
-        var newId = IdentificationNumberGenerator.generate(schema.tableSet(), 1)[0];
+        var newId = IdentificationNumberGenerator.generate(schema, 1)[0];
         var validTableStream = schema.tableSet().stream().filter(this::checkTable);
         var table = StreamExtensions.pickRandomOrThrow(validTableStream, exception, random);
         var pair = getMergeableColumns(table, random);

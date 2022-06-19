@@ -86,7 +86,7 @@ class NullableToHorizontalInheritanceTest {
         );
 
         var invalidTable1 = new Table(10, name, List.of(invalidColumn1), Context.getDefault(), Set.of());
-        var invalidTable2 = new Table(10, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
+        var invalidTable2 = new Table(11, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
         var validTable = new Table(14, name, List.of(validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, validTable);
         var transformation = new NullableToHorizontalInheritance();

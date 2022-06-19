@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TableToColumnNodeTest {
 
     @Test
@@ -42,7 +40,7 @@ class TableToColumnNodeTest {
                         new ColumnConstraintForeignKeyInverse(3, Set.of()))
         );
 
-        var table = new Table(10, name, List.of(column2), Context.getDefault(), Set.of());
+        var table = new Table(12, name, List.of(column2), Context.getDefault(), Set.of());
         var ingestingTable = new Table(10, name, List.of(ingestingColumn), Context.getDefault(), Set.of());
         var ingestedTable = new Table(11, name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable, table);
@@ -109,7 +107,7 @@ class TableToColumnNodeTest {
 
     @ParameterizedTest
     @ValueSource(ints = {0b00, 0b01, 0b10, 0b11})
-    void isExecutableShouldReturnTrue(int flags){
+    void isExecutableShouldReturnTrue(int flags) {
         var shouldStayNormalized = (flags & 0b10) > 0;
         var shouldConserveAllRecords = (flags & 0b01) > 0;
 

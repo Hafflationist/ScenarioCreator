@@ -17,9 +17,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class NullableToVerticalInheritanceTest {
 
@@ -32,14 +29,21 @@ class NullableToVerticalInheritanceTest {
                 Set.of(new ColumnConstraintForeignKeyInverse(2, Set.of())));
         var invalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
                 Set.of(new ColumnConstraintForeignKey(1, Set.of())));
-        var validColumn = new ColumnLeaf(4, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of());
+        var invalidColumn3 = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(4, Set.of())));
+        var invalidColumn4 = new ColumnLeaf(4, name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
+        var validColumn = new ColumnLeaf(5, name, dataType.withIsNullable(true),
+                ColumnContext.getDefault(), Set.of());
 
-        var invalidTable = new Table(10, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
+        var invalidTable = new Table(10, name, List.of(invalidColumn1, invalidColumn2),
+                Context.getDefault(), Set.of());
         var targetTable = new Table(14, name,
-                List.of(invalidColumn1, invalidColumn2, validColumn), Context.getDefault(), Set.of());
+                List.of(invalidColumn3, invalidColumn4, validColumn),
+                Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, targetTable);
         IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), tableSet));
-        var idGenerator = StructuralTestingUtils.getIdGenerator(0);
+        var idGenerator = StructuralTestingUtils.getIdGenerator(100);
         var transformation = new NullableToVerticalInheritance();
 
         // --- Act
@@ -82,7 +86,7 @@ class NullableToVerticalInheritanceTest {
         var validColumn = new ColumnLeaf(4, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of());
 
         var invalidTable1 = new Table(10, name, List.of(invalidColumn1), Context.getDefault(), Set.of());
-        var invalidTable2 = new Table(10, name, List.of(invalidColumn0, invalidColumn2), Context.getDefault(), Set.of());
+        var invalidTable2 = new Table(11, name, List.of(invalidColumn0, invalidColumn2), Context.getDefault(), Set.of());
         var targetTable = new Table(14, name,
                 List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, targetTable);
@@ -119,7 +123,7 @@ class NullableToVerticalInheritanceTest {
         var validColumn = new ColumnLeaf(4, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of());
 
         var invalidTable1 = new Table(10, name, List.of(invalidColumn1), Context.getDefault(), Set.of());
-        var invalidTable2 = new Table(10, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
+        var invalidTable2 = new Table(11, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
         var validTable = new Table(14, name,
                 List.of(invalidColumn1, invalidColumn2, validColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, validTable);

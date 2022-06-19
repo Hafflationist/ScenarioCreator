@@ -5,7 +5,6 @@ import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.structural.base.GroupingColumnsBase;
 import de.mrobohm.operations.structural.base.NewTableBase;
-import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
@@ -31,7 +30,7 @@ public class ColumnLeafsToTable implements TableTransformation {
         var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
         assert newColumnList.size() > 0;
         var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
-        var newIdArray = IdentificationNumberGenerator.generate(otherTableSet, 4);
+        var newIdArray = idGenerator.apply(4);
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
         var newTable = NewTableBase.createNewTable(newName, newColumnList, newIds, true);
         var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
