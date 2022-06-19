@@ -21,7 +21,7 @@ public class RemoveColumn implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
-        assert !hasCriticalConstraints(column) : "Column had critical constraints!";
+        assert freeOfCriticalConstraints(column) : "Column had critical constraints!";
         return new ArrayList<>();
     }
 
@@ -31,16 +31,16 @@ public class RemoveColumn implements ColumnTransformation {
         if (columnList.size() == 1) {
             return new ArrayList<>();
         }
-        return columnList;
+        return columnList.stream().filter(this::freeOfCriticalConstraints).toList();
     }
 
-    private boolean hasCriticalConstraints(Column column) {
+    private boolean freeOfCriticalConstraints(Column column) {
         var hasPrimaryKeyConstraint = column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey);
         var hasForeignKeyConstraint = column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintForeignKey);
         var hasForeignKeyInversConstraint = column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
-        return hasPrimaryKeyConstraint || hasForeignKeyConstraint || hasForeignKeyInversConstraint;
+        return !hasPrimaryKeyConstraint && !hasForeignKeyConstraint && !hasForeignKeyInversConstraint;
     }
 }

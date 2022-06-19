@@ -40,7 +40,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         }
 
         var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
-        var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList());
+        var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList()).stream().map(Column::id).toList();
         var newIds = idGenerator.apply(primaryKeyColumnList.size() + 5);
         var primaryKeyColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
@@ -56,7 +56,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 primaryKeyColumnToNewId
         );
         var newBaseTable = createBaseTable(table, extractableColumnList, newIdComplex);
-        var newDerivingTable = createDerivingTable(newBaseTable, extractableColumnList, newIdComplex, random);
+        var newDerivingTable = createDerivingTable(
+                newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
+        );
         return Set.of(newBaseTable, newDerivingTable);
     }
 
@@ -64,8 +66,11 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey)) {
             return column;
         }
-        assert newIdComplex.primaryKeyColumnToNewId().containsKey(column) : "Map should contain an id for every primary key column!";
-        var newConstraint = new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyColumnToNewId().get(column), Set.of());
+        assert newIdComplex.primaryKeyColumnToNewId().containsKey(column.id())
+                : "Map should contain an id for every primary key column!";
+        var newConstraint = new ColumnConstraintForeignKeyInverse(
+                newIdComplex.primaryKeyColumnToNewId().get(column.id()), Set.of()
+        );
         var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .collect(Collectors.toSet());
@@ -82,7 +87,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 .map(c -> addForeignIfPrimaryKey(c, newIdComplex))
                 .toList();
 
-        if (getPrimaryKeyColumns(extractableColumnList).isEmpty()) {
+        if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
             var newPrimaryColumnConstraintSet = Set.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyConstraintGroupId()),
                     new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId(), Set.of())
@@ -105,25 +110,28 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .filter(c -> !(c instanceof ColumnConstraintForeignKeyInverse))
                 .collect(Collectors.toSet());
+        var newId = newIdComplex.primaryKeyColumnToNewId.get(column.id());
+        assert newId != null;
         return switch (column) {
             case ColumnLeaf leaf -> leaf
                     .withConstraintSet(newConstraintSet)
-                    .withId(newIdComplex.primaryKeyColumnToNewId.get(leaf));
+                    .withId(newId);
             case ColumnCollection collection -> collection
                     .withConstraintSet(newConstraintSet)
-                    .withId(newIdComplex.primaryKeyColumnToNewId.get(collection));
+                    .withId(newId);
             case ColumnNode node -> node
                     .withConstraintSet(newConstraintSet)
-                    .withId(newIdComplex.primaryKeyColumnToNewId.get(node));
+                    .withId(newId);
         };
     }
 
     private Table createDerivingTable(Table baseTable, List<Column> extractableColumnList,
-                                      NewIdComplex newIdComplex, Random random) {
+                                      NewIdComplex newIdComplex, boolean generateSurrogateKeys, Random random) {
         // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
-        var newName = LinguisticUtils.merge(baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random);
-
-        if (getPrimaryKeyColumns(baseTable.columnList()).size() == 0) {
+        var newName = LinguisticUtils.merge(
+                baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random
+        );
+        if (generateSurrogateKeys) {
             // In this case a surrogate key and column must be generated
             var newPrimaryColumnConstraintSet = Set.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyDerivingConstraintGroupId()),
@@ -166,7 +174,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
-        var num = random.nextInt(1, candidateColumnList.size());
+        var num = random.nextInt(1, candidateColumnList.size() + 1);
         var runtimeException = new RuntimeException("Should not happen! (BUG)");
         return StreamExtensions
                 .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException, random)
@@ -180,7 +188,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private boolean hasNullableColumns(Table table) {
-        return table.columnList().stream().anyMatch(Column::isNullable);
+        return table.columnList().size() >= 2 && table.columnList().stream().anyMatch(Column::isNullable);
     }
 
     private record NewIdComplex(int primaryKeyColumnId,
@@ -188,6 +196,6 @@ public class NullableToVerticalInheritance implements TableTransformation {
                                 int primaryKeyDerivingColumnId,
                                 int primaryKeyDerivingConstraintGroupId,
                                 int derivingTableId,
-                                Map<Column, Integer> primaryKeyColumnToNewId) {
+                                Map<Integer, Integer> primaryKeyColumnToNewId) {
     }
 }

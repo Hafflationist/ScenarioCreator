@@ -1,17 +1,14 @@
 package de.mrobohm.utils;
 
-import de.mrobohm.data.column.nesting.Column;
-import de.mrobohm.data.table.Table;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public final class StreamExtensions {
 
@@ -59,6 +56,9 @@ public final class StreamExtensions {
     public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception, Random random)
             throws TException {
         var list = stream.toList();
+        if (list.isEmpty()) {
+            throw exception;
+        }
         var randomPickOption = list.stream()
                 .skip(random.nextLong(list.size()))
                 .findFirst();
@@ -69,8 +69,9 @@ public final class StreamExtensions {
 
     @NotNull
     public static <T> Optional<T> tryPickRandom(Stream<T> stream, Random random) {
-        return stream
-                .skip(random.nextLong(stream.count()))
+        var list = stream.toList();
+        return list.stream()
+                .skip(random.nextLong(list.size()))
                 .findFirst();
     }
 
@@ -90,19 +91,6 @@ public final class StreamExtensions {
     }
 
     @Contract(pure = true)
-    public static int getColumnId(Set<Table> tableSet) {
-        var existingIdSet = tableSet.stream()
-                .flatMap(t -> t.columnList().stream())
-                .map(Column::id)
-                .collect(Collectors.toSet());
-        return Stream
-                .iterate(0, x -> x + 1)
-                .dropWhile(existingIdSet::contains)
-                .toList()
-                .get(0);
-    }
-
-    @Contract(pure = true)
     public static <T> Partition<T> partition(Stream<T> stream, Function<T, Boolean> predicate) {
         var list = stream.toList();
         var yes = list.stream().filter(predicate::apply);
@@ -110,8 +98,41 @@ public final class StreamExtensions {
         return new Partition<>(yes, no);
     }
 
-    public record Partition<T>(Stream<T> yes, Stream<T> no) {
+    public static <A, B, C> Stream<C> zip(Stream<? extends A> a,
+                                          Stream<? extends B> b,
+                                          BiFunction<? super A, ? super B, ? extends C> zipper) {
+        Objects.requireNonNull(zipper);
+        Spliterator<? extends A> aSpliterator = Objects.requireNonNull(a).spliterator();
+        Spliterator<? extends B> bSpliterator = Objects.requireNonNull(b).spliterator();
+
+        // Zipping looses DISTINCT and SORTED characteristics
+        int characteristics = aSpliterator.characteristics() & bSpliterator.characteristics() &
+                ~(Spliterator.DISTINCT | Spliterator.SORTED);
+
+        long zipSize = ((characteristics & Spliterator.SIZED) != 0)
+                ? Math.min(aSpliterator.getExactSizeIfKnown(), bSpliterator.getExactSizeIfKnown())
+                : -1;
+
+        Iterator<A> aIterator = Spliterators.iterator(aSpliterator);
+        Iterator<B> bIterator = Spliterators.iterator(bSpliterator);
+        Iterator<C> cIterator = new Iterator<>() {
+            @Override
+            public boolean hasNext() {
+                return aIterator.hasNext() && bIterator.hasNext();
+            }
+
+            @Override
+            public C next() {
+                return zipper.apply(aIterator.next(), bIterator.next());
+            }
+        };
+
+        Spliterator<C> split = Spliterators.spliterator(cIterator, zipSize, characteristics);
+        return (a.isParallel() || b.isParallel())
+                ? StreamSupport.stream(split, true)
+                : StreamSupport.stream(split, false);
     }
 
-
+    public record Partition<T>(Stream<T> yes, Stream<T> no) {
+    }
 }

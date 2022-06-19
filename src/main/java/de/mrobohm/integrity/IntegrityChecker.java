@@ -22,31 +22,47 @@ public final class IntegrityChecker {
                 .flatMap(IntegrityChecker::extractConstraints)
                 .toList();
 
-        var everythingOk = constraintIdPairStream.stream()
+        var problematicConstraints = constraintIdPairStream.stream()
                 .filter(pair -> pair.second() instanceof ColumnConstraintForeignKey)
-                .allMatch(pair -> {
+                .filter(pair -> {
                     var sourceColumnId = pair.first();
                     var constraintForeignKey = (ColumnConstraintForeignKey) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairStream.stream()
-                            .anyMatch(targetPair -> targetPair.first() == constraintForeignKey.foreignColumnId()
+                            .noneMatch(targetPair -> targetPair.first() == constraintForeignKey.foreignColumnId()
                                     && targetPair.second() instanceof ColumnConstraintForeignKeyInverse inverse
                                     && inverse.foreignColumnId() == sourceColumnId);
-                });
-        assert everythingOk : "Invalid foreign key constraint found! (target missing)";
+                })
+                .map(pair -> {
+                    var notFoundId = ((ColumnConstraintForeignKey) pair.second()).foreignColumnId();
+                    return "relationship " + pair.first() + "->" + notFoundId + ": " + notFoundId + " or its (inverse) constraint part missing!\n";
+                })
+                .distinct()
+                .toList();
+        assert problematicConstraints.isEmpty()
+                : "Invalid foreign key constraint found! (target missing: " + problematicConstraints + ")";
 
-        var everythingOk2 = constraintIdPairStream.stream()
+        var problematicConstraints2 = constraintIdPairStream.stream()
                 .filter(pair -> pair.second() instanceof ColumnConstraintForeignKeyInverse)
-                .allMatch(pair -> {
+                .filter(pair -> {
                     var sourceColumnId = pair.first();
                     var constraintForeignKeyInverse = (ColumnConstraintForeignKeyInverse) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairStream.stream()
-                            .anyMatch(targetPair -> targetPair.first() == constraintForeignKeyInverse.foreignColumnId()
+                            .noneMatch(targetPair -> targetPair.first() == constraintForeignKeyInverse.foreignColumnId()
                                     && targetPair.second() instanceof ColumnConstraintForeignKey inverse
                                     && inverse.foreignColumnId() == sourceColumnId);
-                });
-        assert everythingOk2 : "Invalid foreign key constraint found! (source missing)";
+                })
+                .map(pair -> {
+                    var notFoundId = ((ColumnConstraintForeignKeyInverse) pair.second()).foreignColumnId();
+                    return "relationship " + notFoundId + "->" + pair.first() + ": " + notFoundId + " or its constraint part missing!\n";
+                })
+                .distinct()
+                .toList();
+        assert problematicConstraints2.isEmpty()
+                : "Invalid foreign key constraint found! (source missing : " + problematicConstraints2 + ")";
+
+        // TODO: check uniqueness of ids!!!
     }
 
     private static Stream<Pair<Integer, ColumnConstraint>> extractConstraints(Column column) {

@@ -39,9 +39,10 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         }
 
         var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
-        var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size());
+        var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size() + 1);
         var doubledColumnList = table.columnList().stream()
-                .filter(c -> !extractableColumnList.contains(c))
+                .filter(column -> !extractableColumnList.contains(column))
+                .map(Column::id)
                 .toList();
         var doubledColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
@@ -49,10 +50,11 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 .collect(Collectors.toMap(doubledColumnList::get, idx -> newIds[idx]));
 
         var newIdComplex = new NewIdComplex(
+                newIds[newIds.length - 1],
                 doubledColumnToNewId
         );
         var newBaseTable = createBaseTable(table, extractableColumnList);
-        var newDerivingTable = createDerivingTable(newBaseTable, extractableColumnList, newIdComplex, random);
+        var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
         return Set.of(newBaseTable, newDerivingTable);
     }
 
@@ -65,10 +67,10 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
-        if (!newIdComplex.doubledColumnToNewId.containsKey(column)) {
+        if (!newIdComplex.doubledColumnToNewId.containsKey(column.id())) {
             return column;
         }
-        var newId = newIdComplex.doubledColumnToNewId.get(column);
+        var newId = newIdComplex.doubledColumnToNewId.get(column.id());
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withId(newId);
             case ColumnCollection col -> col.withId(newId);
@@ -85,6 +87,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex))
                 .toList();
         return baseTable
+                .withId(newIdComplex.derivingTableId())
                 .withColumnList(newColumnList)
                 .withName(newName);
     }
@@ -95,7 +98,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
-        var num = random.nextInt(1, candidateColumnList.size());
+        var num = random.nextInt(1, candidateColumnList.size() + 1);
         var runtimeException = new RuntimeException("Should not happen! (BUG)");
         return StreamExtensions
                 .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException, random)
@@ -110,6 +113,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     private boolean hasNullableColumnsAndNoInverseConstraints(Table table) {
         var hasNullableColumns = table.columnList().stream().anyMatch(Column::isNullable);
+        var hasEnoughColumns = table.columnList().size() >= 2;
         // TODO: Das Problem bei ausgehenden Fremdschlüsselbeziehungen ist die notwendige Duplikation der Beziehung, falls die Fremdschlüsselspalte keine Primärschlüsselspalte ist.
         // So eine Beziehung würde eine schemaweite Transformation erfordern.
         // Die Lösung wirkt anstrengend :(
@@ -119,9 +123,9 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         var hasNoInverseKeyConstraints = table.columnList().stream()
                 .allMatch(column -> column.constraintSet().stream()
                         .noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse));
-        return hasNullableColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
+        return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }
 
-    private record NewIdComplex(Map<Column, Integer> doubledColumnToNewId) {
+    private record NewIdComplex(int derivingTableId, Map<Integer, Integer> doubledColumnToNewId) {
     }
 }

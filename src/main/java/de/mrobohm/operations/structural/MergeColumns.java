@@ -2,22 +2,29 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.DataTypeEnum;
+import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.constraint.*;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.operations.TableTransformation;
+import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
-import java.util.function.Function;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public final class MergeColumns implements TableTransformation {
+public final class MergeColumns implements SchemaTransformation {
     private final boolean keepForeignKeyIntegrity;
 
     public MergeColumns(boolean keepForeignKeyIntegrity) {
@@ -31,23 +38,62 @@ public final class MergeColumns implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
-        var pair = getMergeableColumns(table, otherTableSet, random);
-        var newColumn = generateNewColumn(pair.first(), pair.second(), otherTableSet, random);
-        var filteredOldColumnStream = table.columnList().stream()
-                .filter(c -> !c.equals(pair.first()))
-                .filter(c -> !c.equals(pair.second()));
+    public Schema transform(Schema schema, Random random) {
+        var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
+        var newId = IdentificationNumberGenerator.generate(schema.tableSet(), 1)[0];
+        var validTableStream = schema.tableSet().stream().filter(this::checkTable);
+        var table = StreamExtensions.pickRandomOrThrow(validTableStream, exception, random);
+        var pair = getMergeableColumns(table, random);
+        var newColumn = generateNewColumn(newId, pair.first(), pair.second(), random);
+        var filteredOldColumnStream = getNewColumnStream(table, pair);
+
         var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
-        return Collections.singleton(table.withColumnList(newColumnList));
+        var newTableSet = StreamExtensions.replaceInStream(
+                        schema.tableSet().stream(), table, table.withColumnList(newColumnList)
+                )
+                .map(t -> {
+                    var ncl = getNewColumnStream(t, pair).toList();
+                    if (ncl.equals(t.columnList())) {
+                        return t;
+                    }
+                    return t.withColumnList(ncl);
+                })
+                .collect(Collectors.toSet());
+        return schema.withTables(newTableSet);
     }
 
-    private Pair<ColumnLeaf, ColumnLeaf> getMergeableColumns(Table table, Set<Table> otherTableSet, Random random) {
-        var referencedColumnIdSet = getReferencedColumnIdSet(otherTableSet);
-        var validColumnStream = getValidColumns(table.columnList(), referencedColumnIdSet).stream();
-        var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
+    private Stream<Column> getNewColumnStream(Table table, Pair<ColumnLeaf, ColumnLeaf> mergedColumns) {
+        return table.columnList().stream()
+                .filter(column -> !column.equals(mergedColumns.first()))
+                .filter(column -> !column.equals(mergedColumns.second()))
+                .map(column -> {
+                    var newConstraintSet = column.constraintSet().stream()
+                            .filter(c -> switch (c) {
+                                case ColumnConstraintForeignKey ccfk ->
+                                        ccfk.foreignColumnId() != mergedColumns.first().id()
+                                                && ccfk.foreignColumnId() != mergedColumns.second().id();
+                                case ColumnConstraintForeignKeyInverse ccfki ->
+                                        ccfki.foreignColumnId() != mergedColumns.first().id()
+                                                && ccfki.foreignColumnId() != mergedColumns.second().id();
+                                default -> true;
+                            }).collect(Collectors.toSet());
+                    if (newConstraintSet.equals(column.constraintSet())) {
+                        return column;
+                    }
+                    return switch (column) {
+                        case ColumnLeaf leaf -> leaf.withConstraintSet(newConstraintSet);
+                        case ColumnNode node -> node.withConstraintSet(newConstraintSet);
+                        case ColumnCollection col -> col.withConstraintSet(newConstraintSet);
+                    };
+                });
+    }
+
+
+    private Pair<ColumnLeaf, ColumnLeaf> getMergeableColumns(Table table, Random random) {
+        var validColumnStream = getValidColumns(table.columnList());
+        var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
         var twoColumns = StreamExtensions.pickRandomOrThrowMultiple(
-                validColumnStream, 2, exception, random
+                validColumnStream.stream(), 2, exception, random
         );
         var twoColumnsList = twoColumns.toList();
         var firstColumn = twoColumnsList.get(0);
@@ -55,46 +101,33 @@ public final class MergeColumns implements TableTransformation {
         return new Pair<>(firstColumn, secondColumn);
     }
 
-    private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Set<Table> otherTableSet, Random random) {
+    private Column generateNewColumn(int newId, ColumnLeaf columnA, ColumnLeaf columnB, Random random) {
         // TODO this method can be improved dramatically!
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
-        var newId = StreamExtensions.getColumnId(otherTableSet);
         var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
         var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
         return new ColumnLeaf(newId, newName, newDataType, null, new HashSet<>());
     }
 
     @Override
-    @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
-        var referencedColumnIdSet = getReferencedColumnIdSet(tableSet);
+    public boolean isExecutable(Schema schema) {
+        var tableSet = schema.tableSet();
         return tableSet.stream()
-                .filter(t -> checkTable(t, referencedColumnIdSet))
-                .collect(Collectors.toSet());
+                .anyMatch(this::checkTable);
     }
 
-    private boolean checkTable(Table table, Set<Integer> referencedColumnIdSet) {
+    private boolean checkTable(Table table) {
         if (table.columnList().size() < 3) return false;
 
-        var validColumnsCount = getValidColumns(table.columnList(), referencedColumnIdSet).size();
+        var validColumnsCount = getValidColumns(table.columnList()).size();
         return validColumnsCount >= 2;
     }
 
-    private Set<ColumnLeaf> getValidColumns(List<Column> columnList, Set<Integer> referencedColumnIdSet) {
+    private Set<ColumnLeaf> getValidColumns(List<Column> columnList) {
         return columnList.stream()
-                .filter(c -> !referencedColumnIdSet.contains(c.id()) || !keepForeignKeyIntegrity)
                 .filter(c -> c instanceof ColumnLeaf)
                 .map(c -> (ColumnLeaf) c)
                 .filter(c -> checkConstraintSet(c.constraintSet()))
-                .collect(Collectors.toSet());
-    }
-
-    private Set<Integer> getReferencedColumnIdSet(Set<Table> tableSet) {
-        return tableSet.stream()
-                .flatMap(t -> t.columnList().stream())
-                .flatMap(c -> c.constraintSet().stream())
-                .filter(c -> c instanceof ColumnConstraintForeignKey)
-                .map(c -> ((ColumnConstraintForeignKey) c).foreignColumnId())
                 .collect(Collectors.toSet());
     }
 

@@ -12,5 +12,6 @@ class UngroupColumnNodeToColumnLeafsTest {
 
     @Test
     void getCandidates() {
+
     }
 }

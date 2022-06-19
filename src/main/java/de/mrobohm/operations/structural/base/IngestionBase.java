@@ -4,15 +4,15 @@ import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
+import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -51,13 +51,64 @@ public final class IngestionBase {
             Table ingestedTable,
             BiFunction<Table, Boolean, Stream<Column>> columnGenerator) {
         assert ingestingTable.columnList().contains(ingestingColumn) : "ingesting column should be part of the ingesting table!";
+
+        var ingestedColumnOptional = ingestedTable.columnList().stream()
+                .filter(column -> ingestingColumn.constraintSet().stream()
+                        .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse ccfki
+                                && ccfki.foreignColumnId() == column.id()))
+                .findFirst();
+        assert ingestedColumnOptional.isPresent();
+        var newIngestedColumn = freeColumnFromConstraints(ingestedColumnOptional.get(), ingestingTable.columnList());
+        var newIngestedColumnList = StreamExtensions.replaceInStream(
+                ingestedTable.columnList().stream(),
+                ingestedColumnOptional.get(),
+                newIngestedColumn
+        ).toList();
+
         // if the ingesting column can be null, no records from the ingested table will reference the ingesting column.
         // That's why we use the nullability of the ingesting column to determine the nullability of the new columns.
-        var newColumnStream = columnGenerator.apply(ingestedTable, ingestingColumn.isNullable());
-        var newColumnList = StreamExtensions
-                .replaceInStream(ingestingTable.columnList().stream(), ingestingColumn, newColumnStream)
+        var extendingColumnStream = columnGenerator.apply(
+                ingestedTable.withColumnList(newIngestedColumnList),
+                ingestingColumn.isNullable()
+        );
+        var newIngestingColumn = freeColumnFromConstraints(ingestingColumn, ingestedTable.columnList());
+        // column should be removed, if its only purpose is to point to the ingested table
+        var newIngestingColumnList = countDependingColumns(newIngestingColumn) == 0
+                ? StreamExtensions
+                .replaceInStream(ingestingTable.columnList().stream(), ingestingColumn, extendingColumnStream)
+                .toList()
+                : StreamExtensions
+                .replaceInStream(ingestingTable.columnList().stream(), ingestingColumn,
+                        Stream.concat(Stream.of(newIngestingColumn), extendingColumnStream))
                 .toList();
-        return ingestedTable.withColumnList(newColumnList);
+
+        return ingestingTable.withColumnList(newIngestingColumnList);
+    }
+
+    private static Column freeColumnFromConstraints(Column column, List<Column> columnListOfOtherTable) {
+        var otherColumnIdSet = columnListOfOtherTable.stream().map(Column::id).collect(Collectors.toSet());
+        var newIngestingColumnConstraintSet = column.constraintSet().stream()
+                .filter(c ->
+                        !(c instanceof ColumnConstraintForeignKey ccfk && otherColumnIdSet.contains(ccfk.foreignColumnId()))
+                                && !(c instanceof ColumnConstraintForeignKeyInverse ccfki && otherColumnIdSet.contains(ccfki.foreignColumnId())))
+                .collect(Collectors.toSet());
+        return switch (column) {
+            case ColumnLeaf leaf -> leaf.withConstraintSet(newIngestingColumnConstraintSet);
+            case ColumnNode node -> node.withConstraintSet(newIngestingColumnConstraintSet);
+            case ColumnCollection col -> col.withConstraintSet(newIngestingColumnConstraintSet);
+        };
+    }
+
+    private static int countDependingColumns(Column column) {
+        var foreignedIdStream = column.constraintSet().stream()
+                .filter(c -> c instanceof ColumnConstraintForeignKey)
+                .map(c -> (ColumnConstraintForeignKey) c)
+                .map(ColumnConstraintForeignKey::foreignColumnId);
+        var inversedIdStream = column.constraintSet().stream()
+                .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
+                .map(c -> (ColumnConstraintForeignKeyInverse) c)
+                .map(ColumnConstraintForeignKeyInverse::foreignColumnId);
+        return Stream.concat(foreignedIdStream, inversedIdStream).collect(Collectors.toSet()).size();
     }
 
     public static boolean canIngest(Table table, Set<Table> tableSet, IngestionFlags flags) {
@@ -101,7 +152,7 @@ public final class IngestionBase {
         return getRelationshipCount(tableA, tableB) <= 1 && (!tableBNonNull || nonNull);
     }
 
-    public static long getRelationshipCount(Table tableA, Table tableB){
+    public static long getRelationshipCount(Table tableA, Table tableB) {
         var constraints = tableA.columnList().stream()
                 .flatMap(column -> column.constraintSet().stream())
                 .toList();
