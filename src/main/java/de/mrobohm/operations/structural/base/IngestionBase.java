@@ -8,6 +8,8 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdMerge;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.utils.StreamExtensions;
@@ -72,7 +74,8 @@ public final class IngestionBase {
                 ingestedTable.withColumnList(newIngestedColumnList),
                 ingestingColumn.isNullable()
         );
-        var newIngestingColumn = freeColumnFromConstraints(ingestingColumn, ingestedTable.columnList());
+        var newIngestingColumnWithOldId = freeColumnFromConstraints(ingestingColumn, ingestedTable.columnList());
+        var newIngestingColumn = fuseColumnWithIngestedTable(newIngestingColumnWithOldId, ingestedTable);
         // column should be removed, if its only purpose is to point to the ingested table
         var newIngestingColumnList = countDependingColumns(newIngestingColumn) == 0
                 ? StreamExtensions
@@ -84,8 +87,17 @@ public final class IngestionBase {
                 .toList();
 
         return ingestingTable.withColumnList(newIngestingColumnList);
+    }
 
-        // TODO: Hier müsste auf jeden Fall die Erstellung von IDS überarbeitet werden!
+    private static Column fuseColumnWithIngestedTable(Column column, Table ingestedTable) {
+        return column;
+        // Ob diese Methode überhaupt sinnvoll ist, muss nochgeklärt werden!
+//        var newId = new IdMerge(column.id(), ingestedTable.id(), MergeOrSplitType.And);
+//        return switch (column) {
+//            case ColumnLeaf leaf -> leaf.withId(newId);
+//            case ColumnNode node -> node.withId(newId);
+//            case ColumnCollection col -> col.withId(newId);
+//        };
     }
 
     private static Column freeColumnFromConstraints(Column column, List<Column> columnListOfOtherTable) {

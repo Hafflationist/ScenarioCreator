@@ -7,11 +7,11 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
-import de.mrobohm.utils.StreamExtensions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,9 +20,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class MergeColumnsTest {
 
@@ -70,7 +67,7 @@ class MergeColumnsTest {
         var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
-        var newTableSet =newSchema.tableSet();
+        var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(3, newTableSet.size());
         var newInvalidTable = getTable(invalidTable.id(), newTableSet);
         Assertions.assertEquals(invalidTable, newInvalidTable);
@@ -81,6 +78,7 @@ class MergeColumnsTest {
         Assertions.assertEquals(validTable.name(), newValidTable.name());
         Assertions.assertNotEquals(validTable.columnList(), newValidTable.columnList());
         Assertions.assertEquals(validTable.columnList().size() - 1, newValidTable.columnList().size());
+        Assertions.assertTrue(newValidTable.columnList().stream().anyMatch(column -> column.id() instanceof IdMerge));
         Assertions.assertEquals(validTable.context(), newValidTable.context());
         Assertions.assertEquals(validTable.tableConstraintSet(), newValidTable.tableConstraintSet());
         IntegrityChecker.assertValidSchema(newSchema);
@@ -116,7 +114,7 @@ class MergeColumnsTest {
         var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
-        var newTableSet =newSchema.tableSet();
+        var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(2, newTableSet.size());
         var newInvalidTable = getTable(invalidTable.id(), newTableSet);
         Assertions.assertEquals(invalidTable.name(), newInvalidTable.name());

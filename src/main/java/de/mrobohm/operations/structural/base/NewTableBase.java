@@ -14,6 +14,8 @@ import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
@@ -32,11 +34,13 @@ public final class NewTableBase {
     }
 
     public static Table createModifiedTable(Table oldTable, StringPlus otherTablesName,
-                                            List<Column> oldColumnList, NewIds newIds, boolean oneToOne) {
-        var reducedColumnStream = oldTable.columnList().stream().filter(c -> !oldColumnList.contains(c));
+                                            List<Column> extractedColumnList, NewIds newIds, boolean oneToOne) {
+        var reducedColumnStream = oldTable.columnList().stream().filter(c -> !extractedColumnList.contains(c));
         var newForeignKeyColumn = createNewForeignKeyColumn(newIds, otherTablesName, oneToOne);
         var newColumnList = Stream.concat(reducedColumnStream, Stream.of(newForeignKeyColumn)).toList();
-        return oldTable.withColumnList(newColumnList);
+        return oldTable
+                .withColumnList(newColumnList)
+                .withId(new IdPart(oldTable.id(), 0, MergeOrSplitType.And));
     }
 
     private static ColumnLeaf createNewForeignKeyColumn(NewTableBase.NewIds newIds, StringPlus tableName, boolean oneToOne) {
@@ -49,11 +53,13 @@ public final class NewTableBase {
         return createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
     }
 
-    public static Table createNewTable(StringPlus tableName, List<Column> columnList, NewIds newIds, boolean oneToOne) {
+    public static Table createNewTable(Table oldTable, StringPlus tableName, List<Column> columnList,
+                                       NewIds newIds, boolean oneToOne) {
         var primaryKeyColumn = createNewPrimaryKeyColumn(newIds, tableName, oneToOne);
         var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnList.stream()).toList();
         var newContext = Context.getDefault();
-        return new Table(newIds.targetTable, tableName, newColumnList, newContext, Set.of());
+        var newId = new IdPart(oldTable.id(), 1, MergeOrSplitType.And);
+        return new Table(newId, tableName, newColumnList, newContext, Set.of());
     }
 
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
@@ -79,6 +85,6 @@ public final class NewTableBase {
         return new ColumnLeaf(columnId, newName, newDataType, newColumnContext, newConstraintSet);
     }
 
-    public record NewIds(Id targetTable, Id targetColumn, Id sourceColumn, Id constraintGroupId) {
+    public record NewIds(Id targetColumn, Id sourceColumn, Id constraintGroupId) {
     }
 }

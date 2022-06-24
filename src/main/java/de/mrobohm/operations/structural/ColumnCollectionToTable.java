@@ -34,9 +34,11 @@ public class ColumnCollectionToTable implements TableTransformation {
             throw new RuntimeException("Should never happen");
         }
 
-        var newIdArray = idGenerator.apply(4);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
-        var newTable = NewTableBase.createNewTable(column.name(), collection.columnList(), newIds, false);
+        var newIdArray = idGenerator.apply(3);
+        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        var newTable = NewTableBase.createNewTable(
+                table, column.name(), collection.columnList(), newIds, false
+        );
         var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
         return Set.of(newTable, modifiedTable);
     }

@@ -45,4 +45,8 @@ public record ColumnConstraintForeignKey(Id foreignColumnId, Set<Value> foreignV
         var valuesCount = values.size();
         return (double) (valuesCount - obeyingValuesCount) / valuesCount;
     }
+
+    public ColumnConstraintForeignKey withForeignColumnId(Id newForeignColumnId) {
+        return new ColumnConstraintForeignKey(newForeignColumnId, foreignValueSet());
+    }
 }

@@ -34,13 +34,12 @@ public class ColumnNodeToTable implements TableTransformation {
             throw new RuntimeException("Should never happen");
         }
 
-        var newIdArray = idGenerator.apply(4);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
-        var newTable = NewTableBase.createNewTable(column.name(), node.columnList(), newIds, true);
+        var newIdArray = idGenerator.apply(3);
+        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
         var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
         return Set.of(newTable, modifiedTable);
     }
-
 
     @Override
     @NotNull

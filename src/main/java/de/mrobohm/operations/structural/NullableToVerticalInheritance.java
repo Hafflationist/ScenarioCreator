@@ -8,6 +8,8 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -42,14 +44,13 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
         var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
         var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList()).stream().map(Column::id).toList();
-        var newIds = idGenerator.apply(primaryKeyColumnList.size() + 5);
+        var newIds = idGenerator.apply(primaryKeyColumnList.size() + 4);
         var primaryKeyColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
                 .limit(primaryKeyColumnList.size())
                 .collect(Collectors.toMap(primaryKeyColumnList::get, idx -> newIds[idx]));
 
         var newIdComplex = new NewIdComplex(
-                newIds[newIds.length - 5],
                 newIds[newIds.length - 4],
                 newIds[newIds.length - 3],
                 newIds[newIds.length - 2],
@@ -87,6 +88,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 .filter(c -> !extractableColumnList.contains(c))
                 .map(c -> addForeignIfPrimaryKey(c, newIdComplex))
                 .toList();
+        var newId = new IdPart(originalTable.id(), 0, MergeOrSplitType.Other);
 
         if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
             var newPrimaryColumnConstraintSet = Set.of(
@@ -97,9 +99,13 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     newIdComplex.primaryKeyColumnId(),
                     originalTable.name(),
                     newPrimaryColumnConstraintSet);
-            return originalTable.withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList());
+            return originalTable
+                    .withId(newId)
+                    .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList());
         }
-        return originalTable.withColumnList(newColumnList);
+        return originalTable
+                .withId(newId)
+                .withColumnList(newColumnList);
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
@@ -128,6 +134,14 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
     private Table createDerivingTable(Table baseTable, List<Column> extractableColumnList,
                                       NewIdComplex newIdComplex, boolean generateSurrogateKeys, Random random) {
+        if (!(baseTable.id() instanceof IdPart baseTableIdPart)) {
+            throw new RuntimeException();
+        }
+        var newId = new IdPart(
+                baseTableIdPart.predecessorId(),
+                baseTableIdPart.extensionNumber() + 1,
+                MergeOrSplitType.Other
+        );
         // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
         var newName = LinguisticUtils.merge(
                 baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random
@@ -146,7 +160,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .concat(Stream.of(newPrimaryColumn), extractableColumnList.stream())
                     .toList();
             return baseTable
-                    .withId(newIdComplex.derivingTableId)
+                    .withId(newId)
                     .withName(newName)
                     .withColumnList(newColumnList);
         } else {
@@ -157,7 +171,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
                     .toList();
             return baseTable
-                    .withId(newIdComplex.derivingTableId)
+                    .withId(newId)
                     .withName(newName)
                     .withColumnList(newColumnList);
         }
@@ -196,7 +210,6 @@ public class NullableToVerticalInheritance implements TableTransformation {
                                 Id primaryKeyConstraintGroupId,
                                 Id primaryKeyDerivingColumnId,
                                 Id primaryKeyDerivingConstraintGroupId,
-                                Id derivingTableId,
                                 Map<Id, Id> primaryKeyColumnToNewId) {
     }
 }

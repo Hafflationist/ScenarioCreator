@@ -7,6 +7,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
@@ -68,9 +69,8 @@ class HorizontalInheritanceToNullableTest {
         Assertions.assertEquals(baseTable.id(), newTable.id());
         var nullableExtraColumn = extraColumn.withDataType(extraColumn.dataType().withIsNullable(true));
         Assertions.assertTrue(newTable.columnList().contains(nullableExtraColumn));
-        Assertions.assertTrue(newTable.columnList().contains(commonColumn1));
-        Assertions.assertTrue(newTable.columnList().contains(commonColumn2));
-        Assertions.assertTrue(newTable.columnList().contains(commonColumn3));
+        Assertions.assertEquals(baseTableColumnList.size(),
+                newTable.columnList().stream().filter(column -> column.id() instanceof IdMerge).count());
         Assertions.assertEquals(derivingTable.columnList().size(), newTable.columnList().size());
     }
 

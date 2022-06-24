@@ -7,15 +7,19 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdMerge;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.operations.structural.base.IdTranslation;
 import de.mrobohm.operations.structural.base.IngestionBase;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -60,7 +64,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .replaceInStream(schema.tableSet().stream(), oldTableStream, derivationIntegrationResult.newTable())
                 .collect(Collectors.toSet());
 
-        return purgeColumnIds(schema.withTables(newTableSet), derivationIntegrationResult.removedColumnIdSet());
+        return IdTranslation.translateConstraints(schema.withTables(newTableSet), derivationIntegrationResult.idTranslationMap());
     }
 
     private InheritancePair findDerivingTable(Set<Table> tableSet, Random random) {
@@ -74,47 +78,45 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     private DerivationIntegrationResult integrateDerivation(InheritancePair ip) {
+        var columnPairStream = ip.derivation().columnList().stream()
+                .map(derivationColumn ->
+                        new Pair<>(derivationColumn, ip.base().columnList().stream()
+                                .filter(baseColumn -> equalsColumns(derivationColumn, baseColumn))
+                                .findFirst()));
         var columnStreamShouldAdd = StreamExtensions
                 .partition(
-                        ip.derivation().columnList().stream(),
-                        column -> ip.base().columnList().stream().noneMatch(columnB -> equalsColumns(column, columnB))
+                        columnPairStream,
+                        pair -> pair.second().isEmpty()
                 );
 
         var additionalColumnStream = columnStreamShouldAdd.yes()
-                .map(column -> switch (column) {
+                .map(pair -> switch (pair.first()) {
                     case ColumnLeaf leaf -> leaf.withDataType(leaf.dataType().withIsNullable(true));
                     case ColumnNode node -> node.withIsNullable(true);
                     case ColumnCollection col -> col.withIsNullable(true);
                 });
-        var newColumnList = Stream.concat(ip.base().columnList().stream(), additionalColumnStream).toList();
+        var mergeablePairList = columnStreamShouldAdd.no().toList();
+        var mergedColumnStream = mergeablePairList.stream()
+                .map(pair -> {
+                    assert pair.second().isPresent();
+                    var newId = new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
+                    return (Column) switch (pair.first()) {
+                        case ColumnLeaf leaf -> leaf.withId(newId);
+                        case ColumnNode node -> node.withId(newId);
+                        case ColumnCollection col -> col.withId(newId);
+                    };
+                });
+        var newColumnList = Stream.concat(mergedColumnStream, additionalColumnStream).toList();
         var newTable = ip.base().withColumnList(newColumnList);
-        var removedColumnIdSet = columnStreamShouldAdd.no().map(Column::id).collect(Collectors.toSet());
-        return new DerivationIntegrationResult(newTable, removedColumnIdSet);
-    }
-
-    private Schema purgeColumnIds(Schema schema, Set<Id> cidSet) {
-        var newTableSet = schema.tableSet().stream().map(t -> {
-            var newColumnList = t.columnList().stream().map(column -> {
-                var newConstraintSet = column.constraintSet().stream().filter(c -> switch (c) {
-                    case ColumnConstraintForeignKey ccfk -> !cidSet.contains(ccfk.foreignColumnId());
-                    case ColumnConstraintForeignKeyInverse ccfki -> !cidSet.contains(ccfki.foreignColumnId());
-                    default -> true;
-                }).collect(Collectors.toSet());
-                if (column.constraintSet().equals(newConstraintSet)) {
-                    return column;
-                }
-                return switch (column) {
-                    case ColumnLeaf leaf -> leaf.withConstraintSet(newConstraintSet);
-                    case ColumnNode node -> node.withConstraintSet(newConstraintSet);
-                    case ColumnCollection col -> col.withConstraintSet(newConstraintSet);
-                };
-            }).toList();
-            if (t.columnList().equals(newColumnList)) {
-                return t;
-            }
-            return t.withColumnList(newColumnList);
-        }).collect(Collectors.toSet());
-        return schema.withTables(newTableSet);
+        // komplett falsch:
+        var idTranslationMap = mergeablePairList.stream()
+                .filter(pair -> pair.second().isPresent())
+                .flatMap(pair -> {
+                    var newId = (Id) new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
+                    return Stream.of(new Pair<>(pair.first().id(), newId), new Pair<>(pair.second().get().id(), newId));
+                })
+                .collect(Collectors.toMap(Pair::first, Pair::second));
+        return new DerivationIntegrationResult(newTable, idTranslationMap);
     }
 
     @Override
@@ -214,7 +216,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 && isSubsetConstraintSets(constraintSetB, constraintSetA);
     }
 
-    private record DerivationIntegrationResult(Table newTable, Set<Id> removedColumnIdSet) {
+    private record DerivationIntegrationResult(Table newTable, Map<Id, Id> idTranslationMap) {
     }
 
     private record InheritancePair(Table derivation, Table base) {

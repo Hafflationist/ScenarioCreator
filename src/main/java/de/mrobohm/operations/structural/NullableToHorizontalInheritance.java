@@ -8,6 +8,8 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -17,12 +19,10 @@ import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class NullableToHorizontalInheritance implements TableTransformation {
     @Override
@@ -41,18 +41,13 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
         var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
         var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size() + 1);
-        var doubledColumnList = table.columnList().stream()
+        var doubledColumnIdSet = table.columnList().stream()
                 .filter(column -> !extractableColumnList.contains(column))
                 .map(Column::id)
-                .toList();
-        var doubledColumnToNewId = Stream
-                .iterate(0, x -> x + 1)
-                .limit(doubledColumnList.size())
-                .collect(Collectors.toMap(doubledColumnList::get, idx -> newIds[idx]));
-
+                .collect(Collectors.toSet());
         var newIdComplex = new NewIdComplex(
                 newIds[newIds.length - 1],
-                doubledColumnToNewId
+                doubledColumnIdSet
         );
         var newBaseTable = createBaseTable(table, extractableColumnList);
         var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
@@ -61,17 +56,24 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList) {
         var newColumnList = originalTable.columnList().stream()
-                .filter(c -> !extractableColumnList.contains(c))
+                .filter(column -> !extractableColumnList.contains(column))
+                .map(column -> {
+                    var newId = new IdPart(column.id(), 0, MergeOrSplitType.Xor);
+                    return (Column) switch (column) {
+                        case ColumnLeaf leaf -> leaf.withId(newId);
+                        case ColumnNode node -> node.withId(newId);
+                        case ColumnCollection col -> col.withId(newId);
+                    };
+                })
                 .toList();
-
         return originalTable.withColumnList(newColumnList);
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
-        if (!newIdComplex.doubledColumnToNewId.containsKey(column.id())) {
+        if (!newIdComplex.doubledColumnIdSet.contains(column.id())) {
             return column;
         }
-        var newId = newIdComplex.doubledColumnToNewId.get(column.id());
+        var newId = new IdPart(column.id(), 1, MergeOrSplitType.Xor);
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withId(newId);
             case ColumnCollection col -> col.withId(newId);
@@ -127,6 +129,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }
 
-    private record NewIdComplex(Id derivingTableId, Map<Id, Id> doubledColumnToNewId) {
+    private record NewIdComplex(Id derivingTableId, Set<Id> doubledColumnIdSet) {
     }
 }

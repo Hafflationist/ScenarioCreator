@@ -30,4 +30,8 @@ public record ColumnConstraintForeignKeyInverse(Id foreignColumnId,
     private <T> double kickedRatio(List<Value> values, Function<String, T> converter) {
         return 0;
     }
+
+    public ColumnConstraintForeignKeyInverse withForeignColumnId(Id newForeignColumnId) {
+        return new ColumnConstraintForeignKeyInverse(newForeignColumnId, foreignValueSet());
+    }
 }

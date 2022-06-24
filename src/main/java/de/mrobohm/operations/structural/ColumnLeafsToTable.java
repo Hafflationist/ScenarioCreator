@@ -1,6 +1,8 @@
 package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -31,9 +33,9 @@ public class ColumnLeafsToTable implements TableTransformation {
         var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
         assert newColumnList.size() > 0;
         var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
-        var newIdArray = idGenerator.apply(4);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2], newIdArray[3]);
-        var newTable = NewTableBase.createNewTable(newName, newColumnList, newIds, true);
+        var newIdArray = idGenerator.apply(3);
+        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
         var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
         return Set.of(newTable, modifiedTable);
     }

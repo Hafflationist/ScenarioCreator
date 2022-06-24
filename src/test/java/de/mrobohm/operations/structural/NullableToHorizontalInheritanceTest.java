@@ -6,6 +6,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
@@ -65,6 +66,10 @@ class NullableToHorizontalInheritanceTest {
         var newTable2 = newTableList.get(1);
         Assertions.assertEquals(targetTable.columnList().size(), Math.max(newTable1.columnList().size(), newTable2.columnList().size()));
         Assertions.assertEquals(targetTable.columnList().size() - 1, Math.min(newTable1.columnList().size(), newTable2.columnList().size()));
+        Assertions.assertEquals(targetTable.columnList().size() - 1,
+                newTable1.columnList().stream().filter(column-> column.id() instanceof IdPart).count());
+        Assertions.assertEquals(targetTable.columnList().size() - 1,
+                newTable2.columnList().stream().filter(column-> column.id() instanceof IdPart).count());
         Assertions.assertNotEquals(targetTable, newTable1);
         Assertions.assertNotEquals(targetTable, newTable2);
         var fullNewTableSet = StreamExtensions
