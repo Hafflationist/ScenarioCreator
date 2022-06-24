@@ -5,6 +5,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.linguistic.helpers.Translation;
@@ -23,7 +24,7 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(column)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }

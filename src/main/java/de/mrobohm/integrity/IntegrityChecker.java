@@ -8,6 +8,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.utils.Pair;
 
 import java.util.Objects;
@@ -31,9 +32,9 @@ public final class IntegrityChecker {
                     var constraintForeignKey = (ColumnConstraintForeignKey) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairStream.stream()
-                            .noneMatch(targetPair -> targetPair.first() == constraintForeignKey.foreignColumnId()
+                            .noneMatch(targetPair -> targetPair.first().equals(constraintForeignKey.foreignColumnId())
                                     && targetPair.second() instanceof ColumnConstraintForeignKeyInverse inverse
-                                    && inverse.foreignColumnId() == sourceColumnId);
+                                    && inverse.foreignColumnId().equals(sourceColumnId));
                 })
                 .map(pair -> {
                     var notFoundId = ((ColumnConstraintForeignKey) pair.second()).foreignColumnId();
@@ -51,9 +52,9 @@ public final class IntegrityChecker {
                     var constraintForeignKeyInverse = (ColumnConstraintForeignKeyInverse) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairStream.stream()
-                            .noneMatch(targetPair -> targetPair.first() == constraintForeignKeyInverse.foreignColumnId()
+                            .noneMatch(targetPair -> targetPair.first().equals(constraintForeignKeyInverse.foreignColumnId())
                                     && targetPair.second() instanceof ColumnConstraintForeignKey inverse
-                                    && inverse.foreignColumnId() == sourceColumnId);
+                                    && inverse.foreignColumnId().equals(sourceColumnId));
                 })
                 .map(pair -> {
                     var notFoundId = ((ColumnConstraintForeignKeyInverse) pair.second()).foreignColumnId();
@@ -71,7 +72,7 @@ public final class IntegrityChecker {
         assert nonUniqueIdSet.isEmpty() : "Non unique ids found: " + nonUniqueIdSet;
     }
 
-    private static Stream<Pair<Integer, ColumnConstraint>> extractConstraints(Column column) {
+    private static Stream<Pair<Id, ColumnConstraint>> extractConstraints(Column column) {
         var constraints = switch (column) {
             case ColumnLeaf leaf -> leaf.constraintSet().stream().map(c -> new Pair<>(leaf.id(), c));
             case ColumnNode node -> Stream.concat(

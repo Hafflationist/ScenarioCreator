@@ -3,6 +3,7 @@ package de.mrobohm.operations.structural.base;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
@@ -25,7 +26,7 @@ public class GroupingColumnsBase {
                 .toList();
     }
 
-    public static ColumnNode createNewColumnNode(int newId, List<Column> columnList, Random random) {
+    public static ColumnNode createNewColumnNode(Id newId, List<Column> columnList, Random random) {
         assert columnList.size() > 0 : "createNewColumnNode wurde mit 0 Spalten aufgerufen!";
 
         var newName = mergeNames(columnList, random);

@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
@@ -29,12 +30,13 @@ class GroupColumnLeafsToNodeNestedTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(7)));
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(3);
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(4);
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
         var targetColumn = new ColumnNode(
-                6, name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Set.of(), false
+                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
+                Set.of(), false
         );
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new GroupColumnLeafsToNodeNested();
@@ -66,16 +68,18 @@ class GroupColumnLeafsToNodeNestedTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(7)));
-        var invalidColumn = new ColumnNode(2, name, List.of(columnLeaf), Set.of(), false);
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(3);
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(4);
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var invalidColumn = new ColumnNode(new IdSimple(2), name, List.of(columnLeaf), Set.of(), false);
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
         var validColumn1 = new ColumnNode(
-                6, name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Set.of(), false
+                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
+                Set.of(), false
         );
         var validColumn2 = new ColumnCollection(
-                6, name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Set.of(), false
+                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
+                Set.of(), false
         );
         var columnList = List.of((Column)invalidColumn, validColumn1, validColumn2);
         var transformation = new GroupColumnLeafsToNodeNested();

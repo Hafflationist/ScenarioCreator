@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -32,7 +33,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");
         if (!hasNullableColumnsAndNoInverseConstraints(table)) {
             throw exception;
@@ -126,6 +127,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }
 
-    private record NewIdComplex(int derivingTableId, Map<Integer, Integer> doubledColumnToNewId) {
+    private record NewIdComplex(Id derivingTableId, Map<Id, Id> doubledColumnToNewId) {
     }
 }

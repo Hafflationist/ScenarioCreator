@@ -9,6 +9,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class RemoveColumnTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var validColumn = new ColumnLeaf(6, name, dataType, ColumnContext.getDefault(), Set.of());
+        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), Set.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new RemoveColumn();
 
@@ -40,13 +41,13 @@ class RemoveColumnTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var invalidColumn1 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(7, Set.of())));
-        var invalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(8, Set.of())));
-        var invalidColumn3 = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(9)));
-        var validColumn = new ColumnLeaf(6, name, dataType, ColumnContext.getDefault(), Set.of());
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(7), Set.of())));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(8), Set.of())));
+        var invalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(9))));
+        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), Set.of());
         var columnList = List.of((Column) invalidColumn1, invalidColumn2, invalidColumn3, validColumn);
         var transformation = new RemoveColumn();
 
@@ -63,7 +64,7 @@ class RemoveColumnTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var validColumn = new ColumnLeaf(6, name, dataType, ColumnContext.getDefault(), Set.of());
+        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), Set.of());
         var columnList = List.of((Column) validColumn);
         var transformation = new RemoveColumn();
 

@@ -1,6 +1,7 @@
 package de.mrobohm.operations.linguistic;
 
 import de.mrobohm.data.Language;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -22,7 +23,7 @@ public class ChangeLanguageOfTableName implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }

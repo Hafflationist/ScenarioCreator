@@ -6,6 +6,8 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
@@ -24,8 +26,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class MergeColumnsTest {
 
-    Table getTable(int id, Set<Table> tableSet) {
-        var tableOpt = tableSet.stream().filter(t -> t.id() == id).findFirst();
+    Table getTable(Id id, Set<Table> tableSet) {
+        var tableOpt = tableSet.stream().filter(t -> t.id().equals(id)).findFirst();
         assert tableOpt.isPresent();
         return tableOpt.get();
     }
@@ -36,27 +38,28 @@ class MergeColumnsTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var validDataType = new DataType(DataTypeEnum.NVARCHAR, false);
-        var semivalidColumn1 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var semivalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var semivalidColumn3 = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(1, Set.of()),
-                        new ColumnConstraintForeignKeyInverse(2, Set.of())));
-        var invalidColumn1 = new ColumnLeaf(4, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(20)));
-        var invalidColumn2 = new ColumnLeaf(5, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(21)));
-        var invalidColumn3 = new ColumnLeaf(6, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(22)));
-        var validColumn1 = new ColumnLeaf(7, name, validDataType, ColumnContext.getDefault(), Set.of());
-        var validColumn2 = validColumn1.withId(8);
+        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), Set.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
+        var invalidColumn3 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(22))));
+        var validColumn1 = new ColumnLeaf(new IdSimple(7), name, validDataType,
+                ColumnContext.getDefault(), Set.of());
+        var validColumn2 = validColumn1.withId(new IdSimple(8));
 
-        var invalidTable = new Table(10, name,
+        var invalidTable = new Table(new IdSimple(10), name,
                 List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), Set.of());
-        var semivalidTable = new Table(11, name,
+        var semivalidTable = new Table(new IdSimple(11), name,
                 List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), Set.of());
-        var validTable = new Table(14, name,
+        var validTable = new Table(new IdSimple(14), name,
                 List.of(invalidColumn3, validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, validTable, semivalidTable);
         var schema = new Schema(0, name, Context.getDefault(), tableSet);
@@ -88,21 +91,21 @@ class MergeColumnsTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var semivalidColumn1 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var semivalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var semivalidColumn3 = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(1, Set.of()),
-                        new ColumnConstraintForeignKeyInverse(2, Set.of())));
-        var invalidColumn1 = new ColumnLeaf(4, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(20)));
-        var invalidColumn2 = new ColumnLeaf(5, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(21)));
+        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), Set.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
 
-        var invalidTable = new Table(10, name,
+        var invalidTable = new Table(new IdSimple(10), name,
                 List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), Set.of());
-        var semivalidTable = new Table(11, name,
+        var semivalidTable = new Table(new IdSimple(11), name,
                 List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, semivalidTable);
         var schema = new Schema(0, name, Context.getDefault(), tableSet);
@@ -135,24 +138,24 @@ class MergeColumnsTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var semivalidColumn1 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(6, Set.of())));
-        var semivalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(7, Set.of())));
-        var invalidColumn = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(8)));
-        var validColumn1 = new ColumnLeaf(4, name, dataType, ColumnContext.getDefault(), Set.of());
-        var validColumn2 = validColumn1.withId(5);
+        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), Set.of())));
+        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(7), Set.of())));
+        var invalidColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(8))));
+        var validColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), Set.of());
+        var validColumn2 = validColumn1.withId(new IdSimple(5));
 
-        var invalidTable = new Table(10, name,
+        var invalidTable = new Table(new IdSimple(10), name,
                 List.of(invalidColumn, semivalidColumn1), Context.getDefault(), Set.of());
-        var semivalidTable1 = new Table(11, name,
+        var semivalidTable1 = new Table(new IdSimple(11), name,
                 List.of(invalidColumn, semivalidColumn1, semivalidColumn2), Context.getDefault(), Set.of());
-        var semivalidTable2 = new Table(12, name,
+        var semivalidTable2 = new Table(new IdSimple(12), name,
                 List.of(invalidColumn, semivalidColumn1, validColumn1), Context.getDefault(), Set.of());
-        var semivalidTable3 = new Table(13, name,
+        var semivalidTable3 = new Table(new IdSimple(13), name,
                 List.of(invalidColumn, validColumn1, semivalidColumn2), Context.getDefault(), Set.of());
-        var validTable = new Table(14, name,
+        var validTable = new Table(new IdSimple(14), name,
                 List.of(invalidColumn, validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, semivalidTable1, semivalidTable2, semivalidTable3, validTable);
         var schema = new Schema(15, name, Context.getDefault(), tableSet);

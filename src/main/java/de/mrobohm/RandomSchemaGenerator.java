@@ -6,6 +6,7 @@ import de.mrobohm.data.column.Encoding;
 import de.mrobohm.data.column.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 
@@ -36,7 +37,7 @@ public class RandomSchemaGenerator {
         var context = generateRandomContext(random);
         var columnContext = new ColumnContext(context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random));
         return new ColumnLeaf(
-                random.nextInt(),
+                new IdSimple(random.nextInt()),
                 new StringPlusNaked("Spalte" + random.nextInt(), pickRandomLanguage(random)),
                 new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean()),
                 columnContext,
@@ -46,7 +47,8 @@ public class RandomSchemaGenerator {
 
     private static Table generateRandomTable(Random random, int maxColumns) {
         var context = generateRandomContext(random);
-        return new Table(random.nextInt(),
+        return new Table(
+                new IdSimple(random.nextInt()),
                 new StringPlusNaked("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
                 generateRandomList(2, maxColumns, RandomSchemaGenerator::generateRandomColumn, random),
                 context,

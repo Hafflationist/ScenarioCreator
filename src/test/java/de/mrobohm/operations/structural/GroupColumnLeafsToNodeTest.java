@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
@@ -27,12 +28,14 @@ class GroupColumnLeafsToNodeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(7)));
-        var invalidTable = new Table(2, name, List.of(columnLeaf), Context.getDefault(), Set.of());
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(3);
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(4);
-        var targetTable = new Table(6, name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Context.getDefault(), Set.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
+        var targetTable = new Table(
+                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
+                Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, targetTable);
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new GroupColumnLeafsToNode();
@@ -65,12 +68,14 @@ class GroupColumnLeafsToNodeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(7)));
-        var invalidTable = new Table(2, name, List.of(columnLeaf), Context.getDefault(), Set.of());
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(3);
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(4);
-        var validTable = new Table(6, name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Context.getDefault(), Set.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
+        var validTable = new Table(
+                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
+                Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, validTable);
         var transformation = new GroupColumnLeafsToNode();
 

@@ -13,6 +13,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
@@ -67,7 +68,7 @@ public final class NewTableBase {
         return createNewIdColumn(newIds.targetColumn, tableName, newConstraintSet);
     }
 
-    public static ColumnLeaf createNewIdColumn(int columnId,
+    public static ColumnLeaf createNewIdColumn(Id columnId,
                                                 StringPlus tableName,
                                                 Set<ColumnConstraint> newConstraintSet) {
         var nc = tableName.guessNamingConvention();
@@ -78,6 +79,6 @@ public final class NewTableBase {
         return new ColumnLeaf(columnId, newName, newDataType, newColumnContext, newConstraintSet);
     }
 
-    public record NewIds(int targetTable, int targetColumn, int sourceColumn, int constraintGroupId) {
+    public record NewIds(Id targetTable, Id targetColumn, Id sourceColumn, Id constraintGroupId) {
     }
 }

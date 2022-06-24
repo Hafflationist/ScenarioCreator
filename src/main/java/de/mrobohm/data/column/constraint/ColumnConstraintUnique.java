@@ -2,6 +2,7 @@ package de.mrobohm.data.column.constraint;
 
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.dataset.Value;
+import de.mrobohm.data.identification.Id;
 import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
@@ -11,13 +12,13 @@ import java.util.function.Function;
 
 public sealed class ColumnConstraintUnique implements ColumnConstraint permits ColumnConstraintPrimaryKey {
 
-    private final int _uniqueGroupId;
+    private final Id _uniqueGroupId;
 
-    public ColumnConstraintUnique(int uniqueGroupId){
+    public ColumnConstraintUnique(Id uniqueGroupId){
         _uniqueGroupId = uniqueGroupId;
     }
 
-    public int getUniqueGroupId() {
+    public Id getUniqueGroupId() {
         return _uniqueGroupId;
     }
 

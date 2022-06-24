@@ -1,6 +1,7 @@
 package de.mrobohm.data.column.nesting;
 
 import de.mrobohm.data.column.constraint.ColumnConstraint;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-public record ColumnNode(int id,
+public record ColumnNode(Id id,
                          StringPlus name,
                          List<Column> columnList,
                          Set<ColumnConstraint> constraintSet,
@@ -16,7 +17,7 @@ public record ColumnNode(int id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnNode withId(int newId) {
+    public ColumnNode withId(Id newId) {
         return new ColumnNode(newId, name, columnList, constraintSet, isNullable);
     }
 

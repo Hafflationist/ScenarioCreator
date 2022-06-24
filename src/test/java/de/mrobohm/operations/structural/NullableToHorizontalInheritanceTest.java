@@ -6,6 +6,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
@@ -29,22 +30,25 @@ class NullableToHorizontalInheritanceTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var primaryKeyColumn1 = new ColumnLeaf(-1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(5)));
-        var primaryKeyColumn2 = new ColumnLeaf(0, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(5)));
-        var invalidColumn0 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var invalidColumn1 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(3, Set.of())));
-        var invalidColumn2 = new ColumnLeaf(3, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(1, Set.of()),
-                        new ColumnConstraintForeignKeyInverse(2, Set.of())));
-        var validColumn = new ColumnLeaf(4, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of());
+        var primaryKeyColumn1 = new ColumnLeaf(new IdSimple(-1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
+        var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(0), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
+        var invalidColumn0 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(3), Set.of())));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), Set.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+        var validColumn = new ColumnLeaf(
+                new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of());
 
-        var invalidTable1 = new Table(10, name, List.of(invalidColumn1), Context.getDefault(), Set.of());
-        var invalidTable2 = new Table(11, name, List.of(invalidColumn0, invalidColumn2), Context.getDefault(), Set.of());
-        var targetTable = new Table(14, name,
+        var invalidTable1 = new Table(new IdSimple(10), name,
+                List.of(invalidColumn1), Context.getDefault(), Set.of());
+        var invalidTable2 = new Table(new IdSimple(11), name,
+                List.of(invalidColumn0, invalidColumn2), Context.getDefault(), Set.of());
+        var targetTable = new Table(new IdSimple(14), name,
                 List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, targetTable);
         IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), tableSet));
@@ -74,20 +78,20 @@ class NullableToHorizontalInheritanceTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var invalidColumn1 = new ColumnLeaf(1, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(6, Set.of())));
-        var invalidColumn2 = new ColumnLeaf(2, name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(7, Set.of())));
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), Set.of())));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(7), Set.of())));
         var validColumn1 = new ColumnLeaf(
-                4, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of()
+                new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of()
         );
         var validColumn2 = new ColumnLeaf(
-                5, name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of()
+                new IdSimple(5), name, dataType.withIsNullable(true), ColumnContext.getDefault(), Set.of()
         );
 
-        var invalidTable1 = new Table(10, name, List.of(invalidColumn1), Context.getDefault(), Set.of());
-        var invalidTable2 = new Table(11, name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
-        var validTable = new Table(14, name, List.of(validColumn1, validColumn2), Context.getDefault(), Set.of());
+        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), Set.of());
+        var invalidTable2 = new Table(new IdSimple(11), name, List.of(invalidColumn1, invalidColumn2), Context.getDefault(), Set.of());
+        var validTable = new Table(new IdSimple(14), name, List.of(validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, validTable);
         var transformation = new NullableToHorizontalInheritance();
 

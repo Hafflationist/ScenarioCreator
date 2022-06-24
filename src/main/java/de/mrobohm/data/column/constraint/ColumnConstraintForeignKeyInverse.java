@@ -2,6 +2,7 @@ package de.mrobohm.data.column.constraint;
 
 import de.mrobohm.data.DataType;
 import de.mrobohm.data.dataset.Value;
+import de.mrobohm.data.identification.Id;
 import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
@@ -10,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-public record ColumnConstraintForeignKeyInverse(int foreignColumnId,
+public record ColumnConstraintForeignKeyInverse(Id foreignColumnId,
                                                 Set<Value> foreignValueSet) implements ColumnConstraint {
 
     @Override

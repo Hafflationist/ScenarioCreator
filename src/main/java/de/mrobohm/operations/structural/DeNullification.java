@@ -5,6 +5,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,7 @@ public class DeNullification implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!isValid(column)) {
             throw new TransformationCouldNotBeExecutedException("Column is not valid!");
         }

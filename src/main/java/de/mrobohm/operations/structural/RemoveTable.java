@@ -3,6 +3,7 @@ package de.mrobohm.operations.structural;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ public class RemoveTable implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfRelationships(table) : "Table had foreign key constraints!";
         return new HashSet<>();
     }

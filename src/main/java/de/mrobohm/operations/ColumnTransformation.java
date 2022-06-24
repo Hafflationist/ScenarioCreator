@@ -1,6 +1,7 @@
 package de.mrobohm.operations;
 
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.identification.Id;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +14,7 @@ public non-sealed interface ColumnTransformation extends Transformation {
 
     @Contract(pure = true)
     @NotNull
-    List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random);
+    List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random);
 
 
     @Contract(pure = true)

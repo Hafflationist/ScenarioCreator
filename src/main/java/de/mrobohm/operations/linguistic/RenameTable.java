@@ -1,6 +1,7 @@
 package de.mrobohm.operations.linguistic;
 
 import de.mrobohm.data.Language;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
@@ -30,7 +31,7 @@ public class RenameTable implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         var newName = getNewName(table.name(), random);
         return Collections.singleton(table.withName(newName));
     }

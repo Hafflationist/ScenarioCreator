@@ -1,6 +1,7 @@
 package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -23,7 +24,7 @@ public class ColumnNodeToTable implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
 
         var columnNodeStream = table.columnList().stream()

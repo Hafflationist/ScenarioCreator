@@ -7,6 +7,10 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdMerge;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.utils.StreamExtensions;
 
@@ -18,18 +22,30 @@ import static java.util.stream.Stream.of;
 
 public class IdentificationNumberCalculator {
 
-    public static Stream<Integer> getAllIds(Schema schema, boolean checkConstraints){
+    public static Stream<IdSimple> extractIdSimple(Stream<Id> idStream) {
+        return idStream.flatMap(id -> switch(id) {
+            case IdSimple ids -> Stream.of(ids);
+            case IdMerge idm -> Stream.concat(
+                    extractIdSimple(Stream.of(idm.predecessorId1())),
+                    extractIdSimple(Stream.of(idm.predecessorId2()))
+            );
+            case IdPart idp -> extractIdSimple(Stream.of(idp.predecessorId()));
+        });
+    }
+
+
+    public static Stream<Id> getAllIds(Schema schema, boolean checkConstraints){
         var tableSet = schema.tableSet();
         var tableIdStream = tableSet.stream().map(Table::id);
         var columnIdStream = tableSet.stream()
                 .flatMap(t -> t.columnList().stream().flatMap(column -> columnToIdStream(column, checkConstraints)));
-        return Stream.concat(of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
+        return Stream.concat(of(new IdSimple(schema.id())), Stream.concat(tableIdStream, columnIdStream));
     }
 
-    private static Stream<Integer> columnToIdStream(Column column, boolean checkConstraints) {
+    private static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {
         var constraintIdStream = checkConstraints
                 ? constraintsToIdStream(column.constraintSet())
-                : Stream.<Integer>empty();
+                : Stream.<Id>empty();
         return switch (column) {
             case ColumnCollection collection -> of(
                             of(collection.id()),
@@ -45,7 +61,7 @@ public class IdentificationNumberCalculator {
         };
     }
 
-    private static Stream<Integer> constraintsToIdStream(Set<ColumnConstraint> constraintSet) {
+    private static Stream<Id> constraintsToIdStream(Set<ColumnConstraint> constraintSet) {
         return constraintSet.stream()
                 .filter(c -> c instanceof ColumnConstraintUnique)
                 .map(c -> (ColumnConstraintUnique) c)

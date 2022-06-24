@@ -1,5 +1,6 @@
 package de.mrobohm.operations;
 
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +13,7 @@ public non-sealed interface TableTransformation extends Transformation  {
 
     @Contract(pure = true)
     @NotNull
-    Set<Table> transform(Table table, Set<Table> otherTableSet, Function<Integer, int[]> idGenerator, Random random);
+    Set<Table> transform(Table table, Set<Table> otherTableSet, Function<Integer, Id[]> idGenerator, Random random);
 
 
     @Contract(pure = true)

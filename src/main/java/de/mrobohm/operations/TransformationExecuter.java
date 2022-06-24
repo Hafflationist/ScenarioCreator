@@ -3,6 +3,7 @@ package de.mrobohm.operations;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
 import de.mrobohm.operations.exceptions.NoColumnFoundException;
@@ -70,7 +71,7 @@ public class TransformationExecuter {
     private Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
-        Function<Integer, int[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
+        Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
         var newTableSet = transformation.transform(targetTable, schema.tableSet(), idGenerator, random);
         var newSchema = executeTransformationTable(schema, targetTable, newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
@@ -87,7 +88,7 @@ public class TransformationExecuter {
         var target = chooseColumn(schema, transformation::getCandidates, random);
         var targetTable = target.first();
         var targetColumn = target.second();
-        Function<Integer, int[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
+        Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
         var newPartialColumnStream = transformation.transform(targetColumn, idGenerator, random).stream();
 
         var oldColumnStream = targetTable.columnList().stream();

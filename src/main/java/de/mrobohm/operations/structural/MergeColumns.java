@@ -8,6 +8,8 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -70,11 +72,11 @@ public final class MergeColumns implements SchemaTransformation {
                     var newConstraintSet = column.constraintSet().stream()
                             .filter(c -> switch (c) {
                                 case ColumnConstraintForeignKey ccfk ->
-                                        ccfk.foreignColumnId() != mergedColumns.first().id()
-                                                && ccfk.foreignColumnId() != mergedColumns.second().id();
+                                        !ccfk.foreignColumnId().equals(mergedColumns.first().id())
+                                                && !ccfk.foreignColumnId().equals(mergedColumns.second().id());
                                 case ColumnConstraintForeignKeyInverse ccfki ->
-                                        ccfki.foreignColumnId() != mergedColumns.first().id()
-                                                && ccfki.foreignColumnId() != mergedColumns.second().id();
+                                        !ccfki.foreignColumnId().equals(mergedColumns.first().id())
+                                                && !ccfki.foreignColumnId().equals(mergedColumns.second().id());
                                 default -> true;
                             }).collect(Collectors.toSet());
                     if (newConstraintSet.equals(column.constraintSet())) {
@@ -101,7 +103,7 @@ public final class MergeColumns implements SchemaTransformation {
         return new Pair<>(firstColumn, secondColumn);
     }
 
-    private Column generateNewColumn(int newId, ColumnLeaf columnA, ColumnLeaf columnB, Random random) {
+    private Column generateNewColumn(Id newId, ColumnLeaf columnA, ColumnLeaf columnB, Random random) {
         // TODO this method can be improved dramatically!
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
         var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);

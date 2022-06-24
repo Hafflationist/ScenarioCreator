@@ -4,6 +4,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.operations.ColumnTransformation;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +21,7 @@ public class RemoveColumn implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfCriticalConstraints(column) : "Column had critical constraints!";
         return new ArrayList<>();
     }

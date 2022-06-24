@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -33,7 +34,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
     @Override
     @NotNull
     public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, int[]> idGenerator, Random random) {
+                                Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column!");
         if (!hasNullableColumns(table)) {
             throw exception;
@@ -191,11 +192,11 @@ public class NullableToVerticalInheritance implements TableTransformation {
         return table.columnList().size() >= 2 && table.columnList().stream().anyMatch(Column::isNullable);
     }
 
-    private record NewIdComplex(int primaryKeyColumnId,
-                                int primaryKeyConstraintGroupId,
-                                int primaryKeyDerivingColumnId,
-                                int primaryKeyDerivingConstraintGroupId,
-                                int derivingTableId,
-                                Map<Integer, Integer> primaryKeyColumnToNewId) {
+    private record NewIdComplex(Id primaryKeyColumnId,
+                                Id primaryKeyConstraintGroupId,
+                                Id primaryKeyDerivingColumnId,
+                                Id primaryKeyDerivingConstraintGroupId,
+                                Id derivingTableId,
+                                Map<Id, Id> primaryKeyColumnToNewId) {
     }
 }

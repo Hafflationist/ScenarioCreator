@@ -5,6 +5,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.operations.ColumnTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,7 @@ public class ForeignKeyRemover implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!hasForeignKeyConstraint(column)) {
             throw new TransformationCouldNotBeExecutedException("No foreign key constraint found! Expected a column with a foreign key constraint!");
         }
@@ -40,7 +41,8 @@ public class ForeignKeyRemover implements ColumnTransformation {
     }
 
     @Override
-    @NotNull public List<Column> getCandidates(List<Column> columnList) {
+    @NotNull
+    public List<Column> getCandidates(List<Column> columnList) {
         return columnList.stream().filter(this::hasForeignKeyConstraint).toList();
     }
 

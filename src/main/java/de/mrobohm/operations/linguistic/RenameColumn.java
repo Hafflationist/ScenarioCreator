@@ -5,6 +5,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.operations.ColumnTransformation;
@@ -33,7 +34,7 @@ public class RenameColumn implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, int[]> idGenerator, Random random) {
+    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!hasMeaningfulName(column)) {
             throw TRANSFORMATION_EXCEPTION;
         }

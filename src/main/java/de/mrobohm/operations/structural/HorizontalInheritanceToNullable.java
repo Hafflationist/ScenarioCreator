@@ -6,6 +6,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -91,7 +92,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         return new DerivationIntegrationResult(newTable, removedColumnIdSet);
     }
 
-    private Schema purgeColumnIds(Schema schema, Set<Integer> cidSet) {
+    private Schema purgeColumnIds(Schema schema, Set<Id> cidSet) {
         var newTableSet = schema.tableSet().stream().map(t -> {
             var newColumnList = t.columnList().stream().map(column -> {
                 var newConstraintSet = column.constraintSet().stream().filter(c -> switch (c) {
@@ -201,9 +202,9 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
             case ColumnConstraintLocalPredicate cclpa ->
                     cb instanceof ColumnConstraintLocalPredicate cclpb && cclpa.equals(cclpb);
             case ColumnConstraintForeignKey ccfka -> cb instanceof ColumnConstraintForeignKey ccfkb
-                    && ccfka.foreignColumnId() == ccfkb.foreignColumnId();
+                    && ccfka.foreignColumnId().equals(ccfkb.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfkia -> cb instanceof ColumnConstraintForeignKeyInverse ccfkib
-                    && ccfkia.foreignColumnId() == ccfkib.foreignColumnId();
+                    && ccfkia.foreignColumnId().equals(ccfkib.foreignColumnId());
 
         }));
     }
@@ -213,7 +214,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 && isSubsetConstraintSets(constraintSetB, constraintSetA);
     }
 
-    private record DerivationIntegrationResult(Table newTable, Set<Integer> removedColumnIdSet) {
+    private record DerivationIntegrationResult(Table newTable, Set<Id> removedColumnIdSet) {
     }
 
     private record InheritancePair(Table derivation, Table base) {

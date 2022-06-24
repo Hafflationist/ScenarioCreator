@@ -7,6 +7,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.utils.StreamExtensions;
@@ -55,7 +56,7 @@ public final class IngestionBase {
         var ingestedColumnOptional = ingestedTable.columnList().stream()
                 .filter(column -> ingestingColumn.constraintSet().stream()
                         .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse ccfki
-                                && ccfki.foreignColumnId() == column.id()))
+                                && ccfki.foreignColumnId().equals(column.id())))
                 .findFirst();
         assert ingestedColumnOptional.isPresent();
         var newIngestedColumn = freeColumnFromConstraints(ingestedColumnOptional.get(), ingestingTable.columnList());
@@ -83,6 +84,8 @@ public final class IngestionBase {
                 .toList();
 
         return ingestingTable.withColumnList(newIngestingColumnList);
+
+        // TODO: Hier müsste auf jeden Fall die Erstellung von IDS überarbeitet werden!
     }
 
     private static Column freeColumnFromConstraints(Column column, List<Column> columnListOfOtherTable) {
@@ -130,7 +133,7 @@ public final class IngestionBase {
                         .map(c -> ((ColumnConstraintForeignKeyInverse) c).foreignColumnId())
                         .filter(cid -> !flags.insistOnOneToOne() || column.constraintSet().stream()
                                 .filter(c -> c instanceof ColumnConstraintForeignKey)
-                                .anyMatch(c -> ((ColumnConstraintForeignKey) c).foreignColumnId() == cid))
+                                .anyMatch(c -> ((ColumnConstraintForeignKey) c).foreignColumnId().equals(cid)))
                         .map(cid -> columnIdToTable(cid, otherTableSet))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
@@ -143,8 +146,8 @@ public final class IngestionBase {
     }
 
     @NotNull
-    private static Optional<Table> columnIdToTable(int columnId, Set<Table> tableSet) {
-        return tableSet.stream().filter(t -> t.columnList().stream().anyMatch(c -> c.id() == columnId)).findFirst();
+    private static Optional<Table> columnIdToTable(Id columnId, Set<Table> tableSet) {
+        return tableSet.stream().filter(t -> t.columnList().stream().anyMatch(c -> c.id().equals(columnId))).findFirst();
     }
 
     private static boolean hasSimpleRelationship(Table tableA, Table tableB, boolean tableBNonNull) {

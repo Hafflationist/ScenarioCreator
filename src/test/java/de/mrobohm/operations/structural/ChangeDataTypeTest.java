@@ -9,6 +9,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -24,7 +25,7 @@ class ChangeDataTypeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var validDataType = new DataType(DataTypeEnum.INT32, false);
-        var column = new ColumnLeaf(1, name, validDataType, ColumnContext.getDefault(), Set.of());
+        var column = new ColumnLeaf(new IdSimple(1), name, validDataType, ColumnContext.getDefault(), Set.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(0);
         var transformation = new ChangeDataType();
 
@@ -47,11 +48,13 @@ class ChangeDataTypeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var validDataType = new DataType(DataTypeEnum.INT32, false);
-        var validColumn = new ColumnLeaf(1, name, validDataType, ColumnContext.getDefault(), Set.of());
-        var invalidColumn1 = new ColumnNode(2, name, List.of(), Set.of(), false);
+        var validColumn = new ColumnLeaf(new IdSimple(1), name, validDataType, ColumnContext.getDefault(), Set.of());
+        var invalidColumn1 = new ColumnNode(new IdSimple(2), name, List.of(), Set.of(), false);
         var invalidColumn2 = validColumn.withDataType(new DataType(DataTypeEnum.NVARCHAR, true));
-        var invalidColumn3 = validColumn.withConstraintSet(Set.of(new ColumnConstraintForeignKey(2, Set.of())));
-        var invalidColumn4 = validColumn.withConstraintSet(Set.of(new ColumnConstraintForeignKeyInverse(2, Set.of())));
+        var invalidColumn3 = validColumn.withConstraintSet(
+                Set.of(new ColumnConstraintForeignKey(new IdSimple(2), Set.of())));
+        var invalidColumn4 = validColumn.withConstraintSet(
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
         var columnList = List.of(validColumn, (Column) invalidColumn1, invalidColumn2, invalidColumn3, invalidColumn4);
         var transformation = new ChangeDataType();
 

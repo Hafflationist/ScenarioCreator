@@ -7,6 +7,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.integrity.IntegrityChecker;
@@ -28,27 +29,28 @@ class HorizontalInheritanceToNullableTest {
         var nameDeriving = new StringPlusNaked("SpalteD", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var commonColumn1 = new ColumnLeaf(
-                1, new StringPlusNaked("Spalte1", Language.Mixed), dataType,
+                new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var commonColumn2 = new ColumnLeaf(
-                2, new StringPlusNaked("Spalte2", Language.Mixed), dataType,
+                new IdSimple(2), new StringPlusNaked("Spalte2", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var commonColumn3 = new ColumnLeaf(
-                3, new StringPlusNaked("Spalte3", Language.Mixed), dataType,
+                new IdSimple(3), new StringPlusNaked("Spalte3", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
-        var extraColumn = new ColumnLeaf(9, name, dataType, ColumnContext.getDefault(), Set.of());
+        var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), Set.of());
 
         var baseTableColumnList = List.of((Column)commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(10, name, baseTableColumnList, Context.getDefault(), Set.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), Set.of());
         var derivingTableColumnList = List.of(
-                (Column)commonColumn1.withId(4),
-                commonColumn2.withId(5),
-                commonColumn3.withId(6),
+                (Column)commonColumn1.withId(new IdSimple(4)),
+                commonColumn2.withId(new IdSimple(5)),
+                commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
-        var derivingTable = new Table(11, nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
+        var derivingTable = new Table(
+                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
         var schema = new Schema(15, name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -79,32 +81,37 @@ class HorizontalInheritanceToNullableTest {
         var nameDeriving = new StringPlusNaked("SpalteD", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var randomColumn = new ColumnLeaf(
-                0, new StringPlusNaked("s", Language.Mixed), dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(1, Set.of()),
-                        new ColumnConstraintForeignKeyInverse(4, Set.of())));
+                new IdSimple(0), new StringPlusNaked("s", Language.Mixed),
+                dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), Set.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(4), Set.of())));
         var commonColumn1 = new ColumnLeaf(
-                1, new StringPlusNaked("Spalte1", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintForeignKey(0, Set.of()))
+                new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed),
+                dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintForeignKey(new IdSimple(0), Set.of()))
         );
         var commonColumn2 = new ColumnLeaf(
-                2, new StringPlusNaked("Spalte2", Language.Mixed), dataType,
+                new IdSimple(2), new StringPlusNaked("Spalte2", Language.Mixed),
+                dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var commonColumn3 = new ColumnLeaf(
-                3, new StringPlusNaked("Spalte3", Language.Mixed), dataType,
+                new IdSimple(3), new StringPlusNaked("Spalte3", Language.Mixed),
+                dataType,
                 ColumnContext.getDefault(), Set.of()
         );
-        var extraColumn = new ColumnLeaf(9, name, dataType, ColumnContext.getDefault(), Set.of());
+        var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), Set.of());
 
         var baseTableColumnList = List.of((Column)commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(10, name, baseTableColumnList, Context.getDefault(), Set.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), Set.of());
         var derivingTableColumnList = List.of(
-                (Column)commonColumn1.withId(4),
-                commonColumn2.withId(5),
-                commonColumn3.withId(6),
+                (Column)commonColumn1.withId(new IdSimple(4)),
+                commonColumn2.withId(new IdSimple(5)),
+                commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
-        var derivingTable = new Table(11, nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
-        var randomTable = new Table(12, name, List.of(randomColumn), Context.getDefault(), Set.of());
+        var derivingTable = new Table(
+                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
+        var randomTable = new Table(new IdSimple(12), name, List.of(randomColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable, randomTable);
         var schema = new Schema(15, name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -125,27 +132,28 @@ class HorizontalInheritanceToNullableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var commonColumn1 = new ColumnLeaf(
-                1, new StringPlusNaked("Spalte1", Language.Mixed), dataType,
+                new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var commonColumn2 = new ColumnLeaf(
-                2, new StringPlusNaked("Spalte2", Language.Mixed), dataType,
+                new IdSimple(2), new StringPlusNaked("Spalte2", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var commonColumn3 = new ColumnLeaf(
-                3, new StringPlusNaked("Spalte3", Language.Mixed), dataType,
+                new IdSimple(3), new StringPlusNaked("Spalte3", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
-        var extraColumn = new ColumnLeaf(9, name, dataType, ColumnContext.getDefault(), Set.of());
+        var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), Set.of());
 
         var baseTableColumnList = List.of((Column)commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(10, name, baseTableColumnList, Context.getDefault(), Set.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), Set.of());
         var derivingTableColumnList = List.of(
-                (Column)commonColumn1.withId(4),
-                commonColumn2.withId(5),
-                commonColumn3.withId(6),
+                (Column)commonColumn1.withId(new IdSimple(4)),
+                commonColumn2.withId(new IdSimple(5)),
+                commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
-        var derivingTable = new Table(11, name, derivingTableColumnList, Context.getDefault(), Set.of());
+        var derivingTable = new Table(
+                new IdSimple(11), name, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
         var schema = new Schema(15, name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(1, jaccardThreshold);
@@ -164,45 +172,45 @@ class HorizontalInheritanceToNullableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var commonColumn1 = new ColumnLeaf(
-                1, new StringPlusNaked("Spalte1", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(30))
+                new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(30)))
         );
         var commonColumn2 = new ColumnLeaf(
-                2, new StringPlusNaked("Spalte2", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(30))
+                new IdSimple(2), new StringPlusNaked("Spalte2", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(30)))
         );
         var commonColumn3 = new ColumnLeaf(
-                3, new StringPlusNaked("Spalte3", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(30))
+                new IdSimple(3), new StringPlusNaked("Spalte3", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(30)))
         );
         var commonColumn11 = new ColumnLeaf(
-                4, new StringPlusNaked("Spalte1", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(31))
+                new IdSimple(4), new StringPlusNaked("Spalte1", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(31)))
         );
         var commonColumn12 = new ColumnLeaf(
-                5, new StringPlusNaked("Spalte2", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(31))
+                new IdSimple(5), new StringPlusNaked("Spalte2", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(31)))
         );
         var commonColumn13 = new ColumnLeaf(
-                6, new StringPlusNaked("Spalte3", Language.Mixed), dataType,
-                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(31))
+                new IdSimple(6), new StringPlusNaked("Spalte3", Language.Mixed), dataType,
+                ColumnContext.getDefault(), Set.of(new ColumnConstraintPrimaryKey(new IdSimple(31)))
         );
         var extraColumn1 = new ColumnLeaf(
-                7, new StringPlusNaked("Spalte4", Language.Mixed), dataType,
+                new IdSimple(7), new StringPlusNaked("Spalte4", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var extraColumn2 = new ColumnLeaf(
-                8, new StringPlusNaked("Spalte5", Language.Mixed), dataType,
+                new IdSimple(8), new StringPlusNaked("Spalte5", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
         var extraColumn3 = new ColumnLeaf(
-                9, new StringPlusNaked("Spalte6", Language.Mixed), dataType,
+                new IdSimple(9), new StringPlusNaked("Spalte6", Language.Mixed), dataType,
                 ColumnContext.getDefault(), Set.of()
         );
-        var extraColumn4 = new ColumnLeaf(10, name, dataType, ColumnContext.getDefault(), Set.of());
+        var extraColumn4 = new ColumnLeaf(new IdSimple(10), name, dataType, ColumnContext.getDefault(), Set.of());
 
         var baseTableColumnList = List.of((Column)commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(20, name, baseTableColumnList, Context.getDefault(), Set.of());
+        var baseTable = new Table(new IdSimple(20), name, baseTableColumnList, Context.getDefault(), Set.of());
         var derivingTableColumnList = List.of(
                 (Column)commonColumn11,
                 commonColumn12,
@@ -211,7 +219,8 @@ class HorizontalInheritanceToNullableTest {
                 extraColumn2,
                 extraColumn3,
                 extraColumn4);
-        var derivingTable = new Table(21, name, derivingTableColumnList, Context.getDefault(), Set.of());
+        var derivingTable = new Table(
+                new IdSimple(21), name, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
         var schema = new Schema(100, name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(primaryKeyCountThreshold, 1.01);

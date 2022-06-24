@@ -2,6 +2,7 @@ package de.mrobohm.data.table;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Set;
 
-public record Table(int id,
+public record Table(Id id,
                     StringPlus name,
                     List<Column> columnList,
                     Context context,
@@ -17,7 +18,7 @@ public record Table(int id,
 
     @Contract(pure = true)
     @NotNull
-    public Table withId(int newId) {
+    public Table withId(Id newId) {
         return new Table(newId, name, columnList, context, tableConstraintSet);
     }
 
