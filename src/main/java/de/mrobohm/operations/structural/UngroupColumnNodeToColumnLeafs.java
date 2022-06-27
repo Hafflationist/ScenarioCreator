@@ -1,6 +1,7 @@
 package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
@@ -24,7 +25,18 @@ public class UngroupColumnNodeToColumnLeafs implements ColumnTransformation {
         if (!(column instanceof ColumnNode node)) {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnNode!");
         }
-
+        if (node.isNullable()) {
+            return node.columnList().stream().map(co -> {
+               if(co.isNullable()) {
+                   return co;
+               }
+               return switch (co) {
+                    case ColumnLeaf l -> l.withDataType(l.dataType().withIsNullable(true));
+                    case ColumnNode n -> n.withIsNullable(true);
+                    case ColumnCollection c -> c.withIsNullable(true);
+               };
+            }).toList();
+        }
         return node.columnList();
     }
 
@@ -35,6 +47,6 @@ public class UngroupColumnNodeToColumnLeafs implements ColumnTransformation {
     }
 
     private boolean canBeUnested(Column column) {
-        return column instanceof ColumnLeaf;
+        return column instanceof ColumnNode;
     }
 }
