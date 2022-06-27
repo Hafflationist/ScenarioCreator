@@ -91,7 +91,7 @@ public final class IngestionBase {
 
     private static Column fuseColumnWithIngestedTable(Column column, Table ingestedTable) {
         return column;
-        // Ob diese Methode überhaupt sinnvoll ist, muss nochgeklärt werden!
+        // Ob diese Methode überhaupt sinnvoll ist, muss noch geklärt werden!
 //        var newId = new IdMerge(column.id(), ingestedTable.id(), MergeOrSplitType.And);
 //        return switch (column) {
 //            case ColumnLeaf leaf -> leaf.withId(newId);
