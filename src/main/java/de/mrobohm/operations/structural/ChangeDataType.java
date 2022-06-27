@@ -1,7 +1,7 @@
 package de.mrobohm.operations.structural;
 
-import de.mrobohm.data.DataType;
-import de.mrobohm.data.DataTypeEnum;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;

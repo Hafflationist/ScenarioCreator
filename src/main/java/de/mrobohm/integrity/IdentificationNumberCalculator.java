@@ -39,7 +39,7 @@ public class IdentificationNumberCalculator {
         var tableIdStream = tableSet.stream().map(Table::id);
         var columnIdStream = tableSet.stream()
                 .flatMap(t -> t.columnList().stream().flatMap(column -> columnToIdStream(column, checkConstraints)));
-        return Stream.concat(of(new IdSimple(schema.id())), Stream.concat(tableIdStream, columnIdStream));
+        return Stream.concat(of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
     }
 
     private static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {

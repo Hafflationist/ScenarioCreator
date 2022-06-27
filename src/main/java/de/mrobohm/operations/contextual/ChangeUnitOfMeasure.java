@@ -1,6 +1,6 @@
 package de.mrobohm.operations.contextual;
 
-import de.mrobohm.data.DataTypeEnum;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;

@@ -2,6 +2,8 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -43,7 +45,7 @@ class NullableToVerticalInheritanceTest {
                 List.of(invalidColumn3, invalidColumn4, validColumn),
                 Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, targetTable);
-        IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), tableSet));
+        IntegrityChecker.assertValidSchema(new Schema(new IdSimple(-100), name, Context.getDefault(), tableSet));
         var idGenerator = StructuralTestingUtils.getIdGenerator(100);
         var transformation = new NullableToVerticalInheritance();
 
@@ -65,7 +67,8 @@ class NullableToVerticalInheritanceTest {
         var fullNewTableSet = StreamExtensions
                 .replaceInStream(tableSet.stream(), targetTable, newTableSet.stream())
                 .collect(Collectors.toSet());
-        IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), fullNewTableSet));
+        var newSchema = new Schema(new IdSimple(-100), name, Context.getDefault(), fullNewTableSet);
+        IntegrityChecker.assertValidSchema(newSchema);
     }
 
     @Test
@@ -94,7 +97,7 @@ class NullableToVerticalInheritanceTest {
         var targetTable = new Table(new IdSimple(14), name,
                 List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable1, invalidTable2, targetTable);
-        IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), tableSet));
+        IntegrityChecker.assertValidSchema(new Schema(new IdSimple(-100), name, Context.getDefault(), tableSet));
         var idGenerator = StructuralTestingUtils.getIdGenerator(100);
         var transformation = new NullableToVerticalInheritance();
 
@@ -112,7 +115,8 @@ class NullableToVerticalInheritanceTest {
         var fullNewTableSet = StreamExtensions
                 .replaceInStream(tableSet.stream(), targetTable, newTableSet.stream())
                 .collect(Collectors.toSet());
-        IntegrityChecker.assertValidSchema(new Schema(-100, name, Context.getDefault(), fullNewTableSet));
+        var newSchema = new Schema(new IdSimple(-100), name, Context.getDefault(), fullNewTableSet);
+        IntegrityChecker.assertValidSchema(newSchema);
     }
 
     @Test

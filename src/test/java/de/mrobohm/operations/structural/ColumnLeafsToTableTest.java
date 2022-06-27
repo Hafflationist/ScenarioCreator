@@ -2,6 +2,8 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -68,7 +70,7 @@ class ColumnLeafsToTableTest {
                 .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey)));
         Assertions.assertTrue(extractedTable.columnList().contains(columnLeafGroupable1)
                 || extractedTable.columnList().contains(columnLeafGroupable2));
-        IntegrityChecker.assertValidSchema(new Schema(0, name, Context.getDefault(), newTableSet));
+        IntegrityChecker.assertValidSchema(new Schema(new IdSimple(0), name, Context.getDefault(), newTableSet));
     }
 
     @Test

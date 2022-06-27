@@ -1,4 +1,4 @@
-package de.mrobohm.data;
+package de.mrobohm.data.column;
 
 import java.util.Random;
 import java.util.Set;

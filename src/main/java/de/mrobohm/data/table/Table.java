@@ -1,6 +1,7 @@
 package de.mrobohm.data.table;
 
 import de.mrobohm.data.Context;
+import de.mrobohm.data.Entity;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
@@ -14,7 +15,7 @@ public record Table(Id id,
                     StringPlus name,
                     List<Column> columnList,
                     Context context,
-                    Set<TableConstraint> tableConstraintSet) {
+                    Set<TableConstraint> tableConstraintSet) implements Entity {
 
     @Contract(pure = true)
     @NotNull

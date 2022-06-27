@@ -2,6 +2,8 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -53,7 +55,7 @@ class HorizontalInheritanceToNullableTest {
         var derivingTable = new Table(
                 new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new HorizontalInheritanceToNullable(1, 0.5);
 
@@ -113,7 +115,7 @@ class HorizontalInheritanceToNullableTest {
                 new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), Set.of());
         var randomTable = new Table(new IdSimple(12), name, List.of(randomColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable, randomTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new HorizontalInheritanceToNullable(1, 0.5);
 
@@ -155,7 +157,7 @@ class HorizontalInheritanceToNullableTest {
         var derivingTable = new Table(
                 new IdSimple(11), name, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(1, jaccardThreshold);
 
         // --- Act
@@ -222,7 +224,7 @@ class HorizontalInheritanceToNullableTest {
         var derivingTable = new Table(
                 new IdSimple(21), name, derivingTableColumnList, Context.getDefault(), Set.of());
         var tableSet = Set.of(baseTable, derivingTable);
-        var schema = new Schema(100, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(100), name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(primaryKeyCountThreshold, 1.01);
 
         // --- Act

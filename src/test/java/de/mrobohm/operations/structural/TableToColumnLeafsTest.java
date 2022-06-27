@@ -2,6 +2,8 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
@@ -43,7 +45,7 @@ class TableToColumnLeafsTest {
         var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), Set.of());
         var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable, table);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new TableToColumnLeafs(false, false);
 
@@ -78,7 +80,7 @@ class TableToColumnLeafsTest {
         var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), Set.of());
         var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new TableToColumnLeafs(false, false);
 
@@ -115,7 +117,7 @@ class TableToColumnLeafsTest {
         var table3 = new Table(new IdSimple(14), name,
                 List.of(column1, column2, column3), Context.getDefault(), Set.of());
         var tableSet = Set.of(table1, table2, table3);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
 
         // --- Act
@@ -146,7 +148,7 @@ class TableToColumnLeafsTest {
         var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
                 Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new TableToColumnLeafs(true, shouldConserveAllRecords);
 
         // --- Act
@@ -185,7 +187,7 @@ class TableToColumnLeafsTest {
         var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
                 Context.getDefault(), Set.of());
         var tableSet = Set.of(ingestingTable, ingestedTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
 
         // --- Act

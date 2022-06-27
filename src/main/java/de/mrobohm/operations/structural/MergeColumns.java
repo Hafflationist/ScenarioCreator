@@ -1,22 +1,19 @@
 package de.mrobohm.operations.structural;
 
-import de.mrobohm.data.DataType;
-import de.mrobohm.data.DataTypeEnum;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.constraint.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
-import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.identification.IdMerge;
-import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
-import de.mrobohm.operations.structural.generator.IdentificationNumberGenerator;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;

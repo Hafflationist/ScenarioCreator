@@ -2,6 +2,8 @@ package de.mrobohm.operations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -59,7 +61,7 @@ class MergeColumnsTest {
         var validTable = new Table(new IdSimple(14), name,
                 List.of(invalidColumn3, validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, validTable, semivalidTable);
-        var schema = new Schema(0, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new MergeColumns(true);
 
@@ -106,7 +108,7 @@ class MergeColumnsTest {
         var semivalidTable = new Table(new IdSimple(11), name,
                 List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, semivalidTable);
-        var schema = new Schema(0, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new MergeColumns(false);
 
@@ -156,7 +158,7 @@ class MergeColumnsTest {
         var validTable = new Table(new IdSimple(14), name,
                 List.of(invalidColumn, validColumn1, validColumn2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, semivalidTable1, semivalidTable2, semivalidTable3, validTable);
-        var schema = new Schema(15, name, Context.getDefault(), tableSet);
+        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new MergeColumns(keepForeignKeyIntegrity);
 
         // --- Act

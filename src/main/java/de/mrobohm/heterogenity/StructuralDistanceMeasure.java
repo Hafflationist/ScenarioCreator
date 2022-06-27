@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class DistanceMeasure {
-    private DistanceMeasure() {
+public final class StructuralDistanceMeasure {
+    private StructuralDistanceMeasure() {
     }
     // TODO: Man muss den Vergleich zwischen arbiträren Schemata S1 und S2 ermöglichen.
     // Grötenteils gilt (S1 - Root) + (S2 - Root) = S1 - S2
@@ -59,7 +59,7 @@ public final class DistanceMeasure {
     }
 
     public Map<Id, List<Id>> getIdPathSet(Schema schema) {
-        var rootId = new IdSimple(schema.id());
+        var rootId = schema.id();
         return IdentificationNumberCalculator
                 .getAllIds(schema, false)
                 .collect(Collectors.toMap(id -> id,

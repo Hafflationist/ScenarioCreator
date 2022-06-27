@@ -1,5 +1,6 @@
 package de.mrobohm.data;
 
+import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.Table;
 import org.jetbrains.annotations.Contract;
@@ -8,14 +9,14 @@ import org.jetbrains.annotations.NotNull;
 import java.io.Serializable;
 import java.util.Set;
 
-public record Schema(int id,
+public record Schema(Id id,
                      StringPlus name,
                      Context context,
-                     Set<Table> tableSet) implements Serializable {
+                     Set<Table> tableSet) implements Entity, Serializable {
 
     @Contract(pure = true)
     @NotNull
-    public Schema withId(int newId) {
+    public Schema withId(Id newId) {
         return new Schema(newId, name, context, tableSet);
     }
 

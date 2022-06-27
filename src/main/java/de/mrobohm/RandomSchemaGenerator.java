@@ -1,9 +1,7 @@
 package de.mrobohm;
 
 import de.mrobohm.data.*;
-import de.mrobohm.data.column.ColumnContext;
-import de.mrobohm.data.column.Encoding;
-import de.mrobohm.data.column.UnitOfMeasure;
+import de.mrobohm.data.column.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.IdSimple;
@@ -59,7 +57,12 @@ public class RandomSchemaGenerator {
     public static Schema generateRandomSchema(Random random, int maxTables, int maxColumn) {
         var context = generateRandomContext(random);
         var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn), random);
-        return new Schema(random.nextInt(), new StringPlusNaked("Schema" + random.nextInt(), pickRandomLanguage(random)), context, tableSet);
+        return new Schema(
+                new IdSimple(random.nextInt()),
+                new StringPlusNaked("Schema" + random.nextInt(), pickRandomLanguage(random)),
+                context,
+                tableSet
+        );
     }
 
     private static <T> List<T> generateRandomList(int min, int max, Function<Random, T> elementGenerator, Random random) {
