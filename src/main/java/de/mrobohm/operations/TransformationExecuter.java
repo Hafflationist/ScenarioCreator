@@ -72,7 +72,7 @@ public class TransformationExecuter {
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
         Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
-        var newTableSet = transformation.transform(targetTable, schema.tableSet(), idGenerator, random);
+        var newTableSet = transformation.transform(targetTable, idGenerator, random);
         var newSchema = executeTransformationTable(schema, targetTable, newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;

@@ -23,8 +23,7 @@ public class ColumnNodeToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
 
         var columnNodeStream = table.columnList().stream()

@@ -30,21 +30,18 @@ class ColumnLeafsToTableTest {
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
         var targetTable = new Table(new IdSimple(6), targetTableName,
                 List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Context.getDefault(), Set.of());
-        var tableSet = Set.of(invalidTable, targetTable);
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new ColumnLeafsToTable();
 
         // --- Act
-        var newTableSet = transformation.transform(targetTable, tableSet, idGenerator, new Random());
+        var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());
-        Assertions.assertFalse(newTableSet.contains(invalidTable));
         Assertions.assertFalse(newTableSet.contains(targetTable));
         var newTableList = newTableSet.stream()
                 .filter(t -> t.id() instanceof IdPart idp  && idp.predecessorId().equals(targetTable.id()))

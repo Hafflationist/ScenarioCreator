@@ -13,7 +13,7 @@ public non-sealed interface TableTransformation extends Transformation  {
 
     @Contract(pure = true)
     @NotNull
-    Set<Table> transform(Table table, Set<Table> otherTableSet, Function<Integer, Id[]> idGenerator, Random random);
+    Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random);
 
 
     @Contract(pure = true)

@@ -23,8 +23,7 @@ public class RemoveTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfRelationships(table) : "Table had foreign key constraints!";
         return new HashSet<>();
     }

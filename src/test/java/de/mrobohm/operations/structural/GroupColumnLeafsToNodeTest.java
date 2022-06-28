@@ -31,18 +31,16 @@ class GroupColumnLeafsToNodeTest {
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
         var targetTable = new Table(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
                 Context.getDefault(), Set.of());
-        var tableSet = Set.of(invalidTable, targetTable);
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new GroupColumnLeafsToNode();
 
         // --- Act
-        var newTableSet = transformation.transform(targetTable, tableSet, idGenerator, new Random());
+        var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());

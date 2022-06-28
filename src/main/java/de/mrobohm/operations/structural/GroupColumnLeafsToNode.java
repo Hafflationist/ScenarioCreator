@@ -21,8 +21,7 @@ public class GroupColumnLeafsToNode implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(GroupingColumnsBase.containsGroupableColumns(table.columnList()))) {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }

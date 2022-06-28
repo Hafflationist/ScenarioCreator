@@ -1,9 +1,7 @@
 package de.mrobohm.operations.linguistic;
 
-import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.TableTransformation;
 import de.mrobohm.operations.linguistic.helpers.CharBase;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +20,7 @@ public class AddTypoToTableName implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = CharBase.introduceTypo(table.name(), random);
         return Set.of(table.withName(newName));
     }

@@ -22,8 +22,7 @@ public class ChangeLanguageOfTableName implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }

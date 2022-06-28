@@ -30,8 +30,7 @@ public class RenameTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Set<Table> otherTableSet,
-                                Function<Integer, Id[]> idGenerator, Random random) {
+    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = getNewName(table.name(), random);
         return Collections.singleton(table.withName(newName));
     }
