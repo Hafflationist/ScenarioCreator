@@ -24,14 +24,14 @@ public final class StructuralDistanceMeasure {
     // Grötenteils gilt (S1 - Root) + (S2 - Root) = S1 - S2
     // Das Ziel müsste es sein nach der Kürzung des Id-Baums, analoge Operationen zu streichen, da sie sich ausgleichen.
 
-    public double calculateDistanceToRootRelative(Schema root, Schema schema) {
+    public static double calculateDistanceToRootRelative(Schema root, Schema schema) {
         var distanceAbsolute = calculateDistanceToRootAbsolute(root, schema);
         var rootSize = IdentificationNumberCalculator.getAllIds(root, true).count();
         var schemaSize = IdentificationNumberCalculator.getAllIds(schema, true).count();
         return (2.0 * distanceAbsolute) / (double)(rootSize + schemaSize);
     }
 
-    public int calculateDistanceToRootAbsolute(Schema root, Schema schema) {
+    public static int calculateDistanceToRootAbsolute(Schema root, Schema schema) {
         var rootIdSet = IdentificationNumberCalculator
                 .getAllIds(root, true)
                 .collect(Collectors.toSet());
@@ -53,12 +53,12 @@ public final class StructuralDistanceMeasure {
         var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
 
         var schemaPathMap = getIdPathSet(schema);
-        var modificationCount = schemaPathMap.values().stream().mapToInt(this::diffPath).sum();
+        var modificationCount = schemaPathMap.values().stream().mapToInt(StructuralDistanceMeasure::diffPath).sum();
 
         return modificationCount + dropCount + createCount;
     }
 
-    public Map<Id, List<Id>> getIdPathSet(Schema schema) {
+    public static Map<Id, List<Id>> getIdPathSet(Schema schema) {
         var rootId = schema.id();
         return IdentificationNumberCalculator
                 .getAllIds(schema, false)
@@ -81,11 +81,11 @@ public final class StructuralDistanceMeasure {
                         }));
     }
 
-    private Stream<Id> getIdPath(List<Column> columnList, Id id) {
+    private static Stream<Id> getIdPath(List<Column> columnList, Id id) {
         return getIdPathAcc(columnList, id, Stream.of());
     }
 
-    private Stream<Id> getIdPathAcc(List<Column> columnList, Id id, Stream<Id> acc) {
+    private static Stream<Id> getIdPathAcc(List<Column> columnList, Id id, Stream<Id> acc) {
         return columnList.stream()
                 .flatMap(column -> {
                     var newPath = StreamExtensions.prepend(acc, column.id());
@@ -100,12 +100,12 @@ public final class StructuralDistanceMeasure {
                 });
     }
 
-    private int diffPath(List<Id> path) {
-        var pathShortened = path.stream().map(this::shorten).toList();
-        return pathShortened.stream().mapToInt(this::diffId).sum();
+    private static int diffPath(List<Id> path) {
+        var pathShortened = path.stream().map(StructuralDistanceMeasure::shorten).toList();
+        return pathShortened.stream().mapToInt(StructuralDistanceMeasure::diffId).sum();
     }
 
-    private int diffId(Id id) {
+    private static int diffId(Id id) {
         // Eine ID ist nichts anderes als ein Baum.
         // Der Abstand zur Wurzel ist gegeben durch die Anzahl der Knoten des Id-Baums
         // Dies müsste die Anzahl der Operationen darstellen, die zur aktuellen Situation geführt haben.
@@ -116,7 +116,7 @@ public final class StructuralDistanceMeasure {
         };
     }
 
-    private Id shorten(Id id) {
+    private static Id shorten(Id id) {
         // TODO: Id kürzen/normalisieren
         return switch (id) {
             case IdSimple ids -> ids;   // unironisch

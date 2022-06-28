@@ -28,4 +28,8 @@ public record StringPlusSemantical(List<Pair<String, Set<Integer>>> tokenToSynse
         var tokenArray = tokenToSynsetId.stream().map(Pair::first).toArray(String[]::new);
         return LinguisticUtils.merge(namingConvention(), tokenArray);
     }
+
+    public StringPlusSemantical withTokenToSynsetId(List<Pair<String, Set<Integer>>> newTokenToSynsetId) {
+        return new StringPlusSemantical(newTokenToSynsetId, language, namingConvention);
+    }
 }
