@@ -1,15 +1,13 @@
 package de.mrobohm.operations.linguistic.helpers.biglingo;
 
+import de.mrobohm.data.primitives.synset.EnglishSynset;
+import de.mrobohm.data.primitives.synset.GermanSynset;
+import de.mrobohm.data.primitives.synset.GlobalSynset;
+import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import de.tuebingen.uni.sfs.germanet.api.GermaNet;
 import de.tuebingen.uni.sfs.germanet.api.IliRecord;
 import de.tuebingen.uni.sfs.germanet.api.SemRelMeasure;
 import de.tuebingen.uni.sfs.germanet.api.Synset;
-import edu.mit.jwi.item.POS;
-import edu.mit.jwi.item.SynsetID;
-import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
-import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
-import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
-import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -38,26 +36,26 @@ public class GermaNetInterface implements LanguageCorpus {
         System.out.println("Germanet loaded.");
     }
 
-    private static String interLingoRecordToString(InterLingoRecord interLingoRecord) {
-        var posString = switch (interLingoRecord.partOfSpeech()) {
+    private static String englishSynsetToString(EnglishSynset ess) {
+        var posString = switch (ess.partOfSpeech()) {
             case NOUN -> "n";
             case VERB -> "v";
             case ADJECTIVE -> "a";
         };
-        return ("eng30-" + String.format("%07d", interLingoRecord.num()) + "-" + posString).toLowerCase();
+        return ("eng30-" + String.format("%07d", ess.offset()) + "-" + posString).toLowerCase();
     }
 
-    private static InterLingoRecord stringToInterLingoRecord(String str) {
+    private static EnglishSynset stringToEnglishSynset(String str) {
         var strPartArray = str.split("-");
         assert strPartArray.length == 3 : "Invalid interlingorecord string!";
-        var num = Integer.parseInt(strPartArray[1]);
+        var offset = Integer.parseInt(strPartArray[1]);
         var pos = switch (strPartArray[2].toLowerCase()) {
-            case "n" -> InterLingoRecord.PartOfSpeech.NOUN;
-            case "v" -> InterLingoRecord.PartOfSpeech.VERB;
-            case "a" -> InterLingoRecord.PartOfSpeech.ADJECTIVE;
+            case "n" -> PartOfSpeech.NOUN;
+            case "v" -> PartOfSpeech.VERB;
+            case "a" -> PartOfSpeech.ADJECTIVE;
             default -> throw new IllegalStateException("Unexpected value: " + strPartArray[2].toLowerCase());
         };
-        return new InterLingoRecord(num, pos);
+        return new EnglishSynset(offset, pos);
     }
 
     public Set<String> getSynonymes(String word) {
@@ -65,17 +63,19 @@ public class GermaNetInterface implements LanguageCorpus {
         return synonymes.collect(Collectors.toSet());
     }
 
-    public Set<String> getSynonymes(Set<Integer> synsetIdSet) {
+    public Set<String> getSynonymes(Set<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
+                .filter(gss -> gss instanceof GermanSynset)
+                .map(gss -> (GermanSynset) gss)
                 .flatMap(synsetId -> _germanet
-                        .getSynsetByID(synsetId)
+                        .getSynsetByID(synsetId.id())
                         .getAllOrthForms()
                         .stream())
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
+    public Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet) {
         var possibleSynsets = _germanet.getSynsets(word);
         var otherSynsets = otherWordSet.stream()
                 .flatMap(w -> _germanet.getSynsets(w).stream())
@@ -88,6 +88,7 @@ public class GermaNetInterface implements LanguageCorpus {
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
                 .map(Synset::getId)
+                .map(GermanSynset::new)
                 .collect(Collectors.toSet());
     }
 
@@ -111,8 +112,8 @@ public class GermaNetInterface implements LanguageCorpus {
         }
     }
 
-    public Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord) {
-        var ilId = interLingoRecordToString(interLingoRecord);
+    public Set<String> englishSynsetRecord2Word(EnglishSynset ess) {
+        var ilId = englishSynsetToString(ess);
         return _germanet.getIliRecords().stream()
                 .filter(ili -> ili.getPwn30Id().toLowerCase().equals(ilId))
                 .findFirst()
@@ -123,23 +124,29 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet) {
+    public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
+                .filter(gss -> gss instanceof GermanSynset)
+                .map(gss -> ((GermanSynset) gss).id())
                 .map(_germanet::getSynsetByID)
                 .flatMap(ss -> ss.getIliRecords().stream())
                 .map(IliRecord::getPwn30Id)
-                .map(GermaNetInterface::stringToInterLingoRecord)
+                .map(GermaNetInterface::stringToEnglishSynset)
                 .collect(Collectors.toSet());
     }
 
-    public double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2) {
+    public double lowestSemanticDistance(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2) {
         try {
             var semanticUtils = _germanetFreq.getSemanticUtils();
             return synsetIdSet1.stream()
+                    .filter(gss -> gss instanceof GermanSynset)
+                    .map(gss -> ((GermanSynset) gss).id())
                     .map(_germanet::getSynsetByID)
                     .mapToDouble(synset1 -> synsetIdSet2.stream()
+                            .filter(gss -> gss instanceof GermanSynset)
+                            .map(gss -> ((GermanSynset) gss).id())
                             .map(_germanet::getSynsetByID)
-                            .mapToDouble(synset2 -> semanticUtils.getSimilarity(
+                            .mapToDouble(synset2 -> 1.0 - semanticUtils.getSimilarity(
                                     SEM_REL_MEASURE, synset1, synset2, 1
                             ))
                             .min()

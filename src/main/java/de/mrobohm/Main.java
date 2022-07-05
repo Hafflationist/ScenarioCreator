@@ -1,24 +1,25 @@
 package de.mrobohm;
 
 import de.mrobohm.data.Language;
+import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.operations.linguistic.helpers.biglingo.WordNetInterface;
 import de.mrobohm.preprocessing.SemanticSaturation;
+import de.mrobohm.utils.Pair;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Main {
 
-    private static void WriteRandomSchema(String path) {
+    private static void writeRandomSchema(String path) {
         var random = new Random();
         try {
             var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, new GermaNetInterface(), Language.English, new WordNetInterface()));
@@ -32,20 +33,20 @@ public class Main {
 
     }
 
-    private static void TestGermaNetInterface() {
+    private static void testGermaNetInterface() {
         try {
             var germaNetInterface = new GermaNetInterface();
 
-            var transWord = "gehen";
+            var transWord = "Hund";
             var synsetIdSet = germaNetInterface
                     .estimateSynset(transWord, Set.of())
-                    .stream().map(x -> Integer.toString(x))
+                    .stream().map(x -> Integer.toString(((GermanSynset) x).id()))
                     .collect(Collectors.toSet());
-            var pwnIds = new HashSet<>(germaNetInterface.word2InterLingoRecord(germaNetInterface.estimateSynset(transWord, Set.of())));
+            var pwnIds = new HashSet<>(germaNetInterface.word2EnglishSynset(germaNetInterface.estimateSynset(transWord, Set.of())));
             System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
             System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
             var reTranslation = pwnIds.stream()
-                    .flatMap(pwnId -> germaNetInterface.interLingoRecord2Word(pwnId).stream()).toList();
+                    .flatMap(pwnId -> germaNetInterface.englishSynsetRecord2Word(pwnId).stream()).toList();
             System.out.println("Rückübersetzungen von " + transWord + ":" + String.join(". ", reTranslation));
 
             //            var synsetIdSet1 = germaNetInterface
@@ -89,7 +90,7 @@ public class Main {
         }
     }
 
-    private static void TestWordNetInterface() {
+    private static void testWordNetInterface() {
         try {
             var wordNetInterface = new WordNetInterface();
             var synsetIdSet1 = wordNetInterface
@@ -133,7 +134,7 @@ public class Main {
         }
     }
 
-    private static void Equality() {
+    private static void equality() {
         var list1 = Set.of(1, 2, 3, 4);
         var list2 = Stream.of(2, 3, 4, 1).collect(Collectors.toSet());
 
@@ -147,16 +148,44 @@ public class Main {
 
         System.out.println("tr1 == tr2: " + (cr1 == cr2));
         System.out.println("tr1.equals(tr2): " + cr1.equals(cr2));
+    }
 
+    private static void testUnifiedLanguageCorpus() {
+        try {
+            var germaNetInterface = new GermaNetInterface();
+            var wordNetInterface = new WordNetInterface();
+            var ulc = new UnifiedLanguageCorpus(
+                    Map.of(Language.German, germaNetInterface, Language.English, wordNetInterface)
+            );
+            var w1 = new StringPlusNaked("Hund", Language.German);
+            var w2 = new StringPlusNaked("Katze", Language.German);
+            var w3 = new StringPlusNaked("Bank", Language.German);
+            var w4 = new StringPlusNaked("Dog", Language.English);
+            var w5 = new StringPlusNaked("Unsinnnnnnnnnn", Language.English);
+            semanticDiffMaxxing(List.of(w1, w2, w3, w4, w5), ulc);
+        } catch (XMLStreamException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void semanticDiffMaxxing(List<StringPlus> wordList, UnifiedLanguageCorpus ulc) {
+        wordList.stream()
+                .flatMap(w1 -> wordList.stream()
+                        .map(w2 -> new Pair<>(
+                                Stream.of(w1.rawString(), w2.rawString()).sorted().toList(),
+                                ulc.semanticDiff(w1, w2)
+                        )))
+                .distinct()
+                .forEach(System.out::println);
     }
 
 
     public static void main(String[] args) {
         var path = args[0];
-//        WriteRandomSchema(path);
-//        TestGermaNetInterface();
-//        TestWordNetInterface();
-//        Equality();
+//        writeRandomSchema(path);
+//        testGermaNetInterface();
+//        testWordNetInterface();
+        testUnifiedLanguageCorpus();
     }
 
     record TestRecord(int id, Set<Integer> things) {

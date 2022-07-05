@@ -1,5 +1,8 @@
 package de.mrobohm.operations.linguistic.helpers.biglingo;
 
+import de.mrobohm.data.primitives.synset.EnglishSynset;
+import de.mrobohm.data.primitives.synset.GlobalSynset;
+import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
@@ -28,6 +31,23 @@ public class WordNetInterface implements LanguageCorpus {
         _dict.open();
     }
 
+    private POS partOfSpeechToPos(PartOfSpeech pos) {
+        return switch (pos) {
+            case NOUN -> POS.NOUN;
+            case VERB -> POS.VERB;
+            case ADJECTIVE -> POS.ADJECTIVE;
+        };
+    }
+
+    private PartOfSpeech posToPartOfSpeech(POS pos) {
+        return switch (pos) {
+            case NOUN -> PartOfSpeech.NOUN;
+            case VERB -> PartOfSpeech.VERB;
+            case ADJECTIVE -> PartOfSpeech.ADJECTIVE;
+            case default -> throw new RuntimeException("Not implemented");
+        };
+    }
+
     public Set<String> getSynonymes(String wordStr) {
         var idxWord = _dict.getIndexWord(wordStr, POS.NOUN);
         return idxWord.getWordIDs().stream()
@@ -40,10 +60,12 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<String> getSynonymes(Set<Integer> synsetIdSet) {
+    public Set<String> getSynonymes(Set<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
-                .flatMap(synsetId -> _dict
-                        .getSynset(new SynsetID(synsetId, POS.NOUN))
+                .filter(gss -> gss instanceof EnglishSynset)
+                .map(gss -> (EnglishSynset) gss)
+                .flatMap(ess -> _dict
+                        .getSynset(new SynsetID(ess.offset(), partOfSpeechToPos(ess.partOfSpeech())))
                         .getWords().stream()
                         .map(IWord::getLemma)
                         .map(str -> str.replace("_", "")) // hot_dog -> hotdog
@@ -53,12 +75,11 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
+    public Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet) {
         // TODO: Diese Methode funktioniert zurzeit nicht richtig.
         if (_dict.getIndexWord(word, POS.NOUN) == null) {
             return Set.of();
         }
-
 
         var possibleSynsets = _dict
                 .getIndexWord(word, POS.NOUN)
@@ -81,7 +102,7 @@ public class WordNetInterface implements LanguageCorpus {
 
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
-                .map(ISynset::getOffset)
+                .map(ss -> new EnglishSynset(ss.getOffset(), posToPartOfSpeech(ss.getPOS())))
                 .collect(Collectors.toSet());
     }
 
@@ -99,53 +120,47 @@ public class WordNetInterface implements LanguageCorpus {
         var concept = new Concept(synset.toString());
         return otherSynsets.stream()
                 .map(ss -> new Concept(ss.toString()))
-                .mapToDouble(con -> 1 - relatednessCalculator.calcRelatednessOfSynsets(concept, con).getScore())
+                .mapToDouble(con -> 1.0 - relatednessCalculator.calcRelatednessOfSynsets(concept, con).getScore())
                 .average()
                 .orElse(2.0);
     }
 
     @Override
-    public Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord) {
-        var pos = switch (interLingoRecord.partOfSpeech()) {
-            case NOUN -> POS.NOUN;
-            case VERB -> POS.VERB;
-            case ADJECTIVE -> POS.ADJECTIVE;
-        };
-        return _dict.getSynset(new SynsetID(interLingoRecord.num(), pos)).getWords().stream()
+    public Set<String> englishSynsetRecord2Word(EnglishSynset ess) {
+        var pos = partOfSpeechToPos(ess.partOfSpeech());
+        return _dict.getSynset(new SynsetID(ess.offset(), pos)).getWords().stream()
                 .map(IWord::getLemma)
                 .collect(Collectors.toSet());
     }
 
     @Override
-    public Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet) {
-        return synsetIdSet.stream()
-                .map(ss -> new InterLingoRecord(ss, InterLingoRecord.PartOfSpeech.NOUN))
+    public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet) {
+        return gssSet.stream()
+                .filter(gss -> gss instanceof EnglishSynset)
+                .map(gss -> (EnglishSynset) gss)
                 .collect(Collectors.toSet());
     }
 
-    public double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2) {
-        var posSet = Set.of(POS.NOUN, POS.VERB, POS.ADJECTIVE);
+    public double lowestSemanticDistance(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         var db = new MITWordNet(_dict);
         var relatednessCalculator = new WuPalmer(db);   // Resulting values are normalized [0, 1]
         return synsetIdSet1.stream()
-                .mapToDouble(synsetIdNum1 -> synsetIdSet2.stream()
-                        .mapToDouble(synsetIdNum2 -> posSet.stream()
-                                .mapToDouble(pos1 -> posSet.stream()
-                                        .mapToDouble(pos2 -> {
-                                            var synset1 = _dict.getSynset(new SynsetID(synsetIdNum1, pos1));
-                                            var synset2 = _dict.getSynset(new SynsetID(synsetIdNum2, pos2));
-                                            return relatednessCalculator
-                                                    .calcRelatednessOfSynsets(
-                                                            new Concept(synset1.toString()),
-                                                            new Concept(synset2.toString()))
-                                                    .getScore();
-                                        })
-                                        .min()
-                                        .orElse(1.0))
-                                .min()
-                                .orElse(1.0))
+                .filter(gss -> gss instanceof EnglishSynset)
+                .map(gss -> (EnglishSynset) gss)
+                .mapToDouble(ess1 -> synsetIdSet2.stream()
+                        .filter(gss -> gss instanceof EnglishSynset)
+                        .map(gss -> (EnglishSynset) gss)
+                        .mapToDouble(ess2 -> {
+                            var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
+                            var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+                            return 1.0 - relatednessCalculator
+                                    .calcRelatednessOfSynsets(
+                                            new Concept(synsetId1.toString()),
+                                            new Concept(synsetId2.toString()))
+                                    .getScore();
+                        })
                         .min()
                         .orElse(1.0))
                 .min()

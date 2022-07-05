@@ -1,17 +1,20 @@
 package de.mrobohm.operations.linguistic.helpers.biglingo;
 
+import de.mrobohm.data.primitives.synset.EnglishSynset;
+import de.mrobohm.data.primitives.synset.GlobalSynset;
+
 import java.util.Set;
 
 public interface LanguageCorpus {
     Set<String> getSynonymes(String word);
 
-    Set<String> getSynonymes(Set<Integer> synsetIdSet);
+    Set<String> getSynonymes(Set<GlobalSynset> gssSet);
 
-    Set<Integer> estimateSynset(String word, Set<String> otherWordSet);
+    Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet);
 
-    Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord);
+    Set<String> englishSynsetRecord2Word(EnglishSynset ess);
 
-    Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet);
+    Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet);
 
-    double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2);
+    double lowestSemanticDistance(Set<GlobalSynset> gssSet1, Set<GlobalSynset> gssSet2);
 }

@@ -4,6 +4,8 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
+import de.mrobohm.data.primitives.synset.EnglishSynset;
+import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
@@ -60,7 +62,7 @@ public class UnifiedLanguageCorpus {
         return Optional.of(new StringPlusNaked(newWord, newLanguage));
     }
 
-    public Set<Integer> estimateSynsetId(String word, Set<String> context) {
+    public Set<GlobalSynset> estimateSynsetId(String word, Set<String> context) {
         return _corpora.keySet().stream()
                 .map(language -> new Pair<>(language, _corpora.get(language).estimateSynset(word, context)))
                 .max(Comparator.comparingInt(pair -> pair.second().size()))
@@ -68,7 +70,7 @@ public class UnifiedLanguageCorpus {
                 .orElse(Set.of());
     }
 
-    public Set<Set<Integer>> stringPlusToSynsetIdSet(StringPlus word) {
+    public Set<Set<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
         return switch (word) {
             case StringPlusSemantical sps -> sps.tokenToSynsetId().stream()
                     .map(Pair::second)
@@ -92,47 +94,46 @@ public class UnifiedLanguageCorpus {
         var corpus1 = _corpora.get(word1.language());
         var corpus2 = _corpora.get(word2.language());
 
-        var interLingoSetSet1 = synsetIdSetSet1.stream()
-                .map(corpus1::word2InterLingoRecord)
-                .map(interSet -> interSet.stream()
-                        .map(InterLingoRecord::num)
+        var gssSetSet1 = synsetIdSetSet1.stream()
+                .map(corpus1::word2EnglishSynset)
+                .map(essSet -> essSet.stream()
+                        .map(ess -> (GlobalSynset) ess)
                         .collect(Collectors.toSet()))
                 .collect(Collectors.toSet());
-        var interLingoSetSet2 = synsetIdSetSet2.stream()
-                .map(corpus2::word2InterLingoRecord)
-                .map(interSet -> interSet.stream()
-                        .map(InterLingoRecord::num)
+        var gssSetSet2 = synsetIdSetSet2.stream()
+                .map(corpus2::word2EnglishSynset)
+                .map(essSet -> essSet.stream()
+                        .map(ess -> (GlobalSynset) ess)
                         .collect(Collectors.toSet()))
                 .collect(Collectors.toSet());
-        var rawDist = semanticDiffInner(interLingoSetSet1, interLingoSetSet2, Language.English);
+        var rawDist = semanticDiffInner(gssSetSet1, gssSetSet2, Language.English);
         return Math.sqrt(rawDist) * 0.8 + 0.2; // so schlau
-
     }
 
-    private double semanticDiffInner(Set<Set<Integer>> synsetIdSetSet1,
-                                     Set<Set<Integer>> synsetIdSetSet2,
+    private double semanticDiffInner(Set<Set<GlobalSynset>> gssSetSet1,
+                                     Set<Set<GlobalSynset>> gssSetSet2,
                                      Language language) {
         // Wir müssten jetzt die Namen in ihrer tokenisierten Form haben und müssen die semantische Ähnlichkeit bestimmen.
         // Ansatz: Man schaut sich bei jedem Token an, mit welchen Token vom anderen Wort er am besten passt.
         //         Ich muss die KIS-Folien studieren -> monge-elkan distance
-        var diffA = mongeElkanDiff(synsetIdSetSet1, synsetIdSetSet2, language);
-        var diffB = mongeElkanDiff(synsetIdSetSet2, synsetIdSetSet1, language);
+        var diffA = mongeElkanDiff(gssSetSet1, gssSetSet2, language);
+        var diffB = mongeElkanDiff(gssSetSet2, gssSetSet1, language);
         return (diffA + diffB) / 2.0;
     }
 
-    private double mongeElkanDiff(Set<Set<Integer>> synsetIdSetSet1,
-                                  Set<Set<Integer>> synsetIdSetSet2,
+    private double mongeElkanDiff(Set<Set<GlobalSynset>> gssSetSet1,
+                                  Set<Set<GlobalSynset>> gssSetSet2,
                                   Language language) {
-        return synsetIdSetSet1.stream()
-                .mapToDouble(synsetIdSet1 -> synsetIdSetSet2.stream()
-                        .mapToDouble(synsetIdSet2 -> semanticDiff(synsetIdSet1, synsetIdSet2, language))
+        return gssSetSet1.stream()
+                .mapToDouble(gssSet1 -> gssSetSet2.stream()
+                        .mapToDouble(gssSet2 -> semanticDiff(gssSet1, gssSet2, language))
                         .min()
                         .orElse(1.0))
                 .average() // vllt doch Summe?
                 .orElse(1.0);
     }
 
-    private double semanticDiff(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2, Language language) {
+    private double semanticDiff(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2, Language language) {
         return _corpora.get(language).lowestSemanticDistance(synsetIdSet1, synsetIdSet2);
     }
 
