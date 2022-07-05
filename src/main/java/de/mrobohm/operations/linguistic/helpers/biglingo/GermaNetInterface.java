@@ -4,6 +4,12 @@ import de.tuebingen.uni.sfs.germanet.api.GermaNet;
 import de.tuebingen.uni.sfs.germanet.api.IliRecord;
 import de.tuebingen.uni.sfs.germanet.api.SemRelMeasure;
 import de.tuebingen.uni.sfs.germanet.api.Synset;
+import edu.mit.jwi.item.POS;
+import edu.mit.jwi.item.SynsetID;
+import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
+import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
+import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
@@ -15,6 +21,7 @@ import java.util.stream.Collectors;
 
 public class GermaNetInterface implements LanguageCorpus {
 
+    private static final SemRelMeasure SEM_REL_MEASURE = SemRelMeasure.WuAndPalmer;
     private static final String GERMANET_FOLDER = "src/main/resources/germanet/";
     private final GermaNet _germanet;
     private final GermaNet _germanetFreq;
@@ -69,10 +76,10 @@ public class GermaNetInterface implements LanguageCorpus {
 
     @Override
     public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
+        var possibleSynsets = _germanet.getSynsets(word);
         var otherSynsets = otherWordSet.stream()
                 .flatMap(w -> _germanet.getSynsets(w).stream())
                 .collect(Collectors.toSet());
-        var possibleSynsets = _germanet.getSynsets(word);
 
         var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
         var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
@@ -95,7 +102,7 @@ public class GermaNetInterface implements LanguageCorpus {
             var semanticUtils = _germanetFreq.getSemanticUtils();
             return otherSynsets.stream()
                     .mapToDouble(ss -> 1 - Optional
-                            .ofNullable(semanticUtils.getSimilarity(SemRelMeasure.WuAndPalmer, synset, ss, 1))
+                            .ofNullable(semanticUtils.getSimilarity(SEM_REL_MEASURE, synset, ss, 1))
                             .orElse(0.0))
                     .average()
                     .orElse(2.0);
@@ -116,12 +123,31 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<InterLingoRecord> word2InterLingoRecord(String word, Set<String> context) {
-        return estimateSynset(word, context).stream()
+    public Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet) {
+        return synsetIdSet.stream()
                 .map(_germanet::getSynsetByID)
                 .flatMap(ss -> ss.getIliRecords().stream())
                 .map(IliRecord::getPwn30Id)
                 .map(GermaNetInterface::stringToInterLingoRecord)
                 .collect(Collectors.toSet());
+    }
+
+    public double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2) {
+        try {
+            var semanticUtils = _germanetFreq.getSemanticUtils();
+            return synsetIdSet1.stream()
+                    .map(_germanet::getSynsetByID)
+                    .mapToDouble(synset1 -> synsetIdSet2.stream()
+                            .map(_germanet::getSynsetByID)
+                            .mapToDouble(synset2 -> semanticUtils.getSimilarity(
+                                    SEM_REL_MEASURE, synset1, synset2, 1
+                            ))
+                            .min()
+                            .orElse(1.0))
+                    .min()
+                    .orElse(1.0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

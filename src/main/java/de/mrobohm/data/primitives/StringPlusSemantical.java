@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 
-
+// Eigentlich müsste man das mal so machen, dass jedes Token eine eigene Sprache haben kann.
+// Dies hat mEn ein zu hohen Aufwand/Außenwirkung-Verhätltnis.
 public record StringPlusSemantical(List<Pair<String, Set<Integer>>> tokenToSynsetId,
                                    Language language,
                                    NamingConvention namingConvention) implements StringPlus {

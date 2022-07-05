@@ -41,7 +41,7 @@ public class Main {
                     .estimateSynset(transWord, Set.of())
                     .stream().map(x -> Integer.toString(x))
                     .collect(Collectors.toSet());
-            var pwnIds = new HashSet<>(germaNetInterface.word2InterLingoRecord(transWord, Set.of()));
+            var pwnIds = new HashSet<>(germaNetInterface.word2InterLingoRecord(germaNetInterface.estimateSynset(transWord, Set.of())));
             System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
             System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
             var reTranslation = pwnIds.stream()

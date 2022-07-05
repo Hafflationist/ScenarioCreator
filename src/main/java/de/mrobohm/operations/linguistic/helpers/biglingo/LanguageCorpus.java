@@ -11,5 +11,7 @@ public interface LanguageCorpus {
 
     Set<String> interLingoRecord2Word(InterLingoRecord interLingoRecord);
 
-    Set<InterLingoRecord> word2InterLingoRecord(String word, Set<String> context);
+    Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet);
+
+    double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2);
 }

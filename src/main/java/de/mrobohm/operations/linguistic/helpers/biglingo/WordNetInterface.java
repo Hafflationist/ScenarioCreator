@@ -3,11 +3,9 @@ package de.mrobohm.operations.linguistic.helpers.biglingo;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
-import edu.mit.jwi.item.ISynset;
-import edu.mit.jwi.item.IWord;
-import edu.mit.jwi.item.POS;
-import edu.mit.jwi.item.SynsetID;
+import edu.mit.jwi.item.*;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
+import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
@@ -57,16 +55,16 @@ public class WordNetInterface implements LanguageCorpus {
     @Override
     public Set<Integer> estimateSynset(String word, Set<String> otherWordSet) {
         // TODO: Diese Methode funktioniert zurzeit nicht richtig.
-        // Weshalb man nicht zwischen Synsets die semantische Ähnlichkeit bestimmen kann, verstehen ich nicht.
         if (_dict.getIndexWord(word, POS.NOUN) == null) {
             return Set.of();
         }
+
 
         var possibleSynsets = _dict
                 .getIndexWord(word, POS.NOUN)
                 .getWordIDs().stream()
                 .map(_dict::getWord)
-                .map(IWord::getLemma)
+                .map(IWord::getSynset)
                 .collect(Collectors.toSet());
         var otherSynsets = otherWordSet.stream()
                 .filter(w -> _dict.getIndexWord(w, POS.NOUN) != null)
@@ -74,7 +72,7 @@ public class WordNetInterface implements LanguageCorpus {
                         .getIndexWord(w, POS.NOUN)
                         .getWordIDs().stream()
                         .map(_dict::getWord)
-                        .map(IWord::getLemma))
+                        .map(IWord::getSynset))
                 .collect(Collectors.toSet());
 
         var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
@@ -83,28 +81,25 @@ public class WordNetInterface implements LanguageCorpus {
 
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
-                .flatMap(w -> _dict
-                        .getIndexWord(w, POS.NOUN)
-                        .getWordIDs().stream())
-                .map(_dict::getWord)
-                .map(IWord::getSynset)
                 .map(ISynset::getOffset)
                 .collect(Collectors.toSet());
     }
 
-    private double avgDistance(String synset, Set<String> otherSynsets, double min, double max) {
+    private double avgDistance(ISynset synset, Set<ISynset> otherSynsets, double min, double max) {
         return (min != max)
                 ? (avgDistance(synset, otherSynsets) - min) / (max - min)
                 : 0.0;
     }
 
-    private double avgDistance(String synset, Set<String> otherSynsets) {
+    private double avgDistance(ISynset synset, Set<ISynset> otherSynsets) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         var db = new MITWordNet(_dict);
-        var relatednessCalculator = new WuPalmer(db);
+        var relatednessCalculator = new WuPalmer(db);   // Resulting values are normalized [0, 1]
+        var concept = new Concept(synset.toString());
         return otherSynsets.stream()
-                .mapToDouble(ss -> 1 - relatednessCalculator.calcRelatednessOfWords(synset, ss))
+                .map(ss -> new Concept(ss.toString()))
+                .mapToDouble(con -> 1 - relatednessCalculator.calcRelatednessOfSynsets(concept, con).getScore())
                 .average()
                 .orElse(2.0);
     }
@@ -122,9 +117,38 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<InterLingoRecord> word2InterLingoRecord(String word, Set<String> context) {
-        return estimateSynset(word, context).stream()
+    public Set<InterLingoRecord> word2InterLingoRecord(Set<Integer> synsetIdSet) {
+        return synsetIdSet.stream()
                 .map(ss -> new InterLingoRecord(ss, InterLingoRecord.PartOfSpeech.NOUN))
                 .collect(Collectors.toSet());
+    }
+
+    public double lowestSemanticDistance(Set<Integer> synsetIdSet1, Set<Integer> synsetIdSet2) {
+        var posSet = Set.of(POS.NOUN, POS.VERB, POS.ADJECTIVE);
+        WS4JConfiguration.getInstance().setMemoryDB(false);
+        WS4JConfiguration.getInstance().setMFS(true);
+        var db = new MITWordNet(_dict);
+        var relatednessCalculator = new WuPalmer(db);   // Resulting values are normalized [0, 1]
+        return synsetIdSet1.stream()
+                .mapToDouble(synsetIdNum1 -> synsetIdSet2.stream()
+                        .mapToDouble(synsetIdNum2 -> posSet.stream()
+                                .mapToDouble(pos1 -> posSet.stream()
+                                        .mapToDouble(pos2 -> {
+                                            var synset1 = _dict.getSynset(new SynsetID(synsetIdNum1, pos1));
+                                            var synset2 = _dict.getSynset(new SynsetID(synsetIdNum2, pos2));
+                                            return relatednessCalculator
+                                                    .calcRelatednessOfSynsets(
+                                                            new Concept(synset1.toString()),
+                                                            new Concept(synset2.toString()))
+                                                    .getScore();
+                                        })
+                                        .min()
+                                        .orElse(1.0))
+                                .min()
+                                .orElse(1.0))
+                        .min()
+                        .orElse(1.0))
+                .min()
+                .orElse(1.0);
     }
 }
