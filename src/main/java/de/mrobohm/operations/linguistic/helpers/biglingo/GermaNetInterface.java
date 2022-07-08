@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 
 public class GermaNetInterface implements LanguageCorpus {
 
-    private static final SemRelMeasure SEM_REL_MEASURE = SemRelMeasure.WuAndPalmer;
+    private static final SemRelMeasure SEM_REL_MEASURE = SemRelMeasure.Lin;
     private static final String GERMANET_FOLDER = "src/main/resources/germanet/";
     private final GermaNet _germanet;
     private final GermaNet _germanetFreq;

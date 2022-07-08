@@ -6,7 +6,10 @@ import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
-import edu.mit.jwi.item.*;
+import edu.mit.jwi.item.ISynset;
+import edu.mit.jwi.item.IWord;
+import edu.mit.jwi.item.POS;
+import edu.mit.jwi.item.SynsetID;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
@@ -155,6 +158,8 @@ public class WordNetInterface implements LanguageCorpus {
                         .mapToDouble(ess2 -> {
                             var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
                             var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+                            assert synsetId1.getPOS() != null;
+                            assert synsetId2.getPOS() != null;
                             return 1.0 - relatednessCalculator
                                     .calcRelatednessOfSynsets(
                                             new Concept(synsetId1.toString()),
