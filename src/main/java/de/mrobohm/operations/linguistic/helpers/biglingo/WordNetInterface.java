@@ -159,10 +159,12 @@ public class WordNetInterface implements LanguageCorpus {
                         .mapToDouble(ess2 -> {
                             var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
                             var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+                            var pos1 = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId1.toString().toLowerCase().charAt(13));
+                            var pos2 = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId2.toString().toLowerCase().charAt(13));
                             var relatedness = relatednessCalculator
                                     .calcRelatednessOfSynsets(
-                                            new Concept(synsetId1.toString(), edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId1.toString().toLowerCase().charAt(13))),
-                                            new Concept(synsetId2.toString(), edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId2.toString().toLowerCase().charAt(13))))
+                                            new Concept(synsetId1.toString(), pos1),
+                                            new Concept(synsetId2.toString(), pos2))
                                     .getScore();
                             if (relatedness > 1.0) {
                                 System.out.println(synsetId1);
