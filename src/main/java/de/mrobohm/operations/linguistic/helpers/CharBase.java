@@ -3,7 +3,7 @@ package de.mrobohm.operations.linguistic.helpers;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
-import de.mrobohm.utils.Pair;
+import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.Random;
@@ -16,15 +16,17 @@ public final class CharBase {
         return switch (cleanString) {
             case StringPlusNaked spn -> spn.withRawString(introduceTypo(spn.rawString(), random));
             case StringPlusSemantical sps -> {
-                var chosenPairOpt = StreamExtensions
-                        .tryPickRandom(sps.tokenToSynsetId().stream(), random);
-                if (chosenPairOpt.isEmpty()) {
+                var chosenSegmentOpt = StreamExtensions
+                        .tryPickRandom(sps.segmentList().stream(), random);
+                if (chosenSegmentOpt.isEmpty()) {
                     yield sps;
                 }
-                var chosenPair = chosenPairOpt.get();
-                var newPair = new Pair<>(introduceTypo(chosenPair.first(), random), chosenPair.second());
+                var chosenSegment = chosenSegmentOpt.get();
+                var newSegment = new StringPlusSemanticalSegment(
+                        introduceTypo(chosenSegment.token(), random), chosenSegment.gssSet()
+                );
                 var newTokenToSynsetId = StreamExtensions
-                        .replaceInStream(sps.tokenToSynsetId().stream(), chosenPair, newPair)
+                        .replaceInStream(sps.segmentList().stream(), chosenSegment, newSegment)
                         .toList();
                 yield sps.withTokenToSynsetId(newTokenToSynsetId);
             }

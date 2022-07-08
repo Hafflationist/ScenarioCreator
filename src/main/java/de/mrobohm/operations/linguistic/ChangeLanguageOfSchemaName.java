@@ -1,6 +1,5 @@
 package de.mrobohm.operations.linguistic;
 
-import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
 import de.mrobohm.operations.SchemaTransformation;
 import de.mrobohm.operations.exceptions.TransformationCouldNotBeExecutedException;
@@ -11,6 +10,12 @@ import java.util.Random;
 
 public class ChangeLanguageOfSchemaName implements SchemaTransformation {
 
+    private final Translation _translation;
+    public ChangeLanguageOfSchemaName(Translation translation) {
+        _translation = translation;
+    }
+
+
     @Override
     public boolean conservesFlatRelations() {
         return true;
@@ -19,17 +24,15 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        if (schema.name().language() == Language.Technical) {
+        if (isExecutable(schema)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = Translation.translate(schema.name(), random);
+        var newName = _translation.translate(schema.name(), random);
         return schema.withName(newName);
     }
 
     @Override
     public boolean isExecutable(Schema schema) {
-        var lang = schema.name().language();
-        return !lang.equals(Language.Technical)
-                && !lang.equals(Language.Mixed);
+        return _translation.canBeTranslated(schema.name());
     }
 }

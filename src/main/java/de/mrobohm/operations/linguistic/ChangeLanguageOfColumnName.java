@@ -1,8 +1,6 @@
 package de.mrobohm.operations.linguistic;
 
-import de.mrobohm.data.Language;
 import de.mrobohm.data.column.nesting.Column;
-import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
@@ -17,6 +15,11 @@ import java.util.function.Function;
 
 public class ChangeLanguageOfColumnName implements ColumnTransformation {
 
+    private final Translation _translation;
+    public ChangeLanguageOfColumnName(Translation translation) {
+        _translation = translation;
+    }
+
     @Override
     public boolean conservesFlatRelations() {
         return true;
@@ -28,7 +31,7 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
         if (!canBeTranslated(column)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = Translation.translate(column.name(), random);
+        var newName = _translation.translate(column.name(), random);
         return switch (column) {
             case ColumnLeaf c -> List.of(c.withName(newName));
             case ColumnNode c -> List.of(c.withName(newName));
@@ -43,10 +46,6 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
     }
 
     private boolean canBeTranslated(Column column) {
-        return switch (column) {
-            case ColumnCollection ignore -> false;
-            case ColumnNode node -> node.name().language() != Language.Technical;
-            case ColumnLeaf leaf -> leaf.name().language() != Language.Technical;
-        };
+        return _translation.canBeTranslated(column.name());
     }
 }

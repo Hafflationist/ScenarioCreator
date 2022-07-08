@@ -1,6 +1,5 @@
 package de.mrobohm.operations.linguistic;
 
-import de.mrobohm.data.Language;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.TableTransformation;
@@ -15,6 +14,12 @@ import java.util.stream.Collectors;
 
 public class ChangeLanguageOfTableName implements TableTransformation {
 
+    private final Translation _translation;
+    public ChangeLanguageOfTableName(Translation translation) {
+        _translation = translation;
+    }
+
+
     @Override
     public boolean conservesFlatRelations() {
         return true;
@@ -26,7 +31,7 @@ public class ChangeLanguageOfTableName implements TableTransformation {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = Translation.translate(table.name(), random);
+        var newName = _translation.translate(table.name(), random);
         return Set.of(table.withName(newName));
     }
 
@@ -37,6 +42,6 @@ public class ChangeLanguageOfTableName implements TableTransformation {
     }
 
     private boolean canBeTranslated(Table table) {
-        return table.name().language() != Language.Technical;
+        return _translation.canBeTranslated(table.name());
     }
 }

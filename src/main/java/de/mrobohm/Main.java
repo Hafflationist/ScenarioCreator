@@ -46,9 +46,6 @@ public class Main {
             var pwnIds = new HashSet<>(germaNetInterface.word2EnglishSynset(germaNetInterface.estimateSynset(transWord, Set.of())));
             System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
             System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
-            var reTranslation = pwnIds.stream()
-                    .flatMap(pwnId -> germaNetInterface.englishSynsetRecord2Word(pwnId).stream()).toList();
-            System.out.println("Rückübersetzungen von " + transWord + ":" + String.join(". ", reTranslation));
 
             //            var synsetIdSet1 = germaNetInterface
 //                    .estimateSynset("Bank", Set.of("Institut", "Datum", "Id", "hfuzd89we"));

@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class WordNetInterface implements LanguageCorpus {
@@ -130,11 +132,14 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Set<String> englishSynsetRecord2Word(EnglishSynset ess) {
+    public Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
         var pos = partOfSpeechToPos(ess.partOfSpeech());
         return _dict.getSynset(new SynsetID(ess.offset(), pos)).getWords().stream()
                 .map(IWord::getLemma)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        ignore -> Set.of(ess)
+                ));
     }
 
     @Override

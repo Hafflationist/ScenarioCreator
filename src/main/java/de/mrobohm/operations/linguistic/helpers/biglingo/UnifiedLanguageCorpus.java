@@ -4,7 +4,7 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
-import de.mrobohm.data.primitives.synset.EnglishSynset;
+import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
@@ -12,6 +12,8 @@ import de.mrobohm.utils.StreamExtensions;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 public class UnifiedLanguageCorpus {
 
@@ -72,8 +74,8 @@ public class UnifiedLanguageCorpus {
 
     public Set<Set<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
         return switch (word) {
-            case StringPlusSemantical sps -> sps.tokenToSynsetId().stream()
-                    .map(Pair::second)
+            case StringPlusSemantical sps -> sps.segmentList().stream()
+                    .map(StringPlusSemanticalSegment::gssSet)
                     .collect(Collectors.toSet());
             case StringPlusNaked spn -> Set.of(_corpora
                     .get(spn.language())
@@ -137,4 +139,23 @@ public class UnifiedLanguageCorpus {
         return _corpora.get(language).lowestSemanticDistance(synsetIdSet1, synsetIdSet2);
     }
 
+    public Set<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {
+        assert _corpora.containsKey(targetLanguage) : "missing support for language!";
+
+        var validGssMap = segment.gssSet().stream()
+                .filter(gss -> gss.language() != targetLanguage)
+                .collect(groupingBy(GlobalSynset::language));
+
+        assert !validGssMap.values().isEmpty() : "gss already in target language!";
+
+        return validGssMap.keySet().stream()
+                .flatMap(lang -> {
+                    var gssSet = new HashSet<>(validGssMap.get(lang));
+                    return _corpora.get(lang).word2EnglishSynset(gssSet).stream();
+                })
+                .map(_corpora.get(targetLanguage)::englishSynsetRecord2Word)
+                .flatMap(translation -> translation.keySet().stream()
+                        .map(orthForm -> new StringPlusSemanticalSegment(orthForm, translation.get(orthForm))))
+                .collect(Collectors.toSet());
+    }
 }

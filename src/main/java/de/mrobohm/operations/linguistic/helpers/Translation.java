@@ -3,17 +3,33 @@ package de.mrobohm.operations.linguistic.helpers;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.data.primitives.StringPlusSemantical;
+import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
+import java.util.Set;
 
-public final class Translation {
+public class Translation {
 
-    private Translation() {
+    private final UnifiedLanguageCorpus _corpus;
+    public Translation(UnifiedLanguageCorpus corpus) {
+        _corpus = corpus;
     }
 
     @NotNull
-    public static StringPlus translate(StringPlus name, Random random) {
+    public StringPlus translate(StringPlus name, Random random) {
+        return switch(name) {
+            case StringPlusNaked spn -> translateNaked(spn, random);
+            case StringPlusSemantical sps -> {
+                // TODO: Implement me!
+                throw new RuntimeException("implement me!");
+            }
+        };
+    }
+
+    @NotNull
+    private StringPlus translateNaked(StringPlusNaked name, Random random) {
         return switch (name.language()) {
             case English:
                 var germanRawString = translate(name.rawString(), Language.German, random);
@@ -37,8 +53,15 @@ public final class Translation {
     }
 
     @NotNull
-    public static String translate(String string, Language targetLanguage, Random random) {
+    public String translate(String string, Language targetLanguage, Random random) {
         // TODO: Use a lib
         return string;
+    }
+
+    public boolean canBeTranslated(StringPlus stringPlus) {
+        return switch (stringPlus) {
+            case StringPlusNaked spn -> ! Set.of(Language.Mixed, Language.Technical).contains(spn.language());
+            case StringPlusSemantical sps -> sps.language() != Language.Technical;
+        };
     }
 }
