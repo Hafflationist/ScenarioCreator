@@ -4,6 +4,7 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.synset.GermanSynset;
+import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
@@ -163,7 +164,7 @@ public class Main {
             var w4 = new StringPlusNaked("Dog", Language.English);
             var w5 = new StringPlusNaked("Unsinnnnnnnnnn", Language.English);
             semanticDiffMaxxing(List.of(w1, w2, w3, w4, w5), ulc);
-        } catch (XMLStreamException | IOException e) {
+        } catch (IOException | XMLStreamException e) {
             throw new RuntimeException(e);
         }
     }
@@ -173,8 +174,11 @@ public class Main {
                 .flatMap(w1 -> wordList.stream()
                         .map(w2 -> new Pair<>(
                                 Stream.of(w1.rawString(), w2.rawString()).sorted().toList(),
-                                ulc.semanticDiff(w1, w2)
-                        )))
+//                                StringDistances.levenshteinNorm(w1.rawString(), w2.rawString())
+//                                ulc.semanticDiff(w1, w2)
+                                Math.min(ulc.semanticDiff(w1, w2), StringDistances.levenshteinNorm(w1.rawString(), w2.rawString()))
+                        ))
+                )
                 .distinct()
                 .forEach(System.out::println);
     }

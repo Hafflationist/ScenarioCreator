@@ -12,6 +12,7 @@ import edu.mit.jwi.item.POS;
 import edu.mit.jwi.item.SynsetID;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
+import edu.uniba.di.lacam.kdde.ws4j.similarity.Lin;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.WuPalmer;
 import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 
@@ -148,7 +149,7 @@ public class WordNetInterface implements LanguageCorpus {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         var db = new MITWordNet(_dict);
-        var relatednessCalculator = new WuPalmer(db);   // Resulting values are normalized [0, 1]
+        var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
         return synsetIdSet1.stream()
                 .filter(gss -> gss instanceof EnglishSynset)
                 .map(gss -> (EnglishSynset) gss)
@@ -158,13 +159,18 @@ public class WordNetInterface implements LanguageCorpus {
                         .mapToDouble(ess2 -> {
                             var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
                             var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
-                            assert synsetId1.getPOS() != null;
-                            assert synsetId2.getPOS() != null;
-                            return 1.0 - relatednessCalculator
+                            var relatedness = relatednessCalculator
                                     .calcRelatednessOfSynsets(
-                                            new Concept(synsetId1.toString()),
-                                            new Concept(synsetId2.toString()))
+                                            new Concept(synsetId1.toString(), edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId1.toString().toLowerCase().charAt(13))),
+                                            new Concept(synsetId2.toString(), edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId2.toString().toLowerCase().charAt(13))))
                                     .getScore();
+                            if (relatedness > 1.0) {
+                                System.out.println(synsetId1);
+                                System.out.println(synsetId2);
+                            }
+                            assert 0.0 <= relatedness;
+                            assert relatedness <= 1.0;
+                            return 1.0 - relatedness;
                         })
                         .min()
                         .orElse(1.0))
