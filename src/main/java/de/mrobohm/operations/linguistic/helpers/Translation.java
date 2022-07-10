@@ -4,26 +4,68 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
+import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
+import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
 public class Translation {
 
     private final UnifiedLanguageCorpus _corpus;
+
     public Translation(UnifiedLanguageCorpus corpus) {
         _corpus = corpus;
     }
 
+    private Language chooseDifferentLanguage(Language exception, Random random) {
+        var rte = new RuntimeException("Fatal error! Not enough languages defined!");
+        var newLanguage = StreamExtensions.pickRandomOrThrow(Arrays.stream(Language.values()), rte, random);
+        if (newLanguage.equals(exception)) {
+            return chooseDifferentLanguage(exception, random);
+        }
+        return newLanguage;
+    }
+
+    @NotNull
+    private Optional<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Random random) {
+        if (segment.gssSet().isEmpty()) {
+            return Optional.empty();
+        }
+        var rte = new RuntimeException("Should not happen.");
+        var chosenGss = StreamExtensions.pickRandomOrThrow(segment.gssSet().stream(), rte, random);
+        var targetLanguage = chooseDifferentLanguage(chosenGss.language(), random);
+        var translationPossibilitySet = _corpus.translate(segment, targetLanguage);
+        return StreamExtensions.tryPickRandom(translationPossibilitySet.stream(), random);
+    }
+
     @NotNull
     public StringPlus translate(StringPlus name, Random random) {
-        return switch(name) {
+        return switch (name) {
             case StringPlusNaked spn -> translateNaked(spn, random);
             case StringPlusSemantical sps -> {
-                // TODO: Implement me!
-                throw new RuntimeException("implement me!");
+                var rte = new RuntimeException("StringPlus without segments are invalid");
+                var validSegmentStream = sps.segmentList().stream()
+                        .filter(segment -> segment.gssSet().size() > 0
+                                && !segment.gssSet().stream()
+                                .map(GlobalSynset::language)
+                                .allMatch(Set.of(Language.Mixed, Language.Technical)::contains));
+                var chosenSegment = StreamExtensions.pickRandomOrThrow(
+                        validSegmentStream, rte, random
+                );
+                var newSegmentOpt = translate(chosenSegment, random);
+                if (newSegmentOpt.isEmpty()) {
+                    throw new RuntimeException("StringPlus without valid segments! This should be prevented by <canBeTranslated>");
+                }
+                var newSegmentList = StreamExtensions.replaceInStream(
+                        sps.segmentList().stream(), chosenSegment, newSegmentOpt.get()
+                ).toList();
+                yield sps.withSegmentList(newSegmentList);
             }
         };
     }
@@ -60,7 +102,7 @@ public class Translation {
 
     public boolean canBeTranslated(StringPlus stringPlus) {
         return switch (stringPlus) {
-            case StringPlusNaked spn -> ! Set.of(Language.Mixed, Language.Technical).contains(spn.language());
+            case StringPlusNaked spn -> !Set.of(Language.Mixed, Language.Technical).contains(spn.language());
             case StringPlusSemantical sps -> sps.language() != Language.Technical;
         };
     }

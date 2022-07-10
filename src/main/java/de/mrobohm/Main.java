@@ -1,11 +1,14 @@
 package de.mrobohm;
 
 import de.mrobohm.data.Language;
+import de.mrobohm.data.primitives.NamingConvention;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
+import de.mrobohm.operations.linguistic.helpers.Translation;
 import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.operations.linguistic.helpers.biglingo.WordNetInterface;
@@ -180,13 +183,28 @@ public class Main {
                 .forEach(System.out::println);
     }
 
+    private static void testTranslation(){
+        try {
+            var germaNetInterface = new GermaNetInterface();
+            var wordNetInterface = new WordNetInterface();
+            var ulc = new UnifiedLanguageCorpus(
+                    Map.of(Language.German, germaNetInterface, Language.English, wordNetInterface)
+            );
+            var translation = new Translation(ulc);
+            var stringPlus = new StringPlusSemantical(List.of(), NamingConvention.CAMELCASE);
+        }
+        catch (IOException | XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void main(String[] args) {
         var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
-        testUnifiedLanguageCorpus();
+//        testUnifiedLanguageCorpus();
+        testTranslation();
     }
 
     record TestRecord(int id, Set<Integer> things) {

@@ -28,7 +28,7 @@ public final class CharBase {
                 var newTokenToSynsetId = StreamExtensions
                         .replaceInStream(sps.segmentList().stream(), chosenSegment, newSegment)
                         .toList();
-                yield sps.withTokenToSynsetId(newTokenToSynsetId);
+                yield sps.withSegmentList(newTokenToSynsetId);
             }
         };
     }
