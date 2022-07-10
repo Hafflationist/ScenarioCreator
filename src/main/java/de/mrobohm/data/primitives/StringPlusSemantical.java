@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 // Eigentlich müsste man das mal so machen, dass jedes Token eine eigene Sprache haben kann.
 // Dies hat mEn ein zu hohen Aufwand/Außenwirkung-Verhätltnis.
 public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList,
-                                   Language language, // TODO: Calculate based on synsets
                                    NamingConvention namingConvention) implements StringPlus {
 
     @Override
@@ -39,7 +38,7 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
                 .map(token -> new StringPlusSemanticalSegment(token, synsetFinder.apply(token)))
                 .toList();
 
-        return new StringPlusSemantical(segmentList, stringPlus.language(), nc);
+        return new StringPlusSemantical(segmentList, nc);
     }
 
     @Override
@@ -48,7 +47,7 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
         return LinguisticUtils.merge(namingConvention(), tokenArray);
     }
 
-    public StringPlusSemantical withTokenToSynsetId(List<StringPlusSemanticalSegment> newSegmentList) {
-        return new StringPlusSemantical(newSegmentList, language, namingConvention);
+    public StringPlusSemantical withSegmentList(List<StringPlusSemanticalSegment> newSegmentList) {
+        return new StringPlusSemantical(newSegmentList, namingConvention);
     }
 }
