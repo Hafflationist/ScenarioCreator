@@ -46,9 +46,16 @@ public class Translation {
     }
 
     @NotNull
-    public StringPlus translate(StringPlus name, Random random) {
+    public Optional<StringPlus> translate(StringPlus name, Random random) {
+        return translateInner(name, random, 0, 10);
+    }
+
+    public Optional<StringPlus> translateInner(StringPlus name, Random random, int acc, int max) {
+        if (acc == max){
+            return Optional.empty();
+        }
         return switch (name) {
-            case StringPlusNaked spn -> translateNaked(spn, random);
+            case StringPlusNaked spn -> Optional.of(translateNaked(spn, random));
             case StringPlusSemantical sps -> {
                 var rte = new RuntimeException("StringPlus without segments are invalid");
                 var validSegmentStream = sps.segmentList().stream()
@@ -61,14 +68,14 @@ public class Translation {
                 );
                 var newSegmentOpt = translate(chosenSegment, random);
                 if (newSegmentOpt.isEmpty()) {
-                    throw new RuntimeException("No translation found!");
+//                    throw new RuntimeException("No translation found!");
 //                    System.out.println("I'll fucking do it again!");
-//                    yield translate(name, random); // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg
+                    yield translateInner(name, random, acc + 1, max); // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg
                 }
                 var newSegmentList = StreamExtensions.replaceInStream(
                         sps.segmentList().stream(), chosenSegment, newSegmentOpt.get()
                 ).toList();
-                yield sps.withSegmentList(newSegmentList);
+                yield Optional.of(sps.withSegmentList(newSegmentList));
             }
         };
     }
@@ -105,7 +112,8 @@ public class Translation {
 
     public boolean canBeTranslated(StringPlus stringPlus) {
         return switch (stringPlus) {
-            case StringPlusNaked spn -> !Set.of(Language.Mixed, Language.Technical).contains(spn.language());
+            case StringPlusNaked ignore -> false;
+//            case StringPlusNaked spn -> !Set.of(Language.Mixed, Language.Technical).contains(spn.language());
             case StringPlusSemantical sps -> sps.language() != Language.Technical;
         };
     }

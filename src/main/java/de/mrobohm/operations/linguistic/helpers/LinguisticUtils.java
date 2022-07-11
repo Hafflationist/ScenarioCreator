@@ -36,13 +36,13 @@ public final class LinguisticUtils {
             case CAMELCASE -> mergeCamelCase(tokens);
             case PASCALCASE -> mergePascalCase(tokens);
             case SNAKECASE -> tokenStream
-                    .map(t -> capitalize(t.toLowerCase()))
+                    .map(String::toLowerCase)
                     .collect(Collectors.joining("_"));
             case SCREAMINGSNAKECASE -> tokenStream
                     .map(t -> capitalize(t.toUpperCase()))
                     .collect(Collectors.joining("_"));
             case KEBABCASE -> tokenStream
-                    .map(t -> capitalize(t.toLowerCase()))
+                    .map(String::toLowerCase)
                     .collect(Collectors.joining("-"));
             case SCREAMINGKEBABCASE -> tokenStream
                     .map(t -> capitalize(t.toUpperCase()))

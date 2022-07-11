@@ -11,6 +11,7 @@ import java.util.Random;
 public class ChangeLanguageOfSchemaName implements SchemaTransformation {
 
     private final Translation _translation;
+
     public ChangeLanguageOfSchemaName(Translation translation) {
         _translation = translation;
     }
@@ -27,8 +28,9 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
         if (isExecutable(schema)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = _translation.translate(schema.name(), random);
-        return schema.withName(newName);
+        return _translation.translate(schema.name(), random)
+                .map(schema::withName)
+                .orElse(schema);
     }
 
     @Override

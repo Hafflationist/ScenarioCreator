@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 public class ChangeLanguageOfTableName implements TableTransformation {
 
     private final Translation _translation;
+
     public ChangeLanguageOfTableName(Translation translation) {
         _translation = translation;
     }
@@ -31,8 +32,9 @@ public class ChangeLanguageOfTableName implements TableTransformation {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = _translation.translate(table.name(), random);
-        return Set.of(table.withName(newName));
+        return _translation.translate(table.name(), random)
+                .map(newName -> Set.of(table.withName(newName)))
+                .orElse(Set.of(table));
     }
 
     @Override

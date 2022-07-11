@@ -55,9 +55,11 @@ class TranslationTest {
         var translation = getTranslation(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
 
         // --- Act
-        var newStringPlus = translation.translate(stringPlus, new Random());
+        var newStringPlusOpt = translation.translate(stringPlus, new Random());
 
         // --- Assert
+        Assertions.assertTrue(newStringPlusOpt.isPresent());
+        var newStringPlus = newStringPlusOpt.get();
         Assertions.assertNotEquals(stringPlus, newStringPlus);
         Assertions.assertTrue(newStringPlus instanceof StringPlusSemantical);
         var newSps = (StringPlusSemantical) newStringPlus;

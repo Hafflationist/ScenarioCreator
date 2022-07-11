@@ -191,18 +191,19 @@ public class Main {
                     Map.of(Language.German, germaNetInterface, Language.English, wordNetInterface)
             );
             var translation = new Translation(ulc);
-            var stringPlus = new StringPlusNaked("Dog", Language.Technical);
+            var spn = new StringPlusNaked("highway-to-hell", Language.Technical);
             var semanticSaturation = new SemanticSaturation(ulc);
-            var sps = semanticSaturation.saturateSemantically(stringPlus, Set.of());
+            var sps = semanticSaturation.saturateSemantically(spn, Set.of());
             var random = new Random();
-            System.out.println("orgSps(verbose): " + sps);
-            System.out.println("orgSps: " + sps.rawString());
-            System.out.println("translations:");
-            var newSps2 = translation.translate(sps, new Random());
-            System.out.println("newSps: " + newSps2.rawString());
+            System.out.println("Eingabe: " + sps.rawString());
+            System.out.println("Übersetzungen:");
             Stream
                     .generate(() -> translation.translate(sps, random))
+                    .limit(10000)
+                    .distinct()
+                    .filter(Optional::isPresent)
                     .limit(10)
+                    .map(Optional::get)
                     .forEach(newSps -> System.out.println("newSps: " + newSps.rawString()));
         }
         catch (IOException | XMLStreamException e) {

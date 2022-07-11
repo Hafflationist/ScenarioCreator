@@ -141,13 +141,10 @@ public class UnifiedLanguageCorpus {
 
     public Set<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {
         assert _corpora.containsKey(targetLanguage) : "missing support for language!";
-
         var validGssMap = segment.gssSet().stream()
                 .filter(gss -> gss.language() != targetLanguage)
                 .collect(groupingBy(GlobalSynset::language));
-
         assert !validGssMap.values().isEmpty() : "gss already in target language!";
-
         return validGssMap.keySet().stream()
                 .flatMap(lang -> {
                     var gssSet = new HashSet<>(validGssMap.get(lang));
@@ -155,6 +152,11 @@ public class UnifiedLanguageCorpus {
                 })
                 .map(_corpora.get(targetLanguage)::englishSynsetRecord2Word)
                 .flatMap(translation -> translation.keySet().stream()
+                        .map(orthForm -> orthForm
+                                .replace("_", "")
+                                .replace("-", "")
+                                .replace(" ", "")
+                                .toLowerCase())
                         .map(orthForm -> new StringPlusSemanticalSegment(orthForm, translation.get(orthForm))))
                 .collect(Collectors.toSet());
     }

@@ -16,6 +16,7 @@ import java.util.function.Function;
 public class ChangeLanguageOfColumnName implements ColumnTransformation {
 
     private final Translation _translation;
+
     public ChangeLanguageOfColumnName(Translation translation) {
         _translation = translation;
     }
@@ -31,10 +32,13 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
         if (!canBeTranslated(column)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newName = _translation.translate(column.name(), random);
+        var newNameOpt = _translation.translate(column.name(), random);
+        if (newNameOpt.isEmpty()) {
+            return List.of(column);
+        }
         return switch (column) {
-            case ColumnLeaf c -> List.of(c.withName(newName));
-            case ColumnNode c -> List.of(c.withName(newName));
+            case ColumnLeaf c -> List.of(c.withName(newNameOpt.get()));
+            case ColumnNode c -> List.of(c.withName(newNameOpt.get()));
             default -> throw new IllegalStateException("Unexpected value: " + column);
         };
     }
