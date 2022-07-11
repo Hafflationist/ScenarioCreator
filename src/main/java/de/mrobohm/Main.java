@@ -26,9 +26,13 @@ public class Main {
     private static void writeRandomSchema(String path) {
         var random = new Random();
         try {
-            var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, new GermaNetInterface(), Language.English, new WordNetInterface()));
+            var germanet = new GermaNetInterface();
+            var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
             var saturator = new SemanticSaturation(ulc);
-            var schema = saturator.saturateSemantically(RandomSchemaGenerator.generateRandomSchema(random, 8, 8));
+            var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
+                    random, 8, 8, germanet::pickRandomEnglishWord
+            );
+            var schema = saturator.saturateSemantically(schemaNaked);
             SchemaFileHandler.save(schema, path);
             System.out.println("Saved schema in \"" + path + "\"");
         } catch (XMLStreamException | IOException e) {
@@ -213,11 +217,11 @@ public class Main {
 
     public static void main(String[] args) {
         var path = args[0];
-//        writeRandomSchema(path);
+        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
-        testTranslation();
+//        testTranslation();
     }
 
     record TestRecord(int id, Set<Integer> things) {

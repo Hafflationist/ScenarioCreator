@@ -31,35 +31,44 @@ public class RandomSchemaGenerator {
         return new Context(new SemanticDomain(1), language);
     }
 
-    private static Column generateRandomColumn(Random random) {
+    private static Column generateRandomColumn(Random random, Function<Random, String> nameGenerator) {
         var context = generateRandomContext(random);
         var columnContext = new ColumnContext(context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random));
         return new ColumnLeaf(
                 new IdSimple(random.nextInt()),
-                new StringPlusNaked("Spalte" + random.nextInt(), pickRandomLanguage(random)),
+                new StringPlusNaked("Spalte_" + nameGenerator.apply(random), pickRandomLanguage(random)),
                 new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean()),
                 columnContext,
                 new HashSet<>()
         );
     }
 
-    private static Table generateRandomTable(Random random, int maxColumns) {
+    private static Table generateRandomTable(Random random, int maxColumns, Function<Random, String> nameGenerator) {
         var context = generateRandomContext(random);
         return new Table(
                 new IdSimple(random.nextInt()),
-                new StringPlusNaked("Tabelle" + random.nextInt(), pickRandomLanguage(random)),
-                generateRandomList(2, maxColumns, RandomSchemaGenerator::generateRandomColumn, random),
+                new StringPlusNaked("tabelle-" + nameGenerator.apply(random), pickRandomLanguage(random)),
+                generateRandomList(
+                        2,
+                        maxColumns,
+                        r -> RandomSchemaGenerator.generateRandomColumn(r, nameGenerator),
+                        random
+                ),
                 context,
                 new HashSet<>()
         );
     }
 
-    public static Schema generateRandomSchema(Random random, int maxTables, int maxColumn) {
+    public static Schema generateRandomSchema(
+            Random random, int maxTables, int maxColumn, Function<Random, String> nameGenerator
+    ) {
         var context = generateRandomContext(random);
-        var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn), random);
+        var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn, nameGenerator), random);
         return new Schema(
                 new IdSimple(random.nextInt()),
-                new StringPlusNaked("Schema" + random.nextInt(), pickRandomLanguage(random)),
+                new StringPlusNaked(
+                        "SCHEMA_" + nameGenerator.apply(random).toUpperCase(), pickRandomLanguage(random)
+                ),
                 context,
                 tableSet
         );

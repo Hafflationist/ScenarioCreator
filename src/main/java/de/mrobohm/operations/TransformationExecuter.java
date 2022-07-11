@@ -24,7 +24,6 @@ import java.util.stream.Stream;
 
 public class TransformationExecuter {
 
-
     @Contract(pure = true)
     @NotNull
     public Schema executeTransformation(Schema schema, Transformation transformation, Random random)

@@ -5,6 +5,7 @@ import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.StreamExtensions;
 import de.tuebingen.uni.sfs.germanet.api.GermaNet;
 import de.tuebingen.uni.sfs.germanet.api.IliRecord;
 import de.tuebingen.uni.sfs.germanet.api.SemRelMeasure;
@@ -12,10 +13,7 @@ import de.tuebingen.uni.sfs.germanet.api.Synset;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -165,5 +163,16 @@ public class GermaNetInterface implements LanguageCorpus {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String pickRandomEnglishWord(Random random) {
+        var rte = new RuntimeException("REEE");
+        return StreamExtensions
+                .pickRandomOrThrowMultiple(
+                        _germanet.getIliRecords().stream().filter(ili -> !ili.getPwnWord().isBlank()), 1, rte, random
+                )
+                .map(IliRecord::getPwnWord)
+                .toList()
+                .get(0);
     }
 }
