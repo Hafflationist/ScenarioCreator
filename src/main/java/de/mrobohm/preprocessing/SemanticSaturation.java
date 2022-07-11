@@ -1,5 +1,6 @@
 package de.mrobohm.preprocessing;
 
+import de.mrobohm.data.Entity;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
@@ -13,6 +14,7 @@ import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,44 +64,42 @@ public final class SemanticSaturation {
                 c -> enrichName(c, allNames));
     }
 
+    private <T extends Entity> T enrichName(T entity, Set<String> context, Function<StringPlusSemantical, T> enricher) {
+        return switch (entity.name()) {
+            case StringPlusSemantical ignore -> entity;
+            case StringPlusNaked oldName -> {
+                var newName = StringPlusSemantical.of(
+                        oldName,
+                        s -> _corpus.estimateSynsetId(s, context)
+                );
+                yield enricher.apply(newName);
+            }
+        };
+    }
+
+    private Schema enrichName(Schema schema, Set<String> context) {
+        return enrichName(schema, context, schema::withName);
+    }
+
+    private Table enrichName(Table table, Set<String> context) {
+        return enrichName(table, context, table::withName);
+    }
+
+    private Column enrichName(Column column, Set<String> context) {
+        return enrichName(column, context, sps -> switch (column) {
+            case ColumnLeaf leaf -> leaf.withName(sps);
+            case ColumnCollection collection ->
+                    collection.withColumnList(collection.columnList().stream().map(c -> enrichName(c, context)).toList());
+            case ColumnNode node -> node
+                    .withColumnList(node.columnList().stream().map(c -> enrichName(c, context)).toList())
+                    .withName(sps);
+        });
+    }
+
     public StringPlusSemantical saturateSemantically(StringPlusNaked spn, Set<String> context) {
         return StringPlusSemantical.of(
                 spn,
                 s -> _corpus.estimateSynsetId(s, context)
         );
-    }
-
-    private Schema enrichName(Schema schema, Set<String> context) {
-        var oldName = schema.name();
-        var newName = StringPlusSemantical.of(
-                oldName,
-                s -> _corpus.estimateSynsetId(s, context)
-        );
-        return schema.withName(newName);
-    }
-
-    private Table enrichName(Table table, Set<String> context) {
-        var oldName = table.name();
-        var newName = StringPlusSemantical.of(
-                oldName,
-                s -> _corpus.estimateSynsetId(s, context)
-        );
-        return table.withName(newName);
-    }
-
-    private Column enrichName(Column column, Set<String> context) {
-        var oldName = column.name();
-        var newName = StringPlusSemantical.of(
-                oldName,
-                s -> _corpus.estimateSynsetId(s, context)
-        );
-        return switch (column) {
-            case ColumnLeaf leaf -> leaf.withName(newName);
-            case ColumnCollection collection ->
-                    collection.withColumnList(collection.columnList().stream().map(c -> enrichName(c, context)).toList());
-            case ColumnNode node -> node
-                    .withColumnList(node.columnList().stream().map(c -> enrichName(c, context)).toList())
-                    .withName(newName);
-        };
     }
 }
