@@ -2,5 +2,6 @@
 **/schema.yaml
 **/germanet/**
 **/wordnet.dict/**
+/src/main/resources
 /target/**
 /lib/**
