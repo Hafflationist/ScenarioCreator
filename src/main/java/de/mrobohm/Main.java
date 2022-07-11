@@ -186,7 +186,6 @@ public class Main {
     private static void testTranslation(){
         try {
             var germaNetInterface = new GermaNetInterface();
-            germaNetInterface.hugo();
             var wordNetInterface = new WordNetInterface();
             var ulc = new UnifiedLanguageCorpus(
                     Map.of(Language.German, germaNetInterface, Language.English, wordNetInterface)
