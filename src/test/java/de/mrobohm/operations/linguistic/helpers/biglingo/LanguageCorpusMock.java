@@ -8,6 +8,16 @@ import java.util.Set;
 
 public class LanguageCorpusMock implements LanguageCorpus {
 
+
+    private final Map<String, Set<GlobalSynset>> _englishSynsetRecord2WordReturn;
+    private final Set<EnglishSynset> _word2EnglishSynsetReturn;
+
+    public LanguageCorpusMock(Map<String, Set<GlobalSynset>> englishSynsetRecord2WordReturn,
+                              Set<EnglishSynset> word2EnglishSynsetReturn) {
+        _englishSynsetRecord2WordReturn = englishSynsetRecord2WordReturn;
+        _word2EnglishSynsetReturn = word2EnglishSynsetReturn;
+    }
+
     @Override
     public Set<String> getSynonymes(String word) {
         return null;
@@ -25,12 +35,12 @@ public class LanguageCorpusMock implements LanguageCorpus {
 
     @Override
     public Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
-        return null;
+        return _englishSynsetRecord2WordReturn;
     }
 
     @Override
     public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet) {
-        return null;
+        return _word2EnglishSynsetReturn;
     }
 
     @Override

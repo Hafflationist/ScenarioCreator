@@ -25,10 +25,10 @@ public class Translation {
 
     private Language chooseDifferentLanguage(Language exception, Random random) {
         var rte = new RuntimeException("Fatal error! Not enough languages defined!");
-        var newLanguage = StreamExtensions.pickRandomOrThrow(Arrays.stream(Language.values()), rte, random);
-        if (newLanguage.equals(exception)) {
-            return chooseDifferentLanguage(exception, random);
-        }
+        var newLanguageStream = Arrays.stream(Language.values())
+                .filter(lang -> !Set.of(Language.Technical, Language.Mixed, exception).contains(lang));
+        var newLanguage = StreamExtensions.pickRandomOrThrow(newLanguageStream, rte, random);
+        assert !newLanguage.equals(exception) : "Local bug found!";
         return newLanguage;
     }
 
