@@ -6,10 +6,7 @@ import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
-import edu.mit.jwi.item.ISynset;
-import edu.mit.jwi.item.IWord;
-import edu.mit.jwi.item.POS;
-import edu.mit.jwi.item.SynsetID;
+import edu.mit.jwi.item.*;
 import edu.uniba.di.lacam.kdde.lexical_db.MITWordNet;
 import edu.uniba.di.lacam.kdde.lexical_db.data.Concept;
 import edu.uniba.di.lacam.kdde.ws4j.similarity.Lin;
@@ -122,10 +119,11 @@ public class WordNetInterface implements LanguageCorpus {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         var db = new MITWordNet(_dict);
-        var relatednessCalculator = new WuPalmer(db);   // Resulting values are normalized [0, 1]
-        var concept = new Concept(synset.toString());
+        var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
+        var concept = essToConcept(synset.getID());
         return otherSynsets.stream()
-                .map(ss -> new Concept(ss.toString()))
+                .map(IItem::getID)
+                .map(this::essToConcept)
                 .mapToDouble(con -> 1.0 - relatednessCalculator.calcRelatednessOfSynsets(concept, con).getScore())
                 .average()
                 .orElse(2.0);
@@ -150,6 +148,11 @@ public class WordNetInterface implements LanguageCorpus {
                 .collect(Collectors.toSet());
     }
 
+    private Concept essToConcept(ISynsetID synsetId) {
+        var pos = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId.toString().toLowerCase().charAt(13));
+        return new Concept(synsetId.toString(), pos);
+    }
+
     public double lowestSemanticDistance(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
@@ -164,17 +167,11 @@ public class WordNetInterface implements LanguageCorpus {
                         .mapToDouble(ess2 -> {
                             var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
                             var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
-                            var pos1 = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId1.toString().toLowerCase().charAt(13));
-                            var pos2 = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId2.toString().toLowerCase().charAt(13));
                             var relatedness = relatednessCalculator
                                     .calcRelatednessOfSynsets(
-                                            new Concept(synsetId1.toString(), pos1),
-                                            new Concept(synsetId2.toString(), pos2))
+                                            essToConcept(synsetId1),
+                                            essToConcept(synsetId2))
                                     .getScore();
-                            if (relatedness > 1.0) {
-                                System.out.println(synsetId1);
-                                System.out.println(synsetId2);
-                            }
                             assert 0.0 <= relatedness;
                             assert relatedness <= 1.0;
                             return 1.0 - relatedness;
