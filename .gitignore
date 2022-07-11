@@ -1,0 +1,6 @@
+/.idea/*
+**/schema.yaml
+**/germanet/**
+**/wordnet.dict/**
+/target/**
+/lib/**
