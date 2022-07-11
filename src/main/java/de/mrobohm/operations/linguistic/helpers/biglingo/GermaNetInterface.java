@@ -46,7 +46,7 @@ public class GermaNetInterface implements LanguageCorpus {
             case VERB -> "v";
             case ADJECTIVE -> "a";
         };
-        return ("eng30-" + String.format("%07d", ess.offset()) + "-" + posString).toLowerCase();
+        return ("eng30-" + String.format("%08d", ess.offset()) + "-" + posString).toLowerCase();
     }
 
     private static EnglishSynset stringToEnglishSynset(String str) {

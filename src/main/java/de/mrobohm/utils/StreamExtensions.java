@@ -70,6 +70,9 @@ public final class StreamExtensions {
     @NotNull
     public static <T> Optional<T> tryPickRandom(Stream<T> stream, Random random) {
         var list = stream.toList();
+        if (list.isEmpty()){
+            return Optional.empty();
+        }
         return list.stream()
                 .skip(random.nextLong(list.size()))
                 .findFirst();

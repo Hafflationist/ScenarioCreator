@@ -1,17 +1,17 @@
 package de.mrobohm;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.primitives.NamingConvention;
-import de.mrobohm.data.primitives.StringPlus;
-import de.mrobohm.data.primitives.StringPlusNaked;
-import de.mrobohm.data.primitives.StringPlusSemantical;
+import de.mrobohm.data.primitives.*;
+import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GermanSynset;
+import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.operations.linguistic.helpers.Translation;
 import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.operations.linguistic.helpers.biglingo.WordNetInterface;
+import de.mrobohm.preprocessing.Saturation;
 import de.mrobohm.preprocessing.SemanticSaturation;
 import de.mrobohm.utils.Pair;
 
@@ -186,12 +186,25 @@ public class Main {
     private static void testTranslation(){
         try {
             var germaNetInterface = new GermaNetInterface();
+            germaNetInterface.hugo();
             var wordNetInterface = new WordNetInterface();
             var ulc = new UnifiedLanguageCorpus(
                     Map.of(Language.German, germaNetInterface, Language.English, wordNetInterface)
             );
             var translation = new Translation(ulc);
-            var stringPlus = new StringPlusSemantical(List.of(), NamingConvention.CAMELCASE);
+            var stringPlus = new StringPlusNaked("Dog", Language.Technical);
+            var semanticSaturation = new SemanticSaturation(ulc);
+            var sps = semanticSaturation.saturateSemantically(stringPlus, Set.of());
+            var random = new Random();
+            System.out.println("orgSps(verbose): " + sps);
+            System.out.println("orgSps: " + sps.rawString());
+            System.out.println("translations:");
+            var newSps2 = translation.translate(sps, new Random());
+            System.out.println("newSps: " + newSps2.rawString());
+            Stream
+                    .generate(() -> translation.translate(sps, random))
+                    .limit(10)
+                    .forEach(newSps -> System.out.println("newSps: " + newSps.rawString()));
         }
         catch (IOException | XMLStreamException e) {
             throw new RuntimeException(e);

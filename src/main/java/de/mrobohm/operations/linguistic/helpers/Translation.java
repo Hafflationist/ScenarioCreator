@@ -5,6 +5,7 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
+import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.utils.StreamExtensions;
@@ -38,8 +39,8 @@ public class Translation {
             return Optional.empty();
         }
         var rte = new RuntimeException("Should not happen.");
-        var chosenGss = StreamExtensions.pickRandomOrThrow(segment.gssSet().stream(), rte, random);
-        var targetLanguage = chooseDifferentLanguage(chosenGss.language(), random);
+        var randomGss = StreamExtensions.pickRandomOrThrow(segment.gssSet().stream(), rte, random);
+        var targetLanguage = chooseDifferentLanguage(randomGss.language(), random);
         var translationPossibilitySet = _corpus.translate(segment, targetLanguage);
         return StreamExtensions.tryPickRandom(translationPossibilitySet.stream(), random);
     }
@@ -60,7 +61,9 @@ public class Translation {
                 );
                 var newSegmentOpt = translate(chosenSegment, random);
                 if (newSegmentOpt.isEmpty()) {
-                    throw new RuntimeException("StringPlus without valid segments! This should be prevented by <canBeTranslated>");
+                    throw new RuntimeException("No translation found!");
+//                    System.out.println("I'll fucking do it again!");
+//                    yield translate(name, random); // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg
                 }
                 var newSegmentList = StreamExtensions.replaceInStream(
                         sps.segmentList().stream(), chosenSegment, newSegmentOpt.get()

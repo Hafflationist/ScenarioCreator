@@ -6,6 +6,7 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
@@ -21,17 +22,6 @@ public final class SemanticSaturation {
 
     public SemanticSaturation(UnifiedLanguageCorpus corpus) {
         _corpus = corpus;
-    }
-
-    public Schema saturateSemantically(Schema schema) {
-        var allNames = gatherAllNames(schema).stream()
-                .flatMap(s -> LinguisticUtils.tokenize(s).stream())
-                .collect(Collectors.toSet());
-
-        return Saturation.saturate(schema,
-                s -> enrichName(s, allNames),
-                t -> enrichName(t, allNames),
-                c -> enrichName(c, allNames));
     }
 
     private static Set<StringPlus> gatherAllNames(Schema schema) {
@@ -52,15 +42,31 @@ public final class SemanticSaturation {
 
     private static Stream<StringPlus> gatherAllNames(Column column) {
         return switch (column) {
-            case ColumnLeaf leaf ->
-                    Stream.of(leaf.name());
+            case ColumnLeaf leaf -> Stream.of(leaf.name());
             case ColumnCollection collection ->
                     collection.columnList().stream().flatMap(SemanticSaturation::gatherAllNames);
-            case ColumnNode node ->
-                    Stream.concat(
-                        Stream.of(node.name()),
-                        node.columnList().stream().flatMap(SemanticSaturation::gatherAllNames));
+            case ColumnNode node -> Stream.concat(
+                    Stream.of(node.name()),
+                    node.columnList().stream().flatMap(SemanticSaturation::gatherAllNames));
         };
+    }
+
+    public Schema saturateSemantically(Schema schema) {
+        var allNames = gatherAllNames(schema).stream()
+                .flatMap(s -> LinguisticUtils.tokenize(s).stream())
+                .collect(Collectors.toSet());
+
+        return Saturation.saturate(schema,
+                s -> enrichName(s, allNames),
+                t -> enrichName(t, allNames),
+                c -> enrichName(c, allNames));
+    }
+
+    public StringPlusSemantical saturateSemantically(StringPlusNaked spn, Set<String> context) {
+        return StringPlusSemantical.of(
+                spn,
+                s -> _corpus.estimateSynsetId(s, context)
+        );
     }
 
     private Schema enrichName(Schema schema, Set<String> context) {
@@ -89,7 +95,8 @@ public final class SemanticSaturation {
         );
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withName(newName);
-            case ColumnCollection collection -> collection.withColumnList(collection.columnList().stream().map(c -> enrichName(c, context)).toList());
+            case ColumnCollection collection ->
+                    collection.withColumnList(collection.columnList().stream().map(c -> enrichName(c, context)).toList());
             case ColumnNode node -> node
                     .withColumnList(node.columnList().stream().map(c -> enrichName(c, context)).toList())
                     .withName(newName);
