@@ -152,12 +152,10 @@ public class UnifiedLanguageCorpus {
                 })
                 .map(_corpora.get(targetLanguage)::englishSynsetRecord2Word)
                 .flatMap(translation -> translation.keySet().stream()
-                        .map(orthForm -> orthForm
-                                .replace("_", "")
-                                .replace("-", "")
-                                .replace(" ", "")
-                                .toLowerCase())
-                        .map(orthForm -> new StringPlusSemanticalSegment(orthForm, translation.get(orthForm))))
+                        .map(orthForm -> new StringPlusSemanticalSegment(
+                                StringPlusSemanticalSegment.normalizeToken(orthForm),
+                                translation.get(orthForm)
+                        )))
                 .collect(Collectors.toSet());
     }
 }
