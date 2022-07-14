@@ -38,7 +38,6 @@ public class Main {
         } catch (XMLStreamException | IOException e) {
             System.out.println(e.getMessage());
         }
-
     }
 
     private static void testGermaNetInterface() {
