@@ -18,6 +18,10 @@ public sealed class ColumnConstraintUnique implements ColumnConstraint permits C
         _uniqueGroupId = uniqueGroupId;
     }
 
+    public ColumnConstraintUnique withUniqueGroupId(Id newUniqueGroupId) {
+        return new ColumnConstraintUnique(newUniqueGroupId);
+    }
+
     public Id getUniqueGroupId() {
         return _uniqueGroupId;
     }
