@@ -2,16 +2,13 @@ package de.mrobohm;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.*;
-import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GermanSynset;
-import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
-import de.mrobohm.operations.linguistic.helpers.Translation;
-import de.mrobohm.operations.linguistic.helpers.biglingo.GermaNetInterface;
-import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
-import de.mrobohm.operations.linguistic.helpers.biglingo.WordNetInterface;
-import de.mrobohm.preprocessing.Saturation;
+import de.mrobohm.transformations.linguistic.helpers.Translation;
+import de.mrobohm.transformations.linguistic.helpers.biglingo.GermaNetInterface;
+import de.mrobohm.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import de.mrobohm.preprocessing.SemanticSaturation;
 import de.mrobohm.utils.Pair;
 

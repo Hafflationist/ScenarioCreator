@@ -1,15 +1,12 @@
 package de.mrobohm.data.primitives;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
-import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
-import de.mrobohm.utils.Pair;
+import de.mrobohm.transformations.linguistic.helpers.LinguisticUtils;
 
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 // Eigentlich müsste man das mal so machen, dass jedes Token eine eigene Sprache haben kann.
 // Dies hat mEn ein zu hohen Aufwand/Außenwirkung-Verhätltnis.

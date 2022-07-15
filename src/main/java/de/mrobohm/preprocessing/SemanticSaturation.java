@@ -10,8 +10,8 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.operations.linguistic.helpers.LinguisticUtils;
-import de.mrobohm.operations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.transformations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 
 import java.util.Set;
 import java.util.function.Function;
