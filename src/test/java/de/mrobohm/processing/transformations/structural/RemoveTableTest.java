@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.structural;
+package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.column.DataType;
@@ -12,7 +12,6 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.processing.transformations.structural.RemoveTable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

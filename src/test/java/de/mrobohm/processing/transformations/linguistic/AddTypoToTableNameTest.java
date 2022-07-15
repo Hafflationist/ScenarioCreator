@@ -1,12 +1,11 @@
-package de.mrobohm.transformations.linguistic;
+package de.mrobohm.processing.transformations.linguistic;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.processing.transformations.linguistic.AddTypoToTableName;
-import de.mrobohm.transformations.structural.StructuralTestingUtils;
+import de.mrobohm.processing.transformations.structural.StructuralTestingUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.structural;
+package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
@@ -13,7 +13,6 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
-import de.mrobohm.processing.transformations.structural.NullableToHorizontalInheritance;
 import de.mrobohm.utils.StreamExtensions;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

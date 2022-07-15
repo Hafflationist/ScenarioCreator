@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.linguistic;
+package de.mrobohm.processing.transformations.linguistic;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;

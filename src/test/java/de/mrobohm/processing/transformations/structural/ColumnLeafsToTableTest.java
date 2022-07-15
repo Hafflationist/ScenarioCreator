@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.structural;
+package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
@@ -8,13 +8,11 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
-import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
-import de.mrobohm.processing.transformations.structural.ColumnNodeToTable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +20,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-class ColumnNodeToTableTest {
+class ColumnLeafsToTableTest {
 
     @Test
     void transform() {
@@ -30,15 +28,14 @@ class ColumnNodeToTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var targetTableName = new StringPlusNaked("Tabelle", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
-        var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
-        var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
-        var columnNode = new ColumnNode(
-                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
-        var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
-        var idGenerator = StructuralTestingUtils.getIdGenerator(7);
-        var transformation = new ColumnNodeToTable();
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
+        var targetTable = new Table(new IdSimple(6), targetTableName,
+                List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Context.getDefault(), Set.of());
+        var idGenerator = StructuralTestingUtils.getIdGenerator(8);
+        var transformation = new ColumnLeafsToTable();
 
         // --- Act
         var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
@@ -56,17 +53,20 @@ class ColumnNodeToTableTest {
         Assertions.assertNotEquals(targetTable.columnList(), originTable.columnList());
         Assertions.assertEquals(targetTable.context(), originTable.context());
         Assertions.assertEquals(targetTable.tableConstraintSet(), originTable.tableConstraintSet());
-        Assertions.assertEquals(targetTable.columnList().size(), originTable.columnList().size());
-        Assertions.assertTrue(originTable.columnList().stream()
-                .anyMatch(column -> column.id() instanceof IdSimple ids && ids.number() >= 7)); // checks for new column
+        Assertions.assertEquals(
+                targetTable.columnList().size() + 2,
+                originTable.columnList().size() + extractedTable.columnList().size()
+        );
+        Assertions.assertTrue(originTable.columnList().stream().anyMatch(
+                column -> column.id() instanceof IdSimple ids && ids.number() >= 7)); // checks for new column
         Assertions.assertTrue(originTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintForeignKey)));
         Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse)));
         Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey)));
-        Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub1));
-        Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub2));
+        Assertions.assertTrue(extractedTable.columnList().contains(columnLeafGroupable1)
+                || extractedTable.columnList().contains(columnLeafGroupable2));
         IntegrityChecker.assertValidSchema(new Schema(new IdSimple(0), name, Context.getDefault(), newTableSet));
     }
 
@@ -75,16 +75,14 @@ class ColumnNodeToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
-        var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
-        var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
-        var columnNode = new ColumnNode(
-                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
-        var validTable = new Table(
-                new IdSimple(6), name, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
+        var columnLeafGroupable1 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(3));
+        var columnLeafGroupable2 = columnLeaf.withConstraintSet(Set.of()).withId(new IdSimple(4));
+        var validTable = new Table(new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, validTable);
-        var transformation = new ColumnNodeToTable();
+        var transformation = new ColumnLeafsToTable();
 
         // --- Act
         var newTableSet = transformation.getCandidates(tableSet);

@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.structural;
+package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;

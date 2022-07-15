@@ -1,4 +1,4 @@
-package de.mrobohm.transformations.structural;
+package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.ColumnContext;
@@ -7,14 +7,13 @@ import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
-import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
-import de.mrobohm.processing.transformations.structural.ColumnCollectionToTable;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -22,7 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-class ColumnCollectionToTableTest {
+class ColumnNodeToTableTest {
 
     @Test
     void transform() {
@@ -33,12 +32,12 @@ class ColumnCollectionToTableTest {
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
-        var columnCollection = new ColumnCollection(
+        var columnNode = new ColumnNode(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
         var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnCollection), Context.getDefault(), Set.of());
+                new IdSimple(6), targetTableName, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(7);
-        var transformation = new ColumnCollectionToTable();
+        var transformation = new ColumnNodeToTable();
 
         // --- Act
         var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
@@ -79,12 +78,12 @@ class ColumnCollectionToTableTest {
         var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
-        var columnCollection = new ColumnCollection(
+        var columnNode = new ColumnNode(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
         var validTable = new Table(
-                new IdSimple(6), name, List.of(columnLeaf, columnCollection), Context.getDefault(), Set.of());
+                new IdSimple(6), name, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
         var tableSet = Set.of(invalidTable, validTable);
-        var transformation = new ColumnCollectionToTable();
+        var transformation = new ColumnNodeToTable();
 
         // --- Act
         var newTableSet = transformation.getCandidates(tableSet);
