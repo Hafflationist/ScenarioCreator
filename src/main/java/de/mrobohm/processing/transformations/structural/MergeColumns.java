@@ -9,6 +9,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
+import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
@@ -105,8 +106,13 @@ public final class MergeColumns implements SchemaTransformation {
         var newId = new IdMerge(columnA.id(), columnB.id(), MergeOrSplitType.And);
         var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
         var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
+        var newValueSet = columnA.valueSet().stream()
+                .flatMap(valueA -> columnB.valueSet().stream()
+                        .map(valueB -> valueA + "|" + valueB)
+                        .map(Value::new))
+                .collect(Collectors.toSet());
         var newContext = ColumnContext.getDefault();
-        return new ColumnLeaf(newId, newName, newDataType, Set.of(), newContext, new HashSet<>());
+        return new ColumnLeaf(newId, newName, newDataType, newValueSet, newContext, new HashSet<>());
     }
 
     @Override
