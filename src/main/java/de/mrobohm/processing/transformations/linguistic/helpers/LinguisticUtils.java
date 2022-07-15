@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class LinguisticUtils {
 
@@ -128,9 +129,13 @@ public final class LinguisticUtils {
     }
 
     @NotNull
-    public static StringPlus merge(StringPlusSemantical aPlus, StringPlusSemantical bPlus, Random random) {
-        // TODO: Implement me!
-        return merge(aPlus, (StringPlus)bPlus, random);
+    public static StringPlus merge(StringPlusSemantical sps1, StringPlusSemantical sps2, Random random) {
+        var segmentList = Stream.concat(
+                sps1.segmentList().stream(),
+                sps2.segmentList().stream()
+        ).toList();
+        var namingConvention = merge(sps1.guessNamingConvention(), sps2.guessNamingConvention(), random);
+        return new StringPlusSemantical(segmentList, namingConvention);
     }
 
     @NotNull
