@@ -12,6 +12,7 @@ import de.mrobohm.transformations.structural.StructuralTestingUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 
@@ -22,7 +23,9 @@ class AddTypoToColumnNameTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
+        var column = new ColumnLeaf(
+                new IdSimple(1), name, dataType, Set.of(), ColumnContext.getDefault(), Set.of()
+        );
         var idGenerator = StructuralTestingUtils.getIdGenerator(2);
         var transformation = new AddTypoToColumnName();
 

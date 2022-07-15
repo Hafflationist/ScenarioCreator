@@ -22,6 +22,7 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -82,7 +83,7 @@ public final class NewTableBase {
         var newName = new StringPlusNaked(newNameRawString, tableName.language());
         var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
         var newDataType = new DataType(DataTypeEnum.INT64, false);
-        return new ColumnLeaf(columnId, newName, newDataType, newColumnContext, newConstraintSet);
+        return new ColumnLeaf(columnId, newName, newDataType, Set.of(), newColumnContext, newConstraintSet);
     }
 
     public record NewIds(Id targetColumn, Id sourceColumn, Id constraintGroupId) {

@@ -4,14 +4,12 @@ import de.mrobohm.data.*;
 import de.mrobohm.data.column.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,6 +36,7 @@ public class RandomSchemaGenerator {
                 new IdSimple(random.nextInt()),
                 new StringPlusNaked("Spalte_" + nameGenerator.apply(random), pickRandomLanguage(random)),
                 new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean()),
+                Set.of(new Value("1"), new Value("2"), new Value("3")),
                 columnContext,
                 new HashSet<>()
         );

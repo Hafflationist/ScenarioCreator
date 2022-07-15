@@ -1,5 +1,6 @@
 package de.mrobohm.processing.transformations.structural;
 
+import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.Schema;
@@ -18,10 +19,7 @@ import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -107,7 +105,8 @@ public final class MergeColumns implements SchemaTransformation {
         var newId = new IdMerge(columnA.id(), columnB.id(), MergeOrSplitType.And);
         var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
         var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
-        return new ColumnLeaf(newId, newName, newDataType, null, new HashSet<>());
+        var newContext = ColumnContext.getDefault();
+        return new ColumnLeaf(newId, newName, newDataType, Set.of(), newContext, new HashSet<>());
     }
 
     @Override
