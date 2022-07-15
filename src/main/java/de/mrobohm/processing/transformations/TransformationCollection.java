@@ -3,11 +3,9 @@ package de.mrobohm.processing.transformations;
 import de.mrobohm.processing.transformations.constraintBased.ForeignKeyRemover;
 import de.mrobohm.processing.transformations.contextual.ChangeUnitOfMeasure;
 import de.mrobohm.processing.transformations.linguistic.*;
-import de.mrobohm.processing.transformations.structural.*;
-import de.mrobohm.transformations.linguistic.*;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
-import de.mrobohm.transformations.structural.*;
+import de.mrobohm.processing.transformations.structural.*;
 
 import java.util.Map;
 import java.util.Set;
