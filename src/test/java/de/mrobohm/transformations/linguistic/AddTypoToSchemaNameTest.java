@@ -5,6 +5,7 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.processing.transformations.linguistic.AddTypoToSchemaName;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

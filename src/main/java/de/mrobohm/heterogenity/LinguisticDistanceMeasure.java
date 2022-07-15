@@ -7,7 +7,7 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.primitives.StringPlus;
-import de.mrobohm.integrity.IdentificationNumberCalculator;
+import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 

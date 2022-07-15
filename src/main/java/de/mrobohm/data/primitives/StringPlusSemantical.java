@@ -2,7 +2,7 @@ package de.mrobohm.data.primitives;
 
 import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
-import de.mrobohm.transformations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 
 import java.util.List;
 import java.util.Set;

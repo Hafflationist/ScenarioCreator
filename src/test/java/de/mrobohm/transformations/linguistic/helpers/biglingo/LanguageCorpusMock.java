@@ -2,6 +2,7 @@ package de.mrobohm.transformations.linguistic.helpers.biglingo;
 
 import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
+import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.LanguageCorpus;
 
 import java.util.Map;
 import java.util.Set;

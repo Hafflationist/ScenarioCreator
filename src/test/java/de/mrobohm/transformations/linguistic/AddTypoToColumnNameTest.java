@@ -7,6 +7,7 @@ import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
+import de.mrobohm.processing.transformations.linguistic.AddTypoToColumnName;
 import de.mrobohm.transformations.structural.StructuralTestingUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

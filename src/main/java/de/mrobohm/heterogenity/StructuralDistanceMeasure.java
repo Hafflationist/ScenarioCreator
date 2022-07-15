@@ -9,7 +9,7 @@ import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.IdSimple;
-import de.mrobohm.integrity.IdentificationNumberCalculator;
+import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.List;

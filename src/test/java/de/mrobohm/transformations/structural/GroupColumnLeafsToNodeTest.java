@@ -11,7 +11,8 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.integrity.IntegrityChecker;
+import de.mrobohm.processing.integrity.IntegrityChecker;
+import de.mrobohm.processing.transformations.structural.GroupColumnLeafsToNode;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

@@ -8,8 +8,9 @@ import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.data.primitives.synset.PartOfSpeech;
+import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.transformations.linguistic.helpers.biglingo.LanguageCorpusMock;
-import de.mrobohm.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

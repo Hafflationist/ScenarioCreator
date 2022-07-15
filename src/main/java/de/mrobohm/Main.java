@@ -5,11 +5,11 @@ import de.mrobohm.data.primitives.*;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
-import de.mrobohm.transformations.linguistic.helpers.Translation;
-import de.mrobohm.transformations.linguistic.helpers.biglingo.GermaNetInterface;
-import de.mrobohm.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
-import de.mrobohm.transformations.linguistic.helpers.biglingo.WordNetInterface;
-import de.mrobohm.preprocessing.SemanticSaturation;
+import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
+import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
+import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
+import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.utils.Pair;
 
 import javax.xml.stream.XMLStreamException;
