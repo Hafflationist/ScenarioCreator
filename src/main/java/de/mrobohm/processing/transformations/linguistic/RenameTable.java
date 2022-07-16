@@ -29,6 +29,11 @@ public class RenameTable implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = getNewName(table.name(), random);

@@ -22,6 +22,11 @@ public class RemoveTable implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfRelationships(table) : "Table had foreign key constraints!";

@@ -31,6 +31,11 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");

@@ -32,6 +32,11 @@ public final class MergeColumns implements SchemaTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     public boolean conservesFlatRelations() {
         return true;
     }

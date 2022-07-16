@@ -49,6 +49,11 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given schema did not include horizontal inheritance");

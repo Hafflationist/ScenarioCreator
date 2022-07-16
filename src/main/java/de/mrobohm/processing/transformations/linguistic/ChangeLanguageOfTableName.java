@@ -27,6 +27,11 @@ public class ChangeLanguageOfTableName implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(table)) {

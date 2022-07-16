@@ -6,4 +6,7 @@ public sealed interface Transformation permits ColumnTransformation, TableTransf
 
     @Contract(pure = true)
     boolean conservesFlatRelations();
+
+    @Contract(pure = true)
+    boolean breaksSemanticSaturation();
 }

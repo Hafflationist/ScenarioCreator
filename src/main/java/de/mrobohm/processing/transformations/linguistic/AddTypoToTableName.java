@@ -19,6 +19,11 @@ public class AddTypoToTableName implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = CharBase.introduceTypo(table.name(), random);

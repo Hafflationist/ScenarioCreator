@@ -36,6 +36,11 @@ public class BinaryValueToTable implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two values!!");
@@ -131,6 +136,8 @@ public class BinaryValueToTable implements TableTransformation {
         // ColumnConstraintForeignKey stellen eigentlich kein Problem dar, da ruhig von mehreren Tabellen auf eine
         // äußere Spalte gezeigt werden kann. Dies würde die Transformation allerdings auf das ganze Schema ausweiten.
         // Dies würde Mühe bedeuten, weil man die entsprechenden ColumnConstraintForeignKeyInverse anpassen müsste.
+
+        // Erweitere und nutz die eigene Klasse <IdTranslation>
         return column.constraintSet().stream()
                 .noneMatch(c ->
                         c instanceof ColumnConstraintForeignKey

@@ -24,6 +24,11 @@ public class ChangeDataType implements ColumnTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(column instanceof ColumnLeaf leaf)) {

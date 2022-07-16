@@ -23,6 +23,11 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
         if (isExecutable(schema)) {

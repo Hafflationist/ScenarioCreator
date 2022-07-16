@@ -24,6 +24,11 @@ public class RenameSchema implements SchemaTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
         var newName = getNewName(schema.name(), random);

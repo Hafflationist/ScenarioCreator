@@ -21,6 +21,11 @@ public class ColumnCollectionToTable implements TableTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return true;
+    }
+
+    @Override
     @NotNull
     public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");

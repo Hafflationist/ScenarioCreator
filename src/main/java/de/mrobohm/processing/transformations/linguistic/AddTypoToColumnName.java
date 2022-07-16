@@ -21,6 +21,11 @@ public class AddTypoToColumnName implements ColumnTransformation {
     }
 
     @Override
+    public boolean breaksSemanticSaturation() {
+        return false;
+    }
+
+    @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = CharBase.introduceTypo(column.name(), random);
