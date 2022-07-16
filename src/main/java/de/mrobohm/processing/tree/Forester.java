@@ -12,8 +12,12 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class Forester {
-    private Forester() {
+public class Forester {
+
+    private final SingleTransformationExecuter _singleTransformationExecuter;
+
+    private Forester(SingleTransformationExecuter singleTransformationExecuter) {
+        _singleTransformationExecuter = singleTransformationExecuter;
     }
 
     public Set<Schema> createScenario(Schema rootSchema) {
@@ -72,7 +76,7 @@ public final class Forester {
                 transformationSet.stream(), rte, random
         );
         try {
-            var newSchema = SingleTransformationExecuter.executeTransformation(
+            var newSchema = _singleTransformationExecuter.executeTransformation(
                     te.schema(), chosenTransformation, random
             );
             return new TreeLeaf(newSchema);

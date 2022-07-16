@@ -6,6 +6,7 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
+import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;
 import de.mrobohm.processing.transformations.exceptions.NoTableFoundException;
 import de.mrobohm.processing.transformations.structural.generator.IdentificationNumberGenerator;
@@ -24,21 +25,31 @@ import java.util.stream.Stream;
 
 public class SingleTransformationExecuter {
 
+    private final SemanticSaturation _semanticSaturation;
+
+    public SingleTransformationExecuter(SemanticSaturation semanticSaturation) {
+        _semanticSaturation = semanticSaturation;
+    }
+
     @Contract(pure = true)
     @NotNull
-    public static Schema executeTransformation(Schema schema, Transformation transformation, Random random)
+    public Schema executeTransformation(Schema schema, Transformation transformation, Random random)
             throws NoTableFoundException, NoColumnFoundException {
-        return switch (transformation) {
+        var newSchema = switch (transformation) {
             case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);
             case SchemaTransformation st -> executeTransformationSchema(schema, st, random);
         };
+        if (transformation.breaksSemanticSaturation()) {
+            return _semanticSaturation.saturateSemantically(newSchema);
+        }
+        return newSchema;
     }
 
 
     @Contract(pure = true)
     @NotNull
-    private static Schema executeTransformationSchema(
+    private Schema executeTransformationSchema(
             Schema schema, SchemaTransformation transformation, Random random
     ) {
         var newSchema = transformation.transform(schema, random);
@@ -49,14 +60,14 @@ public class SingleTransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private static Table chooseTable(Set<Table> tableSet, Random random) throws NoTableFoundException {
+    private Table chooseTable(Set<Table> tableSet, Random random) throws NoTableFoundException {
         var tableStream = tableSet.stream();
         return StreamExtensions.pickRandomOrThrow(tableStream, new NoTableFoundException(), random);
     }
 
     @Contract(pure = true)
     @NotNull
-    private static Schema executeTransformationTable(Schema schema, Table targetTable, Set<Table> newTableSet) {
+    private Schema executeTransformationTable(Schema schema, Table targetTable, Set<Table> newTableSet) {
         assert schema.tableSet().contains(targetTable);
 
         var filteredTableStream = schema.tableSet()
@@ -69,7 +80,7 @@ public class SingleTransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private static Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
+    private Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
             throws NoTableFoundException {
         var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
         Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
@@ -82,7 +93,7 @@ public class SingleTransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private static Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
+    private Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
             throws NoTableFoundException, NoColumnFoundException {
         assert schema != null;
 
@@ -106,7 +117,7 @@ public class SingleTransformationExecuter {
 
     @Contract(pure = true)
     @NotNull
-    private static Pair<Table, Column> chooseColumn(
+    private Pair<Table, Column> chooseColumn(
             Schema schema, Function<List<Column>, List<Column>> getCandidates, Random random
     ) throws NoColumnFoundException, NoTableFoundException {
         assert schema.tableSet().size() > 0;
