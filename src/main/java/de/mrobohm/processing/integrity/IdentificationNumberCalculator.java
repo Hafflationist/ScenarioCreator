@@ -18,8 +18,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static java.util.stream.Stream.of;
-
 public class IdentificationNumberCalculator {
 
     public static Stream<IdSimple> extractIdSimple(Stream<Id> idStream) {
@@ -39,7 +37,7 @@ public class IdentificationNumberCalculator {
         var tableIdStream = tableSet.stream().map(Table::id);
         var columnIdStream = tableSet.stream()
                 .flatMap(t -> t.columnList().stream().flatMap(column -> columnToIdStream(column, checkConstraints)));
-        return Stream.concat(of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
+        return Stream.concat(Stream.of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
     }
 
     private static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {
@@ -47,14 +45,14 @@ public class IdentificationNumberCalculator {
                 ? constraintsToIdStream(column.constraintSet())
                 : Stream.<Id>empty();
         return switch (column) {
-            case ColumnCollection collection -> of(
-                            of(collection.id()),
+            case ColumnCollection collection -> Stream.of(
+                            Stream.of(collection.id()),
                             constraintIdStream,
                             collection.columnList().stream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
                     .flatMap(Function.identity());
             case ColumnLeaf leaf -> StreamExtensions.prepend(constraintIdStream, leaf.id());
-            case ColumnNode node -> of(
-                            of(node.id()),
+            case ColumnNode node -> Stream.of(
+                            Stream.of(node.id()),
                             constraintIdStream,
                             node.columnList().stream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
                     .flatMap(Function.identity());
