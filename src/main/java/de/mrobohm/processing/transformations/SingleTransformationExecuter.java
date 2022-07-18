@@ -14,6 +14,7 @@ import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,9 +26,10 @@ import java.util.stream.Stream;
 
 public class SingleTransformationExecuter {
 
+    @Nullable
     private final SemanticSaturation _semanticSaturation;
 
-    public SingleTransformationExecuter(SemanticSaturation semanticSaturation) {
+    public SingleTransformationExecuter(@Nullable SemanticSaturation semanticSaturation) {
         _semanticSaturation = semanticSaturation;
     }
 
@@ -40,7 +42,7 @@ public class SingleTransformationExecuter {
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);
             case SchemaTransformation st -> executeTransformationSchema(schema, st, random);
         };
-        if (transformation.breaksSemanticSaturation()) {
+        if (transformation.breaksSemanticSaturation() && _semanticSaturation != null) {
             return _semanticSaturation.saturateSemantically(newSchema);
         }
         return newSchema;
