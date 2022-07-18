@@ -115,7 +115,7 @@ public class BinaryValueToTable implements TableTransformation {
     @NotNull
     public Set<Table> getCandidates(Set<Table> tableSet) {
         return tableSet.stream()
-                .filter(t -> GroupingColumnsBase.containsGroupableColumns(t.columnList()))
+                .filter(this::isTableValid)
                 .collect(Collectors.toSet());
     }
 
@@ -127,7 +127,8 @@ public class BinaryValueToTable implements TableTransformation {
                 .map(column -> (ColumnLeaf) column)
                 .map(ColumnLeaf::valueSet)
                 .map(Set::size)
-                .anyMatch(size -> size == 2);
+                .anyMatch(size -> size == 2)
+            && table.columnList().size() >= 2;
     }
 
     private boolean checkConstraints(Column column) {
