@@ -31,7 +31,6 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
-// equivalent to vertical split
 public class BinaryValueToTable implements SchemaTransformation {
     @Override
     public boolean conservesFlatRelations() {

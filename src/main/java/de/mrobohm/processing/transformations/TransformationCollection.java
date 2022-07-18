@@ -100,6 +100,7 @@ public class TransformationCollection {
                 new ChangeLanguageOfSchemaName(translation),
                 new RenameSchema(unifiedLanguageCorpus),
                 // structural
+                new BinaryValueToTable(),
                 new HorizontalInheritanceToNullable(0.5),
                 new MergeColumns(params.keepForeignKeyIntegrity),
                 new TableToColumnCollection(params.shouldConserveAllRecords),
