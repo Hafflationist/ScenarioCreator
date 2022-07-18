@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class StructuralDistanceMeasure {
-    private StructuralDistanceMeasure() {
+public final class StructuralDistanceMeasureElementary {
+    private StructuralDistanceMeasureElementary() {
     }
     // TODO: Man muss den Vergleich zwischen arbiträren Schemata S1 und S2 ermöglichen.
     // Grötenteils gilt (S1 - Root) + (S2 - Root) = S1 - S2
@@ -53,12 +53,12 @@ public final class StructuralDistanceMeasure {
         var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
 
         var schemaPathMap = getIdPathSet(schema);
-        var modificationCount = schemaPathMap.values().stream().mapToInt(StructuralDistanceMeasure::diffPath).sum();
+        var modificationCount = schemaPathMap.values().stream().mapToInt(StructuralDistanceMeasureElementary::diffPath).sum();
 
         return modificationCount + dropCount + createCount;
     }
 
-    public static Map<Id, List<Id>> getIdPathSet(Schema schema) {
+    private static Map<Id, List<Id>> getIdPathSet(Schema schema) {
         var rootId = schema.id();
         return IdentificationNumberCalculator
                 .getAllIds(schema, false)
@@ -82,15 +82,15 @@ public final class StructuralDistanceMeasure {
     }
 
     private static Stream<Id> getIdPath(List<Column> columnList, Id id) {
-        return getIdPathAcc(columnList, id, Stream.of());
+        return getIdPathAcc(columnList, id, List.of());
     }
 
-    private static Stream<Id> getIdPathAcc(List<Column> columnList, Id id, Stream<Id> acc) {
+    private static Stream<Id> getIdPathAcc(List<Column> columnList, Id id, List<Id> acc) {
         return columnList.stream()
                 .flatMap(column -> {
-                    var newPath = StreamExtensions.prepend(acc, column.id());
+                    var newPath = StreamExtensions.prepend(acc.stream(), column.id()).toList();
                     if (column.id().equals(id)) {
-                        return newPath;
+                        return newPath.stream();
                     }
                     return switch (column) {
                         case ColumnLeaf ignore -> Stream.of();
@@ -101,8 +101,8 @@ public final class StructuralDistanceMeasure {
     }
 
     private static int diffPath(List<Id> path) {
-        var pathShortened = path.stream().map(StructuralDistanceMeasure::shorten).toList();
-        return pathShortened.stream().mapToInt(StructuralDistanceMeasure::diffId).sum();
+        var pathShortened = path.stream().map(StructuralDistanceMeasureElementary::shorten).toList();
+        return pathShortened.stream().mapToInt(StructuralDistanceMeasureElementary::diffId).sum();
     }
 
     private static int diffId(Id id) {
@@ -122,7 +122,6 @@ public final class StructuralDistanceMeasure {
             case IdSimple ids -> ids;   // unironisch
             case IdPart idp -> idp;
             case IdMerge idm -> idm;
-
         };
     }
 }
