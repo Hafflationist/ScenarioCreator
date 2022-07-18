@@ -10,10 +10,12 @@ import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
+import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,7 +55,14 @@ public final class StructuralDistanceMeasureElementary {
         var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
 
         var schemaPathMap = getIdPathSet(schema);
-        var modificationCount = schemaPathMap.values().stream().mapToInt(StructuralDistanceMeasureElementary::diffPath).sum();
+        var rootPathMap = getIdPathSet(root);
+        var entityModificationCount = diffEntity(schemaPathMap.keySet());
+        var entityNestingChanges = schemaPathMap.keySet().stream()
+                .filter(rootPathMap.keySet()::contains)
+                .map(id -> new Pair<>(schemaPathMap.get(id), rootPathMap.get(id)))
+                .mapToInt(StructuralDistanceMeasureElementary::diffEntityNestingChanges)
+                .sum();
+        var modificationCount = entityModificationCount + entityNestingChanges;
 
         return modificationCount + dropCount + createCount;
     }
@@ -100,9 +109,26 @@ public final class StructuralDistanceMeasureElementary {
                 });
     }
 
-    private static int diffPath(List<Id> path) {
-        var pathShortened = path.stream().map(StructuralDistanceMeasureElementary::shorten).toList();
-        return pathShortened.stream().mapToInt(StructuralDistanceMeasureElementary::diffId).sum();
+    private static int diffEntity(Set<Id> idSet) {
+        return idSet.stream()
+                .map(StructuralDistanceMeasureElementary::shorten)
+                .mapToInt(StructuralDistanceMeasureElementary::diffId).sum();
+    }
+
+    private static int diffEntityNestingChanges(Pair<List<Id>, List<Id>> combinedPathPair) {
+        var schemaPath = combinedPathPair.first();
+        var rootPath = combinedPathPair.second();
+        if(schemaPath.size() != rootPath.size()){
+            // change detected!
+            return 1;
+        }
+        if (schemaPath.size() <= 2) {
+            // schema and leaf id are irrelevant
+            return 0;
+        }
+        var schemaPathTrimmed = schemaPath.subList(1, schemaPath.size() - 2);
+        var rootPathTrimmed = rootPath.subList(1, rootPath.size() - 2);
+        return schemaPathTrimmed.equals(rootPathTrimmed) ? 0 : 1;
     }
 
     private static int diffId(Id id) {
@@ -111,7 +137,7 @@ public final class StructuralDistanceMeasureElementary {
         // Dies müsste die Anzahl der Operationen darstellen, die zur aktuellen Situation geführt haben.
         return switch (id) {
             case IdSimple ignore -> 0;
-            case IdPart idp -> 1 + diffId(idp.predecessorId());
+            case IdPart idp -> (idp.extensionNumber() == 0 ? 0 : 1) + diffId(idp.predecessorId());
             case IdMerge idm -> 1 + diffId(idm.predecessorId1()) + diffId(idm.predecessorId2());
         };
     }

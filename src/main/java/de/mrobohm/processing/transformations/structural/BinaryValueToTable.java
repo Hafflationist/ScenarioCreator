@@ -72,8 +72,8 @@ public class BinaryValueToTable implements SchemaTransformation {
     private TableSplitResult splitTable(Table table) {
 
 
-        var tablePart1 = splitTablePart(table, 1);
-        var tablePart2 = splitTablePart(table, 2);
+        var tablePart1 = splitTablePart(table, 0);
+        var tablePart2 = splitTablePart(table, 1);
         var idMapWrongType = Stream.concat(getAllColumnIdPartStream(tablePart1), getAllColumnIdPartStream(tablePart2))
                 .collect(groupingBy(IdPart::predecessorId));
         var idMap = idMapWrongType.keySet().stream()
