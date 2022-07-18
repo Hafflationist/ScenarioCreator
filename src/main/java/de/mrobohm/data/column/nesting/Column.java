@@ -12,6 +12,10 @@ public sealed interface Column extends Entity permits ColumnCollection, ColumnLe
 
     StringPlus name();
 
+    default <T extends ColumnConstraint> boolean containsConstraint(Class<T> constraintType){
+        return constraintSet().stream().anyMatch(c -> c.getClass().equals(constraintType));
+    }
+
     Set<ColumnConstraint> constraintSet();
 
     boolean isNullable();
