@@ -41,7 +41,7 @@ public class GroupingColumnsBase {
     }
 
     private static boolean areConstraintsFine(Column column) {
-        return column.constraintSet().stream().noneMatch(constraint -> constraint instanceof ColumnConstraintPrimaryKey);
+        return !column.containsConstraint(ColumnConstraintPrimaryKey.class);
     }
 
     public static boolean containsGroupableColumns(List<Column> columnList) {

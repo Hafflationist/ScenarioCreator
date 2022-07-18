@@ -41,12 +41,9 @@ public class RemoveColumn implements ColumnTransformation {
     }
 
     private boolean freeOfCriticalConstraints(Column column) {
-        var hasPrimaryKeyConstraint = column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey);
-        var hasForeignKeyConstraint = column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintForeignKey);
-        var hasForeignKeyInversConstraint = column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
+        var hasPrimaryKeyConstraint = column.containsConstraint(ColumnConstraintPrimaryKey.class);
+        var hasForeignKeyConstraint = column.containsConstraint(ColumnConstraintForeignKey.class);
+        var hasForeignKeyInversConstraint = column.containsConstraint(ColumnConstraintForeignKeyInverse.class);
         return !hasPrimaryKeyConstraint && !hasForeignKeyConstraint && !hasForeignKeyInversConstraint;
     }
 }

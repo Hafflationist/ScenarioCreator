@@ -101,7 +101,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     private List<Column> chooseExtendingColumns(List<Column> columnList, Random random) {
         var candidateColumnList = columnList.stream()
-                .filter(column -> column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey))
+                .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
@@ -125,11 +125,9 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         // So eine Beziehung würde eine schemaweite Transformation erfordern.
         // Die Lösung wirkt anstrengend :(
         var hasNoForeignKeyConstraints = table.columnList().stream()
-                .allMatch(column -> column.constraintSet().stream()
-                        .noneMatch(c -> c instanceof ColumnConstraintForeignKey));
+                .noneMatch(column -> column.containsConstraint(ColumnConstraintForeignKey.class));
         var hasNoInverseKeyConstraints = table.columnList().stream()
-                .allMatch(column -> column.constraintSet().stream()
-                        .noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse));
+                .noneMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class));
         return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }
 

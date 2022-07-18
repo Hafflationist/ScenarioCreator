@@ -141,19 +141,4 @@ public class BinaryValueToTable implements TableTransformation {
                 && !isReferenced
                 && splitColumnPresent;
     }
-
-    private boolean checkConstraints(Column column) {
-        // In Wahrheit sind nur die ColumnConstraintForeignKeyInverse ein Problem, da äußere Spalten nicht auf mehrere
-        // Tabellen zeigen können.
-        // ColumnConstraintForeignKey stellen eigentlich kein Problem dar, da ruhig von mehreren Tabellen auf eine
-        // äußere Spalte gezeigt werden kann. Dies würde die Transformation allerdings auf das ganze Schema ausweiten.
-        // Dies würde Mühe bedeuten, weil man die entsprechenden ColumnConstraintForeignKeyInverse anpassen müsste.
-
-        // Erweitere und nutz die eigene Klasse <IdTranslation>
-        return column.constraintSet().stream()
-                .noneMatch(c ->
-                        c instanceof ColumnConstraintForeignKey
-                                || c instanceof ColumnConstraintForeignKeyInverse
-                );
-    }
 }

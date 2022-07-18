@@ -141,12 +141,15 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         }
 
         var basePartition = StreamExtensions
-                .partition(ip.base().columnList().stream(), column -> column.constraintSet().stream()
-                        .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey));
+                .partition(
+                        ip.base().columnList().stream(),
+                        column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)
+                );
 
         var derivingPartition = StreamExtensions
-                .partition(ip.derivation().columnList().stream(), column -> column.constraintSet().stream()
-                        .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey));
+                .partition(
+                        ip.derivation().columnList().stream(),
+                        column -> column.containsConstraint(ColumnConstraintPrimaryKey.class));
 
         // Check whether both primary key column lists are equal
         var basePrimaryKeyColumnList = basePartition.yes().toList();

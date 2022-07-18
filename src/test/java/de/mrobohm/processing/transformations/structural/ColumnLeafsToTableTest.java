@@ -59,9 +59,14 @@ class ColumnLeafsToTableTest {
         );
         Assertions.assertTrue(originTable.columnList().stream().anyMatch(
                 column -> column.id() instanceof IdSimple ids && ids.number() >= 7)); // checks for new column
-        Assertions.assertTrue(originTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintForeignKey)));
-        Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
+        Assertions.assertTrue(originTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKey.class)));
+        Assertions.assertTrue(extractedTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class)));
+        Assertions.assertTrue(extractedTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)));
+        Assertions.assertTrue(extractedTable.columnList().stream()
+                .anyMatch(column -> column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse)));
         Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
                 .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey)));

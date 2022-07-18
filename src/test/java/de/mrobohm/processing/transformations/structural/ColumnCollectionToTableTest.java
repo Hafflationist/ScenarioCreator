@@ -58,12 +58,12 @@ class ColumnCollectionToTableTest {
         Assertions.assertEquals(targetTable.columnList().size(), originTable.columnList().size());
         Assertions.assertTrue(originTable.columnList().stream()
                 .anyMatch(column -> column.id() instanceof IdSimple ids && ids.number() >= 7)); // checks for new column
-        Assertions.assertTrue(originTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintForeignKey)));
-        Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintForeignKeyInverse)));
-        Assertions.assertTrue(extractedTable.columnList().stream().anyMatch(column -> column.constraintSet().stream()
-                .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey)));
+        Assertions.assertTrue(originTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKey.class)));
+        Assertions.assertTrue(extractedTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class)));
+        Assertions.assertTrue(extractedTable.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)));
         Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub1));
         Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub2));
         IntegrityChecker.assertValidSchema(new Schema(new IdSimple(0), name, Context.getDefault(), newTableSet));

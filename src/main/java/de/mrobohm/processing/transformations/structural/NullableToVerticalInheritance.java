@@ -69,7 +69,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private Column addForeignIfPrimaryKey(Column column, NewIdComplex newIdComplex) {
-        if (column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey)) {
+        if (!column.containsConstraint(ColumnConstraintPrimaryKey.class)) {
             return column;
         }
         assert newIdComplex.primaryKeyColumnToNewId().containsKey(column.id())
@@ -113,7 +113,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
-        if (column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey)) {
+        if (!column.containsConstraint(ColumnConstraintPrimaryKey.class)) {
             return column;
         }
         var newConstraint = new ColumnConstraintForeignKey(column.id(), Set.of());
@@ -182,8 +182,8 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private List<Column> getPrimaryKeyColumns(List<Column> columnList) {
-        return columnList.stream().filter(column -> column.constraintSet().stream()
-                        .anyMatch(c -> c instanceof ColumnConstraintPrimaryKey))
+        return columnList.stream()
+                .filter(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class))
                 .toList();
     }
 

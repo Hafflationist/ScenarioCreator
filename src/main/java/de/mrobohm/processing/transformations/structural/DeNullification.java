@@ -50,7 +50,7 @@ public class DeNullification implements ColumnTransformation {
     private boolean isValid(Column column) {
         var isNotNode = !(column instanceof ColumnNode);
         var isNullable = column.isNullable();
-        var isNotForeignKey = column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
+        var isNotForeignKey = !column.containsConstraint(ColumnConstraintForeignKey.class);
         return isNotNode && isNullable && isNotForeignKey;
     }
 }

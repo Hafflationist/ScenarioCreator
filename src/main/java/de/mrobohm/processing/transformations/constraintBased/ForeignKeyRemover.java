@@ -52,6 +52,6 @@ public class ForeignKeyRemover implements ColumnTransformation {
     }
 
     private boolean hasForeignKeyConstraint(Column column) {
-        return column.constraintSet().stream().anyMatch(c -> c instanceof ColumnConstraintForeignKey);
+        return column.containsConstraint(ColumnConstraintForeignKey.class);
     }
 }
