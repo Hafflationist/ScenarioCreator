@@ -118,7 +118,11 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .filter(pair -> pair.second().isPresent())
                 .flatMap(pair -> {
                     var newId = (Id) new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
-                    return Stream.of(new Pair<>(pair.first().id(), newId), new Pair<>(pair.second().get().id(), newId));
+                    var newIdSet = Set.of(newId);
+                    return Stream.of(
+                            new Pair<>(pair.first().id(), newIdSet),
+                            new Pair<>(pair.second().get().id(), newIdSet)
+                    );
                 })
                 .collect(Collectors.toMap(Pair::first, Pair::second));
         return new DerivationIntegrationResult(newTable, idTranslationMap);
@@ -221,7 +225,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 && isSubsetConstraintSets(constraintSetB, constraintSetA);
     }
 
-    private record DerivationIntegrationResult(Table newTable, Map<Id, Id> idTranslationMap) {
+    private record DerivationIntegrationResult(Table newTable, Map<Id, Set<Id>> idTranslationMap) {
     }
 
     private record InheritancePair(Table derivation, Table base) {

@@ -10,14 +10,15 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class IdTranslation {
-    public static Schema translateConstraints(Schema schema, Map<Id, Id> idTranslationMap) {
+    public static Schema translateConstraints(Schema schema, Map<Id, Set<Id>> idTranslationMap) {
         var newTableSet = schema.tableSet().stream().map(t -> {
             var newColumnList = t.columnList().stream().map(column -> {
                 var newConstraintSet = column.constraintSet().stream()
-                        .map(c -> IdTranslation.translateConstraint(c, idTranslationMap))
+                        .flatMap(c -> IdTranslation.translateConstraint(c, idTranslationMap).stream())
                         .collect(Collectors.toSet());
                 if (column.constraintSet().equals(newConstraintSet)) {
                     return column;
@@ -36,7 +37,7 @@ public class IdTranslation {
         return schema.withTables(newTableSet);
     }
 
-    private static ColumnConstraint translateConstraint(ColumnConstraint constraint, Map<Id, Id> idTranslationMap) {
+    private static Set<ColumnConstraint> translateConstraint(ColumnConstraint constraint, Map<Id, Set<Id>> idTranslationMap) {
         var containsChangedId = switch (constraint) {
             case ColumnConstraintForeignKey ccfk -> idTranslationMap.containsKey(ccfk.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfki -> idTranslationMap.containsKey(ccfki.foreignColumnId());
@@ -45,12 +46,16 @@ public class IdTranslation {
         if (containsChangedId) {
             return switch (constraint) {
                 case ColumnConstraintForeignKey ccfk ->
-                        ccfk.withForeignColumnId(idTranslationMap.get(ccfk.foreignColumnId()));
+                        idTranslationMap.get(ccfk.foreignColumnId()).stream()
+                                .map(ccfk::withForeignColumnId)
+                                .collect(Collectors.toSet());
                 case ColumnConstraintForeignKeyInverse ccfki ->
-                        ccfki.withForeignColumnId(idTranslationMap.get(ccfki.foreignColumnId()));
+                        idTranslationMap.get(ccfki.foreignColumnId()).stream()
+                                .map(ccfki::withForeignColumnId)
+                                .collect(Collectors.toSet());
                 default -> throw new RuntimeException();
             };
         }
-        return constraint;
+        return Set.of(constraint);
     }
 }
