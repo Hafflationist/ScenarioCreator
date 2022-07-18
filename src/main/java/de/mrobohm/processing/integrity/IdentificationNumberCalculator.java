@@ -40,7 +40,7 @@ public class IdentificationNumberCalculator {
         return Stream.concat(Stream.of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
     }
 
-    private static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {
+    public static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {
         var constraintIdStream = checkConstraints
                 ? constraintsToIdStream(column.constraintSet())
                 : Stream.<Id>empty();
