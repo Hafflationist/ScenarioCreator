@@ -1,10 +1,7 @@
 package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
-import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
-import de.mrobohm.data.column.constraint.ColumnConstraintLocalPredicate;
-import de.mrobohm.data.column.constraint.ColumnConstraintUnique;
+import de.mrobohm.data.column.constraint.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -18,7 +15,6 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
-import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
@@ -121,14 +117,29 @@ public class BinaryValueToTable implements TableTransformation {
 
     // block foreign key constraints!
     private boolean isTableValid(Table table) {
-        return table.columnList().stream()
-                .filter(this::checkConstraints)
+
+        var enoughNonPrimKeyColumns = table.columnList().stream()
+                .anyMatch(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class));
+
+        var enoughColumns = table.columnList().size() >= 2;
+
+        var isReferenced = table.columnList().stream()
+                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class));
+
+        var splitColumnPresent = table.columnList().stream()
+                .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
+                .filter(column -> !column.containsConstraint(ColumnConstraintForeignKey.class))
+                .filter(column -> !column.containsConstraint(ColumnConstraintForeignKeyInverse.class))
                 .filter(column -> column instanceof ColumnLeaf)
                 .map(column -> (ColumnLeaf) column)
                 .map(ColumnLeaf::valueSet)
                 .map(Set::size)
-                .anyMatch(size -> size == 2)
-            && table.columnList().size() >= 2;
+                .anyMatch(size -> size == 2);
+
+        return enoughNonPrimKeyColumns
+                && enoughColumns
+                && !isReferenced
+                && splitColumnPresent;
     }
 
     private boolean checkConstraints(Column column) {
