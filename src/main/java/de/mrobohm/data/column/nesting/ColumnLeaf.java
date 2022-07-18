@@ -9,8 +9,6 @@ import de.mrobohm.data.primitives.StringPlus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.text.html.Option;
-import java.util.Optional;
 import java.util.Set;
 
 public record ColumnLeaf(Id id,
@@ -53,7 +51,7 @@ public record ColumnLeaf(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnLeaf withvalueSet(Set<Value> newValueSet) {
+    public ColumnLeaf withValueSet(Set<Value> newValueSet) {
         return new ColumnLeaf(id, name, dataType, newValueSet, context, constraintSet);
     }
 
