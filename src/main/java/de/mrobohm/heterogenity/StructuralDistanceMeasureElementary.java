@@ -35,7 +35,7 @@ public final class StructuralDistanceMeasureElementary {
 
     public static int calculateDistanceToRootAbsolute(Schema root, Schema schema) {
         var rootIdSet = IdentificationNumberCalculator
-                .getAllIds(root, true)
+                .getAllIds(root, false)
                 .collect(Collectors.toSet());
 
         var isRealRoot = rootIdSet.stream().allMatch(id -> id instanceof IdSimple);
@@ -47,7 +47,7 @@ public final class StructuralDistanceMeasureElementary {
                 .collect(Collectors.toSet());
 
         var schemaSimpleIdSet = IdentificationNumberCalculator
-                .extractIdSimple(IdentificationNumberCalculator.getAllIds(schema, true))
+                .extractIdSimple(IdentificationNumberCalculator.getAllIds(schema, false))
                 .map(IdSimple::number)
                 .collect(Collectors.toSet());
 
