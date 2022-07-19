@@ -11,13 +11,20 @@ import de.mrobohm.utils.StreamExtensions;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Forester {
 
     private final SingleTransformationExecuter _singleTransformationExecuter;
 
-    private Forester(SingleTransformationExecuter singleTransformationExecuter) {
+    private final TransformationCollection _transformationCollection;
+
+    private Forester(
+            SingleTransformationExecuter singleTransformationExecuter,
+            TransformationCollection transformationCollection
+    ) {
         _singleTransformationExecuter = singleTransformationExecuter;
+        _transformationCollection = transformationCollection;
     }
 
     public Set<Schema> createScenario(Schema rootSchema) {
@@ -25,6 +32,35 @@ public class Forester {
         // Hier wird die Stelle sein, an der alles zusammen läuft
         // Diese Methode definiert quasie die Anforderung des gesamten Programms.
         throw new RuntimeException("implement me!");
+    }
+
+    public TreeEntity step(TreeEntity te, TreeTargetDefinition ttd, Random random) {
+        var chosenTe = chooseTreeEntityToExtend(te, ttd, random);
+        var transformationSet = getChosenTransformations(
+                _transformationCollection,
+                ttd.keepForeignKeyIntegrity(),
+                ttd.shouldConserveAllRecords(),
+                ttd.shouldStayNormalized(),
+                ttd.conservesFlatRelations()
+        );
+        var newTe = extendTreeEntity(te, transformationSet, random);
+        return TreeDataOperator.replaceTreeEntity(te, chosenTe, newTe);
+    }
+
+    private Set<TreeEntity> getAllTreeEntitySet(TreeEntity te) {
+        return switch (te) {
+            case TreeLeaf tl -> Set.of((TreeEntity) tl);
+            case TreeNode tn -> {
+                var children = tn.childSet().stream().flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
+                yield Stream.concat(Stream.of(tn), children).collect(Collectors.toSet());
+            }
+        };
+    }
+
+    private TreeEntity chooseTreeEntityToExtend(TreeEntity te, TreeTargetDefinition ttd, Random random) {
+        var possibilitySet = getAllTreeEntitySet(te);
+        var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
+        return StreamExtensions.pickRandomOrThrow(possibilitySet.stream(), rte, random);
     }
 
     private TreeEntity extendTreeEntity(TreeEntity te, Set<Transformation> transformationSet, Random random) {
