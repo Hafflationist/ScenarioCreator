@@ -33,6 +33,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StructuralDistanceMeasureElementaryTest {
 
+    private String appendSpacesToName(String name) {
+        var spaces = "                        ";
+        return name + spaces.substring(name.length());
+    }
+
     @Test
     void calculateDistanceToRootAbsolute_BinaryValueToTable() throws NoTableFoundException, NoColumnFoundException {
         // --- arrange
@@ -54,7 +59,7 @@ class StructuralDistanceMeasureElementaryTest {
         var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println("BinaryValueToTable:\t" + diff);
+        System.out.println(appendSpacesToName("BinaryValueToTable:") + diff);
         Assertions.assertTrue(diff > 0);
     }
 
@@ -79,7 +84,7 @@ class StructuralDistanceMeasureElementaryTest {
         var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println("RemoveColumn:\t" + diff);
+        System.out.println(appendSpacesToName("RemoveColumn:") + diff);
         Assertions.assertTrue(diff > 0);
     }
 
@@ -104,7 +109,7 @@ class StructuralDistanceMeasureElementaryTest {
         var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println("RemoveTable:\t" + diff);
+        System.out.println(appendSpacesToName("RemoveTable:") + diff);
         Assertions.assertTrue(diff > 0);
     }
 
@@ -128,7 +133,7 @@ class StructuralDistanceMeasureElementaryTest {
         var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println("Manual_Grouping:\t" + diff);
+        System.out.println(appendSpacesToName("Manual_Grouping:") + diff);
         Assertions.assertTrue(diff > 0);
     }
 
@@ -154,7 +159,7 @@ class StructuralDistanceMeasureElementaryTest {
         var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println("Manual_ChangeGrouping:\t" + diff);
+        System.out.println(appendSpacesToName("Manual_ChangeGrouping:") + diff);
         Assertions.assertTrue(diff > 0);
     }
 }
