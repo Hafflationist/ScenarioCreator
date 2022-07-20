@@ -1,6 +1,7 @@
 package de.mrobohm.processing.tree;
 
 import de.mrobohm.data.Schema;
+import de.mrobohm.processing.transformations.SingleTransformationChecker;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
 import de.mrobohm.processing.transformations.Transformation;
 import de.mrobohm.processing.transformations.TransformationCollection;
@@ -27,11 +28,14 @@ public class Forester {
         _transformationCollection = transformationCollection;
     }
 
-    public Set<Schema> createScenario(Schema rootSchema) {
+    public Set<Schema> createScenario(Schema rootSchema, TreeTargetDefinition ttd, Random random) {
         var tree = new TreeLeaf<>(rootSchema);
-        // Hier wird die Stelle sein, an der alles zusammen läuft
-        // Diese Methode definiert quasi die Anforderung des gesamten Programms.
-        throw new RuntimeException("implement me!");
+        return Stream
+                .iterate((TreeEntity<Schema>)tree, t -> step(t, ttd, random))
+                .limit(20)
+                .flatMap(te -> getAllTreeEntitySet(te).stream())
+                .map(TreeEntity::content)
+                .collect(Collectors.toSet());
     }
 
     public TreeEntity<Schema> step(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
@@ -108,8 +112,12 @@ public class Forester {
     ) {
         if (acc >= max) throw new RuntimeException("No suitable transformation could be found and performed!");
         var rte = new RuntimeException("Not enough transformations given!");
+        // TODO: check which transformations can be applied!
+        var schema = te.content();
+        var validTransformationStream = transformationSet.stream()
+                .filter(transformation -> SingleTransformationChecker.checkTransformation(schema, transformation));
         var chosenTransformation = StreamExtensions.pickRandomOrThrow(
-                transformationSet.stream(), rte, random
+                validTransformationStream, rte, random
         );
         try {
             var newSchema = _singleTransformationExecuter.executeTransformation(
