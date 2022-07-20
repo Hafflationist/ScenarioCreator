@@ -32,7 +32,7 @@ public final class SingleTransformationChecker {
     @Contract(pure = true)
     public static boolean checkTransformation(Schema schema, Transformation transformation) {
         return switch (transformation) {
-            case ColumnTransformation ct -> schema.tableSet().stream()
+            case ColumnTransformation ct -> schema.tableSet().parallelStream()
                     .map(t -> ct.getCandidates(t.columnList()).size() > 0)
                     .reduce((a, b) -> a || b)
                     .orElse(false);

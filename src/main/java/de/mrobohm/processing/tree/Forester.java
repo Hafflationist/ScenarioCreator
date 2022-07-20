@@ -20,7 +20,7 @@ public class Forester {
 
     private final TransformationCollection _transformationCollection;
 
-    private Forester(
+    public Forester(
             SingleTransformationExecuter singleTransformationExecuter,
             TransformationCollection transformationCollection
     ) {
@@ -32,13 +32,13 @@ public class Forester {
         var tree = new TreeLeaf<>(rootSchema);
         return Stream
                 .iterate((TreeEntity<Schema>)tree, t -> step(t, ttd, random))
-                .limit(20)
+                .limit(5)
                 .flatMap(te -> getAllTreeEntitySet(te).stream())
                 .map(TreeEntity::content)
                 .collect(Collectors.toSet());
     }
 
-    public TreeEntity<Schema> step(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
+    private TreeEntity<Schema> step(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
         var chosenTe = chooseTreeEntityToExtend(te, ttd, random);
         var transformationSet = getChosenTransformations(
                 _transformationCollection,

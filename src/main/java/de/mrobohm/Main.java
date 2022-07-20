@@ -5,17 +5,22 @@ import de.mrobohm.data.primitives.*;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
+import de.mrobohm.processing.transformations.SingleTransformationExecuter;
+import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
+import de.mrobohm.processing.tree.Forester;
+import de.mrobohm.processing.tree.TreeTargetDefinition;
 import de.mrobohm.utils.Pair;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
@@ -30,7 +35,7 @@ public class Main {
                     random, 8, 8, germanet::pickRandomEnglishWord
             );
             var schema = saturator.saturateSemantically(schemaNaked);
-            SchemaFileHandler.save(schema, path);
+            SchemaFileHandler.save(schema, path + "schema.yaml");
             System.out.println("Saved schema in \"" + path + "\"");
         } catch (XMLStreamException | IOException e) {
             System.out.println(e.getMessage());
@@ -211,6 +216,42 @@ public class Main {
         }
     }
 
+    private static void testForester(String path) {
+        var metaRandom = new Random();
+        var seed = metaRandom.nextInt();
+        System.out.println("Seed: " + seed);
+        var random = new Random(seed);
+        try {
+            var germanet = new GermaNetInterface();
+            var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
+            var ss = new SemanticSaturation(ulc);
+            var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
+                    random, 3, 3, germanet::pickRandomEnglishWord
+            );
+            var schema = ss.saturateSemantically(schemaNaked);
+
+            var ste = new SingleTransformationExecuter(ss);
+            var translation = new Translation(ulc);
+            var tc = new TransformationCollection(ulc, translation);
+            var forester = new Forester(ste, tc);
+            var ttd = new TreeTargetDefinition(true, true, true, false);
+            var schemaList = forester.createScenario(schema, ttd, random).stream().toList();
+            SchemaFileHandler.save(schema, path + "scenario/schemaRoot.yaml");
+            IntStream.range(0, schemaList.size())
+                    .forEach(idx -> {
+                        var newSchema = schemaList.get(idx);
+                        try {
+                            SchemaFileHandler.save(newSchema, path + "scenario/schemaDerivative" + idx + ".yaml");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        System.out.println("Saved schema in \"" + path + "\"");
+                    });
+        } catch (XMLStreamException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
     public static void main(String[] args) {
         var path = args[0];
         writeRandomSchema(path);
@@ -218,6 +259,7 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
+        testForester(path);
     }
 
     record TestRecord(int id, Set<Integer> things) {
