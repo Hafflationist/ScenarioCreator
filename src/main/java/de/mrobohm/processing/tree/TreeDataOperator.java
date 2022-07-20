@@ -11,7 +11,6 @@ final class TreeDataOperator {
             TreeEntity<TContent> oldEntity,
             TreeEntity<TContent> newEntity
     ) {
-        // TODO: TEST ME!!!
         if (root.equals(oldEntity)) {
             return newEntity;
         }
