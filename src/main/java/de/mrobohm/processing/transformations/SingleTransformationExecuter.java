@@ -37,6 +37,9 @@ public class SingleTransformationExecuter {
     @NotNull
     public Schema executeTransformation(Schema schema, Transformation transformation, Random random)
             throws NoTableFoundException, NoColumnFoundException {
+        if(!SingleTransformationChecker.checkTransformation(schema, transformation)) {
+            throw new NoTableFoundException("SingleTransformationChecker.checkTransformation dais \"no!\"");
+        }
         var newSchema = switch (transformation) {
             case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);
@@ -110,7 +113,6 @@ public class SingleTransformationExecuter {
                 .replaceInStream(oldColumnStream, targetColumn, newPartialColumnStream)
                 .toList();
         var newTableSet = Collections.singleton(targetTable.withColumnList(newColumnList));
-
         var newSchema = executeTransformationTable(schema, target.first(), newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;
