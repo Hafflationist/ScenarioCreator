@@ -28,13 +28,13 @@ public class Forester {
     }
 
     public Set<Schema> createScenario(Schema rootSchema) {
-        var tree = new TreeLeaf(rootSchema);
+        var tree = new TreeLeaf<>(rootSchema);
         // Hier wird die Stelle sein, an der alles zusammen läuft
-        // Diese Methode definiert quasie die Anforderung des gesamten Programms.
+        // Diese Methode definiert quasi die Anforderung des gesamten Programms.
         throw new RuntimeException("implement me!");
     }
 
-    public TreeEntity step(TreeEntity te, TreeTargetDefinition ttd, Random random) {
+    public TreeEntity<Schema> step(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
         var chosenTe = chooseTreeEntityToExtend(te, ttd, random);
         var transformationSet = getChosenTransformations(
                 _transformationCollection,
@@ -47,27 +47,27 @@ public class Forester {
         return TreeDataOperator.replaceTreeEntity(te, chosenTe, newTe);
     }
 
-    private Set<TreeEntity> getAllTreeEntitySet(TreeEntity te) {
+    private Set<TreeEntity<Schema>> getAllTreeEntitySet(TreeEntity<Schema> te) {
         return switch (te) {
-            case TreeLeaf tl -> Set.of((TreeEntity) tl);
-            case TreeNode tn -> {
+            case TreeLeaf<Schema> tl -> Set.of((TreeEntity<Schema>) tl);
+            case TreeNode<Schema> tn -> {
                 var children = tn.childSet().stream().flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
                 yield Stream.concat(Stream.of(tn), children).collect(Collectors.toSet());
             }
         };
     }
 
-    private TreeEntity chooseTreeEntityToExtend(TreeEntity te, TreeTargetDefinition ttd, Random random) {
+    private TreeEntity<Schema> chooseTreeEntityToExtend(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
         var possibilitySet = getAllTreeEntitySet(te);
         var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
         return StreamExtensions.pickRandomOrThrow(possibilitySet.stream(), rte, random);
     }
 
-    private TreeEntity extendTreeEntity(TreeEntity te, Set<Transformation> transformationSet, Random random) {
+    private TreeEntity<Schema> extendTreeEntity(TreeEntity<Schema> te, Set<Transformation> transformationSet, Random random) {
         var newChild = createNewChild(te, transformationSet, random);
         var oldChildSet = switch (te) {
-            case TreeNode tn -> tn.childSet();
-            case TreeLeaf ignore -> Set.<TreeEntity>of();
+            case TreeNode<Schema> tn -> tn.childSet();
+            case TreeLeaf ignore -> Set.<TreeEntity<Schema>>of();
         };
         var newChildSet = StreamExtensions
                 .prepend(oldChildSet.stream(), newChild)
@@ -90,8 +90,8 @@ public class Forester {
         );
     }
 
-    private TreeLeaf createNewChild(
-            TreeEntity te,
+    private TreeLeaf<Schema> createNewChild(
+            TreeEntity<Schema> te,
             Set<Transformation> transformationSet,
             Random random
     ) {
@@ -99,8 +99,8 @@ public class Forester {
     }
 
 
-    private TreeLeaf createNewChildInner(
-            TreeEntity te,
+    private TreeLeaf<Schema> createNewChildInner(
+            TreeEntity<Schema> te,
             Set<Transformation> transformationSet,
             Random random,
             int max,
@@ -113,9 +113,9 @@ public class Forester {
         );
         try {
             var newSchema = _singleTransformationExecuter.executeTransformation(
-                    te.schema(), chosenTransformation, random
+                    te.content(), chosenTransformation, random
             );
-            return new TreeLeaf(newSchema);
+            return new TreeLeaf<>(newSchema);
         } catch (NoTableFoundException | NoColumnFoundException e) {
             return createNewChildInner(te, transformationSet, random, max, acc + 1);
         }

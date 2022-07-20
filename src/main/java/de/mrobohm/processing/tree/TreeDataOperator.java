@@ -6,14 +6,18 @@ final class TreeDataOperator {
     private TreeDataOperator() {
     }
 
-    static TreeEntity replaceTreeEntity(TreeEntity root, TreeEntity oldEntity, TreeEntity newEntity) {
+    static <TContent> TreeEntity<TContent> replaceTreeEntity(
+            TreeEntity<TContent> root,
+            TreeEntity<TContent> oldEntity,
+            TreeEntity<TContent> newEntity
+    ) {
         // TODO: TEST ME!!!
         if (root.equals(oldEntity)) {
             return newEntity;
         }
         return switch (root) {
             case TreeLeaf ignore -> root;
-            case TreeNode tn -> {
+            case TreeNode<TContent> tn -> {
                 var childSet = tn.childSet();
                 var newChildSet = childSet.stream()
                         .map(child -> replaceTreeEntity(child, oldEntity, newEntity))

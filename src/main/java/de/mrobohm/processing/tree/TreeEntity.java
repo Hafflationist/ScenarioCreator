@@ -1,13 +1,11 @@
 package de.mrobohm.processing.tree;
 
-import de.mrobohm.data.Schema;
-
 import java.util.Set;
 
-public sealed interface TreeEntity permits TreeLeaf, TreeNode {
-    Schema schema();
+public sealed interface TreeEntity<TContent> permits TreeLeaf, TreeNode {
+    TContent content();
 
-    default TreeNode withChildren(Set<TreeEntity> newChildSet) {
-        return new TreeNode(schema(), newChildSet);
+    default TreeNode<TContent> withChildren(Set<TreeEntity<TContent>> newChildSet) {
+        return new TreeNode<>(content(), newChildSet);
     }
 }

@@ -1,8 +1,6 @@
 package de.mrobohm.processing.tree;
 
-import de.mrobohm.data.Schema;
-
 import java.util.Set;
 
-public record TreeNode(Schema schema, Set<TreeEntity> childSet) implements TreeEntity {
+public record TreeNode<TContent>(TContent content, Set<TreeEntity<TContent>> childSet) implements TreeEntity<TContent> {
 }
