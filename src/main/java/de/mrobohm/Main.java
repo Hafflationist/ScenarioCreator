@@ -183,18 +183,18 @@ public class Main {
     private static void semanticDiffMaxxing(List<StringPlus> wordList, UnifiedLanguageCorpus ulc) {
         wordList.stream()
                 .flatMap(w1 -> wordList.stream()
-                        .map(w2 -> new Pair<>(
-                                Stream.of(w1.rawString(), w2.rawString()).sorted().toList(),
+                                .map(w2 -> new Pair<>(
+                                        Stream.of(w1.rawString(), w2.rawString()).sorted().toList(),
 //                                StringDistances.levenshteinNorm(w1.rawString(), w2.rawString())
 //                                ulc.semanticDiff(w1, w2)
-                                Math.min(ulc.semanticDiff(w1, w2), StringDistances.levenshteinNorm(w1.rawString(), w2.rawString()))
-                        ))
+                                        Math.min(ulc.semanticDiff(w1, w2), StringDistances.levenshteinNorm(w1.rawString(), w2.rawString()))
+                                ))
                 )
                 .distinct()
                 .forEach(System.out::println);
     }
 
-    private static void testTranslation(){
+    private static void testTranslation() {
         try {
             var germaNetInterface = new GermaNetInterface();
             var wordNetInterface = new WordNetInterface();
@@ -216,8 +216,7 @@ public class Main {
                     .limit(10)
                     .map(Optional::get)
                     .forEach(newSps -> System.out.println("newSps: " + newSps.rawString()));
-        }
-        catch (IOException | XMLStreamException e) {
+        } catch (IOException | XMLStreamException e) {
             throw new RuntimeException(e);
         }
     }

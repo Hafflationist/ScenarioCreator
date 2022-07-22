@@ -52,6 +52,9 @@ public class WordNetInterface implements LanguageCorpus {
 
     public Set<String> getSynonymes(String wordStr) {
         var idxWord = _dict.getIndexWord(wordStr, POS.NOUN);
+        if (idxWord == null) {
+            return Set.of();
+        }
         return idxWord.getWordIDs().stream()
                 .map(_dict::getWord)
                 .flatMap(word -> word.getSynset().getWords().stream())

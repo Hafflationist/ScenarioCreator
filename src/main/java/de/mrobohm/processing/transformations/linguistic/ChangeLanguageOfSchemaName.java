@@ -30,7 +30,7 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        if (isExecutable(schema)) {
+        if (!isExecutable(schema)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
         return _translation.translate(schema.name(), random)
