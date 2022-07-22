@@ -1,23 +1,28 @@
 package de.mrobohm;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.primitives.*;
+import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
 import de.mrobohm.inout.SchemaFileHandler;
+import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
 import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
-import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.tree.Forester;
 import de.mrobohm.processing.tree.TreeTargetDefinition;
 import de.mrobohm.utils.Pair;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.Nullable;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,7 +40,8 @@ public class Main {
                     random, 8, 8, germanet::pickRandomEnglishWord
             );
             var schema = saturator.saturateSemantically(schemaNaked);
-            SchemaFileHandler.save(schema, path + "schema.yaml");
+            SchemaFileHandler.save(schema, Path.of(path, "schema.yaml"));
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
             System.out.println("Saved schema in \"" + path + "\"");
         } catch (XMLStreamException | IOException e) {
             System.out.println(e.getMessage());
@@ -216,12 +222,23 @@ public class Main {
         }
     }
 
-    private static void testForester(String path) {
-        var metaRandom = new Random();
-        var seed = metaRandom.nextInt();
-        System.out.println("Seed: " + seed);
-        var random = new Random(seed);
+    private static void testForester(String pathStr, @Nullable Integer seedOpt) {
         try {
+            // clean directory
+            FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
+
+            // Manage randomness and seed
+            var metaRandom = new Random();
+            var seed = (seedOpt == null) ? metaRandom.nextInt() : seedOpt;
+            System.out.println("Seed: " + seed);
+            var random = new Random(seed);
+            var seedFile = Path.of(pathStr, "scenario/seed.txt").toFile();
+            try (var writer = new FileWriter(seedFile)) {
+//                writer.write("hugo");
+                writer.write(Integer.toString(seed));
+            }
+
+            // calc
             var germanet = new GermaNetInterface();
             var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
             var ss = new SemanticSaturation(ulc);
@@ -236,12 +253,14 @@ public class Main {
             var forester = new Forester(ste, tc);
             var ttd = new TreeTargetDefinition(true, true, true, false);
             var schemaList = forester.createScenario(schema, ttd, random).stream().toList();
-            SchemaFileHandler.save(schema, path + "scenario/schemaRoot.yaml");
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
             IntStream.range(0, schemaList.size())
                     .forEach(idx -> {
                         var newSchema = schemaList.get(idx);
+                        var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
                         try {
-                            SchemaFileHandler.save(newSchema, path + "scenario/schemaDerivative" + idx + ".yaml");
+                            SchemaFileHandler.save(newSchema, path);
                         } catch (IOException e) {
                             throw new RuntimeException(e);
                         }
@@ -259,7 +278,7 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        testForester(path);
+        testForester(path, 923822708);
     }
 
     record TestRecord(int id, Set<Integer> things) {
