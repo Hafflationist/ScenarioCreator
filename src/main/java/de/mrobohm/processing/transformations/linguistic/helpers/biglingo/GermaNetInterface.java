@@ -167,9 +167,11 @@ public class GermaNetInterface implements LanguageCorpus {
 
     public String pickRandomEnglishWord(Random random) {
         var rte = new RuntimeException("REEE");
+        var validIliStream = _germanet.getIliRecords().stream()
+                .filter(ili -> !ili.getPwnWord().isBlank());
         return StreamExtensions
                 .pickRandomOrThrowMultiple(
-                        _germanet.getIliRecords().stream().filter(ili -> !ili.getPwnWord().isBlank()), 1, rte, random
+                        validIliStream, 1, rte, random
                 )
                 .map(IliRecord::getPwnWord)
                 .toList()
