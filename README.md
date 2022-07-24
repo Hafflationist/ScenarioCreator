@@ -12,4 +12,5 @@ The files of the WordNet corpus can be downloaded [here](https://wordnetcode.pri
 You need to place the `dict`-folder into the first created directory. 
 The second created directory has to be filled with the files of the GermaNet corpus, which you have to obtain by yourself. 
 The files should reside in a folder named `GN_V160` in the second created directory. 
-To get the translation feature working, you have to download [ILI-records](https://www.sfs.uni-tuebingen.de/GermaNet/documents/ili/GN-V16.0-ILI-Mappings-DE-EN-XML.zip) and follow its instruction in the `README` file.
+To get the translation feature working, you have to download [ILI-records](https://www.sfs.uni-tuebingen.de/GermaNet/documents/ili/GN-V16.0-ILI-Mappings-DE-EN-XML.zip) and follow its instruction in the `README` file. FOr the calculation of the semantic distance used in this program you have to paste the [data (all files)](https://www.sfs.uni-tuebingen.de/GermaNet/documents/freqLists/GN_V160-FreqLists.zip)
+ about word freqeuencies into the GermaNet-directory.
