@@ -277,7 +277,11 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        testForester(path, 923822708);
+        for (long i = 0; i < Long.MAX_VALUE; i++) {
+            System.out.println("Starte Anlauf " + i + "...");
+            testForester(path, 923822708);
+            System.out.println("Anlauf " + i + " vollständig");
+        }
     }
 
     record TestRecord(int id, Set<Integer> things) {
