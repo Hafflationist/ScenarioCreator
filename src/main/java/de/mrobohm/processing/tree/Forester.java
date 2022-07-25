@@ -57,7 +57,8 @@ public class Forester {
         return switch (te) {
             case TreeLeaf<Schema> tl -> SSet.of((TreeEntity<Schema>) tl);
             case TreeNode<Schema> tn -> {
-                var children = tn.childSet().stream().flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
+                var children = tn.childSet().parallelStream()
+                        .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
                 yield Stream.concat(Stream.of(tn), children).collect(Collectors.toCollection(TreeSet::new));
             }
         };

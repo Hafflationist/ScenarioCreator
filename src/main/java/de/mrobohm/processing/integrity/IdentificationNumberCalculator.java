@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class IdentificationNumberCalculator {
 
     public static Stream<IdSimple> extractIdSimple(Stream<Id> idStream) {
-        return idStream.flatMap(id -> switch(id) {
+        return idStream.parallel().flatMap(id -> switch(id) {
             case IdSimple ids -> Stream.of(ids);
             case IdMerge idm -> Stream.concat(
                     extractIdSimple(Stream.of(idm.predecessorId1())),
@@ -34,8 +34,8 @@ public class IdentificationNumberCalculator {
 
     public static Stream<Id> getAllIds(Schema schema, boolean checkConstraints){
         var tableSet = schema.tableSet();
-        var tableIdStream = tableSet.stream().map(Table::id);
-        var columnIdStream = tableSet.stream()
+        var tableIdStream = tableSet.parallelStream().map(Table::id);
+        var columnIdStream = tableSet.parallelStream()
                 .flatMap(t -> t.columnList().stream().flatMap(column -> columnToIdStream(column, checkConstraints)));
         return Stream.concat(Stream.of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
     }
@@ -48,19 +48,19 @@ public class IdentificationNumberCalculator {
             case ColumnCollection collection -> Stream.of(
                             Stream.of(collection.id()),
                             constraintIdStream,
-                            collection.columnList().stream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
+                            collection.columnList().parallelStream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
                     .flatMap(Function.identity());
             case ColumnLeaf leaf -> StreamExtensions.prepend(constraintIdStream, leaf.id());
             case ColumnNode node -> Stream.of(
                             Stream.of(node.id()),
                             constraintIdStream,
-                            node.columnList().stream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
+                            node.columnList().parallelStream().flatMap(cc -> columnToIdStream(cc, checkConstraints)))
                     .flatMap(Function.identity());
         };
     }
 
     private static Stream<Id> constraintsToIdStream(SortedSet<ColumnConstraint> constraintSet) {
-        return constraintSet.stream()
+        return constraintSet.parallelStream()
                 .filter(c -> c instanceof ColumnConstraintUnique)
                 .map(c -> (ColumnConstraintUnique) c)
                 .map(ColumnConstraintUnique::getUniqueGroupId);

@@ -97,7 +97,7 @@ public class SingleTransformationExecuter {
     @Contract(pure = true)
     @NotNull
     private Schema executeTransformationColumn(Schema schema, ColumnTransformation transformation, Random random)
-            throws NoTableFoundException, NoColumnFoundException {
+            throws NoColumnFoundException {
         assert schema != null;
 
         var target = chooseColumn(schema, transformation::getCandidates, random);
