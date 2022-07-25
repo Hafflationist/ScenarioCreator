@@ -1,29 +1,30 @@
 package de.mrobohm.data.column.nesting;
 
+import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
-import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
+import de.mrobohm.utils.SSet;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 public record ColumnLeaf(Id id,
                          StringPlus name,
                          DataType dataType,
-                         Set<Value> valueSet,
+                         SortedSet<Value> valueSet,
                          ColumnContext context,
-                         Set<ColumnConstraint> constraintSet) implements Column {
+                         SortedSet<ColumnConstraint> constraintSet) implements Column {
 
     public ColumnLeaf(Id id,
                       StringPlus name,
                       DataType dataType,
                       ColumnContext context,
-                      Set<ColumnConstraint> constraintSet) {
-        this(id, name, dataType, Set.of(), context, constraintSet);
+                      SortedSet<ColumnConstraint> constraintSet) {
+        this(id, name, dataType, SSet.of(), context, constraintSet);
     }
 
     @Override
@@ -51,7 +52,7 @@ public record ColumnLeaf(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnLeaf withValueSet(Set<Value> newValueSet) {
+    public ColumnLeaf withValueSet(SortedSet<Value> newValueSet) {
         return new ColumnLeaf(id, name, dataType, newValueSet, context, constraintSet);
     }
 
@@ -63,7 +64,7 @@ public record ColumnLeaf(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnLeaf withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
+    public ColumnLeaf withConstraintSet(SortedSet<ColumnConstraint> newConstraintSet) {
         return new ColumnLeaf(id, name, dataType, valueSet, context, newConstraintSet);
     }
 }

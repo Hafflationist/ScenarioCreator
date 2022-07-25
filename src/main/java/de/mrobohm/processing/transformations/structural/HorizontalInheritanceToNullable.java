@@ -15,13 +15,11 @@ import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBe
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
 import de.mrobohm.processing.transformations.structural.base.IngestionBase;
 import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -67,12 +65,12 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
 
         var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), oldTableStream, derivationIntegrationResult.newTable())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         return IdTranslation.translateConstraints(schema.withTables(newTableSet), derivationIntegrationResult.idTranslationMap());
     }
 
-    private InheritancePair findDerivingTable(Set<Table> tableSet, Random random) {
+    private InheritancePair findDerivingTable(SortedSet<Table> tableSet, Random random) {
         var ipStream = tableSet.stream()
                 .flatMap(t1 -> tableSet.stream().map(t2 -> new Pair<>(t1, t2)))
                 .map(pair -> new InheritancePair(pair.first(), pair.second()))
@@ -118,7 +116,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .filter(pair -> pair.second().isPresent())
                 .flatMap(pair -> {
                     var newId = (Id) new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
-                    var newIdSet = Set.of(newId);
+                    var newIdSet = SSet.of(newId);
                     return Stream.of(
                             new Pair<>(pair.first().id(), newIdSet),
                             new Pair<>(pair.second().get().id(), newIdSet)
@@ -209,7 +207,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         return false;
     }
 
-    private boolean isSubsetConstraintSets(Set<ColumnConstraint> constraintSetSuper, Set<ColumnConstraint> constraintSetSub) {
+    private boolean isSubsetConstraintSets(SortedSet<ColumnConstraint> constraintSetSuper, SortedSet<ColumnConstraint> constraintSetSub) {
         return constraintSetSub.stream().allMatch(ca -> constraintSetSuper.stream().anyMatch(cb -> switch (ca) {
             case ColumnConstraintPrimaryKey ignore -> cb instanceof ColumnConstraintPrimaryKey;
             case ColumnConstraintUnique ignore -> cb instanceof ColumnConstraintUnique;
@@ -223,12 +221,12 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         }));
     }
 
-    private boolean equalsConstraintSets(Set<ColumnConstraint> constraintSetA, Set<ColumnConstraint> constraintSetB) {
+    private boolean equalsConstraintSets(SortedSet<ColumnConstraint> constraintSetA, SortedSet<ColumnConstraint> constraintSetB) {
         return isSubsetConstraintSets(constraintSetA, constraintSetB)
                 && isSubsetConstraintSets(constraintSetB, constraintSetA);
     }
 
-    private record DerivationIntegrationResult(Table newTable, Map<Id, Set<Id>> idTranslationMap) {
+    private record DerivationIntegrationResult(Table newTable, Map<Id, SortedSet<Id>> idTranslationMap) {
     }
 
     private record InheritancePair(Table derivation, Table base) {

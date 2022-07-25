@@ -6,11 +6,13 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.structural.base.NewTableBase;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,7 @@ public class ColumnNodeToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
 
         var columnNodeStream = table.columnList().stream()
@@ -42,13 +44,13 @@ public class ColumnNodeToTable implements TableTransformation {
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
         var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
         var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
-        return Set.of(newTable, modifiedTable);
+        return SSet.of(newTable, modifiedTable);
     }
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
-        return tableSet.stream().filter(this::hasColumnNode).collect(Collectors.toSet());
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
+        return tableSet.stream().filter(this::hasColumnNode).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private boolean hasColumnNode(Table table) {

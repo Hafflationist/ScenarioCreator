@@ -60,12 +60,12 @@ public class GermaNetInterface implements LanguageCorpus {
         return new EnglishSynset(offset, pos);
     }
 
-    public Set<String> getSynonymes(String word) {
+    public SortedSet<String> getSynonymes(String word) {
         var synonymes = _germanet.getSynsets(word).stream().flatMap(ss -> ss.getAllOrthForms().stream());
-        return synonymes.collect(Collectors.toSet());
+        return synonymes.collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public Set<String> getSynonymes(Set<GlobalSynset> synsetIdSet) {
+    public SortedSet<String> getSynonymes(SortedSet<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
                 .filter(gss -> gss instanceof GermanSynset)
                 .map(gss -> (GermanSynset) gss)
@@ -73,15 +73,15 @@ public class GermaNetInterface implements LanguageCorpus {
                         .getSynsetByID(synsetId.id())
                         .getAllOrthForms()
                         .stream())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override
-    public Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet) {
+    public SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet) {
         var possibleSynsets = _germanet.getSynsets(word);
         var otherSynsets = otherWordSet.stream()
                 .flatMap(w -> _germanet.getSynsets(w).stream())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
         var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
@@ -91,16 +91,16 @@ public class GermaNetInterface implements LanguageCorpus {
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
                 .map(Synset::getId)
                 .map(GermanSynset::new)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private double avgDistance(Synset synset, Set<Synset> otherSynsets, double min, double max) {
+    private double avgDistance(Synset synset, SortedSet<Synset> otherSynsets, double min, double max) {
         return (min != max)
                 ? (avgDistance(synset, otherSynsets) - min) / (max - min)
                 : 0.0;
     }
 
-    private double avgDistance(Synset synset, Set<Synset> otherSynsets) {
+    private double avgDistance(Synset synset, SortedSet<Synset> otherSynsets) {
         try {
             var semanticUtils = _germanetFreq.getSemanticUtils();
             return otherSynsets.stream()
@@ -114,7 +114,7 @@ public class GermaNetInterface implements LanguageCorpus {
         }
     }
 
-    public Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
+    public Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
         var ilId = englishSynsetToString(ess);
         var preMap = _germanet.getIliRecords().stream()
                 .filter(ili -> ili.getPwn30Id().toLowerCase().equals(ilId))
@@ -126,12 +126,12 @@ public class GermaNetInterface implements LanguageCorpus {
                 .collect(groupingBy(Pair::first));
         return preMap.keySet().stream().collect(Collectors.toMap(
                 Function.identity(),
-                orthForm -> preMap.get(orthForm).stream().map(Pair::second).collect(Collectors.toSet())
+                orthForm -> preMap.get(orthForm).stream().map(Pair::second).collect(Collectors.toCollection(TreeSet::new))
         ));
     }
 
     @Override
-    public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> synsetIdSet) {
+    public SortedSet<EnglishSynset> word2EnglishSynset(SortedSet<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
                 .filter(gss -> gss instanceof GermanSynset)
                 .map(gss -> ((GermanSynset) gss).id())
@@ -139,10 +139,10 @@ public class GermaNetInterface implements LanguageCorpus {
                 .flatMap(ss -> ss.getIliRecords().stream())
                 .map(IliRecord::getPwn30Id)
                 .map(GermaNetInterface::stringToEnglishSynset)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public double lowestSemanticDistance(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2) {
+    public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
         try {
             var semanticUtils = _germanetFreq.getSemanticUtils();
             return synsetIdSet1.stream()

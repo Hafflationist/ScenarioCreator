@@ -15,12 +15,14 @@ import de.mrobohm.processing.transformations.TableTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -37,7 +39,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");
         if (!hasNullableColumnsAndNoInverseConstraints(table)) {
             throw exception;
@@ -48,14 +50,14 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         var doubledColumnIdSet = table.columnList().stream()
                 .filter(column -> !extractableColumnList.contains(column))
                 .map(Column::id)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         var newIdComplex = new NewIdComplex(
                 newIds[newIds.length - 1],
                 doubledColumnIdSet
         );
         var newBaseTable = createBaseTable(table, extractableColumnList);
         var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
-        return Set.of(newBaseTable, newDerivingTable);
+        return SSet.of(newBaseTable, newDerivingTable);
     }
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList) {
@@ -114,8 +116,8 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
-        return tableSet.stream().filter(this::hasNullableColumnsAndNoInverseConstraints).collect(Collectors.toSet());
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
+        return tableSet.stream().filter(this::hasNullableColumnsAndNoInverseConstraints).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private boolean hasNullableColumnsAndNoInverseConstraints(Table table) {
@@ -131,6 +133,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }
 
-    private record NewIdComplex(Id derivingTableId, Set<Id> doubledColumnIdSet) {
+    private record NewIdComplex(Id derivingTableId, SortedSet<Id> doubledColumnIdSet) {
     }
 }

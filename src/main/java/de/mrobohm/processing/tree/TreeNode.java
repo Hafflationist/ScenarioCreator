@@ -1,6 +1,6 @@
 package de.mrobohm.processing.tree;
 
-import java.util.Set;
+import java.util.SortedSet;
 
-public record TreeNode<TContent>(TContent content, Set<TreeEntity<TContent>> childSet) implements TreeEntity<TContent> {
+public record TreeNode<TContent>(TContent content, SortedSet<TreeEntity<TContent>> childSet) implements TreeEntity<TContent> {
 }

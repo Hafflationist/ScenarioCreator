@@ -8,18 +8,20 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.utils.SSet;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 public class IdTranslation {
-    public static Schema translateConstraints(Schema schema, Map<Id, Set<Id>> idTranslationMap) {
+    public static Schema translateConstraints(Schema schema, Map<Id, SortedSet<Id>> idTranslationMap) {
         var newTableSet = schema.tableSet().stream().map(t -> {
             var newColumnList = t.columnList().stream().map(column -> {
                 var newConstraintSet = column.constraintSet().stream()
                         .flatMap(c -> IdTranslation.translateConstraint(c, idTranslationMap).stream())
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(TreeSet::new));
                 if (column.constraintSet().equals(newConstraintSet)) {
                     return column;
                 }
@@ -33,11 +35,11 @@ public class IdTranslation {
                 return t;
             }
             return t.withColumnList(newColumnList);
-        }).collect(Collectors.toSet());
+        }).collect(Collectors.toCollection(TreeSet::new));
         return schema.withTables(newTableSet);
     }
 
-    private static Set<ColumnConstraint> translateConstraint(ColumnConstraint constraint, Map<Id, Set<Id>> idTranslationMap) {
+    private static SortedSet<ColumnConstraint> translateConstraint(ColumnConstraint constraint, Map<Id, SortedSet<Id>> idTranslationMap) {
         var containsChangedId = switch (constraint) {
             case ColumnConstraintForeignKey ccfk -> idTranslationMap.containsKey(ccfk.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfki -> idTranslationMap.containsKey(ccfki.foreignColumnId());
@@ -45,17 +47,15 @@ public class IdTranslation {
         };
         if (containsChangedId) {
             return switch (constraint) {
-                case ColumnConstraintForeignKey ccfk ->
-                        idTranslationMap.get(ccfk.foreignColumnId()).stream()
-                                .map(ccfk::withForeignColumnId)
-                                .collect(Collectors.toSet());
-                case ColumnConstraintForeignKeyInverse ccfki ->
-                        idTranslationMap.get(ccfki.foreignColumnId()).stream()
-                                .map(ccfki::withForeignColumnId)
-                                .collect(Collectors.toSet());
+                case ColumnConstraintForeignKey ccfk -> idTranslationMap.get(ccfk.foreignColumnId()).stream()
+                        .map(ccfk::withForeignColumnId)
+                        .collect(Collectors.toCollection(TreeSet::new));
+                case ColumnConstraintForeignKeyInverse ccfki -> idTranslationMap.get(ccfki.foreignColumnId()).stream()
+                        .map(ccfki::withForeignColumnId)
+                        .collect(Collectors.toCollection(TreeSet::new));
                 default -> throw new RuntimeException();
             };
         }
-        return Set.of(constraint);
+        return SSet.of(constraint);
     }
 }

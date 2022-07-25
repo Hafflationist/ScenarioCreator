@@ -4,6 +4,7 @@ import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.Id;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.math.BigDecimal;
 import java.sql.Date;

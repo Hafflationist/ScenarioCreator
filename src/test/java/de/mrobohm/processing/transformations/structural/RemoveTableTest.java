@@ -1,10 +1,10 @@
 package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.Context;
-import de.mrobohm.data.column.DataType;
-import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.DataType;
+import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
@@ -12,12 +12,12 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 class RemoveTableTest {
 
@@ -27,10 +27,10 @@ class RemoveTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), Set.of())));
-        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), Set.of());
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
+        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), Set.of());
+        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), SSet.of());
         var validTable = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new RemoveTable();
@@ -48,18 +48,18 @@ class RemoveTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
         var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(9), Set.of())));
-        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), Set.of());
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(9), SSet.of())));
+        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
         var validColumn2 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), Set.of());
+        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), SSet.of());
         var invalidTable2 = invalidTable1.withId(new IdSimple(11)).withColumnList(List.of(invalidColumn2));
         var validTable1 = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
         var validTable2 = invalidTable1.withId(new IdSimple(13)).withColumnList(List.of(validColumn2));
-        var tableSet = Set.of(invalidTable1, invalidTable2, validTable1, validTable2);
+        var tableSet = SSet.of(invalidTable1, invalidTable2, validTable1, validTable2);
         var transformation = new RemoveTable();
 
         // --- Act

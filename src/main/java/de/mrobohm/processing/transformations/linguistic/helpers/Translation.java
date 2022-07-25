@@ -7,6 +7,7 @@ import de.mrobohm.data.primitives.StringPlusSemantical;
 import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,7 +51,7 @@ public class Translation {
     }
 
     public Optional<StringPlus> translateInner(StringPlus name, Random random, int acc, int max) {
-        if (acc == max){
+        if (acc == max) {
             return Optional.empty();
         }
         return switch (name) {
@@ -61,7 +62,7 @@ public class Translation {
                         .filter(segment -> segment.gssSet().size() > 0
                                 && !segment.gssSet().stream()
                                 .map(GlobalSynset::language)
-                                .allMatch(Set.of(Language.Mixed, Language.Technical)::contains));
+                                .allMatch(SSet.of(Language.Mixed, Language.Technical)::contains));
                 var chosenSegment = StreamExtensions.pickRandomOrThrow(
                         validSegmentStream, rte, random
                 );
@@ -112,7 +113,7 @@ public class Translation {
     public boolean canBeTranslated(StringPlus stringPlus) {
         return switch (stringPlus) {
             case StringPlusNaked ignore -> false;
-//            case StringPlusNaked spn -> !Set.of(Language.Mixed, Language.Technical).contains(spn.language());
+//            case StringPlusNaked spn -> !SSet.of(Language.Mixed, Language.Technical).contains(spn.language());
             case StringPlusSemantical sps -> sps.language() != Language.Technical;
         };
     }

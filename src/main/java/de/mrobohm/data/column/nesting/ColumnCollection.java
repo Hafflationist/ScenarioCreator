@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 
 public record ColumnCollection(Id id,
                                StringPlus name,
                                List<Column> columnList,
-                               Set<ColumnConstraint> constraintSet,
+                               SortedSet<ColumnConstraint> constraintSet,
                                boolean isNullable) implements Column {
 
     @Contract(pure = true)
@@ -35,7 +35,7 @@ public record ColumnCollection(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public ColumnCollection withConstraintSet(Set<ColumnConstraint> newConstraintSet) {
+    public ColumnCollection withConstraintSet(SortedSet<ColumnConstraint> newConstraintSet) {
         return new ColumnCollection(id, name, columnList, newConstraintSet, isNullable);
     }
 

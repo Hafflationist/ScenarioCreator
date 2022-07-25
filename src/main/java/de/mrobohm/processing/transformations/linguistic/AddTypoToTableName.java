@@ -4,10 +4,12 @@ import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
 import de.mrobohm.processing.transformations.linguistic.helpers.CharBase;
+import de.mrobohm.utils.SSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -25,16 +27,16 @@ public class AddTypoToTableName implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var newName = CharBase.introduceTypo(table.name(), random);
-        return Set.of(table.withName(newName));
+        return SSet.of(table.withName(newName));
     }
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
         return tableSet.stream()
                 .filter(t -> t.name().rawString().length() > 0)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

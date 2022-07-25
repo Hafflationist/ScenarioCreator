@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 
 public record Table(Id id,
                     StringPlus name,
                     List<Column> columnList,
                     Context context,
-                    Set<TableConstraint> tableConstraintSet) implements Entity {
+                    SortedSet<TableConstraint> tableConstraintSet) implements Entity {
 
     @Contract(pure = true)
     @NotNull
@@ -43,7 +43,7 @@ public record Table(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public Table withTableConstraintSet(Set<TableConstraint> newTableConstraints) {
+    public Table withTableConstraintSet(SortedSet<TableConstraint> newTableConstraints) {
         return new Table(id, name, columnList, context, newTableConstraints);
     }
 }

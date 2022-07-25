@@ -6,17 +6,19 @@ import de.mrobohm.processing.transformations.linguistic.*;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.processing.transformations.structural.*;
+import de.mrobohm.utils.SSet;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class TransformationCollection {
 
-    private final Set<ColumnTransformation> _allColumnTransformationSet;
-    private final Set<TableTransformation> _allTableTransformationSet;
-    private final Map<TransformationParams, Set<SchemaTransformation>> _allSchemaTransformationSet;
+    private final SortedSet<ColumnTransformation> _allColumnTransformationSet;
+    private final SortedSet<TableTransformation> _allTableTransformationSet;
+    private final Map<TransformationParams, SortedSet<SchemaTransformation>> _allSchemaTransformationSet;
 
     public TransformationCollection(
             UnifiedLanguageCorpus unifiedLanguageCorpus,
@@ -27,10 +29,10 @@ public class TransformationCollection {
         _allSchemaTransformationSet = generateAllSchemaTransformationSet(unifiedLanguageCorpus, translation);
     }
 
-    private Set<ColumnTransformation> generateAllColumnTransformationSet(
+    private SortedSet<ColumnTransformation> generateAllColumnTransformationSet(
             UnifiedLanguageCorpus unifiedLanguageCorpus, Translation translation
     ) {
-        return Set.of(
+        return SSet.of(
                 // constraintBased
                 new ForeignKeyRemover(),
                 // contextual
@@ -48,10 +50,10 @@ public class TransformationCollection {
         );
     }
 
-    private Set<TableTransformation> generateAllTableTransformationSet(
+    private SortedSet<TableTransformation> generateAllTableTransformationSet(
             UnifiedLanguageCorpus unifiedLanguageCorpus, Translation translation
     ) {
-        return Set.of(
+        return SSet.of(
                 // constraintBased
                 // contextual
                 // linguistic
@@ -69,7 +71,7 @@ public class TransformationCollection {
         );
     }
 
-    private Map<TransformationParams, Set<SchemaTransformation>> generateAllSchemaTransformationSet(
+    private Map<TransformationParams, SortedSet<SchemaTransformation>> generateAllSchemaTransformationSet(
             UnifiedLanguageCorpus unifiedLanguageCorpus,
             Translation translation
     ) {
@@ -87,12 +89,12 @@ public class TransformationCollection {
                 ));
     }
 
-    private Set<SchemaTransformation> generateAllSchemaTransformationSetInner(
+    private SortedSet<SchemaTransformation> generateAllSchemaTransformationSetInner(
             UnifiedLanguageCorpus unifiedLanguageCorpus,
             Translation translation,
             TransformationParams params
     ) {
-        return Set.of(
+        return SSet.of(
                 // constraintBased
                 // contextual
                 // linguistic
@@ -109,7 +111,7 @@ public class TransformationCollection {
         );
     }
 
-    public Set<Transformation> getAllTransformationSet(
+    public SortedSet<Transformation> getAllTransformationSet(
             boolean keepForeignKeyIntegrity,
             boolean shouldConserveAllRecords,
             boolean shouldStayNormalized,
@@ -125,7 +127,7 @@ public class TransformationCollection {
                         )
                 )
                 .filter(t -> t.conservesFlatRelations() || !conservesFlatRelations)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private record TransformationParams(boolean keepForeignKeyIntegrity,

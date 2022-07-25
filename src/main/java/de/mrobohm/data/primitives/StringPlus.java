@@ -3,7 +3,7 @@ package de.mrobohm.data.primitives;
 import de.mrobohm.data.Language;
 
 
-public sealed interface StringPlus permits StringPlusNaked, StringPlusSemantical {
+public sealed interface StringPlus extends Comparable<StringPlus> permits StringPlusNaked, StringPlusSemantical {
     String rawString();
     Language language();
 
@@ -42,5 +42,10 @@ public sealed interface StringPlus permits StringPlusNaked, StringPlusSemantical
                 .filter(Character::isLetter)
                 .count();
         return ((double) letterChars) / ((double) str.length());
+    }
+
+    @Override
+    default int compareTo(StringPlus sp) {
+        return this.toString().compareTo(sp.toString());
     }
 }

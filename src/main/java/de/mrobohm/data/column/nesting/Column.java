@@ -4,8 +4,9 @@ import de.mrobohm.data.Entity;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.SortedSet;
 
 public sealed interface Column extends Entity permits ColumnCollection, ColumnLeaf, ColumnNode {
     Id id();
@@ -16,7 +17,7 @@ public sealed interface Column extends Entity permits ColumnCollection, ColumnLe
         return constraintSet().stream().anyMatch(c -> c.getClass().equals(constraintType));
     }
 
-    Set<ColumnConstraint> constraintSet();
+    SortedSet<ColumnConstraint> constraintSet();
 
     boolean isNullable();
 }

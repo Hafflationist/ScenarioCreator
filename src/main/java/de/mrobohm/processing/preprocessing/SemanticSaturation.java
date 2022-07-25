@@ -13,7 +13,8 @@ import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -26,13 +27,13 @@ public final class SemanticSaturation {
         _corpus = corpus;
     }
 
-    private static Set<StringPlus> gatherAllNames(Schema schema) {
+    private static SortedSet<StringPlus> gatherAllNames(Schema schema) {
         var schemaName = schema.name();
         return Stream
                 .concat(
                         Stream.of(schemaName),
                         schema.tableSet().stream().flatMap(SemanticSaturation::gatherAllNames))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static Stream<StringPlus> gatherAllNames(Table table) {
@@ -56,7 +57,7 @@ public final class SemanticSaturation {
     public Schema saturateSemantically(Schema schema) {
         var allNames = gatherAllNames(schema).stream()
                 .flatMap(s -> LinguisticUtils.tokenize(s).stream())
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         return Saturation.saturate(schema,
                 s -> enrichName(s, allNames),
@@ -64,7 +65,7 @@ public final class SemanticSaturation {
                 c -> enrichName(c, allNames));
     }
 
-    private <T extends Entity> T enrichName(T entity, Set<String> context, Function<StringPlusSemantical, T> enricher) {
+    private <T extends Entity> T enrichName(T entity, SortedSet<String> context, Function<StringPlusSemantical, T> enricher) {
         return switch (entity.name()) {
             case StringPlusSemantical ignore -> entity;
             case StringPlusNaked oldName -> {
@@ -77,15 +78,15 @@ public final class SemanticSaturation {
         };
     }
 
-    private Schema enrichName(Schema schema, Set<String> context) {
+    private Schema enrichName(Schema schema, SortedSet<String> context) {
         return enrichName(schema, context, schema::withName);
     }
 
-    private Table enrichName(Table table, Set<String> context) {
+    private Table enrichName(Table table, SortedSet<String> context) {
         return enrichName(table, context, table::withName);
     }
 
-    private Column enrichName(Column column, Set<String> context) {
+    private Column enrichName(Column column, SortedSet<String> context) {
         return enrichName(column, context, sps -> switch (column) {
             case ColumnLeaf leaf -> leaf.withName(sps);
             case ColumnCollection collection ->
@@ -96,7 +97,7 @@ public final class SemanticSaturation {
         });
     }
 
-    public StringPlusSemantical saturateSemantically(StringPlusNaked spn, Set<String> context) {
+    public StringPlusSemantical saturateSemantically(StringPlusNaked spn, SortedSet<String> context) {
         return StringPlusSemantical.of(
                 spn,
                 s -> _corpus.estimateSynsetId(s, context)

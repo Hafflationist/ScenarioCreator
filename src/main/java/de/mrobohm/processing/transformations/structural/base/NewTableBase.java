@@ -1,12 +1,8 @@
 package de.mrobohm.processing.transformations.structural.base;
 
 import de.mrobohm.data.Context;
-import de.mrobohm.data.column.DataType;
-import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.ColumnContext;
-import de.mrobohm.data.column.Encoding;
-import de.mrobohm.data.column.UnitOfMeasure;
+import de.mrobohm.data.column.*;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
@@ -20,10 +16,10 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.utils.SSet;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.stream.Stream;
 
 public final class NewTableBase {
@@ -45,11 +41,11 @@ public final class NewTableBase {
     }
 
     private static ColumnLeaf createNewForeignKeyColumn(NewTableBase.NewIds newIds, StringPlus tableName, boolean oneToOne) {
-        var constraintSetOneToOne = Set.of(
-                new ColumnConstraintForeignKey(newIds.targetColumn, Set.of()),
-                (ColumnConstraint) new ColumnConstraintForeignKeyInverse(newIds.targetColumn, Set.of()));
-        var constraintSetOneToMany = Set.of(
-                (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn, Set.of()));
+        var constraintSetOneToOne = SSet.of(
+                new ColumnConstraintForeignKey(newIds.targetColumn, SSet.of()),
+                (ColumnConstraint) new ColumnConstraintForeignKeyInverse(newIds.targetColumn, SSet.of()));
+        var constraintSetOneToMany = SSet.of(
+                (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn, SSet.of()));
         var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
         return createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
     }
@@ -60,30 +56,30 @@ public final class NewTableBase {
         var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnList.stream()).toList();
         var newContext = Context.getDefault();
         var newId = new IdPart(oldTable.id(), 1, MergeOrSplitType.And);
-        return new Table(newId, tableName, newColumnList, newContext, Set.of());
+        return new Table(newId, tableName, newColumnList, newContext, SSet.of());
     }
 
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
-        var constraintSetOneToOne = Set.of(
+        var constraintSetOneToOne = SSet.of(
                 new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
-                new ColumnConstraintForeignKey(newIds.sourceColumn(), Set.of()),
-                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), Set.of()));
-        var constraintSetOneToMany = Set.of(
+                new ColumnConstraintForeignKey(newIds.sourceColumn(), SSet.of()),
+                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), SSet.of()));
+        var constraintSetOneToMany = SSet.of(
                 new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
-                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), Set.of()));
+                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), SSet.of()));
         var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
         return createNewIdColumn(newIds.targetColumn, tableName, newConstraintSet);
     }
 
     public static ColumnLeaf createNewIdColumn(Id columnId,
-                                                StringPlus tableName,
-                                                Set<ColumnConstraint> newConstraintSet) {
+                                               StringPlus tableName,
+                                               SortedSet<ColumnConstraint> newConstraintSet) {
         var nc = tableName.guessNamingConvention();
         var newNameRawString = LinguisticUtils.merge(nc, tableName.rawString(), "id");
         var newName = new StringPlusNaked(newNameRawString, tableName.language());
         var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
         var newDataType = new DataType(DataTypeEnum.INT64, false);
-        return new ColumnLeaf(columnId, newName, newDataType, Set.of(), newColumnContext, newConstraintSet);
+        return new ColumnLeaf(columnId, newName, newDataType, SSet.of(), newColumnContext, newConstraintSet);
     }
 
     public record NewIds(Id targetColumn, Id sourceColumn, Id constraintGroupId) {

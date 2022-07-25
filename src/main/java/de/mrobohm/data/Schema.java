@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.util.SortedSet;
 
 public record Schema(Id id,
                      StringPlus name,
                      Context context,
-                     Set<Table> tableSet) implements Entity, Serializable {
+                     SortedSet<Table> tableSet) implements Entity, Serializable {
 
     @Contract(pure = true)
     @NotNull
@@ -34,7 +34,7 @@ public record Schema(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public Schema withTables(Set<Table> newTableSet) {
+    public Schema withTables(SortedSet<Table> newTableSet) {
         return new Schema(id, name, context, newTableSet);
     }
 

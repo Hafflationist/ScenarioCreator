@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Random;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,8 +36,8 @@ public class ForeignKeyRemover implements ColumnTransformation {
         }
 
         var newConstraintSet = column.constraintSet().stream()
-                .filter( c -> !(c instanceof ColumnConstraintForeignKey))
-                .collect(Collectors.toSet());
+                .filter(c -> !(c instanceof ColumnConstraintForeignKey))
+                .collect(Collectors.toCollection(TreeSet::new));
 
         return switch (column) {
             case ColumnCollection c -> List.of(c.withConstraintSet(newConstraintSet));

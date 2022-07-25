@@ -12,6 +12,7 @@ import de.mrobohm.data.identification.Id;
 import de.mrobohm.utils.Pair;
 
 import java.util.Objects;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,7 +69,7 @@ public final class IntegrityChecker {
         var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
         var nonUniqueIdSet = allIdList.stream()
                 .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         assert nonUniqueIdSet.isEmpty() : "Non unique ids found: " + nonUniqueIdSet;
     }
 

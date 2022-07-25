@@ -1,5 +1,6 @@
 package de.mrobohm.processing.tree;
 
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 final class TreeDataOperator {
@@ -20,7 +21,7 @@ final class TreeDataOperator {
                 var childSet = tn.childSet();
                 var newChildSet = childSet.stream()
                         .map(child -> replaceTreeEntity(child, oldEntity, newEntity))
-                        .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(TreeSet::new));
 
                 if (newChildSet.equals(childSet)) {
                     yield root;

@@ -5,7 +5,7 @@ import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 
 // Eigentlich müsste man das mal so machen, dass jedes Token eine eigene Sprache haben kann.
@@ -28,7 +28,7 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
         };
     }
 
-    public static StringPlusSemantical of(StringPlus stringPlus, Function<String, Set<GlobalSynset>> synsetFinder) {
+    public static StringPlusSemantical of(StringPlus stringPlus, Function<String, SortedSet<GlobalSynset>> synsetFinder) {
         var nc = stringPlus.guessNamingConvention();
         var tokens = LinguisticUtils.tokenize(stringPlus);
         var segmentList = tokens.stream()

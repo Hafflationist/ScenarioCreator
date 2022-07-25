@@ -4,18 +4,18 @@ import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 
 public interface LanguageCorpus {
-    Set<String> getSynonymes(String word);
+    SortedSet<String> getSynonymes(String word);
 
-    Set<String> getSynonymes(Set<GlobalSynset> gssSet);
+    SortedSet<String> getSynonymes(SortedSet<GlobalSynset> gssSet);
 
-    Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet);
+    SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet);
 
-    Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess);
+    Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess);
 
-    Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet);
+    SortedSet<EnglishSynset> word2EnglishSynset(SortedSet<GlobalSynset> gssSet);
 
-    double lowestSemanticDistance(Set<GlobalSynset> gssSet1, Set<GlobalSynset> gssSet2);
+    double lowestSemanticDistance(SortedSet<GlobalSynset> gssSet1, SortedSet<GlobalSynset> gssSet2);
 }

@@ -1,12 +1,14 @@
 package de.mrobohm.data.primitives;
 
 import de.mrobohm.data.primitives.synset.GlobalSynset;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.Set;
+import java.util.SortedSet;
 
-public record StringPlusSemanticalSegment(String token, Set<GlobalSynset> gssSet) {
+public record StringPlusSemanticalSegment(String token, SortedSet<GlobalSynset> gssSet)
+        implements Comparable<StringPlusSemanticalSegment> {
 
-    public StringPlusSemanticalSegment(String token, Set<GlobalSynset> gssSet) {
+    public StringPlusSemanticalSegment(String token, SortedSet<GlobalSynset> gssSet) {
         this.token = normalizeToken(token);
         this.gssSet = gssSet;
     }
@@ -22,5 +24,10 @@ public record StringPlusSemanticalSegment(String token, Set<GlobalSynset> gssSet
                 .replace("-", "")
                 .replace(" ", "")
                 .toLowerCase();
+    }
+
+    @Override
+    public int compareTo(@NotNull StringPlusSemanticalSegment spss) {
+        return this.toString().compareTo(spss.toString());
     }
 }

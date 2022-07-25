@@ -1,7 +1,8 @@
 package de.mrobohm.data.column;
 
+import de.mrobohm.utils.SSet;
+
 import java.util.Random;
-import java.util.Set;
 
 public enum DataTypeEnum {
     FLOAT16,
@@ -36,16 +37,16 @@ public enum DataTypeEnum {
 
     public boolean isSmallerThan(DataTypeEnum dt) {
         return switch (this) {
-            case FLOAT16 -> Set.of(FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
-            case FLOAT32 -> Set.of(FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case FLOAT16 -> SSet.of(FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case FLOAT32 -> SSet.of(FLOAT64, DECIMAL, NVARCHAR).contains(dt);
             case FLOAT64 -> NVARCHAR == dt;
-            case DECIMAL -> Set.of(FLOAT64, NVARCHAR).contains(dt);
-            case INT1 -> Set.of(INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
-            case INT8 -> Set.of(INT16, INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
-            case INT16 -> Set.of(INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
-            case INT32 -> Set.of(INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
-            case INT64 -> Set.of(FLOAT64, DECIMAL, DATETIME, NVARCHAR).contains(dt);
-            case DATETIME -> Set.of(INT64, NVARCHAR).contains(dt);
+            case DECIMAL -> SSet.of(FLOAT64, NVARCHAR).contains(dt);
+            case INT1 -> SSet.of(INT8, INT16, INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case INT8 -> SSet.of(INT16, INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case INT16 -> SSet.of(INT32, INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case INT32 -> SSet.of(INT64, FLOAT32, FLOAT64, DECIMAL, NVARCHAR).contains(dt);
+            case INT64 -> SSet.of(FLOAT64, DECIMAL, DATETIME, NVARCHAR).contains(dt);
+            case DATETIME -> SSet.of(INT64, NVARCHAR).contains(dt);
             case NVARCHAR -> false;
         };
     }

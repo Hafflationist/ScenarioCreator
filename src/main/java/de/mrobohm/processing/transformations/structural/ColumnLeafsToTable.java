@@ -6,10 +6,12 @@ import de.mrobohm.processing.transformations.TableTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
 import de.mrobohm.processing.transformations.structural.base.NewTableBase;
+import de.mrobohm.utils.SSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,7 @@ public class ColumnLeafsToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(GroupingColumnsBase.containsGroupableColumns(table.columnList()))) {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
@@ -39,15 +41,15 @@ public class ColumnLeafsToTable implements TableTransformation {
         var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
         var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
         var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
-        return Set.of(newTable, modifiedTable);
+        return SSet.of(newTable, modifiedTable);
     }
 
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
         return tableSet.stream()
                 .filter(t -> GroupingColumnsBase.containsGroupableColumns(t.columnList()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

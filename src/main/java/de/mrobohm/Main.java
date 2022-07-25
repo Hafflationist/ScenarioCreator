@@ -16,6 +16,7 @@ import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.WordNet
 import de.mrobohm.processing.tree.Forester;
 import de.mrobohm.processing.tree.TreeTargetDefinition;
 import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.SSet;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,23 +55,23 @@ public class Main {
 
             var transWord = "Hund";
             var synsetIdSet = germaNetInterface
-                    .estimateSynset(transWord, Set.of())
+                    .estimateSynset(transWord, SSet.of())
                     .stream().map(x -> Integer.toString(((GermanSynset) x).id()))
-                    .collect(Collectors.toSet());
-            var pwnIds = new HashSet<>(germaNetInterface.word2EnglishSynset(germaNetInterface.estimateSynset(transWord, Set.of())));
+                    .collect(Collectors.toCollection(TreeSet::new));
+            var pwnIds = new HashSet<>(germaNetInterface.word2EnglishSynset(germaNetInterface.estimateSynset(transWord, SSet.of())));
             System.out.println("synsetIdSet von " + transWord + ": (" + synsetIdSet.size() + ") " + String.join("; ", synsetIdSet));
             System.out.println("PwnIds von " + transWord + ": (" + pwnIds.size() + ") " + String.join("; ", pwnIds.stream().map(Record::toString).toList()));
 
             //            var synsetIdSet1 = germaNetInterface
-//                    .estimateSynset("Bank", Set.of("Institut", "Datum", "Id", "hfuzd89we"));
+//                    .estimateSynset("Bank", SSet.of("Institut", "Datum", "Id", "hfuzd89we"));
 //            var synonymes1 = germaNetInterface.getSynonymes(synsetIdSet1);
 //
 //            var synsetIdSet2 = germaNetInterface
-//                    .estimateSynset("Bank", Set.of("Stuhl", "Datum", "Id", "hfuzd89we"));
+//                    .estimateSynset("Bank", SSet.of("Stuhl", "Datum", "Id", "hfuzd89we"));
 //            var synonymes2 = germaNetInterface.getSynonymes(synsetIdSet2);
 //
 //            var synsetIdSet3 = germaNetInterface
-//                    .estimateSynset("Bank", Set.of("Datum", "Id", "hfuzd89we"));
+//                    .estimateSynset("Bank", SSet.of("Datum", "Id", "hfuzd89we"));
 //            var synonymes3 = germaNetInterface.getSynonymes(synsetIdSet3);
 //
 //            System.out.println("possible synonyms for BANK(\"Institut\", \"Datum\", \"Id\", \"hfuzd89we\"):");
@@ -106,15 +107,15 @@ public class Main {
         try {
             var wordNetInterface = new WordNetInterface();
             var synsetIdSet1 = wordNetInterface
-                    .estimateSynset("dog", Set.of("food", "water", "Id", "hfuzd89we"));
+                    .estimateSynset("dog", SSet.of("food", "water", "Id", "hfuzd89we"));
             var synonymes1 = wordNetInterface.getSynonymes(synsetIdSet1);
 
             var synsetIdSet2 = wordNetInterface
-                    .estimateSynset("dog", Set.of("animal", "cat", "Id", "hfuzd89we"));
+                    .estimateSynset("dog", SSet.of("animal", "cat", "Id", "hfuzd89we"));
             var synonymes2 = wordNetInterface.getSynonymes(synsetIdSet2);
 
             var synsetIdSet3 = wordNetInterface
-                    .estimateSynset("dog", Set.of("Datum", "Id", "hfuzd89we"));
+                    .estimateSynset("dog", SSet.of("Datum", "Id", "hfuzd89we"));
             var synonymes3 = wordNetInterface.getSynonymes(synsetIdSet3);
 
             System.out.println("possible synonyms for DOG(\"food\", \"water\", \"Id\", \"hfuzd89we\"):");
@@ -147,15 +148,15 @@ public class Main {
     }
 
     private static void equality() {
-        var list1 = Set.of(1, 2, 3, 4);
-        var list2 = Stream.of(2, 3, 4, 1).collect(Collectors.toSet());
+        var list1 = SSet.of(1, 2, 3, 4);
+        var list2 = Stream.of(2, 3, 4, 1).collect(Collectors.toCollection(TreeSet::new));
 
         var tr1 = new TestRecord(0, list1);
         var tr2 = new TestRecord(1, list1);
         var tr3 = new TestRecord(1, list2);
 
-        var cr1 = new ContainerRecord(1, Set.of(tr1, tr2));
-        var cr2 = new ContainerRecord(1, Set.of(tr1, tr2));
+        var cr1 = new ContainerRecord(1, SSet.of(tr1, tr2));
+        var cr2 = new ContainerRecord(1, SSet.of(tr1, tr2));
 
 
         System.out.println("tr1 == tr2: " + (cr1 == cr2));
@@ -204,7 +205,7 @@ public class Main {
             var translation = new Translation(ulc);
             var spn = new StringPlusNaked("highway-to-hell", Language.Technical);
             var semanticSaturation = new SemanticSaturation(ulc);
-            var sps = semanticSaturation.saturateSemantically(spn, Set.of());
+            var sps = semanticSaturation.saturateSemantically(spn, SSet.of());
             var random = new Random();
             System.out.println("Eingabe: " + sps.rawString());
             System.out.println("Übersetzungen:");
@@ -250,7 +251,9 @@ public class Main {
             var translation = new Translation(ulc);
             var tc = new TransformationCollection(ulc, translation);
             var forester = new Forester(ste, tc);
-            var ttd = new TreeTargetDefinition(true, true, true, false);
+            var ttd = new TreeTargetDefinition(
+                    true, true, true, false
+            );
             var schemaList = forester.createScenario(schema, ttd, random).stream().toList();
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
@@ -279,14 +282,14 @@ public class Main {
 //        testTranslation();
         for (long i = 0; i < Long.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
-            testForester(path, 923822708);
+            testForester(path, i);
             System.out.println("Anlauf " + i + " vollständig");
         }
     }
 
-    record TestRecord(int id, Set<Integer> things) {
+    record TestRecord(int id, SortedSet<Integer> things) {
     }
 
-    record ContainerRecord(int id, Set<TestRecord> testis) {
+    record ContainerRecord(int id, SortedSet<TestRecord> testis) {
     }
 }

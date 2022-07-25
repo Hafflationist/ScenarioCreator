@@ -5,12 +5,11 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
-import de.mrobohm.processing.transformations.linguistic.AddTypoToSchemaName;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
-import java.util.Set;
 
 class AddTypoToSchemaNameTest {
 
@@ -18,7 +17,7 @@ class AddTypoToSchemaNameTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var schema = new Schema(new IdSimple(1), name, Context.getDefault(), Set.of());
+        var schema = new Schema(new IdSimple(1), name, Context.getDefault(), SSet.of());
         var transformation = new AddTypoToSchemaName();
 
         // --- Act

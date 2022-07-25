@@ -16,13 +16,11 @@ import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBe
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
 import de.mrobohm.processing.transformations.structural.base.NewTableBase;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,7 +38,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column!");
         if (!hasNullableColumns(table)) {
             throw exception;
@@ -65,7 +63,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         var newDerivingTable = createDerivingTable(
                 newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
         );
-        return Set.of(newBaseTable, newDerivingTable);
+        return SSet.of(newBaseTable, newDerivingTable);
     }
 
     private Column addForeignIfPrimaryKey(Column column, NewIdComplex newIdComplex) {
@@ -75,11 +73,11 @@ public class NullableToVerticalInheritance implements TableTransformation {
         assert newIdComplex.primaryKeyColumnToNewId().containsKey(column.id())
                 : "Map should contain an id for every primary key column!";
         var newConstraint = new ColumnConstraintForeignKeyInverse(
-                newIdComplex.primaryKeyColumnToNewId().get(column.id()), Set.of()
+                newIdComplex.primaryKeyColumnToNewId().get(column.id()), SSet.of()
         );
         var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withConstraintSet(newConstraintSet);
             case ColumnNode node -> node.withConstraintSet(newConstraintSet);
@@ -95,9 +93,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
         var newId = new IdPart(originalTable.id(), 0, MergeOrSplitType.Other);
 
         if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
-            var newPrimaryColumnConstraintSet = Set.of(
+            var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyConstraintGroupId()),
-                    new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId(), Set.of())
+                    new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId(), SSet.of())
             );
             var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyColumnId(),
@@ -116,11 +114,11 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (!column.containsConstraint(ColumnConstraintPrimaryKey.class)) {
             return column;
         }
-        var newConstraint = new ColumnConstraintForeignKey(column.id(), Set.of());
+        var newConstraint = new ColumnConstraintForeignKey(column.id(), SSet.of());
         var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .filter(c -> !(c instanceof ColumnConstraintForeignKeyInverse))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         var newId = newIdComplex.primaryKeyColumnToNewId.get(column.id());
         assert newId != null;
         return switch (column) {
@@ -152,9 +150,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
         );
         if (generateSurrogateKeys) {
             // In this case a surrogate key and column must be generated
-            var newPrimaryColumnConstraintSet = Set.of(
+            var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyDerivingConstraintGroupId()),
-                    new ColumnConstraintForeignKey(newIdComplex.primaryKeyColumnId(), Set.of())
+                    new ColumnConstraintForeignKey(newIdComplex.primaryKeyColumnId(), SSet.of())
             );
             var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyDerivingColumnId(),
@@ -202,8 +200,8 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
-        return tableSet.stream().filter(this::hasNullableColumns).collect(Collectors.toSet());
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
+        return tableSet.stream().filter(this::hasNullableColumns).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private boolean hasNullableColumns(Table table) {

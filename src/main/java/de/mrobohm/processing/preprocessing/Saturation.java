@@ -5,7 +5,8 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.table.Table;
 
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -23,10 +24,10 @@ public final class Saturation {
                 .stream()
                 .map(saturateTable)
                 .map(t -> maybeWithColumnList(t, t.columnList().stream().map(saturateColumn).toList()))
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toCollection(TreeSet::new)));
     }
 
-    private static Schema maybeWithTableSet(Schema schema, Set<Table> tableSet) {
+    private static Schema maybeWithTableSet(Schema schema, SortedSet<Table> tableSet) {
         if (schema.tableSet().equals(tableSet)) {
             return schema;
         } else {

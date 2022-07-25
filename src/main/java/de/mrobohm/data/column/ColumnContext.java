@@ -5,7 +5,8 @@ import de.mrobohm.data.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure unitOfMeasure, Language language) {
+public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure unitOfMeasure, Language language)
+        implements Comparable<ColumnContext> {
 
     @Contract(pure = true)
     @NotNull
@@ -35,4 +36,8 @@ public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure un
         return new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.Pure, Language.Technical);
     }
 
+    @Override
+    public int compareTo(@NotNull ColumnContext context) {
+        return this.toString().compareTo(context.toString());
+    }
 }

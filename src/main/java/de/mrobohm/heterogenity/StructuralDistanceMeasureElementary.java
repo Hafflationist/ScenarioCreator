@@ -13,9 +13,7 @@ import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,13 +28,13 @@ public final class StructuralDistanceMeasureElementary {
         var distanceAbsolute = calculateDistanceToRootAbsolute(root, schema);
         var rootSize = IdentificationNumberCalculator.getAllIds(root, true).count();
         var schemaSize = IdentificationNumberCalculator.getAllIds(schema, true).count();
-        return (2.0 * distanceAbsolute) / (double)(rootSize + schemaSize);
+        return (2.0 * distanceAbsolute) / (double) (rootSize + schemaSize);
     }
 
     public static int calculateDistanceToRootAbsolute(Schema root, Schema schema) {
         var rootIdSet = IdentificationNumberCalculator
                 .getAllIds(root, false)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         var isRealRoot = rootIdSet.stream().allMatch(id -> id instanceof IdSimple);
         assert isRealRoot : "root schema must contain only IdSimple!";
@@ -44,12 +42,12 @@ public final class StructuralDistanceMeasureElementary {
         var rootSimpleIdSet = IdentificationNumberCalculator
                 .extractIdSimple(rootIdSet.stream())
                 .map(IdSimple::number)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         var schemaSimpleIdSet = IdentificationNumberCalculator
                 .extractIdSimple(IdentificationNumberCalculator.getAllIds(schema, false))
                 .map(IdSimple::number)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
 
         var dropCount = (int) rootSimpleIdSet.stream().filter(idNum -> !schemaSimpleIdSet.contains(idNum)).count();
         var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
@@ -118,7 +116,7 @@ public final class StructuralDistanceMeasureElementary {
     private static int diffEntityNestingChanges(Pair<List<Id>, List<Id>> combinedPathPair) {
         var schemaPath = combinedPathPair.first();
         var rootPath = combinedPathPair.second();
-        if(schemaPath.size() != rootPath.size()){
+        if (schemaPath.size() != rootPath.size()) {
             // change detected!
             return 1;
         }

@@ -6,10 +6,10 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.SchemaTransformation;
 import de.mrobohm.processing.transformations.structural.base.IngestionBase;
+import de.mrobohm.utils.SSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Stream;
 
 public class TableToColumnNode implements SchemaTransformation {
@@ -44,7 +44,7 @@ public class TableToColumnNode implements SchemaTransformation {
                 ingestedTable.id(),
                 ingestedTable.name(),
                 ingestedTable.columnList(),
-                Set.of(),
+                SSet.of(),
                 isNullable
         ));
     }

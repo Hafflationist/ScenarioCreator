@@ -8,11 +8,11 @@ import org.jetbrains.annotations.Contract;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 
 public record ColumnConstraintForeignKeyInverse(Id foreignColumnId,
-                                                Set<Value> foreignValueSet) implements ColumnConstraint {
+                                                SortedSet<Value> foreignValueSet) implements ColumnConstraint {
 
     @Override
     public double estimateRatioOfKickedValues(List<Value> values, DataType dataType) {

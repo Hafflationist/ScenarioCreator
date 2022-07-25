@@ -5,47 +5,47 @@ import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.LanguageCorpus;
 
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 
 public class LanguageCorpusMock implements LanguageCorpus {
 
 
-    private final Map<String, Set<GlobalSynset>> _englishSynsetRecord2WordReturn;
-    private final Set<EnglishSynset> _word2EnglishSynsetReturn;
+    private final Map<String, SortedSet<GlobalSynset>> _englishSynsetRecord2WordReturn;
+    private final SortedSet<EnglishSynset> _word2EnglishSynsetReturn;
 
-    public LanguageCorpusMock(Map<String, Set<GlobalSynset>> englishSynsetRecord2WordReturn,
-                              Set<EnglishSynset> word2EnglishSynsetReturn) {
+    public LanguageCorpusMock(Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2WordReturn,
+                              SortedSet<EnglishSynset> word2EnglishSynsetReturn) {
         _englishSynsetRecord2WordReturn = englishSynsetRecord2WordReturn;
         _word2EnglishSynsetReturn = word2EnglishSynsetReturn;
     }
 
     @Override
-    public Set<String> getSynonymes(String word) {
+    public SortedSet<String> getSynonymes(String word) {
         return null;
     }
 
     @Override
-    public Set<String> getSynonymes(Set<GlobalSynset> gssSet) {
+    public SortedSet<String> getSynonymes(SortedSet<GlobalSynset> gssSet) {
         return null;
     }
 
     @Override
-    public Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet) {
+    public SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet) {
         return null;
     }
 
     @Override
-    public Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
+    public Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
         return _englishSynsetRecord2WordReturn;
     }
 
     @Override
-    public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet) {
+    public SortedSet<EnglishSynset> word2EnglishSynset(SortedSet<GlobalSynset> gssSet) {
         return _word2EnglishSynsetReturn;
     }
 
     @Override
-    public double lowestSemanticDistance(Set<GlobalSynset> gssSet1, Set<GlobalSynset> gssSet2) {
+    public double lowestSemanticDistance(SortedSet<GlobalSynset> gssSet1, SortedSet<GlobalSynset> gssSet2) {
         return 0;
     }
 }

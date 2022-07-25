@@ -23,26 +23,32 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, T newElement) {
+    public static <T extends Comparable> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, T newElement) {
         return replaceInStream(iterable, Stream.of(originalElement), newElement);
     }
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> iterable, T originalElement, Stream<T> newElementStream) {
+    public static <T extends Comparable> Stream<T> replaceInStream(
+            Stream<T> iterable, T originalElement, Stream<T> newElementStream
+    ) {
         return replaceInStream(iterable, Stream.of(originalElement), newElementStream);
     }
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> iterable, Stream<T> originalElementStream, T newElement) {
+    public static <T extends Comparable> Stream<T> replaceInStream(
+            Stream<T> iterable, Stream<T> originalElementStream, T newElement
+    ) {
         return replaceInStream(iterable, originalElementStream, Stream.of(newElement));
     }
 
     @Contract(pure = true)
     @NotNull
-    public static <T> Stream<T> replaceInStream(Stream<T> stream, Stream<T> originalElementStream, Stream<T> newElementStream) {
-        var originalElementSet = originalElementStream.collect(Collectors.toSet());
+    public static <T extends Comparable> Stream<T> replaceInStream(
+            Stream<T> stream, Stream<T> originalElementStream, Stream<T> newElementStream
+    ) {
+        var originalElementSet = originalElementStream.collect(Collectors.toCollection(TreeSet::new));
         var list = stream.toList();
         var firstHalf = list.stream().takeWhile(e -> !originalElementSet.contains(e)).toList();
         var secondHalf = list.stream()

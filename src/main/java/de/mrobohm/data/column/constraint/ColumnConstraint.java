@@ -2,10 +2,11 @@ package de.mrobohm.data.column.constraint;
 
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.dataset.Value;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public sealed interface ColumnConstraint permits
+public sealed interface ColumnConstraint extends Comparable<ColumnConstraint> permits
         ColumnConstraintForeignKey,
         ColumnConstraintForeignKeyInverse,
         ColumnConstraintLocalPredicate,
@@ -15,4 +16,8 @@ public sealed interface ColumnConstraint permits
     // Mit gegebenen Datensätzen lassen sich härtere Beschränkungen bewerten. Für das Aufweichen kann an eine Gleichverteilung annehmen.
     double estimateRatioOfKickedValues(List<Value> values, DataType dataType);
 
+    @Override
+    default int compareTo(@NotNull ColumnConstraint cc) {
+        return this.toString().compareTo(cc.toString());
+    }
 }

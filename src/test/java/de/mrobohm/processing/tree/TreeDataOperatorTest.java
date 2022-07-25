@@ -1,9 +1,8 @@
 package de.mrobohm.processing.tree;
 
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.Set;
 
 class TreeDataOperatorTest {
 
@@ -12,22 +11,22 @@ class TreeDataOperatorTest {
         // --- Arrange
         var oldTe = new TreeLeaf<>(88);
         var newTe = new TreeLeaf<>(23);
-        var oldTree = new TreeNode<>(0, Set.of(
-                new TreeNode<>(1, Set.of(
+        var oldTree = new TreeNode<>(0, SSet.of(
+                new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
                         new TreeLeaf<>(13),
                         new TreeLeaf<>(14),
                         new TreeLeaf<>(15)
                 )),
-                new TreeNode<>(2, Set.of(
+                new TreeNode<>(2, SSet.of(
                         new TreeLeaf<>(21),
                         new TreeLeaf<>(22),
                         oldTe,
                         new TreeLeaf<>(24),
                         new TreeLeaf<>(25)
                 )),
-                new TreeNode<>(3, Set.of(
+                new TreeNode<>(3, SSet.of(
                         new TreeLeaf<>(31),
                         new TreeLeaf<>(32),
                         new TreeLeaf<>(33),
@@ -35,22 +34,22 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(35)
                 ))
         ));
-        var expectedTree = new TreeNode<>(0, Set.of(
-                new TreeNode<>(1, Set.of(
+        var expectedTree = new TreeNode<>(0, SSet.of(
+                new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
                         new TreeLeaf<>(13),
                         new TreeLeaf<>(14),
                         new TreeLeaf<>(15)
                 )),
-                new TreeNode<>(2, Set.of(
+                new TreeNode<>(2, SSet.of(
                         new TreeLeaf<>(21),
                         new TreeLeaf<>(22),
                         newTe,
                         new TreeLeaf<>(24),
                         new TreeLeaf<>(25)
                 )),
-                new TreeNode<>(3, Set.of(
+                new TreeNode<>(3, SSet.of(
                         new TreeLeaf<>(31),
                         new TreeLeaf<>(32),
                         new TreeLeaf<>(33),
@@ -71,8 +70,8 @@ class TreeDataOperatorTest {
         // --- Arrange
         var oldTe = new TreeLeaf<>(88);
         var newTe = new TreeLeaf<>(23);
-        var oldTree = new TreeNode<>(0, Set.of(
-                new TreeNode<>(1, Set.of(
+        var oldTree = new TreeNode<>(0, SSet.of(
+                new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
                         new TreeLeaf<>(13),
@@ -80,7 +79,7 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(15)
                 )),
                 oldTe,
-                new TreeNode<>(3, Set.of(
+                new TreeNode<>(3, SSet.of(
                         new TreeLeaf<>(31),
                         new TreeLeaf<>(32),
                         new TreeLeaf<>(33),
@@ -88,8 +87,8 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(35)
                 ))
         ));
-        var expectedTree = new TreeNode<>(0, Set.of(
-                new TreeNode<>(1, Set.of(
+        var expectedTree = new TreeNode<>(0, SSet.of(
+                new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
                         new TreeLeaf<>(13),
@@ -97,7 +96,7 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(15)
                 )),
                 newTe,
-                new TreeNode<>(3, Set.of(
+                new TreeNode<>(3, SSet.of(
                         new TreeLeaf<>(31),
                         new TreeLeaf<>(32),
                         new TreeLeaf<>(33),

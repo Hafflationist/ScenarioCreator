@@ -14,7 +14,7 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -59,7 +59,7 @@ public class IdentificationNumberCalculator {
         };
     }
 
-    private static Stream<Id> constraintsToIdStream(Set<ColumnConstraint> constraintSet) {
+    private static Stream<Id> constraintsToIdStream(SortedSet<ColumnConstraint> constraintSet) {
         return constraintSet.stream()
                 .filter(c -> c instanceof ColumnConstraintUnique)
                 .map(c -> (ColumnConstraintUnique) c)

@@ -8,6 +8,7 @@ import de.mrobohm.data.primitives.StringPlusSemanticalSegment;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.*;
@@ -23,7 +24,7 @@ public class UnifiedLanguageCorpus {
         _corpora = corpora;
     }
 
-    private Map<Language, Set<String>> synonymizeFully(String word) {
+    private Map<Language, SortedSet<String>> synonymizeFully(String word) {
         return _corpora.keySet().stream()
                 .collect(Collectors.toMap(
                         l -> l,
@@ -64,22 +65,22 @@ public class UnifiedLanguageCorpus {
         return Optional.of(new StringPlusNaked(newWord, newLanguage));
     }
 
-    public Set<GlobalSynset> estimateSynsetId(String word, Set<String> context) {
+    public SortedSet<GlobalSynset> estimateSynsetId(String word, SortedSet<String> context) {
         return _corpora.keySet().stream()
                 .map(language -> new Pair<>(language, _corpora.get(language).estimateSynset(word, context)))
                 .max(Comparator.comparingInt(pair -> pair.second().size()))
                 .map(Pair::second)
-                .orElse(Set.of());
+                .orElse(SSet.of());
     }
 
-    public Set<Set<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
+    public SortedSet<SortedSet<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
         return switch (word) {
             case StringPlusSemantical sps -> sps.segmentList().stream()
                     .map(StringPlusSemanticalSegment::gssSet)
-                    .collect(Collectors.toSet());
-            case StringPlusNaked spn -> Set.of(_corpora
+                    .collect(Collectors.toCollection(TreeSet::new));
+            case StringPlusNaked spn -> SSet.of(_corpora
                     .get(spn.language())
-                    .estimateSynset(spn.rawString(), Set.of())
+                    .estimateSynset(spn.rawString(), SSet.of())
             );
         };
     }
@@ -100,20 +101,20 @@ public class UnifiedLanguageCorpus {
                 .map(corpus1::word2EnglishSynset)
                 .map(essSet -> essSet.stream()
                         .map(ess -> (GlobalSynset) ess)
-                        .collect(Collectors.toSet()))
-                .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
+                .collect(Collectors.toCollection(TreeSet::new));
         var gssSetSet2 = synsetIdSetSet2.stream()
                 .map(corpus2::word2EnglishSynset)
                 .map(essSet -> essSet.stream()
                         .map(ess -> (GlobalSynset) ess)
-                        .collect(Collectors.toSet()))
-                .collect(Collectors.toSet());
+                        .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
+                .collect(Collectors.toCollection(TreeSet::new));
         var rawDist = semanticDiffInner(gssSetSet1, gssSetSet2, Language.English);
         return Math.sqrt(rawDist) * 0.8 + 0.2; // so schlau
     }
 
-    private double semanticDiffInner(Set<Set<GlobalSynset>> gssSetSet1,
-                                     Set<Set<GlobalSynset>> gssSetSet2,
+    private double semanticDiffInner(SortedSet<SortedSet<GlobalSynset>> gssSetSet1,
+                                     SortedSet<SortedSet<GlobalSynset>> gssSetSet2,
                                      Language language) {
         // Wir müssten jetzt die Namen in ihrer tokenisierten Form haben und müssen die semantische Ähnlichkeit bestimmen.
         // Ansatz: Man schaut sich bei jedem Token an, mit welchen Token vom anderen Wort er am besten passt.
@@ -123,8 +124,8 @@ public class UnifiedLanguageCorpus {
         return (diffA + diffB) / 2.0;
     }
 
-    private double mongeElkanDiff(Set<Set<GlobalSynset>> gssSetSet1,
-                                  Set<Set<GlobalSynset>> gssSetSet2,
+    private double mongeElkanDiff(SortedSet<SortedSet<GlobalSynset>> gssSetSet1,
+                                  SortedSet<SortedSet<GlobalSynset>> gssSetSet2,
                                   Language language) {
         return gssSetSet1.stream()
                 .mapToDouble(gssSet1 -> gssSetSet2.stream()
@@ -135,11 +136,11 @@ public class UnifiedLanguageCorpus {
                 .orElse(1.0);
     }
 
-    private double semanticDiff(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2, Language language) {
+    private double semanticDiff(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2, Language language) {
         return _corpora.get(language).lowestSemanticDistance(synsetIdSet1, synsetIdSet2);
     }
 
-    public Set<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {
+    public SortedSet<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {
         assert _corpora.containsKey(targetLanguage) : "missing support for language!";
         var validGssMap = segment.gssSet().stream()
                 .filter(gss -> gss.language() != targetLanguage)
@@ -147,7 +148,7 @@ public class UnifiedLanguageCorpus {
         assert !validGssMap.values().isEmpty() : "gss already in target language!";
         return validGssMap.keySet().stream()
                 .flatMap(lang -> {
-                    var gssSet = new HashSet<>(validGssMap.get(lang));
+                    var gssSet = new TreeSet<>(validGssMap.get(lang));
                     return _corpora.get(lang).word2EnglishSynset(gssSet).stream();
                 })
                 .map(_corpora.get(targetLanguage)::englishSynsetRecord2Word)
@@ -156,6 +157,6 @@ public class UnifiedLanguageCorpus {
                                 StringPlusSemanticalSegment.normalizeToken(orthForm),
                                 translation.get(orthForm)
                         )))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 }

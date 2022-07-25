@@ -18,14 +18,10 @@ import de.mrobohm.processing.transformations.SchemaTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
-import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -65,7 +61,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                 schema.tableSet().stream(),
                 table,
                 Stream.of(tableFirst, tableSecond)
-        ).collect(Collectors.toSet());
+        ).collect(Collectors.toCollection(TreeSet::new));
         return IdTranslation.translateConstraints(schema.withTables(newTableSet), tableSplitResult.idMap);
     }
 
@@ -77,7 +73,7 @@ public class BinaryValueToTable implements SchemaTransformation {
         var idMapWrongType = Stream.concat(getAllColumnIdPartStream(tablePart1), getAllColumnIdPartStream(tablePart2))
                 .collect(groupingBy(IdPart::predecessorId));
         var idMap = idMapWrongType.keySet().stream()
-                .collect(Collectors.toMap(id -> id, id -> (Set<Id>) new HashSet<Id>(idMapWrongType.get(id))));
+                .collect(Collectors.toMap(id -> id, id -> (SortedSet<Id>) new TreeSet<Id>(idMapWrongType.get(id))));
         return new TableSplitResult(tablePart1, tablePart2, idMap);
     }
 
@@ -87,7 +83,6 @@ public class BinaryValueToTable implements SchemaTransformation {
                 .filter(id -> id instanceof IdPart)
                 .map(id -> (IdPart) id);
     }
-    private record TableSplitResult(Table tableFirst, Table tableSecond, Map<Id, Set<Id>> idMap) {};
 
     private Table splitTablePart(Table table, int partNum) {
         var errorMsg = "Chosen table contains invalid constraints! This should be prevented by <getCandidates>!";
@@ -103,7 +98,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                             var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
                             yield ccu.withUniqueGroupId(newConstraintId);
                         }
-                    }).collect(Collectors.toSet());
+                    }).collect(Collectors.toCollection(TreeSet::new));
                     return (Column) switch (column) {
                         case ColumnLeaf leaf -> leaf
                                 .withId(newId)
@@ -158,5 +153,8 @@ public class BinaryValueToTable implements SchemaTransformation {
     public boolean isExecutable(Schema schema) {
         return schema.tableSet().stream()
                 .anyMatch(this::isTableValid);
+    }
+
+    private record TableSplitResult(Table tableFirst, Table tableSecond, Map<Id, SortedSet<Id>> idMap) {
     }
 }

@@ -8,11 +8,13 @@ import org.jetbrains.annotations.Contract;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public record ColumnConstraintForeignKey(Id foreignColumnId, Set<Value> foreignValueSet) implements ColumnConstraint {
+public record ColumnConstraintForeignKey(Id foreignColumnId,
+                                         SortedSet<Value> foreignValueSet) implements ColumnConstraint {
 
     @Override
     public double estimateRatioOfKickedValues(List<Value> values, DataType dataType) {
@@ -31,14 +33,14 @@ public record ColumnConstraintForeignKey(Id foreignColumnId, Set<Value> foreignV
         var convertedForeignValueSet = foreignValueSet
                 .stream()
                 .map(v -> converter.apply(v.content()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         var obeyingValuesCount = values
                 .stream()
                 .map(v -> converter.apply(v.content()))
                 .filter(convertedForeignValueSet::contains)
                 .count();
 
-        if (obeyingValuesCount == 0){
+        if (obeyingValuesCount == 0) {
             return 0;
         }
 

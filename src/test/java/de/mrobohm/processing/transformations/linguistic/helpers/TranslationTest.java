@@ -10,18 +10,19 @@ import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.data.primitives.synset.PartOfSpeech;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.LanguageCorpusMock;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
 
 class TranslationTest {
 
-    private Translation getTranslation(Map<String, Set<GlobalSynset>> englishSynsetRecord2WordReturn,
-                                       Set<EnglishSynset> word2EnglishSynsetReturn) {
+    private Translation getTranslation(Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2WordReturn,
+                                       SortedSet<EnglishSynset> word2EnglishSynsetReturn) {
         var languageCorpusMock = new LanguageCorpusMock(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
         var ulc = new UnifiedLanguageCorpus(
                 Map.of(Language.German, languageCorpusMock, Language.English, languageCorpusMock)
@@ -40,10 +41,10 @@ class TranslationTest {
     @Test
     void translate() {
         // --- Arrange
-        var validSegment = new StringPlusSemanticalSegment("Katze", Set.of(new GermanSynset(1)));
-        var invalidSegment = new StringPlusSemanticalSegment("Unsinnnnn", Set.of());
+        var validSegment = new StringPlusSemanticalSegment("Katze", SSet.of(new GermanSynset(1)));
+        var invalidSegment = new StringPlusSemanticalSegment("Unsinnnnn", SSet.of());
         var expectedSegment = new StringPlusSemanticalSegment(
-                "Cat", Set.of(new EnglishSynset(2, PartOfSpeech.NOUN))
+                "Cat", SSet.of(new EnglishSynset(2, PartOfSpeech.NOUN))
         );
         var stringPlus = new StringPlusSemantical(List.of(
                 validSegment, invalidSegment
@@ -51,7 +52,7 @@ class TranslationTest {
 
         var englishSynsetRecord2WordReturn =
                 Map.of(expectedSegment.token(), expectedSegment.gssSet());
-        Set<EnglishSynset> word2EnglishSynsetReturn = Set.of(new EnglishSynset(-1, PartOfSpeech.NOUN));
+        SortedSet<EnglishSynset> word2EnglishSynsetReturn = SSet.of(new EnglishSynset(-1, PartOfSpeech.NOUN));
         var translation = getTranslation(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
 
         // --- Act
@@ -87,8 +88,8 @@ class TranslationTest {
     void canBeTranslatedFalseInvalidSps() {
         // --- Arrange
         var stringPlus = new StringPlusSemantical(List.of(
-                new StringPlusSemanticalSegment("hugo", Set.of()),
-                new StringPlusSemanticalSegment("hugo", Set.of())
+                new StringPlusSemanticalSegment("hugo", SSet.of()),
+                new StringPlusSemanticalSegment("hugo", SSet.of())
         ), NamingConvention.CAMELCASE);
         var translation = getTranslation();
 
@@ -103,8 +104,8 @@ class TranslationTest {
     void canBeTranslatedTrue() {
         // --- Arrange
         var stringPlus = new StringPlusSemantical(List.of(
-                new StringPlusSemanticalSegment("katze", Set.of(new GermanSynset(1))),
-                new StringPlusSemanticalSegment("hugo", Set.of())
+                new StringPlusSemanticalSegment("katze", SSet.of(new GermanSynset(1))),
+                new StringPlusSemanticalSegment("hugo", SSet.of())
         ), NamingConvention.CAMELCASE);
         var translation = getTranslation();
 

@@ -7,13 +7,14 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.ColumnTransformation;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -78,7 +79,7 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
     }
 
     private boolean hasValidDataType(ColumnLeaf column) {
-        return Set.of(
+        return SSet.of(
                 DataTypeEnum.FLOAT16,
                 DataTypeEnum.FLOAT32,
                 DataTypeEnum.FLOAT64,

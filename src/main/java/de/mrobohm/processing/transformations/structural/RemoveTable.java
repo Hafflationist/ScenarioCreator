@@ -6,11 +6,12 @@ import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
+import de.mrobohm.utils.SSet;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,23 +29,23 @@ public class RemoveTable implements TableTransformation {
 
     @Override
     @NotNull
-    public Set<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfRelationships(table) : "Table had foreign key constraints!";
-        return new HashSet<>();
+        return SSet.of();
     }
 
     @Override
     @NotNull
-    public Set<Table> getCandidates(Set<Table> tableSet) {
+    public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
         return tableSet.stream()
                 .filter(this::freeOfRelationships)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private boolean freeOfRelationships(Table table) {
         var ownColumnIdSet = table.columnList().stream()
                 .map(Column::id)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return table.columnList().stream().noneMatch(column -> {
             var hasForeignKeys = column.constraintSet().stream()
                     .filter(c -> c instanceof ColumnConstraintForeignKey)

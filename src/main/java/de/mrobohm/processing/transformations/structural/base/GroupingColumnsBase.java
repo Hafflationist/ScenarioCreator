@@ -6,11 +6,11 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 public class GroupingColumnsBase {
 
@@ -29,10 +29,10 @@ public class GroupingColumnsBase {
         assert columnList.size() > 0 : "createNewColumnNode wurde mit 0 Spalten aufgerufen!";
 
         var newName = mergeNames(columnList, random);
-        return new ColumnNode(newId, newName, columnList, Set.of(), false);
+        return new ColumnNode(newId, newName, columnList, SSet.of(), false);
     }
 
-    public static StringPlus mergeNames(List<Column> columnList, Random random){
+    public static StringPlus mergeNames(List<Column> columnList, Random random) {
         // TODO: Vllt könnte man hier ein besseren neuen Namen finden...
         var allNames = columnList.stream().map(Column::name).toList();
         return allNames.stream()

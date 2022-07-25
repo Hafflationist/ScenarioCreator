@@ -11,7 +11,8 @@ import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,13 +44,13 @@ public final class LinguisticDistanceMeasure {
                 .sum();
     }
 
-    private static Set<Entity> reduce(Schema schema) {
+    private static SortedSet<Entity> reduce(Schema schema) {
         var tableEntities = schema.tableSet().stream()
                 .flatMap(t -> StreamExtensions
                         .prepend(t.columnList().stream()
                                 .flatMap(LinguisticDistanceMeasure::reduceColumn), t));
 
-        return StreamExtensions.prepend(tableEntities, schema).collect(Collectors.toSet());
+        return StreamExtensions.prepend(tableEntities, schema).collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static Stream<Entity> reduceColumn(Column column) {

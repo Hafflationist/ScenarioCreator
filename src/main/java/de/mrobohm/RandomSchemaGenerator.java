@@ -8,6 +8,7 @@ import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.utils.SSet;
 
 import java.util.*;
 import java.util.function.Function;
@@ -36,9 +37,9 @@ public class RandomSchemaGenerator {
                 new IdSimple(random.nextInt()),
                 new StringPlusNaked("Spalte_" + nameGenerator.apply(random), pickRandomLanguage(random)),
                 new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean()),
-                Set.of(new Value("1"), new Value("2"), new Value("3")),
+                SSet.of(new Value("1"), new Value("2"), new Value("3")),
                 columnContext,
-                new HashSet<>()
+                SSet.of()
         );
     }
 
@@ -54,7 +55,7 @@ public class RandomSchemaGenerator {
                         random
                 ),
                 context,
-                new HashSet<>()
+                SSet.of()
         );
     }
 
@@ -78,9 +79,9 @@ public class RandomSchemaGenerator {
         return Stream.generate(() -> random).map(elementGenerator).limit(size).toList();
     }
 
-    private static <T> Set<T> generateRandomSet(int min, int max, Function<Random, T> elementGenerator, Random random) {
+    private static <T> SortedSet<T> generateRandomSet(int min, int max, Function<Random, T> elementGenerator, Random random) {
         var size = random.nextLong(min, max + 1);
-        return Stream.generate(() -> random).map(elementGenerator).limit(size).collect(Collectors.toSet());
+        return Stream.generate(() -> random).map(elementGenerator).limit(size).collect(Collectors.toCollection(TreeSet::new));
     }
 
 }

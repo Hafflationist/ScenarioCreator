@@ -8,11 +8,11 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.processing.transformations.structural.StructuralTestingUtils;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
-import java.util.Set;
 
 class AddTypoToColumnNameTest {
 
@@ -22,7 +22,7 @@ class AddTypoToColumnNameTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var column = new ColumnLeaf(
-                new IdSimple(1), name, dataType, Set.of(), ColumnContext.getDefault(), Set.of()
+                new IdSimple(1), name, dataType, SSet.of(), ColumnContext.getDefault(), SSet.of()
         );
         var idGenerator = StructuralTestingUtils.getIdGenerator(2);
         var transformation = new AddTypoToColumnName();

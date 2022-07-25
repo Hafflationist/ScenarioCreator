@@ -6,12 +6,12 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.structural.StructuralTestingUtils;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 class AddTypoToTableNameTest {
 
@@ -19,7 +19,7 @@ class AddTypoToTableNameTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), Set.of());
+        var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), SSet.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(2);
         var transformation = new AddTypoToTableName();
 

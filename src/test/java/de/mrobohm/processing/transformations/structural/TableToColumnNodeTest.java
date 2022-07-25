@@ -1,6 +1,8 @@
 package de.mrobohm.processing.transformations.structural;
 
-import de.mrobohm.data.*;
+import de.mrobohm.data.Context;
+import de.mrobohm.data.Language;
+import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
@@ -14,7 +16,7 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
-import de.mrobohm.processing.transformations.structural.TableToColumnNode;
+import de.mrobohm.utils.SSet;
 import junit.framework.AssertionFailedError;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,7 +25,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,22 +36,22 @@ class TableToColumnNodeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
+        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(4), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
         var ingestedColumn = new ColumnLeaf(new IdSimple(2), name,
                 dataType.withIsNullable(true), ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(4), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
         var ingestingColumn = new ColumnLeaf(new IdSimple(4), name,
                 dataType.withIsNullable(true), ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(3), Set.of()))
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of()))
         );
 
-        var table = new Table(new IdSimple(12), name, List.of(column2), Context.getDefault(), Set.of());
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), Set.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
-        var tableSet = Set.of(ingestingTable, ingestedTable, table);
+        var table = new Table(new IdSimple(12), name, List.of(column2), Context.getDefault(), SSet.of());
+        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
+        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+        var tableSet = SSet.of(ingestingTable, ingestedTable, table);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new TableToColumnNode(false, false);
@@ -62,7 +64,7 @@ class TableToColumnNodeTest {
         var oldIdSet = schema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
                 .map(Column::id)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         var newIdSet = newSchema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
                 .flatMap(column -> switch (column) {
@@ -71,7 +73,7 @@ class TableToColumnNodeTest {
                     case ColumnCollection ignore -> throw new AssertionFailedError();
                 })
                 .map(Column::id)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         Assertions.assertEquals(oldIdSet, newIdSet);
     }
 
@@ -80,20 +82,20 @@ class TableToColumnNodeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
+        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(4), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
         var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of()))
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
         var ingestingTable = new Table(
-                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), Set.of());
+                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
         var ingestedTable = new Table(
-                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
-        var tableSet = Set.of(ingestingTable, ingestedTable);
+                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+        var tableSet = SSet.of(ingestingTable, ingestedTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new TableToColumnNode(false, false);
@@ -111,8 +113,8 @@ class TableToColumnNodeTest {
                     case ColumnCollection ignore -> throw new AssertionFailedError();
                 })
                 .map(Column::id)
-                .collect(Collectors.toSet());
-        Assertions.assertEquals(Set.of(new IdSimple(1), new IdSimple(2)), newIdSet);
+                .collect(Collectors.toCollection(TreeSet::new));
+        Assertions.assertEquals(SSet.of(new IdSimple(1), new IdSimple(2)), newIdSet);
     }
 
     @ParameterizedTest
@@ -125,27 +127,27 @@ class TableToColumnNodeTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
         var ingestedColumn = new ColumnLeaf(new IdSimple(2), name,
                 dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
                 shouldStayNormalized
-                        ? Set.of(new ColumnConstraintForeignKey(new IdSimple(4), Set.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(4), Set.of()))
-                        : Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4), Set.of()))
+                        ? SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of()),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of()))
+                        : SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of()))
         );
         var ingestingColumn = new ColumnLeaf(new IdSimple(4), name,
                 dataType.withIsNullable(true), ColumnContext.getDefault(),
                 shouldStayNormalized
-                        ? Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of()),
-                        new ColumnConstraintForeignKey(new IdSimple(2), Set.of()))
-                        : Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of()))
+                        ? SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()),
+                        new ColumnConstraintForeignKey(new IdSimple(2), SSet.of()))
+                        : SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
         var ingestingTable = new Table(
-                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), Set.of());
+                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
         var ingestedTable = new Table(
-                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), Set.of());
-        var tableSet = Set.of(ingestingTable, ingestedTable);
+                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+        var tableSet = SSet.of(ingestingTable, ingestedTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new TableToColumnNode(shouldStayNormalized, shouldConserveAllRecords);
 

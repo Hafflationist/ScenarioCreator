@@ -19,12 +19,12 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 class BinaryValueToTableTest {
 
@@ -33,11 +33,11 @@ class BinaryValueToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = Set.of(new Value("Männlein"), new Value("Weiblein"));
+        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var validColumn = invalidColumn
-                .withConstraintSet(Set.of())
+                .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
         var targetTable = new Table(
@@ -45,9 +45,9 @@ class BinaryValueToTableTest {
                 name,
                 List.of(invalidColumn, validColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
-        var tableSet = Set.of(targetTable);
+        var tableSet = SSet.of(targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new BinaryValueToTable();
@@ -79,15 +79,15 @@ class BinaryValueToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = Set.of(new Value("Männlein"), new Value("Weiblein"));
+        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of())));
         var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(referencedColumn.id(), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
         var validColumn = invalidColumn
-                .withConstraintSet(Set.of())
+                .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(4));
         var referencedTable = new Table(
@@ -95,16 +95,16 @@ class BinaryValueToTableTest {
                 name,
                 List.of(referencedColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
         var targetTable = new Table(
                 new IdSimple(11),
                 name,
                 List.of(validColumn, referencingColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
-        var tableSet = Set.of(referencedTable, targetTable);
+        var tableSet = SSet.of(referencedTable, targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
         var transformation = new BinaryValueToTable();
@@ -145,43 +145,43 @@ class BinaryValueToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = Set.of(new Value("Männlein"), new Value("Weiblein"));
+        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
         var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
         var validColumn = primColumn
-                .withConstraintSet(Set.of())
+                .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
         var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), Set.of());
+                List.of(primColumn), Context.getDefault(), SSet.of());
         var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), Set.of());
+                List.of(validColumn), Context.getDefault(), SSet.of());
         var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
         var validTable1 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
         var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
-        var tableSet = Set.of(
+        var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable1
         );
@@ -200,43 +200,43 @@ class BinaryValueToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = Set.of(new Value("Männlein"), new Value("Weiblein"));
+        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
         var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
         var validColumn = primColumn
-                .withConstraintSet(Set.of())
+                .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
         var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), Set.of());
+                List.of(primColumn), Context.getDefault(), SSet.of());
         var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), Set.of());
+                List.of(validColumn), Context.getDefault(), SSet.of());
         var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
         var validTable1 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
         var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
                 Context.getDefault(),
-                Set.of()
+                SSet.of()
         );
-        var tableSet = Set.of(
+        var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable2
         );
@@ -255,29 +255,29 @@ class BinaryValueToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = Set.of(new Value("Männlein"), new Value("Weiblein"));
+        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+                SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
         var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                Set.of(new ColumnConstraintForeignKey(new IdSimple(2), Set.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
         var validColumn = primColumn
-                .withConstraintSet(Set.of())
+                .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
         var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), Set.of());
+                List.of(primColumn), Context.getDefault(), SSet.of());
         var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), Set.of());
+                List.of(validColumn), Context.getDefault(), SSet.of());
         var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), Set.of());
+                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
         var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), Set.of());
-        var tableSet = Set.of(
+                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
+        var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5
         );
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);

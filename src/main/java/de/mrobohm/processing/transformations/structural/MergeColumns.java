@@ -1,9 +1,9 @@
 package de.mrobohm.processing.transformations.structural;
 
+import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
-import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.constraint.*;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
@@ -17,10 +17,14 @@ import de.mrobohm.processing.transformations.SchemaTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -62,7 +66,7 @@ public final class MergeColumns implements SchemaTransformation {
                     }
                     return t.withColumnList(ncl);
                 })
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return schema.withTables(newTableSet);
     }
 
@@ -80,7 +84,7 @@ public final class MergeColumns implements SchemaTransformation {
                                         !ccfki.foreignColumnId().equals(mergedColumns.first().id())
                                                 && !ccfki.foreignColumnId().equals(mergedColumns.second().id());
                                 default -> true;
-                            }).collect(Collectors.toSet());
+                            }).collect(Collectors.toCollection(TreeSet::new));
                     if (newConstraintSet.equals(column.constraintSet())) {
                         return column;
                     }
@@ -115,9 +119,9 @@ public final class MergeColumns implements SchemaTransformation {
                 .flatMap(valueA -> columnB.valueSet().stream()
                         .map(valueB -> valueA + "|" + valueB)
                         .map(Value::new))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         var newContext = ColumnContext.getDefault();
-        return new ColumnLeaf(newId, newName, newDataType, newValueSet, newContext, new HashSet<>());
+        return new ColumnLeaf(newId, newName, newDataType, newValueSet, newContext, SSet.of());
     }
 
     @Override
@@ -134,15 +138,15 @@ public final class MergeColumns implements SchemaTransformation {
         return validColumnsCount >= 2;
     }
 
-    private Set<ColumnLeaf> getValidColumns(List<Column> columnList) {
+    private SortedSet<ColumnLeaf> getValidColumns(List<Column> columnList) {
         return columnList.stream()
                 .filter(c -> c instanceof ColumnLeaf)
                 .map(c -> (ColumnLeaf) c)
                 .filter(c -> checkConstraintSet(c.constraintSet()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private boolean checkConstraintSet(Set<ColumnConstraint> constraints) {
+    private boolean checkConstraintSet(SortedSet<ColumnConstraint> constraints) {
         return constraints.stream().noneMatch(this::isObstacle);
     }
 

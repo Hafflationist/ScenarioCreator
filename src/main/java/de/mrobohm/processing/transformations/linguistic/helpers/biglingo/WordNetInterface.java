@@ -3,6 +3,7 @@ package de.mrobohm.processing.transformations.linguistic.helpers.biglingo;
 import de.mrobohm.data.primitives.synset.EnglishSynset;
 import de.mrobohm.data.primitives.synset.GlobalSynset;
 import de.mrobohm.data.primitives.synset.PartOfSpeech;
+import de.mrobohm.utils.SSet;
 import edu.mit.jwi.IRAMDictionary;
 import edu.mit.jwi.RAMDictionary;
 import edu.mit.jwi.data.ILoadPolicy;
@@ -15,9 +16,7 @@ import edu.uniba.di.lacam.kdde.ws4j.util.WS4JConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,10 +49,10 @@ public class WordNetInterface implements LanguageCorpus {
         };
     }
 
-    public Set<String> getSynonymes(String wordStr) {
+    public SortedSet<String> getSynonymes(String wordStr) {
         var idxWord = _dict.getIndexWord(wordStr, POS.NOUN);
         if (idxWord == null) {
-            return Set.of();
+            return SSet.of();
         }
         return idxWord.getWordIDs().stream()
                 .map(_dict::getWord)
@@ -61,11 +60,11 @@ public class WordNetInterface implements LanguageCorpus {
                 .map(IWord::getLemma)
                 .map(str -> str.replace("_", "")) // hot_dog -> hotdog
                 .map(String::toLowerCase) // Canisfamiliaris -> canisfamiliaris
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override
-    public Set<String> getSynonymes(Set<GlobalSynset> synsetIdSet) {
+    public SortedSet<String> getSynonymes(SortedSet<GlobalSynset> synsetIdSet) {
         return synsetIdSet.stream()
                 .filter(gss -> gss instanceof EnglishSynset)
                 .map(gss -> (EnglishSynset) gss)
@@ -76,14 +75,14 @@ public class WordNetInterface implements LanguageCorpus {
                         .map(str -> str.replace("_", "")) // hot_dog -> hotdog
                         .map(String::toLowerCase) // Canisfamiliaris -> canisfamiliaris
                 )
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     @Override
-    public Set<GlobalSynset> estimateSynset(String word, Set<String> otherWordSet) {
+    public SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet) {
         // TODO: Diese Methode funktioniert zurzeit nicht richtig.
         if (_dict.getIndexWord(word, POS.NOUN) == null) {
-            return Set.of();
+            return SSet.of();
         }
 
         var possibleSynsets = _dict
@@ -108,7 +107,7 @@ public class WordNetInterface implements LanguageCorpus {
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
                 .map(ss -> new EnglishSynset(ss.getOffset(), posToPartOfSpeech(ss.getPOS())))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private double avgDistance(ISynset synset, Set<ISynset> otherSynsets, double min, double max) {
@@ -132,22 +131,22 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     @Override
-    public Map<String, Set<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
+    public Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
         var pos = partOfSpeechToPos(ess.partOfSpeech());
         return _dict.getSynset(new SynsetID(ess.offset(), pos)).getWords().stream()
                 .map(IWord::getLemma)
                 .collect(Collectors.toMap(
                         Function.identity(),
-                        ignore -> Set.of(ess)
+                        ignore -> SSet.of(ess)
                 ));
     }
 
     @Override
-    public Set<EnglishSynset> word2EnglishSynset(Set<GlobalSynset> gssSet) {
+    public SortedSet<EnglishSynset> word2EnglishSynset(SortedSet<GlobalSynset> gssSet) {
         return gssSet.stream()
                 .filter(gss -> gss instanceof EnglishSynset)
                 .map(gss -> (EnglishSynset) gss)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private Concept essToConcept(ISynsetID synsetId) {
@@ -155,7 +154,7 @@ public class WordNetInterface implements LanguageCorpus {
         return new Concept(synsetId.toString(), pos);
     }
 
-    public double lowestSemanticDistance(Set<GlobalSynset> synsetIdSet1, Set<GlobalSynset> synsetIdSet2) {
+    public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         var db = new MITWordNet(_dict);

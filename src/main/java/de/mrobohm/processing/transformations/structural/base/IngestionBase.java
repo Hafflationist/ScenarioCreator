@@ -10,6 +10,7 @@ import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -42,7 +43,7 @@ public final class IngestionBase {
         var newTable = ingest(chosenTable, chosenColumn, chosenIngestableTable, columnGenerator);
         var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), Stream.of(chosenTable, chosenIngestableTable), newTable)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return schema.withTables(newTableSet);
     }
 
@@ -99,12 +100,12 @@ public final class IngestionBase {
     }
 
     private static Column freeColumnFromConstraints(Column column, List<Column> columnListOfOtherTable) {
-        var otherColumnIdSet = columnListOfOtherTable.stream().map(Column::id).collect(Collectors.toSet());
+        var otherColumnIdSet = columnListOfOtherTable.stream().map(Column::id).collect(Collectors.toCollection(TreeSet::new));
         var newIngestingColumnConstraintSet = column.constraintSet().stream()
                 .filter(c ->
                         !(c instanceof ColumnConstraintForeignKey ccfk && otherColumnIdSet.contains(ccfk.foreignColumnId()))
                                 && !(c instanceof ColumnConstraintForeignKeyInverse ccfki && otherColumnIdSet.contains(ccfki.foreignColumnId())))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(TreeSet::new));
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withConstraintSet(newIngestingColumnConstraintSet);
             case ColumnNode node -> node.withConstraintSet(newIngestingColumnConstraintSet);
@@ -121,20 +122,20 @@ public final class IngestionBase {
                 .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
                 .map(c -> (ColumnConstraintForeignKeyInverse) c)
                 .map(ColumnConstraintForeignKeyInverse::foreignColumnId);
-        return Stream.concat(foreignedIdStream, inversedIdStream).collect(Collectors.toSet()).size();
+        return Stream.concat(foreignedIdStream, inversedIdStream).collect(Collectors.toCollection(TreeSet::new)).size();
     }
 
-    public static boolean canIngest(Table table, Set<Table> tableSet, IngestionFlags flags) {
+    public static boolean canIngest(Table table, SortedSet<Table> tableSet, IngestionFlags flags) {
         var ingestionCandidates = getIngestionCandidates(table, tableSet, flags);
         return ingestionCandidates.keySet().size() > 0;
     }
 
     @NotNull
-    private static Map<Column, Set<Table>> getIngestionCandidates(
+    private static Map<Column, SortedSet<Table>> getIngestionCandidates(
             Table table,
-            Set<Table> tableSet,
+            SortedSet<Table> tableSet,
             IngestionFlags flags) {
-        var otherTableSet = tableSet.stream().filter(t -> t != table).collect(Collectors.toSet());
+        var otherTableSet = tableSet.stream().filter(t -> t != table).collect(Collectors.toCollection(TreeSet::new));
         var ingestionCandidates = table.columnList().stream().collect(Collectors.toMap(
                 Function.identity(),
                 // All tables pointing to <table> could be ingested by <table> into a collection
@@ -148,7 +149,7 @@ public final class IngestionBase {
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .filter(t -> hasSimpleRelationship(table, t, flags.shouldConserveAllRecords()))
-                        .collect(Collectors.toSet())));
+                        .collect(Collectors.toCollection(TreeSet::new))));
 
         return table.columnList().stream()
                 .filter(column -> ingestionCandidates.get(column).size() > 0)
@@ -156,7 +157,7 @@ public final class IngestionBase {
     }
 
     @NotNull
-    private static Optional<Table> columnIdToTable(Id columnId, Set<Table> tableSet) {
+    private static Optional<Table> columnIdToTable(Id columnId, SortedSet<Table> tableSet) {
         return tableSet.stream().filter(t -> t.columnList().stream().anyMatch(c -> c.id().equals(columnId))).findFirst();
     }
 
@@ -179,7 +180,7 @@ public final class IngestionBase {
                 .map(ColumnConstraintForeignKeyInverse::foreignColumnId);
         var cidExistingInB = Stream.concat(foreignColumnIdSet1, foreignColumnIdSet2)
                 .distinct()
-                .map(cid -> columnIdToTable(cid, Set.of(tableB)))
+                .map(cid -> columnIdToTable(cid, SSet.of(tableB)))
                 .filter(Optional::isPresent);
         return cidExistingInB.count();
     }

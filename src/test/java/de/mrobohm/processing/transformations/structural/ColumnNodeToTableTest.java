@@ -1,6 +1,8 @@
 package de.mrobohm.processing.transformations.structural;
 
-import de.mrobohm.data.*;
+import de.mrobohm.data.Context;
+import de.mrobohm.data.Language;
+import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
@@ -14,12 +16,12 @@ import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IntegrityChecker;
+import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 
 class ColumnNodeToTableTest {
 
@@ -29,13 +31,13 @@ class ColumnNodeToTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var targetTableName = new StringPlusNaked("Tabelle", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
         var columnNode = new ColumnNode(
-                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
+                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
         var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
+                new IdSimple(6), targetTableName, List.of(columnLeaf, columnNode), Context.getDefault(), SSet.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(7);
         var transformation = new ColumnNodeToTable();
 
@@ -46,7 +48,7 @@ class ColumnNodeToTableTest {
         Assertions.assertEquals(2, newTableSet.size());
         Assertions.assertFalse(newTableSet.contains(targetTable));
         var newTableList = newTableSet.stream()
-                .filter(t -> t.id() instanceof IdPart idp  && idp.predecessorId().equals(targetTable.id()))
+                .filter(t -> t.id() instanceof IdPart idp && idp.predecessorId().equals(targetTable.id()))
                 .toList();
         var originTable = newTableList.stream()
                 .filter(t -> t.name().equals(targetTable.name())).findFirst().get();
@@ -74,15 +76,15 @@ class ColumnNodeToTableTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), Set.of());
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), Set.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), SSet.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
         var columnNode = new ColumnNode(
-                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), Set.of(), false);
+                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
         var validTable = new Table(
-                new IdSimple(6), name, List.of(columnLeaf, columnNode), Context.getDefault(), Set.of());
-        var tableSet = Set.of(invalidTable, validTable);
+                new IdSimple(6), name, List.of(columnLeaf, columnNode), Context.getDefault(), SSet.of());
+        var tableSet = SSet.of(invalidTable, validTable);
         var transformation = new ColumnNodeToTable();
 
         // --- Act
