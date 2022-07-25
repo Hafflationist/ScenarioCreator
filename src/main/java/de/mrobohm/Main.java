@@ -222,7 +222,7 @@ public class Main {
         }
     }
 
-    private static void testForester(String pathStr, @Nullable Integer seedOpt) {
+    private static void testForester(String pathStr, @Nullable Integer seedOpt, UnifiedLanguageCorpus ulc, GermaNetInterface gni) {
         try {
             // clean directory
             FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
@@ -239,11 +239,9 @@ public class Main {
             }
 
             // calc
-            var germanet = new GermaNetInterface();
-            var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
             var ss = new SemanticSaturation(ulc);
             var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
-                    random, 3, 3, germanet::pickRandomEnglishWord
+                    random, 3, 3, gni::pickRandomEnglishWord
             );
             var schema = ss.saturateSemantically(schemaNaked);
 
@@ -268,21 +266,23 @@ public class Main {
                         }
                         System.out.println("Saved schema in \"" + path + "\"");
                     });
-        } catch (XMLStreamException | IOException e) {
+        } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws XMLStreamException, IOException {
         var path = args[0];
         writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        for (long i = 0; i < Long.MAX_VALUE; i++) {
+        var germanet = new GermaNetInterface();
+        var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
+        for (int i = 0; i < Integer.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
-            testForester(path, i);
+            testForester(path, i, ulc, germanet);
             System.out.println("Anlauf " + i + " vollständig");
         }
     }
