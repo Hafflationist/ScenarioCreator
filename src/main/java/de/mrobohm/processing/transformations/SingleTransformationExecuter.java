@@ -121,17 +121,13 @@ public class SingleTransformationExecuter {
     @NotNull
     private Pair<Table, Column> chooseColumn(
             Schema schema, Function<List<Column>, List<Column>> getCandidates, Random random
-    ) throws NoColumnFoundException, NoTableFoundException {
+    ) throws NoColumnFoundException {
         assert schema.tableSet().size() > 0;
 
-        var candidateTableSet = schema.tableSet()
+        var candidateStream = schema.tableSet()
                 .stream()
-                .filter(table -> getCandidates.apply(table.columnList()).size() > 0)
-                .collect(Collectors.toCollection(TreeSet::new));
-
-        var targetTable = chooseTable(candidateTableSet, random);
-        var columnStream = targetTable.columnList().stream();
-        var targetColumn = StreamExtensions.pickRandomOrThrow(columnStream, new NoColumnFoundException(), random);
-        return new Pair<>(targetTable, targetColumn);
+                .flatMap(t -> getCandidates.apply(t.columnList()).stream().map(column -> new Pair<>(t, column)));
+        return StreamExtensions
+                .pickRandomOrThrow(candidateStream, new NoColumnFoundException(), random);
     }
 }
