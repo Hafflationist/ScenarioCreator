@@ -3,17 +3,18 @@ package de.mrobohm.heterogenity.ted;
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 class TedTree {
     static int[][] TD;
     private final TedNode root;
     // function l() which gives the leftmost child
-    List<Integer> l = List.of();
+    List<Integer> l = new ArrayList<>();
     // list of keyroots, i.e., nodes with a left child and the tree root
-    List<Integer> keyroots = List.of();
+    List<Integer> keyroots = new ArrayList<>();
     // list of the labels of the nodes used for node comparison
-    List<String> labels = List.of();
+    List<String> labels = new ArrayList<>();
 
     // the following constructor handles preorder notation. E.g., f(a b(c))
     TedTree(String s) throws IOException {
@@ -152,7 +153,7 @@ class TedTree {
     private void l() {
         // put together a function which gives l()
         leftmost();
-        l = l(root, List.of());
+        l = l(root, new ArrayList<>());
     }
 
     private List<Integer> l(TedNode node, List<Integer> l) {

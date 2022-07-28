@@ -6,6 +6,9 @@ import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.data.identification.IdMerge;
+import de.mrobohm.data.identification.IdPart;
+import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.table.Table;
 
 import java.io.IOException;
@@ -21,7 +24,11 @@ final class Converter {
     }
 
     private static String idToLabel(Id id) {
-        throw new RuntimeException("Implement me!");
+        return switch(id) {
+            case IdSimple ids -> "i" + ids.number();
+            case IdPart idp -> "q" + idToLabel(idp.predecessorId()) + "p" + idp.extensionNumber();
+            case IdMerge idm -> idToLabel(idm.predecessorId1()) + idToLabel(idm.predecessorId2());
+        };
     }
 
     private static String schemaToPreorderNotation(Schema schema) {

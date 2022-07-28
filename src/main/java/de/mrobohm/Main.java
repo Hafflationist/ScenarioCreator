@@ -5,6 +5,7 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
+import de.mrobohm.heterogenity.ted.Ted;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
@@ -222,7 +223,7 @@ public class Main {
         }
     }
 
-    private static void testForester(String pathStr, @Nullable Integer seedOpt, UnifiedLanguageCorpus ulc, GermaNetInterface gni) {
+    private static void testForesterInner(String pathStr, @Nullable Integer seedOpt, UnifiedLanguageCorpus ulc, GermaNetInterface gni) {
         try {
             // clean directory
             FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
@@ -271,6 +272,35 @@ public class Main {
         }
     }
 
+
+    private static void testForester(String path) throws XMLStreamException, IOException {
+        var germanet = new GermaNetInterface();
+        var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
+        for (int i = 1500; i < Integer.MAX_VALUE; i++) {
+            System.out.println("Starte Anlauf " + i + "...");
+            testForesterInner(path, i, ulc, germanet);
+            System.out.println("Anlauf " + i + " vollständig");
+        }
+    }
+
+    private static void testTreeEditDistance() {
+        var random = new Random();
+        try {
+            var germanet = new GermaNetInterface();
+            var schema1 = RandomSchemaGenerator.generateRandomSchema(
+                    random, 8, 8, germanet::pickRandomEnglishWord
+            );
+            var schema2 = RandomSchemaGenerator.generateRandomSchema(
+                    random, 8, 8, germanet::pickRandomEnglishWord
+            );
+            var distAbs = Ted.calculateDistanceAbsolute(schema1, schema2);
+            var distRel = Ted.calculateDistanceRelative(schema1, schema2);
+            System.out.println("distAbs: " + distAbs);
+            System.out.println("distRel: " + distRel);
+        } catch (XMLStreamException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+    }
     public static void main(String[] args) throws XMLStreamException, IOException {
         var path = args[0];
 //        writeRandomSchema(path);
@@ -278,13 +308,8 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        var germanet = new GermaNetInterface();
-        var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 1500; i < Integer.MAX_VALUE; i++) {
-            System.out.println("Starte Anlauf " + i + "...");
-            testForester(path, i, ulc, germanet);
-            System.out.println("Anlauf " + i + " vollständig");
-        }
+//        testForester(path);
+        testTreeEditDistance();
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {
