@@ -139,17 +139,17 @@ class TedTree {
         return forestdist[i][j];
     }
 
-    public void traverse() {
+    private void traverse() {
         // put together an ordered list of node labels of the tree
         traverse(root, labels);
     }
 
-    public void index() {
+    private void index() {
         // index each node in the tree according to traversal method
         index(root, 0);
     }
 
-    public void l() {
+    private void l() {
         // put together a function which gives l()
         leftmost();
         l = l(root, List.of());
@@ -167,7 +167,7 @@ class TedTree {
         leftmost(root);
     }
 
-    public void keyroots() {
+    private void keyroots() {
         for (int i = 0; i < l.size(); i++) {
             int flag = 0;
             for (int j = i + 1; j < l.size(); j++) {
