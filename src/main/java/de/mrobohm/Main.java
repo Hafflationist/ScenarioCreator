@@ -273,14 +273,14 @@ public class Main {
 
     public static void main(String[] args) throws XMLStreamException, IOException {
         var path = args[0];
-        writeRandomSchema(path);
+//        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
         var germanet = new GermaNetInterface();
         var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 0; i < Integer.MAX_VALUE; i++) {
+        for (int i = 1500; i < Integer.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
             testForester(path, i, ulc, germanet);
             System.out.println("Anlauf " + i + " vollständig");
