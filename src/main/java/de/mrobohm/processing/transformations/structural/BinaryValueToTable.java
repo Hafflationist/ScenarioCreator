@@ -18,6 +18,7 @@ import de.mrobohm.processing.transformations.SchemaTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,40 +42,46 @@ public class BinaryValueToTable implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two values!!");
+        var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two or three values!!");
         var validTableStream = schema.tableSet().stream().filter(this::isTableValid);
         var table = StreamExtensions.pickRandomOrThrow(validTableStream, tcnbee, random);
         var validColumnStream = table.columnList().stream()
                 .filter(column -> column instanceof ColumnLeaf)
                 .map(column -> (ColumnLeaf) column)
-                .filter(leaf -> leaf.valueSet().size() == 2);
+                .filter(leaf -> leaf.valueSet().size() == 2 || leaf.valueSet().size() == 3);
         var chosenSplitLeaf = StreamExtensions.pickRandomOrThrow(validColumnStream, tcnbee, random);
         var newColumnList = table.columnList().stream()
                 .filter(column -> !column.equals(chosenSplitLeaf))
                 .toList();
         var tableWithoutChosenSplitLeaf = table.withColumnList(newColumnList);
-        var tableSplitResult = splitTable(tableWithoutChosenSplitLeaf);
         var valueList = chosenSplitLeaf.valueSet().stream().toList();
-        var tableFirst = appendToName(tableSplitResult.tableFirst, valueList.get(0).content(), random);
-        var tableSecond = appendToName(tableSplitResult.tableSecond, valueList.get(1).content(), random);
+        var tableSplitResult = splitTable(tableWithoutChosenSplitLeaf, valueList.size());
+        var addTableStream = StreamExtensions
+                .zip(
+                        tableSplitResult.tableSet.stream(),
+                        valueList.stream(),
+                        (t, value) -> appendToName(t, value.content(), random)
+                );
         var newTableSet = StreamExtensions.replaceInStream(
                 schema.tableSet().stream(),
                 table,
-                Stream.of(tableFirst, tableSecond)
+                addTableStream
         ).collect(Collectors.toCollection(TreeSet::new));
         return IdTranslation.translateConstraints(schema.withTables(newTableSet), tableSplitResult.idMap);
     }
 
-    private TableSplitResult splitTable(Table table) {
+    private TableSplitResult splitTable(Table table, int n) {
+        var tableSet = Stream.iterate(0, x -> x + 1)
+                .limit(n)
+                .map(x -> splitTablePart(table, x))
+                .collect(Collectors.toCollection(TreeSet::new));
 
-
-        var tablePart1 = splitTablePart(table, 0);
-        var tablePart2 = splitTablePart(table, 1);
-        var idMapWrongType = Stream.concat(getAllColumnIdPartStream(tablePart1), getAllColumnIdPartStream(tablePart2))
+        var idMapWrongType = tableSet.stream()
+                .flatMap(this::getAllColumnIdPartStream)
                 .collect(groupingBy(IdPart::predecessorId));
         var idMap = idMapWrongType.keySet().stream()
                 .collect(Collectors.toMap(id -> id, id -> (SortedSet<Id>) new TreeSet<Id>(idMapWrongType.get(id))));
-        return new TableSplitResult(tablePart1, tablePart2, idMap);
+        return new TableSplitResult(tableSet, idMap);
     }
 
     private Stream<IdPart> getAllColumnIdPartStream(Table table) {
@@ -141,7 +148,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                 .map(column -> (ColumnLeaf) column)
                 .map(ColumnLeaf::valueSet)
                 .map(Set::size)
-                .anyMatch(size -> size == 2);
+                .anyMatch(size -> size == 2 || size == 3);
 
         return enoughNonPrimKeyColumns
                 && enoughColumns
@@ -155,6 +162,6 @@ public class BinaryValueToTable implements SchemaTransformation {
                 .anyMatch(this::isTableValid);
     }
 
-    private record TableSplitResult(Table tableFirst, Table tableSecond, Map<Id, SortedSet<Id>> idMap) {
+    private record TableSplitResult(SortedSet<Table> tableSet, Map<Id, SortedSet<Id>> idMap) {
     }
 }
