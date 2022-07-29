@@ -16,6 +16,7 @@ import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.heterogenity.ted.Ted;
 import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;
@@ -25,10 +26,11 @@ import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-class DistanceMeasureTest {
+class StructuralDistanceMeasureTest {
 
     private String appendSpacesToName(String name) {
         var spaces = "                             ";
@@ -36,7 +38,7 @@ class DistanceMeasureTest {
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_BinaryValueToTable() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_BinaryValueToTable() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -53,17 +55,18 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("BinaryValueToTable:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("BinaryValueToTable:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_RemoveColumn() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_RemoveColumn() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -80,17 +83,18 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("RemoveColumn:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("RemoveColumn:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_RemoveTable() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_RemoveTable() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -107,17 +111,18 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("RemoveTable:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("RemoveTable:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_Manual_Grouping() {
+    void calculateDistanceToRootAbsolute_Manual_Grouping() throws IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -133,15 +138,16 @@ class DistanceMeasureTest {
         var newTable = rootTable.withColumnList(List.of(columnNode));
         var newSchema = rootSchema.withTables(SSet.of(newTable));
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println(appendSpacesToName("Manual_Grouping:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("Manual_Grouping:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_Manual_ChangeGrouping() {
+    void calculateDistanceToRootAbsolute_Manual_ChangeGrouping() throws IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -159,15 +165,16 @@ class DistanceMeasureTest {
         var newTable = rootTable.withColumnList(newColumnList);
         var newSchema = rootSchema.withTables(SSet.of(newTable));
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
-        System.out.println(appendSpacesToName("Manual_ChangeGrouping:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("Manual_ChangeGrouping:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_ColumnCollectionToTable() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_ColumnCollectionToTable() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -187,17 +194,18 @@ class DistanceMeasureTest {
         IntegrityChecker.assertValidSchema(newSchema);
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("ColumnCollectionToTable:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("ColumnCollectionToTable:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_GroupColumnLeafsToNode() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_GroupColumnLeafsToNode() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -214,18 +222,19 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("GroupColumnLeafsToNode:") + diff);
-        Assertions.assertTrue(5 >= diff);
-        Assertions.assertTrue(diff >= 2);
+        System.out.println(appendSpacesToName("GroupColumnLeafsToNode:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(5 >= diffElementary);
+        Assertions.assertTrue(diffElementary >= 2);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_MergeColumns() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_MergeColumns() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
         var dt = new DataType(DataTypeEnum.NVARCHAR, false);
@@ -242,17 +251,18 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("MergeColumns:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("MergeColumns:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 
     @Test
-    void calculateDistanceToRootAbsolute_TableToColumnCollection() throws NoTableFoundException, NoColumnFoundException {
+    void calculateDistanceToRootAbsolute_TableToColumnCollection() throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
@@ -275,12 +285,13 @@ class DistanceMeasureTest {
         var newSchema = ste.executeTransformation(rootSchema, transformation, new Random());
 
         // --- act
-        var diff = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- assert
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        System.out.println(appendSpacesToName("TableToColumnCollection:") + diff);
-        Assertions.assertTrue(diff > 0);
+        System.out.println(appendSpacesToName("TableToColumnCollection:") + diffElementary + "\t" + diffTed);
+        Assertions.assertTrue(diffElementary > 0);
     }
 }

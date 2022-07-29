@@ -36,7 +36,8 @@ final class Converter {
         var childLabelList = schema.tableSet().stream()
                 .map(Converter::tableToPreorderNotation)
                 .collect(Collectors.joining(" "));
-        return schemaLabel + "(" + childLabelList + ")";
+        var childPart = schema.tableSet().isEmpty() ? "" : "(" + childLabelList + ")";
+        return schemaLabel + childPart;
     }
 
     private static String tableToPreorderNotation(Table table) {
@@ -44,7 +45,8 @@ final class Converter {
         var childLabelList = table.columnList().stream()
                 .map(Converter::columnToPreorderNotation)
                 .collect(Collectors.joining(" "));
-        return tableLabel + "(" + childLabelList + ")";
+        var childPart = table.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+        return tableLabel + childPart;
     }
 
     private static String columnToPreorderNotation(Column column) {
@@ -55,14 +57,16 @@ final class Converter {
                 var childLabelList = node.columnList().stream()
                         .map(Converter::columnToPreorderNotation)
                         .collect(Collectors.joining(" "));
-                yield columnLabel + "(" + childLabelList + ")";
+                var childPart = node.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+                yield columnLabel + childPart;
             }
             case ColumnCollection col -> {
                 var columnLabel = idToLabel(col.id());
                 var childLabelList = col.columnList().stream()
                         .map(Converter::columnToPreorderNotation)
                         .collect(Collectors.joining(" "));
-                yield columnLabel + "(" + childLabelList + ")";
+                var childPart = col.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+                yield columnLabel + childPart;
             }
         };
     }
