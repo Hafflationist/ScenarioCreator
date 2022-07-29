@@ -27,9 +27,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.SortedSet;
 
-class StructuralDistanceMeasureElementaryTest {
+class DistanceMeasureTest {
 
     private String appendSpacesToName(String name) {
         var spaces = "                             ";
