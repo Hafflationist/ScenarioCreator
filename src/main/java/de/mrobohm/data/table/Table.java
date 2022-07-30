@@ -15,35 +15,42 @@ public record Table(Id id,
                     StringPlus name,
                     List<Column> columnList,
                     Context context,
-                    SortedSet<TableConstraint> tableConstraintSet) implements Entity {
+                    SortedSet<TableConstraint> tableConstraintSet,
+                    SortedSet<FunctionalDependency> functionalDependencySet) implements Entity {
 
     @Contract(pure = true)
     @NotNull
     public Table withId(Id newId) {
-        return new Table(newId, name, columnList, context, tableConstraintSet);
+        return new Table(newId, name, columnList, context, tableConstraintSet, functionalDependencySet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withName(StringPlus newName) {
-        return new Table(id, newName, columnList, context, tableConstraintSet);
+        return new Table(id, newName, columnList, context, tableConstraintSet, functionalDependencySet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withColumnList(List<Column> newColumnList) {
-        return new Table(id, name, newColumnList, context, tableConstraintSet);
+        return new Table(id, name, newColumnList, context, tableConstraintSet, functionalDependencySet);
     }
 
     @Contract(pure = true)
     @NotNull
     public Table withContext(Context newContext) {
-        return new Table(id, name, columnList, newContext, tableConstraintSet);
+        return new Table(id, name, columnList, newContext, tableConstraintSet, functionalDependencySet);
     }
 
     @Contract(pure = true)
     @NotNull
-    public Table withTableConstraintSet(SortedSet<TableConstraint> newTableConstraints) {
-        return new Table(id, name, columnList, context, newTableConstraints);
+    public Table withTableConstraintSet(SortedSet<TableConstraint> newTableConstraintSet) {
+        return new Table(id, name, columnList, context, newTableConstraintSet, functionalDependencySet);
+    }
+
+    @Contract(pure = true)
+    @NotNull
+    public Table withFunctionalDepencySet(SortedSet<FunctionalDependency> newFunctionalDependencySet) {
+        return new Table(id, name, columnList, context, tableConstraintSet, newFunctionalDependencySet);
     }
 }

@@ -55,6 +55,7 @@ public class RandomSchemaGenerator {
                         random
                 ),
                 context,
+                SSet.of(),
                 SSet.of()
         );
     }

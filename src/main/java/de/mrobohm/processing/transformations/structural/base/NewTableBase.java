@@ -56,7 +56,7 @@ public final class NewTableBase {
         var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnList.stream()).toList();
         var newContext = Context.getDefault();
         var newId = new IdPart(oldTable.id(), 1, MergeOrSplitType.And);
-        return new Table(newId, tableName, newColumnList, newContext, SSet.of());
+        return new Table(newId, tableName, newColumnList, newContext, SSet.of(), SSet.of());
     }
 
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
