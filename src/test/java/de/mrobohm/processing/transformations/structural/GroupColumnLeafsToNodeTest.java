@@ -38,7 +38,7 @@ class GroupColumnLeafsToNodeTest {
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
         var targetTable = new Table(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
-                Context.getDefault(), SSet.of());
+                Context.getDefault(), SSet.of(), SSet.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new GroupColumnLeafsToNode();
 
@@ -72,12 +72,13 @@ class GroupColumnLeafsToNodeTest {
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), SSet.of());
+        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf),
+                Context.getDefault(), SSet.of(), SSet.of());
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
         var validTable = new Table(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
-                Context.getDefault(), SSet.of());
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(invalidTable, validTable);
         var transformation = new GroupColumnLeafsToNode();
 

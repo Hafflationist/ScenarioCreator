@@ -37,7 +37,8 @@ class ColumnCollectionToTableTest {
         var columnCollection = new ColumnCollection(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
         var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnCollection), Context.getDefault(), SSet.of());
+                new IdSimple(6), targetTableName, List.of(columnLeaf, columnCollection),
+                Context.getDefault(), SSet.of(), SSet.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(7);
         var transformation = new ColumnCollectionToTable();
 
@@ -77,13 +78,15 @@ class ColumnCollectionToTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf), Context.getDefault(), SSet.of());
+        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf),
+                Context.getDefault(), SSet.of(), SSet.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
         var columnCollection = new ColumnCollection(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
         var validTable = new Table(
-                new IdSimple(6), name, List.of(columnLeaf, columnCollection), Context.getDefault(), SSet.of());
+                new IdSimple(6), name, List.of(columnLeaf, columnCollection),
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(invalidTable, validTable);
         var transformation = new ColumnCollectionToTable();
 

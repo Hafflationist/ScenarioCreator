@@ -19,7 +19,7 @@ class AddTypoToTableNameTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), SSet.of());
+        var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), SSet.of(), SSet.of());
         var idGenerator = StructuralTestingUtils.getIdGenerator(2);
         var transformation = new AddTypoToTableName();
 

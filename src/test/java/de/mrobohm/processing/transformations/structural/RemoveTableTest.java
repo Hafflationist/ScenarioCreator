@@ -30,7 +30,8 @@ class RemoveTableTest {
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
         var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
+                Context.getDefault(), SSet.of(), SSet.of());
         var validTable = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new RemoveTable();
@@ -55,7 +56,8 @@ class RemoveTableTest {
         var validColumn2 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
+                Context.getDefault(), SSet.of(), SSet.of());
         var invalidTable2 = invalidTable1.withId(new IdSimple(11)).withColumnList(List.of(invalidColumn2));
         var validTable1 = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
         var validTable2 = invalidTable1.withId(new IdSimple(13)).withColumnList(List.of(validColumn2));

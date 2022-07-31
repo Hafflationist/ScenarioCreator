@@ -48,14 +48,14 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var derivingTableColumnList = List.of(
                 (Column) commonColumn1.withId(new IdSimple(4)),
                 commonColumn2.withId(new IdSimple(5)),
                 commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
         var derivingTable = new Table(
-                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of());
+                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(baseTable, derivingTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -107,15 +107,15 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var derivingTableColumnList = List.of(
                 (Column) commonColumn1.withId(new IdSimple(4)),
                 commonColumn2.withId(new IdSimple(5)),
                 commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
         var derivingTable = new Table(
-                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of());
-        var randomTable = new Table(new IdSimple(12), name, List.of(randomColumn), Context.getDefault(), SSet.of());
+                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
+        var randomTable = new Table(new IdSimple(12), name, List.of(randomColumn), Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(baseTable, derivingTable, randomTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -150,14 +150,14 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of());
+        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var derivingTableColumnList = List.of(
                 (Column) commonColumn1.withId(new IdSimple(4)),
                 commonColumn2.withId(new IdSimple(5)),
                 commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
         var derivingTable = new Table(
-                new IdSimple(11), name, derivingTableColumnList, Context.getDefault(), SSet.of());
+                new IdSimple(11), name, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(baseTable, derivingTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(1, jaccardThreshold);
@@ -214,7 +214,7 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn4 = new ColumnLeaf(new IdSimple(10), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(20), name, baseTableColumnList, Context.getDefault(), SSet.of());
+        var baseTable = new Table(new IdSimple(20), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var derivingTableColumnList = List.of(
                 (Column) commonColumn11,
                 commonColumn12,
@@ -224,7 +224,7 @@ class HorizontalInheritanceToNullableTest {
                 extraColumn3,
                 extraColumn4);
         var derivingTable = new Table(
-                new IdSimple(21), name, derivingTableColumnList, Context.getDefault(), SSet.of());
+                new IdSimple(21), name, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(baseTable, derivingTable);
         var schema = new Schema(new IdSimple(100), name, Context.getDefault(), tableSet);
         var transformation = new HorizontalInheritanceToNullable(primaryKeyCountThreshold, 1.01);

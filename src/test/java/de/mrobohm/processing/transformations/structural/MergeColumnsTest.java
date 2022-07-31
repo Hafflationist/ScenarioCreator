@@ -58,11 +58,11 @@ class MergeColumnsTest {
         var validColumn2 = validColumn1.withId(new IdSimple(8));
 
         var invalidTable = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of());
+                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
         var semivalidTable = new Table(new IdSimple(11), name,
-                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of());
+                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of(), SSet.of());
         var validTable = new Table(new IdSimple(14), name,
-                List.of(invalidColumn3, validColumn1, validColumn2), Context.getDefault(), SSet.of());
+                List.of(invalidColumn3, validColumn1, validColumn2), Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(invalidTable, validTable, semivalidTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -107,9 +107,9 @@ class MergeColumnsTest {
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
 
         var invalidTable = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of());
+                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
         var semivalidTable = new Table(new IdSimple(11), name,
-                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of());
+                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of(),SSet.of());
         var tableSet = SSet.of(invalidTable, semivalidTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -151,15 +151,15 @@ class MergeColumnsTest {
         var validColumn2 = validColumn1.withId(new IdSimple(5));
 
         var invalidTable = new Table(new IdSimple(10), name,
-                List.of(invalidColumn, semivalidColumn1), Context.getDefault(), SSet.of());
+                List.of(invalidColumn, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
         var semivalidTable1 = new Table(new IdSimple(11), name,
-                List.of(invalidColumn, semivalidColumn1, semivalidColumn2), Context.getDefault(), SSet.of());
+                List.of(invalidColumn, semivalidColumn1, semivalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
         var semivalidTable2 = new Table(new IdSimple(12), name,
-                List.of(invalidColumn, semivalidColumn1, validColumn1), Context.getDefault(), SSet.of());
+                List.of(invalidColumn, semivalidColumn1, validColumn1), Context.getDefault(), SSet.of(), SSet.of());
         var semivalidTable3 = new Table(new IdSimple(13), name,
-                List.of(invalidColumn, validColumn1, semivalidColumn2), Context.getDefault(), SSet.of());
+                List.of(invalidColumn, validColumn1, semivalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
         var validTable = new Table(new IdSimple(14), name,
-                List.of(invalidColumn, validColumn1, validColumn2), Context.getDefault(), SSet.of());
+                List.of(invalidColumn, validColumn1, validColumn2), Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(invalidTable, semivalidTable1, semivalidTable2, semivalidTable3, validTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new MergeColumns(keepForeignKeyIntegrity);

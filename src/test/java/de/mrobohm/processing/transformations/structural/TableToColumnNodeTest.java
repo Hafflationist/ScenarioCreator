@@ -48,9 +48,11 @@ class TableToColumnNodeTest {
                         new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of()))
         );
 
-        var table = new Table(new IdSimple(12), name, List.of(column2), Context.getDefault(), SSet.of());
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+        var table = new Table(new IdSimple(12), name, List.of(column2), Context.getDefault(), SSet.of(), SSet.of());
+        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(ingestingTable, ingestedTable, table);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -92,9 +94,11 @@ class TableToColumnNodeTest {
         );
 
         var ingestingTable = new Table(
-                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
+                new IdSimple(10), name, List.of(ingestingColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var ingestedTable = new Table(
-                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+                new IdSimple(11), name, List.of(column1, ingestedColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(ingestingTable, ingestedTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -144,9 +148,10 @@ class TableToColumnNodeTest {
         );
 
         var ingestingTable = new Table(
-                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of());
+                new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of(), SSet.of());
         var ingestedTable = new Table(
-                new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of());
+                new IdSimple(11), name, List.of(column1, ingestedColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(ingestingTable, ingestedTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         var transformation = new TableToColumnNode(shouldStayNormalized, shouldConserveAllRecords);

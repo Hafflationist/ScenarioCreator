@@ -45,6 +45,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(invalidColumn, validColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(targetTable);
@@ -91,6 +92,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(invalidColumn, validColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(targetTable);
@@ -147,6 +149,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(referencedColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var targetTable = new Table(
@@ -154,6 +157,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(validColumn, referencingColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(referencedTable, targetTable);
@@ -205,6 +209,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(referencedColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var targetTable = new Table(
@@ -212,6 +217,7 @@ class BinaryValueToTableTest {
                 name,
                 List.of(validColumn, referencingColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(referencedTable, targetTable);
@@ -273,21 +279,22 @@ class BinaryValueToTableTest {
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var validTable1 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(
@@ -321,21 +328,22 @@ class BinaryValueToTableTest {
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(
@@ -369,21 +377,22 @@ class BinaryValueToTableTest {
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
                 Context.getDefault(),
+                SSet.of(),
                 SSet.of()
         );
         var tableSet = SSet.of(
@@ -423,16 +432,16 @@ class BinaryValueToTableTest {
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn), Context.getDefault(), SSet.of());
+        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var invalidTable2 = new Table(new IdSimple(2), name,
-                List.of(primColumn), Context.getDefault(), SSet.of());
+                List.of(primColumn), Context.getDefault(), SSet.of(), SSet.of());
         var invalidTable3 = new Table(new IdSimple(4), name,
-                List.of(validColumn), Context.getDefault(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name,
-                List.of(primColumn, validColumn, invalidColumn), Context.getDefault(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name,
-                List.of(primColumn, invalidColumn, neutralColumn), Context.getDefault(), SSet.of());
+                List.of(validColumn), Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+                Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5
         );
