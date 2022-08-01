@@ -12,6 +12,7 @@ import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
@@ -101,13 +102,21 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     newIdComplex.primaryKeyColumnId(),
                     originalTable.name(),
                     newPrimaryColumnConstraintSet);
+            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                    originalTable.functionalDependencySet(), newColumnList
+            );
             return originalTable
                     .withId(newId)
-                    .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList());
+                    .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList())
+                    .withFunctionalDependencySet(newFunctionalDependencySet);
         }
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                originalTable.functionalDependencySet(), newColumnList
+        );
         return originalTable
                 .withId(newId)
-                .withColumnList(newColumnList);
+                .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFunctionalDependencySet);
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
@@ -161,10 +170,14 @@ public class NullableToVerticalInheritance implements TableTransformation {
             var newColumnList = Stream
                     .concat(Stream.of(newPrimaryColumn), extractableColumnList.stream())
                     .toList();
+            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                    baseTable.functionalDependencySet(), newColumnList
+            );
             return baseTable
                     .withId(newId)
                     .withName(newName)
-                    .withColumnList(newColumnList);
+                    .withColumnList(newColumnList)
+                    .withFunctionalDependencySet(newFunctionalDependencySet);
         } else {
             // otherwise we take the primary key columns (with reassigned id and modified constraints)
             var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
@@ -172,10 +185,14 @@ public class NullableToVerticalInheritance implements TableTransformation {
             var newColumnList = Stream
                     .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
                     .toList();
+            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                    baseTable.functionalDependencySet(), newColumnList
+            );
             return baseTable
                     .withId(newId)
                     .withName(newName)
-                    .withColumnList(newColumnList);
+                    .withColumnList(newColumnList)
+                    .withFunctionalDependencySet(newFunctionalDependencySet);
         }
     }
 

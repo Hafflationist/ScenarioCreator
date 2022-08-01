@@ -19,6 +19,11 @@ public final class Ted {
     public static int calculateDistanceAbsolute(Schema schema1, Schema schema2) throws IOException {
         var tedTree1 = Converter.schemaToTedTree(schema1);
         var tedTree2 = Converter.schemaToTedTree(schema2);
-        return TedTree.ZhangShasha(tedTree1, tedTree2);
+        try {
+            return TedTree.ZhangShasha(tedTree1, tedTree2);
+        } catch (ArrayIndexOutOfBoundsException ex) {
+            // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg
+            return calculateDistanceAbsolute(schema1, schema2);
+        }
     }
 }

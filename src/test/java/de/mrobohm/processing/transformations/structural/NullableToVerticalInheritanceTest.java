@@ -42,14 +42,15 @@ class NullableToVerticalInheritanceTest {
         var validColumn = new ColumnLeaf(new IdSimple(5), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable = new Table(new IdSimple(10), name, List.of(invalidColumn1, invalidColumn2),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var targetTable = new Table(new IdSimple(14), name,
-                List.of(invalidColumn3, invalidColumn4, validColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable = StructuralTestingUtils.createTable(
+                10, List.of(invalidColumn1, invalidColumn2)
+        );
+        var targetTable = StructuralTestingUtils.createTable(
+                14, List.of(invalidColumn3, invalidColumn4, validColumn)
+        );
         var tableSet = SSet.of(invalidTable, targetTable);
         IntegrityChecker.assertValidSchema(new Schema(new IdSimple(-100), name, Context.getDefault(), tableSet));
-        var idGenerator = StructuralTestingUtils.getIdGenerator(100);
+        var idGenerator = StructuralTestingUtils.getIdGenerator(600);
         var transformation = new NullableToVerticalInheritance();
 
         // --- Act
@@ -93,12 +94,15 @@ class NullableToVerticalInheritanceTest {
         var validColumn = new ColumnLeaf(new IdSimple(4), name,
                 dataType.withIsNullable(true), ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable1 = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(11), name,
-                List.of(invalidColumn0, invalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
-        var targetTable = new Table(new IdSimple(14), name,
-                List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn), Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable1 = StructuralTestingUtils.createTable(
+                10, List.of(invalidColumn1)
+        );
+        var invalidTable2 = StructuralTestingUtils.createTable(
+                11, List.of(invalidColumn0, invalidColumn2)
+        );
+        var targetTable = StructuralTestingUtils.createTable(
+                14, List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn)
+        );
         var tableSet = SSet.of(invalidTable1, invalidTable2, targetTable);
         IntegrityChecker.assertValidSchema(new Schema(new IdSimple(-100), name, Context.getDefault(), tableSet));
         var idGenerator = StructuralTestingUtils.getIdGenerator(100);

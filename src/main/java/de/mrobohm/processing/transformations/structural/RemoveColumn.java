@@ -28,6 +28,7 @@ public class RemoveColumn implements ColumnTransformation {
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         assert freeOfCriticalConstraints(column) : "Column had critical constraints!";
+        // TODO: handle functional dependencies!!! (This should be done in a TableTransformation)
         return new ArrayList<>();
     }
 

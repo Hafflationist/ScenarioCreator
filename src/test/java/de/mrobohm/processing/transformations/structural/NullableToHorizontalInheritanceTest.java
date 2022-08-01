@@ -36,29 +36,32 @@ class NullableToHorizontalInheritanceTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var primaryKeyColumn1 = new ColumnLeaf(new IdSimple(-1), name, dataType, ColumnContext.getDefault(),
+        var primaryKeyColumn1 = new ColumnLeaf(new IdSimple(31), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
-        var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(0), name, dataType, ColumnContext.getDefault(),
+        var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(32), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
-        var invalidColumn0 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var validColumn = new ColumnLeaf(
-                new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(), SSet.of());
+        var invalidColumn0 = new ColumnLeaf(new IdSimple(21), name, dataType, ColumnContext.getDefault(),
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+        var invalidColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(),
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+        var invalidColumn2 = new ColumnLeaf(new IdSimple(22), name, dataType, ColumnContext.getDefault(),
+                SSet.of(new ColumnConstraintForeignKeyInverse(invalidColumn0.id(), SSet.of()),
+                        new ColumnConstraintForeignKeyInverse(invalidColumn1.id(), SSet.of())));
+        var validColumn = new ColumnLeaf(new IdSimple(33), name, dataType.withIsNullable(true),
+                ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable1 = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(11), name,
-                List.of(invalidColumn0, invalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
-        var targetTable = new Table(new IdSimple(14), name,
-                List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn), Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable1 = StructuralTestingUtils.createTable(
+                101, List.of(invalidColumn1)
+        );
+        var invalidTable2 = StructuralTestingUtils.createTable(
+                102, List.of(invalidColumn0, invalidColumn2)
+        );
+        var targetTable = StructuralTestingUtils.createTable(
+                103, List.of(primaryKeyColumn1, primaryKeyColumn2, validColumn)
+        );
         var tableSet = SSet.of(invalidTable1, invalidTable2, targetTable);
         IntegrityChecker.assertValidSchema(new Schema(new IdSimple(-100), name, Context.getDefault(), tableSet));
-        var idGenerator = StructuralTestingUtils.getIdGenerator(100);
+        var idGenerator = StructuralTestingUtils.getIdGenerator(1200);
         var transformation = new NullableToHorizontalInheritance();
 
         // --- Act

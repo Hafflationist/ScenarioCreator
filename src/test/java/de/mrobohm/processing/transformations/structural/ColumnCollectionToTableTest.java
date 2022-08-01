@@ -29,16 +29,17 @@ class ColumnCollectionToTableTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var targetTableName = new StringPlusNaked("Tabelle", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
         var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
         var columnCollection = new ColumnCollection(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
-        var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnCollection),
-                Context.getDefault(), SSet.of(), SSet.of());
+        var targetTable = StructuralTestingUtils.createTable(
+                6, List.of(columnLeaf, columnCollection, neutralColumn1, neutralColumn2)
+        );
         var idGenerator = StructuralTestingUtils.getIdGenerator(7);
         var transformation = new ColumnCollectionToTable();
 

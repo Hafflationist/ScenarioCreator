@@ -31,7 +31,7 @@ class HorizontalInheritanceToNullableTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var nameDeriving = new StringPlusNaked("SpalteD", Language.Mixed);
+//        var nameDeriving = new StringPlusNaked("SpalteD", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var commonColumn1 = new ColumnLeaf(
                 new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed), dataType,
@@ -48,14 +48,15 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
+        var baseTable = StructuralTestingUtils.createTable(
+                10, baseTableColumnList
+        );
         var derivingTableColumnList = List.of(
                 (Column) commonColumn1.withId(new IdSimple(4)),
                 commonColumn2.withId(new IdSimple(5)),
                 commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
-        var derivingTable = new Table(
-                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
+        var derivingTable = StructuralTestingUtils.createTable(11, derivingTableColumnList);
         var tableSet = SSet.of(baseTable, derivingTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -107,14 +108,15 @@ class HorizontalInheritanceToNullableTest {
         var extraColumn = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         var baseTableColumnList = List.of((Column) commonColumn1, commonColumn2, commonColumn3);
-        var baseTable = new Table(new IdSimple(10), name, baseTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
+        var baseTable = StructuralTestingUtils.createTable(
+                10, baseTableColumnList
+        );
         var derivingTableColumnList = List.of(
                 (Column) commonColumn1.withId(new IdSimple(4)),
                 commonColumn2.withId(new IdSimple(5)),
                 commonColumn3.withId(new IdSimple(6)),
                 extraColumn);
-        var derivingTable = new Table(
-                new IdSimple(11), nameDeriving, derivingTableColumnList, Context.getDefault(), SSet.of(), SSet.of());
+        var derivingTable = StructuralTestingUtils.createTable(11, derivingTableColumnList);
         var randomTable = new Table(new IdSimple(12), name, List.of(randomColumn), Context.getDefault(), SSet.of(), SSet.of());
         var tableSet = SSet.of(baseTable, derivingTable, randomTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);

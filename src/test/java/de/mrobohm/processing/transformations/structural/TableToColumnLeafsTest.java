@@ -32,6 +32,8 @@ class TableToColumnLeafsTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
@@ -44,12 +46,15 @@ class TableToColumnLeafsTest {
                         new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of()))
         );
 
-        var table = new Table(new IdSimple(12), name, List.of(column2),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
+        var table = StructuralTestingUtils.createTable(
+                12, List.of(column2)
+        );
+        var ingestingTable = StructuralTestingUtils.createTable(
+                10, List.of(ingestingColumn, neutralColumn1)
+        );
+        var ingestedTable = StructuralTestingUtils.createTable(
+                11, List.of(column1, ingestedColumn, neutralColumn2)
+        );
         var tableSet = SSet.of(ingestingTable, ingestedTable, table);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -76,6 +81,8 @@ class TableToColumnLeafsTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
@@ -83,10 +90,12 @@ class TableToColumnLeafsTest {
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
+        var ingestingTable = StructuralTestingUtils.createTable(
+                10, List.of(ingestingColumn, neutralColumn1)
+        );
+        var ingestedTable = StructuralTestingUtils.createTable(
+                11, List.of(column1, ingestedColumn, neutralColumn2)
+        );
         var tableSet = SSet.of(ingestingTable, ingestedTable);
         var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -101,7 +110,10 @@ class TableToColumnLeafsTest {
                 .flatMap(t -> t.columnList().stream())
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
-        Assertions.assertEquals(SSet.of(new IdSimple(1), new IdSimple(2)), newIdSet);
+        Assertions.assertEquals(
+                SSet.of(new IdSimple(1), new IdSimple(2), new IdSimple(12), new IdSimple(13)),
+                newIdSet
+        );
     }
 
     @ParameterizedTest

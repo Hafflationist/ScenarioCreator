@@ -29,17 +29,18 @@ class ColumnNodeToTableTest {
     void transform() {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var targetTableName = new StringPlusNaked("Tabelle", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
-        var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var columnLeaf = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var columnLeafSub1 = columnLeaf.withId(new IdSimple(21));
+        var columnLeafSub2 = columnLeaf.withId(new IdSimple(22));
         var columnNode = new ColumnNode(
-                new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
-        var targetTable = new Table(
-                new IdSimple(6), targetTableName, List.of(columnLeaf, columnNode),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var idGenerator = StructuralTestingUtils.getIdGenerator(7);
+                new IdSimple(14), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
+        var targetTable = StructuralTestingUtils.createTable(
+                101, List.of(columnLeaf, columnNode, neutralColumn1, neutralColumn2)
+        );
+        var idGenerator = StructuralTestingUtils.getIdGenerator(600);
         var transformation = new ColumnNodeToTable();
 
         // --- Act
@@ -69,7 +70,7 @@ class ColumnNodeToTableTest {
                 .anyMatch(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)));
         Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub1));
         Assertions.assertTrue(extractedTable.columnList().contains(columnLeafSub2));
-        IntegrityChecker.assertValidSchema(new Schema(new IdSimple(0), name, Context.getDefault(), newTableSet));
+        IntegrityChecker.assertValidSchema(new Schema(new IdSimple(1000), name, Context.getDefault(), newTableSet));
     }
 
     @Test

@@ -50,7 +50,7 @@ public record Table(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public Table withFunctionalDepencySet(SortedSet<FunctionalDependency> newFunctionalDependencySet) {
+    public Table withFunctionalDependencySet(SortedSet<FunctionalDependency> newFunctionalDependencySet) {
         return new Table(id, name, columnList, context, tableConstraintSet, newFunctionalDependencySet);
     }
 }

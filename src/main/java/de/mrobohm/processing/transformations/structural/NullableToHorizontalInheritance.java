@@ -12,6 +12,7 @@ import de.mrobohm.data.identification.IdPart;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.GroupingColumnsBase;
@@ -72,7 +73,12 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                     };
                 })
                 .toList();
-        return originalTable.withColumnList(newColumnList);
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                originalTable.functionalDependencySet(), newColumnList
+        );
+        return originalTable
+                .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFunctionalDependencySet);
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
@@ -95,9 +101,13 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         var newColumnList = baseTable.columnList().stream()
                 .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex))
                 .toList();
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                baseTable.functionalDependencySet(), newColumnList
+        );
         return baseTable
                 .withId(newIdComplex.derivingTableId())
                 .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFunctionalDependencySet)
                 .withName(newName);
     }
 

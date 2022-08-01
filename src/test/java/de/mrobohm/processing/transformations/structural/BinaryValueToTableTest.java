@@ -34,19 +34,16 @@ class BinaryValueToTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
-        var targetTable = new Table(
-                new IdSimple(6),
-                name,
-                List.of(invalidColumn, validColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+        var targetTable = StructuralTestingUtils.createTable(
+                6, List.of(invalidColumn, validColumn, neutralColumn1, neutralColumn2)
         );
         var tableSet = SSet.of(targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
@@ -81,19 +78,16 @@ class BinaryValueToTableTest {
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
         var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
-        var targetTable = new Table(
-                new IdSimple(6),
-                name,
-                List.of(invalidColumn, validColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+        var targetTable = StructuralTestingUtils.createTable(
+                6, List.of(invalidColumn, validColumn, neutralColumn1, neutralColumn2)
         );
         var tableSet = SSet.of(targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
@@ -136,6 +130,9 @@ class BinaryValueToTableTest {
         var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn3 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
         var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of())));
         var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
@@ -144,21 +141,11 @@ class BinaryValueToTableTest {
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(4));
-        var referencedTable = new Table(
-                new IdSimple(10),
-                name,
-                List.of(referencedColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+        var referencedTable = StructuralTestingUtils.createTable(
+                20, List.of(referencedColumn, neutralColumn1)
         );
-        var targetTable = new Table(
-                new IdSimple(11),
-                name,
-                List.of(validColumn, referencingColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+        var targetTable = StructuralTestingUtils.createTable(
+                21, List.of(validColumn, referencingColumn, neutralColumn2, neutralColumn3)
         );
         var tableSet = SSet.of(referencedTable, targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
@@ -196,29 +183,22 @@ class BinaryValueToTableTest {
         var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
         var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of())));
-        var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn3 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var referencedColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+        var referencingColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
         var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
-                .withId(new IdSimple(4));
-        var referencedTable = new Table(
-                new IdSimple(10),
-                name,
-                List.of(referencedColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+                .withId(new IdSimple(7));
+        var referencedTable = StructuralTestingUtils.createTable(
+                10, List.of(referencedColumn, neutralColumn1)
         );
-        var targetTable = new Table(
-                new IdSimple(11),
-                name,
-                List.of(validColumn, referencingColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
+        var targetTable = StructuralTestingUtils.createTable(
+                11, List.of(validColumn, referencingColumn, neutralColumn2, neutralColumn3)
         );
         var tableSet = SSet.of(referencedTable, targetTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
@@ -279,24 +259,12 @@ class BinaryValueToTableTest {
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
-                Context.getDefault(), SSet.of(), SSet.of());
-        var validTable1 = new Table(
-                new IdSimple(6),
-                name,
-                List.of(primColumn, validColumn),
-                Context.getDefault(),
-                SSet.of(),
-                SSet.of()
-        );
+        var invalidTable1 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn));
+        var invalidTable2 = StructuralTestingUtils.createTable(2, List.of(primColumn));
+        var invalidTable3 = StructuralTestingUtils.createTable(4, List.of(validColumn));
+        var invalidTable4 = StructuralTestingUtils.createTable(4, List.of(primColumn, validColumn, invalidColumn));
+        var invalidTable5 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn, neutralColumn));
+        var validTable1 = StructuralTestingUtils.createTable(6, List.of(primColumn, validColumn));
         var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable1

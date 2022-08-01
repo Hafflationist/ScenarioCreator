@@ -15,6 +15,7 @@ import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.SSet;
 
@@ -35,8 +36,13 @@ public final class NewTableBase {
         var reducedColumnStream = oldTable.columnList().stream().filter(c -> !extractedColumnList.contains(c));
         var newForeignKeyColumn = createNewForeignKeyColumn(newIds, otherTablesName, oneToOne);
         var newColumnList = Stream.concat(reducedColumnStream, Stream.of(newForeignKeyColumn)).toList();
+
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                oldTable.functionalDependencySet(), newColumnList
+        );
         return oldTable
                 .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFunctionalDependencySet)
                 .withId(new IdPart(oldTable.id(), 0, MergeOrSplitType.And));
     }
 
@@ -56,7 +62,10 @@ public final class NewTableBase {
         var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnList.stream()).toList();
         var newContext = Context.getDefault();
         var newId = new IdPart(oldTable.id(), 1, MergeOrSplitType.And);
-        return new Table(newId, tableName, newColumnList, newContext, SSet.of(), SSet.of());
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                oldTable.functionalDependencySet(), columnList
+        );
+        return new Table(newId, tableName, newColumnList, newContext, SSet.of(), newFunctionalDependencySet);
     }
 
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {

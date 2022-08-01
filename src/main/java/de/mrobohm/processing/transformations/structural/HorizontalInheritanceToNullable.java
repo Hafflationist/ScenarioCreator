@@ -67,7 +67,11 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .replaceInStream(schema.tableSet().stream(), oldTableStream, derivationIntegrationResult.newTable())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        return IdTranslation.translateConstraints(schema.withTables(newTableSet), derivationIntegrationResult.idTranslationMap());
+        return IdTranslation.translateConstraints(
+                schema.withTables(newTableSet),
+                derivationIntegrationResult.idTranslationMap(),
+                Set.of()
+        );
     }
 
     private InheritancePair findDerivingTable(SortedSet<Table> tableSet, Random random) {

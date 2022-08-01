@@ -57,12 +57,15 @@ class MergeColumnsTest {
                 ColumnContext.getDefault(), SSet.of());
         var validColumn2 = validColumn1.withId(new IdSimple(8));
 
-        var invalidTable = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var semivalidTable = new Table(new IdSimple(11), name,
-                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of(), SSet.of());
-        var validTable = new Table(new IdSimple(14), name,
-                List.of(invalidColumn3, validColumn1, validColumn2), Context.getDefault(), SSet.of(), SSet.of());
+        var invalidTable = StructuralTestingUtils.createTable(
+                10, List.of(invalidColumn1, semivalidColumn1)
+        );
+        var semivalidTable = StructuralTestingUtils.createTable(
+                11, List.of(invalidColumn2, semivalidColumn2, semivalidColumn3)
+        );
+        var validTable = StructuralTestingUtils.createTable(
+                14, List.of(invalidColumn3, validColumn1, validColumn2)
+        );
         var tableSet = SSet.of(invalidTable, validTable, semivalidTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
@@ -106,10 +109,12 @@ class MergeColumnsTest {
         var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
 
-        var invalidTable = new Table(new IdSimple(10), name,
-                List.of(invalidColumn1, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var semivalidTable = new Table(new IdSimple(11), name,
-                List.of(invalidColumn2, semivalidColumn2, semivalidColumn3), Context.getDefault(), SSet.of(),SSet.of());
+        var invalidTable = StructuralTestingUtils.createTable(
+                10, List.of(invalidColumn1, semivalidColumn1)
+        );
+        var semivalidTable = StructuralTestingUtils.createTable(
+                11, List.of(invalidColumn2, semivalidColumn2, semivalidColumn3)
+        );
         var tableSet = SSet.of(invalidTable, semivalidTable);
         var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);

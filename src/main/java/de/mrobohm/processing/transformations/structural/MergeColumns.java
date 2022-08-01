@@ -14,6 +14,7 @@ import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.SchemaTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.utils.Pair;
@@ -56,15 +57,25 @@ public final class MergeColumns implements SchemaTransformation {
         var filteredOldColumnStream = getNewColumnStream(table, pair);
 
         var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
-        var newTableSet = StreamExtensions.replaceInStream(
-                        schema.tableSet().stream(), table, table.withColumnList(newColumnList)
+        // TODO: Some more fds could be rescued (fd-augmentation!)
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+                table.functionalDependencySet(), newColumnList
+        );
+        var newTableSet = StreamExtensions
+                .replaceInStream(
+                        schema.tableSet().stream(),
+                        table,
+                        table
+                                .withColumnList(newColumnList)
+                                .withFunctionalDependencySet(newFunctionalDependencySet)
                 )
                 .map(t -> {
                     var ncl = getNewColumnStream(t, pair).toList();
                     if (ncl.equals(t.columnList())) {
                         return t;
                     }
-                    return t.withColumnList(ncl);
+                    return t
+                            .withColumnList(ncl);
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
         return schema.withTables(newTableSet);

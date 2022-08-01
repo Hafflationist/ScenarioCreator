@@ -9,6 +9,7 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
@@ -85,7 +86,14 @@ public final class IngestionBase {
                         Stream.concat(Stream.of(newIngestingColumn), extendingColumnStream))
                 .toList();
 
-        return ingestingTable.withColumnList(newIngestingColumnList);
+        var allFdSet = Stream.concat(
+                ingestingTable.functionalDependencySet().stream(),
+                ingestedTable.functionalDependencySet().stream()
+        ).collect(Collectors.toCollection(TreeSet::new));
+        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(allFdSet, newIngestingColumnList);
+        return ingestingTable
+                .withColumnList(newIngestingColumnList)
+                .withFunctionalDependencySet(newFunctionalDependencySet);
     }
 
     private static Column fuseColumnWithIngestedTable(Column column, Table ingestedTable) {

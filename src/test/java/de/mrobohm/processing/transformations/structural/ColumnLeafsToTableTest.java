@@ -18,30 +18,35 @@ import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Stream;
 
 class ColumnLeafsToTableTest {
-
     @Test
     void transform() {
         // --- Arrange
+        var random = new Random();
         var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var targetTableName = new StringPlusNaked("Tabelle", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
-        var targetTable = new Table(new IdSimple(6), targetTableName,
+        var targetTable = StructuralTestingUtils.createTable(
+                6,
                 List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
-                Context.getDefault(), SSet.of(), SSet.of());
+                random
+        );
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new ColumnLeafsToTable();
 
         // --- Act
-        var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        var newTableSet = transformation.transform(targetTable, idGenerator, random);
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());

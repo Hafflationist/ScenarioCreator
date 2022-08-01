@@ -32,13 +32,15 @@ class GroupColumnLeafsToNodeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
+        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
         var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
-        var targetTable = new Table(
-                new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
-                Context.getDefault(), SSet.of(), SSet.of());
+        var targetTable = StructuralTestingUtils.createTable(
+                6, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2, neutralColumn1, neutralColumn2)
+        );
         var idGenerator = StructuralTestingUtils.getIdGenerator(8);
         var transformation = new GroupColumnLeafsToNode();
 

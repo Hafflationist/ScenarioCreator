@@ -66,7 +66,11 @@ public class BinaryValueToTable implements SchemaTransformation {
                 table,
                 addTableStream
         ).collect(Collectors.toCollection(TreeSet::new));
-        return IdTranslation.translateConstraints(schema.withTables(newTableSet), tableSplitResult.idMap);
+        return IdTranslation.translateConstraints(
+                schema.withTables(newTableSet),
+                tableSplitResult.idMap,
+                Set.of(chosenSplitLeaf.id())
+        );
     }
 
     private TableSplitResult splitTable(Table table, int n) {
