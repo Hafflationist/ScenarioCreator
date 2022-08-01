@@ -10,7 +10,6 @@ import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.FunctionalDependency;
-import de.mrobohm.data.table.Table;
 import de.mrobohm.utils.Pair;
 
 import java.util.Objects;
@@ -115,7 +114,7 @@ public final class IntegrityChecker {
                                     .concat(fd.right().stream(), fd.left().stream())
                                     .filter(id -> !allColumnIdInTableSet.contains(id))
                                     .collect(Collectors.toSet());
-                            return new FunctionalDependencyErrorReport(t, fd, circle, invalidRefSet);
+                            return new FunctionalDependencyErrorReport(t.id(), fd, circle, invalidRefSet);
                         })
                         .filter(fder -> fder.circle() || !fder.invalidRefSet().isEmpty()))
                 .collect(Collectors.toSet());
@@ -124,7 +123,7 @@ public final class IntegrityChecker {
     }
 
     private record FunctionalDependencyErrorReport(
-            Table table,
+            Id tableId,
             FunctionalDependency fd,
             boolean circle,
             Set<Id> invalidRefSet
