@@ -88,8 +88,8 @@ class TranslationTest {
     void canBeTranslatedFalseInvalidSps() {
         // --- Arrange
         var stringPlus = new StringPlusSemantical(List.of(
-                new StringPlusSemanticalSegment("hugo", SSet.of()),
-                new StringPlusSemanticalSegment("hugo", SSet.of())
+                new StringPlusSemanticalSegment("808", SSet.of()),
+                new StringPlusSemanticalSegment("111", SSet.of())
         ), NamingConvention.CAMELCASE);
         var translation = getTranslation();
 

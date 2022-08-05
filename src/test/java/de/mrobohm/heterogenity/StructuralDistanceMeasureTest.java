@@ -42,7 +42,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_BinaryValueToTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -71,13 +71,13 @@ class StructuralDistanceMeasureTest {
     }
 
 
-    public static Stream<Arguments> hugo(){
+    public static Stream<Arguments> argSource(){
         return Stream.of(Arguments.of(new Random().nextInt()));
 //        return Stream.iterate(0, i -> i + 1).map(Arguments::of).limit(10000);
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_RemoveColumn(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -106,7 +106,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_RemoveTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -187,7 +187,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_ColumnCollectionToTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -219,7 +219,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_GroupColumnLeafsToNode(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -249,7 +249,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_MergeColumns(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("name", Language.Technical);
@@ -278,7 +278,7 @@ class StructuralDistanceMeasureTest {
     }
 
     @ParameterizedTest
-    @MethodSource("hugo")
+    @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_TableToColumnCollection(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
