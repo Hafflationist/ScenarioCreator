@@ -82,21 +82,22 @@ public class IdTranslation {
             Set<Id> idPurgeSet,
             List<Column> columnList
     ) {
-        var newFdSet = fdSet.stream()
-                .filter(fd -> fd.left().stream().noneMatch(idPurgeSet::contains))
-                .map(fd -> {
-                    var newLeft = translateSideOfFunctionalDependency(
-                            fd.left(), idTranslationMap, idPurgeSet, columnList
-                    );
-                    var newRight = translateSideOfFunctionalDependency(
-                            fd.right(), idTranslationMap, idPurgeSet, columnList
-                    );
-                    var newFd = new FunctionalDependency(newLeft, newRight);
-                    return fd.equals(newFd) ? fd : newFd;
-                })
-                .filter(fd -> !fd.left().isEmpty() && !fd.right().isEmpty())
-                .collect(Collectors.toCollection(TreeSet::new));
-        return fdSet.equals(newFdSet) ? fdSet : newFdSet;
+//        var newFdSet = fdSet.stream()
+//                .filter(fd -> fd.left().stream().noneMatch(idPurgeSet::contains))
+//                .map(fd -> {
+//                    var newLeft = translateSideOfFunctionalDependency(
+//                            fd.left(), idTranslationMap, idPurgeSet, columnList
+//                    );
+//                    var newRight = translateSideOfFunctionalDependency(
+//                            fd.right(), idTranslationMap, idPurgeSet, columnList
+//                    );
+//                    var newFd = new FunctionalDependency(newLeft, newRight);
+//                    return fd.equals(newFd) ? fd : newFd;
+//                })
+//                .filter(fd -> !fd.left().isEmpty() && !fd.right().isEmpty())
+//                .collect(Collectors.toCollection(TreeSet::new));
+//        return fdSet.equals(newFdSet) ? fdSet : newFdSet;
+        return fdSet;
     }
 
     private static SortedSet<Id> translateSideOfFunctionalDependency(

@@ -15,6 +15,7 @@ import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.processing.transformations.SchemaTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.LinguisticUtils;
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
@@ -121,9 +122,11 @@ public class BinaryValueToTable implements SchemaTransformation {
                                 .withConstraintSet(newConstraintSet);
                     };
                 }).toList();
+        var newFdSet = FunctionalDependencyManager.getValidFdSet(table.functionalDependencySet(), newColumnList);
         return table
                 .withId(new IdPart(table.id(), partNum, MergeOrSplitType.Xor))
-                .withColumnList(newColumnList);
+                .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFdSet);
     }
 
     private Table appendToName(Table table, String suffix, Random random) {

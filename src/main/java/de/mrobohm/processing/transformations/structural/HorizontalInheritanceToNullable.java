@@ -11,6 +11,7 @@ import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.SchemaTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
 import de.mrobohm.processing.transformations.structural.base.IngestionBase;
@@ -114,7 +115,10 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                     };
                 });
         var newColumnList = Stream.concat(mergedColumnStream, additionalColumnStream).toList();
-        var newTable = ip.base().withColumnList(newColumnList);
+        var newFdSet = FunctionalDependencyManager.getValidFdSet(
+                ip.base.functionalDependencySet(), newColumnList
+        );
+        var newTable = ip.base().withColumnList(newColumnList).withFunctionalDependencySet(newFdSet);
         // komplett falsch:
         var idTranslationMap = mergeablePairList.stream()
                 .filter(pair -> pair.second().isPresent())
