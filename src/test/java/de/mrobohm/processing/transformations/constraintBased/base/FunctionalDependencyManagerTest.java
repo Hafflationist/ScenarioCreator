@@ -1,11 +1,11 @@
-package de.mrobohm.processing.fundep;
+package de.mrobohm.processing.transformations.constraintBased.base;
 
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.table.FunctionalDependency;
 import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Test;
 
-class FunctionalDependencyCalculatorTest {
+class FunctionalDependencyManagerTest {
 
 
     private FunctionalDependency of(int a, int b) {
@@ -25,7 +25,7 @@ class FunctionalDependencyCalculatorTest {
 
         // --- Act
         //var closureImp = FunctionalDependencyCalculator.attributeClosureImperative(SSet.of(attr), fdSet);
-        var closureFun = FunctionalDependencyCalculator.attributeClosure(SSet.of(attr), fdSet);
+        var closureFun = FunctionalDependencyManager.attributeClosure(SSet.of(attr), fdSet);
 
         // --- Assert
 //        Assertions.assertEquals(closureFun, closureImp);

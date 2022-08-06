@@ -5,9 +5,9 @@ import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.processing.fundep.FunctionalDependencyCalculator;
 import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
+import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;
 import de.mrobohm.processing.transformations.exceptions.NoTableFoundException;
 import de.mrobohm.processing.transformations.structural.generator.IdentificationNumberGenerator;
@@ -18,7 +18,10 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.List;
+import java.util.Random;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -47,7 +50,7 @@ public class SingleTransformationExecuter {
         if (transformation.breaksSemanticSaturation() && _semanticSaturation != null) {
             return _semanticSaturation.saturateSemantically(newSchema);
         }
-        return FunctionalDependencyCalculator.transClosure(newSchema);
+        return FunctionalDependencyManager.transClosure(newSchema);
     }
 
 
