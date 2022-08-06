@@ -1,5 +1,6 @@
 package de.mrobohm.processing.fundep;
 
+import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.FunctionalDependency;
 import de.mrobohm.utils.Pair;
@@ -12,6 +13,22 @@ import java.util.stream.Collectors;
 
 public final class FunctionalDependencyCalculator {
     private FunctionalDependencyCalculator() {
+    }
+
+    public static Schema transClosure(Schema schema) {
+        var newTableSet = schema.tableSet().stream()
+                .map(t -> {
+                    var newFdSet = transClosure(t.functionalDependencySet());
+                    if (newFdSet.equals(t.functionalDependencySet())){
+                        return t;
+                    }
+                    return t.withFunctionalDependencySet(newFdSet);
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+        if (schema.tableSet().equals(newTableSet)) {
+            return schema;
+        }
+        return schema.withTableSet(newTableSet);
     }
 
     /**

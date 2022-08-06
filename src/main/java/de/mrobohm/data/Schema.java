@@ -34,7 +34,7 @@ public record Schema(Id id,
 
     @Contract(pure = true)
     @NotNull
-    public Schema withTables(SortedSet<Table> newTableSet) {
+    public Schema withTableSet(SortedSet<Table> newTableSet) {
         return new Schema(id, name, context, newTableSet);
     }
 

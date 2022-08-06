@@ -5,6 +5,7 @@ import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
+import de.mrobohm.processing.fundep.FunctionalDependencyCalculator;
 import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;
@@ -46,7 +47,7 @@ public class SingleTransformationExecuter {
         if (transformation.breaksSemanticSaturation() && _semanticSaturation != null) {
             return _semanticSaturation.saturateSemantically(newSchema);
         }
-        return newSchema;
+        return FunctionalDependencyCalculator.transClosure(newSchema);
     }
 
 
@@ -77,7 +78,7 @@ public class SingleTransformationExecuter {
                 .stream()
                 .filter(table -> !table.equals(targetTable));
         var newTableStream = Stream.concat(filteredTableStream, newTableSet.stream());
-        return schema.withTables(newTableStream.collect(Collectors.toCollection(TreeSet::new)));
+        return schema.withTableSet(newTableStream.collect(Collectors.toCollection(TreeSet::new)));
     }
 
 

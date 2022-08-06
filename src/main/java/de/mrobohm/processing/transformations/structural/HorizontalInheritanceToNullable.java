@@ -68,7 +68,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .collect(Collectors.toCollection(TreeSet::new));
 
         return IdTranslation.translateConstraints(
-                schema.withTables(newTableSet),
+                schema.withTableSet(newTableSet),
                 derivationIntegrationResult.idTranslationMap(),
                 Set.of()
         );

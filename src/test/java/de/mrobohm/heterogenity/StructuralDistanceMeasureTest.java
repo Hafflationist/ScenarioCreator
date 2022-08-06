@@ -149,7 +149,7 @@ class StructuralDistanceMeasureTest {
         var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
         var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
         var newTable = rootTable.withColumnList(List.of(columnNode));
-        var newSchema = rootSchema.withTables(SSet.of(newTable));
+        var newSchema = rootSchema.withTableSet(SSet.of(newTable));
         // --- Act
         var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
         var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
@@ -176,7 +176,7 @@ class StructuralDistanceMeasureTest {
         var newColumnNode = columnNode.withColumnList(List.of(column3, column4));
         var newColumnList = List.of((Column) column1, column2, newColumnNode);
         var newTable = rootTable.withColumnList(newColumnList);
-        var newSchema = rootSchema.withTables(SSet.of(newTable));
+        var newSchema = rootSchema.withTableSet(SSet.of(newTable));
         // --- Act
         var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
         var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);

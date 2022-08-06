@@ -78,7 +78,7 @@ public final class MergeColumns implements SchemaTransformation {
                             .withColumnList(ncl);
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
-        return schema.withTables(newTableSet);
+        return schema.withTableSet(newTableSet);
     }
 
     private Stream<Column> getNewColumnStream(Table table, Pair<ColumnLeaf, ColumnLeaf> mergedColumns) {

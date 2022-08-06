@@ -31,7 +31,7 @@ public final class Saturation {
         if (schema.tableSet().equals(tableSet)) {
             return schema;
         } else {
-            return schema.withTables(tableSet);
+            return schema.withTableSet(tableSet);
         }
     }
 

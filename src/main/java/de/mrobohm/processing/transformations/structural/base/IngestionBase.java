@@ -45,7 +45,7 @@ public final class IngestionBase {
         var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), Stream.of(chosenTable, chosenIngestableTable), newTable)
                 .collect(Collectors.toCollection(TreeSet::new));
-        return schema.withTables(newTableSet);
+        return schema.withTableSet(newTableSet);
     }
 
     public static Table ingest(

@@ -43,7 +43,7 @@ public class IdTranslation {
                     .withColumnList(newColumnList)
                     .withFunctionalDependencySet(newFunctionalDependencySet);
         }).collect(Collectors.toCollection(TreeSet::new));
-        return schema.withTables(newTableSet);
+        return schema.withTableSet(newTableSet);
     }
 
     private static SortedSet<ColumnConstraint> translateConstraint(
