@@ -57,7 +57,6 @@ public final class MergeColumns implements SchemaTransformation {
         var filteredOldColumnStream = getNewColumnStream(table, pair);
 
         var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
-        // TODO: Some more fds could be rescued (fd-augmentation!)
         var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 table.functionalDependencySet(), newColumnList
         );
@@ -74,8 +73,7 @@ public final class MergeColumns implements SchemaTransformation {
                     if (ncl.equals(t.columnList())) {
                         return t;
                     }
-                    return t
-                            .withColumnList(ncl);
+                    return t.withColumnList(ncl);
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
         return schema.withTableSet(newTableSet);
