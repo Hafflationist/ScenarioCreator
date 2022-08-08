@@ -18,11 +18,9 @@ import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.provider.Arguments;
 
 import java.util.List;
 import java.util.Random;
-import java.util.stream.Stream;
 
 class ColumnLeafsToTableTest {
     @Test
@@ -31,8 +29,6 @@ class ColumnLeafsToTableTest {
         var random = new Random();
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
