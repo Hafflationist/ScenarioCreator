@@ -115,9 +115,25 @@ public final class FunctionalDependencyManager {
      * @return for each fd the right-hand side is expanded to the attribute closure of the left-hand side
      */
     public static SortedSet<FunctionalDependency> transClosure(SortedSet<FunctionalDependency> fdSet) {
+        return transClosure(fdSet, true);
+    }
+
+    /**
+     * @param fdSet
+     * @return for each fd the right-hand side is expanded to the attribute closure of the left-hand side
+     */
+    public static SortedSet<FunctionalDependency> transClosure(SortedSet<FunctionalDependency> fdSet, boolean groupRightSide) {
         return fdSet.stream()
                 .map(FunctionalDependency::left)
-                .map(attrSet -> new FunctionalDependency(attrSet, attributeClosure(attrSet, fdSet)))
+                .flatMap(attrSet -> {
+                    var attrClosure = attributeClosure(attrSet, fdSet).stream()
+                            .filter(id -> !attrSet.contains(id))
+                            .collect(Collectors.toCollection(TreeSet::new));
+                    if (groupRightSide) {
+                        return Stream.of(new FunctionalDependency(attrSet, attrClosure));
+                    }
+                    return attrClosure.stream().map(rid -> new FunctionalDependency(attrSet, SSet.of(rid)));
+                })
                 .collect(Collectors.toCollection(TreeSet::new));
     }
     // In Wirklichkeit brauchen wir die abgeschlossene Hülle,
@@ -136,5 +152,19 @@ public final class FunctionalDependencyManager {
                 .findFirst(pair -> pair.first().size() == pair.second().size())
                 .map(Pair::first)
                 .orElseThrow();
+    }
+
+    public static SortedSet<FunctionalDependency> minimalCover(SortedSet<FunctionalDependency> fdSet) {
+        //return fdSet;
+        return fdSet.stream()
+                .filter(fd -> {
+                    var fdSetWithoutFd = fdSet.stream()
+                            .filter(f -> !f.equals(fd))
+                            .collect(Collectors.toCollection(TreeSet::new));
+                    var attrClosure = attributeClosure(fd.left(), fdSetWithoutFd);
+                    return !attrClosure.containsAll(fd.right());
+                })
+                .collect(Collectors.toCollection(TreeSet::new));
+        //throw new RuntimeException("Implement me!");
     }
 }
