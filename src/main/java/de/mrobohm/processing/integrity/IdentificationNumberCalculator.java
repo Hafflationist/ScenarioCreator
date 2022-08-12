@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class IdentificationNumberCalculator {
 
     public static Stream<IdSimple> extractIdSimple(Stream<Id> idStream) {
-        return idStream.parallel().flatMap(id -> switch(id) {
+        return idStream.parallel().flatMap(id -> switch (id) {
             case IdSimple ids -> Stream.of(ids);
             case IdMerge idm -> Stream.concat(
                     extractIdSimple(Stream.of(idm.predecessorId1())),
@@ -32,7 +32,7 @@ public class IdentificationNumberCalculator {
     }
 
 
-    public static Stream<Id> getAllIds(Schema schema, boolean checkConstraints){
+    public static Stream<Id> getAllIds(Schema schema, boolean checkConstraints) {
         var tableSet = schema.tableSet();
         var tableIdStream = tableSet.parallelStream().map(Table::id);
         var columnIdStream = tableSet.parallelStream()
