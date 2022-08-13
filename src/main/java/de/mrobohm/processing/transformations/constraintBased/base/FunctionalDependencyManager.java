@@ -161,12 +161,11 @@ public final class FunctionalDependencyManager {
 
     public static SortedSet<FunctionalDependency> minimalCover(SortedSet<FunctionalDependency> fdSet) {
         return SSet.foldLeft(fdSet, fdSet, (acc, fd) -> {
-            var fdSetWithoutFd = acc.stream()
+            var accWithoutFd = acc.stream()
                     .filter(f -> !f.equals(fd))
                     .collect(Collectors.toCollection(TreeSet::new));
-            var attrClosure = attributeClosure(fd.left(), fdSetWithoutFd);
-            if (attrClosure.containsAll(fd.right())) {
-                return fdSetWithoutFd;
+            if (membership(fd, accWithoutFd)) {
+                return accWithoutFd;
             }
             return acc;
         });
