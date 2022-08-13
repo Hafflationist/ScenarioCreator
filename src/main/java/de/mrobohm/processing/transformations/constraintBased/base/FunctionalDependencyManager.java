@@ -154,17 +154,21 @@ public final class FunctionalDependencyManager {
                 .orElseThrow();
     }
 
+    public static boolean membership(FunctionalDependency fd, SortedSet<FunctionalDependency> fdSet) {
+        var attrClosure = attributeClosure(fd.left(), fdSet);
+        return attrClosure.containsAll(fd.right());
+    }
+
     public static SortedSet<FunctionalDependency> minimalCover(SortedSet<FunctionalDependency> fdSet) {
-        //return fdSet;
-        return fdSet.stream()
-                .filter(fd -> {
-                    var fdSetWithoutFd = fdSet.stream()
-                            .filter(f -> !f.equals(fd))
-                            .collect(Collectors.toCollection(TreeSet::new));
-                    var attrClosure = attributeClosure(fd.left(), fdSetWithoutFd);
-                    return !attrClosure.containsAll(fd.right());
-                })
-                .collect(Collectors.toCollection(TreeSet::new));
-        //throw new RuntimeException("Implement me!");
+        return SSet.foldLeft(fdSet, fdSet, (acc, fd) -> {
+            var fdSetWithoutFd = acc.stream()
+                    .filter(f -> !f.equals(fd))
+                    .collect(Collectors.toCollection(TreeSet::new));
+            var attrClosure = attributeClosure(fd.left(), fdSetWithoutFd);
+            if (attrClosure.containsAll(fd.right())) {
+                return fdSetWithoutFd;
+            }
+            return acc;
+        });
     }
 }

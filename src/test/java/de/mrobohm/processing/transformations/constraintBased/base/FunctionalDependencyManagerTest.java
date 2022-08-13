@@ -112,10 +112,69 @@ class FunctionalDependencyManagerTest {
         var attr = new IdSimple(1);
 
         // --- Act
-        //var closureImp = FunctionalDependencyCalculator.attributeClosureImperative(SSet.of(attr), fdSet);
-        var closureFun = FunctionalDependencyManager.attributeClosure(SSet.of(attr), fdSet);
+        var attrClosure = FunctionalDependencyManager.attributeClosure(SSet.of(attr), fdSet);
 
         // --- Assert
-//        Assertions.assertEquals(closureFun, closureImp);
+        Assertions.assertTrue(attrClosure.contains(new IdSimple(2)));
+        Assertions.assertTrue(attrClosure.contains(new IdSimple(3)));
+        Assertions.assertFalse(attrClosure.contains(new IdSimple(4)));
+        Assertions.assertFalse(attrClosure.contains(new IdSimple(5)));
+    }
+
+    @Test
+    void minimalCover1() {
+        // --- Arrange
+        var fdSet = SSet.of(
+                of(1, 2),
+                of(2, 3),
+                of(1, 3),
+                of(4, 5)
+        );
+        var coverExpected1 = SSet.of(
+                of(1, 2),
+                of(1, 3),
+                of(4, 5)
+        );
+        var coverExpected2 = SSet.of(
+                of(1, 2),
+                of(2, 3),
+                of(4, 5)
+        );
+
+        // --- Act
+        var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
+
+        // --- Assert
+        Assertions.assertEquals(coverExpected1.size(), coverActual.size());
+        Assertions.assertTrue(coverActual.equals(coverExpected1) || coverActual.equals(coverExpected2));
+    }
+
+    @Test
+    void minimalCover2() {
+        // --- Arrange
+        var fdSet = SSet.of(
+                of(1, 2),
+                of(1, 3),
+                new FunctionalDependency(
+                        SSet.of(new IdSimple(1)),
+                        SSet.of(new IdSimple(2), new IdSimple(3))
+                )
+        );
+        var coverExpected1 = SSet.of(
+                of(1, 2),
+                of(1, 3)
+        );
+        var coverExpected2 = SSet.of(
+                new FunctionalDependency(
+                        SSet.of(new IdSimple(1)),
+                        SSet.of(new IdSimple(2), new IdSimple(3))
+                )
+        );
+
+        // --- Act
+        var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
+
+        // --- Assert
+        Assertions.assertTrue(coverActual.equals(coverExpected1) || coverActual.equals(coverExpected2));
     }
 }

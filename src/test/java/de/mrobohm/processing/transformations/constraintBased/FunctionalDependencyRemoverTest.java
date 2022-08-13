@@ -136,7 +136,6 @@ class FunctionalDependencyRemoverTest {
 
     @Test
     void getCandidates() {
-
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
