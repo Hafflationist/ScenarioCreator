@@ -2,7 +2,6 @@ package de.mrobohm.heterogenity;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.Id;
-import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.table.FunctionalDependency;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
@@ -12,7 +11,6 @@ import de.mrobohm.utils.StreamExtensions;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,17 +18,17 @@ public final class ConstraintBasedDistanceMeasure {
     private ConstraintBasedDistanceMeasure() {
     }
 
-    public static double calculateDistanceToRootRelative(
-            Schema schema1, Schema schema2, BiFunction<StringPlus, StringPlus, Double> diff
+    public static double calculateDistanceRelative(
+            Schema schema1, Schema schema2
     ) {
-        var distanceAbsolute = calculateDistanceToRootAbsolute(schema1, schema2, diff);
+        var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
         var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
         var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
         return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
     }
 
-    public static double calculateDistanceToRootAbsolute(
-            Schema schema1, Schema schema2, BiFunction<StringPlus, StringPlus, Double> diff
+    public static double calculateDistanceAbsolute(
+            Schema schema1, Schema schema2
     ) {
         var weightedDistList = findCorrespondingTablePairs(schema1, schema2)
                 .map(pair -> new Pair<>(
@@ -46,7 +44,7 @@ public final class ConstraintBasedDistanceMeasure {
 
     private static Stream<Pair<Table, Table>> findCorrespondingTablePairs(Schema schema1, Schema schema2) {
         return schema1.tableSet().stream()
-                .filter(t1 -> IdentificationNumberCalculator.extractIdSimple(t1.id()).count() > 2)
+                .filter(t1 -> IdentificationNumberCalculator.extractIdSimple(t1.id()).count() <= 2)
                 .flatMap(t1 -> schema2.tableSet().stream()
                         .filter(t2 -> {
                             var idList2 = IdentificationNumberCalculator
@@ -101,6 +99,7 @@ public final class ConstraintBasedDistanceMeasure {
         var union = nonIntersecting + intersecting;
         // jaccard / IOU -> inverse
         // I chose linear inversion because intersection could be 0
+        if (union == 0) return 0.0;
         return 1 - (intersecting / (double) union);
     }
 

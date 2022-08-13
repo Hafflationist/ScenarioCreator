@@ -22,24 +22,25 @@ public final class ConstraintBasedTestingUtils {
         var allIdSet = columnList.stream()
                 .flatMap(column -> IdentificationNumberCalculator.columnToIdStream(column, false))
                 .collect(Collectors.toCollection(TreeSet::new));
-        if (allIdSet.size() < 2){
+        if (allIdSet.size() < 2) {
             return SSet.of();
         }
         return Stream
                 .generate(() -> generateSingleFd(allIdSet, random))
-                .limit(allIdSet.size())
+                .limit(allIdSet.size() / 2)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private static FunctionalDependency generateSingleFd(SortedSet<Id> allIdSet, Random random) {
         var count = allIdSet.size();
-        var chosenSize = (random.nextInt(count / 2) + 1);
+        var chosenSizeLeft = 1; //(random.nextInt(Math.min(2, count / 2)) + 1);
+        var chosenSizeRight = (random.nextInt(Math.min(3, count / 2)) + 1);
         var rte = new RuntimeException("FEHLER");
         var left = StreamExtensions
-                .pickRandomOrThrowMultiple(allIdSet.stream(), chosenSize, rte, random)
+                .pickRandomOrThrowMultiple(allIdSet.stream(), chosenSizeLeft, rte, random)
                 .collect(Collectors.toCollection(TreeSet::new));
         var right = StreamExtensions
-                .pickRandomOrThrowMultiple(allIdSet.stream().filter(id -> !left.contains(id)), chosenSize, rte, random)
+                .pickRandomOrThrowMultiple(allIdSet.stream().filter(id -> !left.contains(id)), chosenSizeRight, rte, random)
                 .collect(Collectors.toCollection(TreeSet::new));
         return new FunctionalDependency(left, right);
     }
