@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -24,6 +25,10 @@ public final class SSet {
         return Stream.concat(set.stream(), stream).collect(Collectors.toCollection(TreeSet::new));
     }
 
+    public static <T> SortedSet<T> prepend(T head, SortedSet<T> set) {
+        return Stream.concat(Stream.of(head), set.stream()).collect(Collectors.toCollection(TreeSet::new));
+    }
+
     public static <T> Set<SortedSet<T>> powerSet(SortedSet<T> set) {
         assert set.size() <= 22 : "Calculating the power set would exceed the capabilities of my computer. : (";
         var list = set.stream().toList();
@@ -40,5 +45,21 @@ public final class SSet {
                         .map(list::get)
                         .collect(Collectors.toCollection(TreeSet::new)))
                 .collect(Collectors.toSet());
+    }
+
+    public static <U, T> U foldLeft(SortedSet<T> set, U seed, BiFunction<U, ? super T, U> folder) {
+        if (set.isEmpty()){
+            return seed;
+        }
+        var head = set.first();
+        var tail = set.stream().skip(1).collect(Collectors.toCollection(TreeSet::new));
+        var newSeed = folder.apply(seed, head);
+        return foldLeft(tail, newSeed, folder);
+        // in the case of stack problems (TCO won't be performed in JAVA):
+//        U result = seed;
+//        for (T element : set) {
+//            result = folder.apply(result, element);
+//        }
+//        return result;
     }
 }
