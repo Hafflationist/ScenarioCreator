@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity;
+package de.mrobohm.heterogenity.linguistic;
 
 import de.mrobohm.data.Entity;
 import de.mrobohm.data.Schema;
@@ -33,22 +33,37 @@ public final class LinguisticDistanceMeasure {
     public static double calculateDistanceToRootAbsolute(
             Schema schema1, Schema schema2, BiFunction<StringPlus, StringPlus, Double> diff
     ) {
-        var entityList1 = reduce(schema1);
-        var entityList2 = reduce(schema2);
-        // TODO: Vllt sollte man sich hier nochmal genauer überlegen, wie man die semantische Unterschiedlichkeit zweier ganzen Mengen darstellt.
-        // Vermutung: Die gepaarten Spalten werden größtenteils eh semantisch ähnlich sein.
-        return entityList1.stream()
-                .map(e1 -> new Pair<>(e1, entityList2.stream().filter(e2 -> e2.id().equals(e1.id())).findFirst()))
-                .filter(pair -> pair.second().isPresent())
+        var entitySet1 = reduce(schema1);
+        var entitySet2 = reduce(schema2);
+        var intersectingIdSet = entitySet1.stream()
+                .map(Entity::id)
+                .filter(id -> entitySet2.stream().anyMatch(e -> e.id().equals(id)))
+                .collect(Collectors.toCollection(TreeSet::new));
+        var easyMappingDist = entitySet1.stream()
+                .filter(e1 -> intersectingIdSet.contains(e1.id()))
+                .map(e1 -> new Pair<>(e1, entitySet2.stream().filter(e2 -> e2.id().equals(e1.id())).findFirst()))
+                .filter(pair -> pair.second().isPresent()) // eigentlich unnötig, nur für den Kompilierer
                 .mapToDouble(pair -> diff.apply(pair.first().name(), pair.second().get().name()))
                 .sum();
+
+        var mapping1Stream = EntityHandler
+                .getEntityMapping(entitySet1, entitySet2, intersectingIdSet);
+        var mapping2Stream = EntityHandler
+                .getEntityMapping(entitySet2, entitySet1, intersectingIdSet);
+        var difficultMappingDist = EntityHandler.mappingToDistance(mapping1Stream, diff)
+                + EntityHandler.mappingToDistance(mapping2Stream, diff);
+
+        return easyMappingDist + difficultMappingDist;
     }
 
     private static SortedSet<Entity> reduce(Schema schema) {
         var tableEntities = schema.tableSet().stream()
                 .flatMap(t -> StreamExtensions
-                        .prepend(t.columnList().stream()
-                                .flatMap(LinguisticDistanceMeasure::reduceColumn), t));
+                        .prepend(
+                                t.columnList().stream()
+                                        .flatMap(LinguisticDistanceMeasure::reduceColumn),
+                                t
+                        ));
 
         return StreamExtensions.prepend(tableEntities, schema).collect(Collectors.toCollection(TreeSet::new));
     }
@@ -66,5 +81,4 @@ public final class LinguisticDistanceMeasure {
             );
         };
     }
-
 }
