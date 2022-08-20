@@ -11,7 +11,6 @@ import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class EntityHandler {
@@ -19,13 +18,13 @@ public final class EntityHandler {
     }
 
 
-    public static Map<Entity, TreeSet<Entity>> getEntityMapping(
+    public static Map<StringPlus, SortedSet<StringPlus>> getNameMapping(
             SortedSet<Entity> entitySet1, SortedSet<Entity> entitySet2, SortedSet<Id> intersectingIdSet
     ) {
         return entitySet1.stream()
                 .filter(e1 -> !intersectingIdSet.contains(e1.id()))
                 .collect(Collectors.toMap(
-                        Function.identity(),
+                        Entity::name,
                         e1 -> entitySet2.stream()
                                 .filter(e2 -> {
                                     var e1IdSet = IdentificationNumberCalculator
@@ -35,19 +34,20 @@ public final class EntityHandler {
                                             .extractIdSimple(e2.id())
                                             .anyMatch(e1IdSet::contains);
                                 })
+                                .map(Entity::name)
                                 .collect(Collectors.toCollection(TreeSet::new))
                 ));
     }
 
     public static double mappingToDistance(
-            Map<Entity, TreeSet<Entity>> mapping, BiFunction<StringPlus, StringPlus, Double> diff
+            Map<StringPlus, SortedSet<StringPlus>> mapping, BiFunction<StringPlus, StringPlus, Double> diff
     ) {
+        // Hier muss noch beachtet werden, was mit doppelt gezählten Differenzen passiert!
         var deterministicRandom = new Random(0);
         return mapping.keySet().stream()
                 .mapToDouble(e -> {
                     var mapped = mapping.get(e);
                     var concatenatedStringOpt = mapped.stream()
-                            .map(Entity::name)
                             .reduce((a, b) -> LinguisticUtils.merge(a, b, deterministicRandom));
                     if (concatenatedStringOpt.isEmpty()) {
                         return 0.0;
@@ -55,7 +55,7 @@ public final class EntityHandler {
                     // Die Idee hinter dem aktuellen Gewicht: Jedes Element, das über eine 1:1-Korrespondenz hinaus geht,
                     // wird nur in der einen Hälfte berücksichtigt.
                     var weight = 1.0 + ((mapped.size() - 1.0) / 2.0);
-                    return weight * diff.apply(e.name(), concatenatedStringOpt.get());
+                    return weight * diff.apply(e, concatenatedStringOpt.get());
                 })
                 .sum();
     }

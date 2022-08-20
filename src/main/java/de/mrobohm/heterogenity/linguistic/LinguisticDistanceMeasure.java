@@ -47,9 +47,9 @@ public final class LinguisticDistanceMeasure {
                 .sum();
 
         var mapping1Stream = EntityHandler
-                .getEntityMapping(entitySet1, entitySet2, intersectingIdSet);
+                .getNameMapping(entitySet1, entitySet2, intersectingIdSet);
         var mapping2Stream = EntityHandler
-                .getEntityMapping(entitySet2, entitySet1, intersectingIdSet);
+                .getNameMapping(entitySet2, entitySet1, intersectingIdSet);
         var difficultMappingDist = EntityHandler.mappingToDistance(mapping1Stream, diff)
                 + EntityHandler.mappingToDistance(mapping2Stream, diff);
 
