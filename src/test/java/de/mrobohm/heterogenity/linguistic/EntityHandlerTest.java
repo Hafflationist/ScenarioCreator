@@ -8,15 +8,28 @@ import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 class EntityHandlerTest {
-
 
     private static EntityMock em(Id id) {
         var name = new StringPlusNaked(id.toString(), Language.Technical);
         return new EntityMock(name, id);
+    }
+
+    private static double parseDoubleOrDefault(String str, double defaultValue) {
+        try {
+            return Double.parseDouble(str);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
     @Test
@@ -106,44 +119,45 @@ class EntityHandlerTest {
         Assertions.assertTrue(abs < 1e-3);
     }
 
-    @Test
-    void mappingToDistanceTestPartialSummation1() {
+    @ParameterizedTest
+    @ValueSource(ints = {
+            1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24
+    })
+    void mappingToDistanceTestWeight(int size) {
         // --- Arrange
+        var mapped = (SortedSet<StringPlus>) Stream
+                .iterate(65, x -> x + 1)
+                .map(Character::toString)
+                .map(this::spnDist)
+                .limit(size)
+                .collect(Collectors.toCollection(TreeSet::new));
         var mapping = Map.of(
-                spnDist(0.0), SSet.of(spnDist(1.0), spnDist(1.0))
+                spnDist(1.0), mapped
         );
 
         // --- Act
         var dist = EntityHandler.mappingToDistance(mapping, this::diff);
 
         // --- Assert
-        var abs = Math.abs(dist - 1.5);
-        Assertions.assertTrue(abs < 1e-3);
-    }
-
-    @Test
-    void mappingToDistanceTestPartialSummation2() {
-        // --- Arrange
-        var mapping = Map.of(
-                spnDist(0.0), SSet.of(spnDist(1.0), spnDist(1.0), spnDist(1.0), spnDist(1.0))
-        );
-
-        // --- Act
-        var dist = EntityHandler.mappingToDistance(mapping, this::diff);
-
-        // --- Assert
-        var abs = Math.abs(dist - 2.5);
+        var expected = (size - 1) / 2.0 + 1.0;
+        var abs = Math.abs(dist - expected);
         Assertions.assertTrue(abs < 1e-3);
     }
 
     private double diff(StringPlus sp1, StringPlus sp2) {
-        var dist1 = Double.parseDouble(sp1.rawString());
-        var dist2 = Double.parseDouble(sp2.rawString());
+        var str1 = sp1.rawString().replaceAll("[^\\d.-]", "");
+        var str2 = sp2.rawString().replaceAll("[^\\d.-]", "");
+        var dist1 = parseDoubleOrDefault(str1, -Double.MAX_VALUE);
+        var dist2 = parseDoubleOrDefault(str2, -Double.MAX_VALUE);
         return Math.max(dist1, dist2);
     }
 
     private StringPlus spnDist(double dist) {
         return new StringPlusNaked(Double.toString(dist), Language.Technical);
+    }
+
+    private StringPlus spnDist(String name) {
+        return new StringPlusNaked(name, Language.Technical);
     }
 
     private record EntityMock(StringPlus name, Id id) implements Entity {
