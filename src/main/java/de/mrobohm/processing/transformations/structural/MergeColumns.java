@@ -167,6 +167,7 @@ public final class MergeColumns implements SchemaTransformation {
             case ColumnConstraintLocalPredicate ignored -> false;
             case ColumnConstraintPrimaryKey ignored -> true;
             case ColumnConstraintUnique ignored -> false;
+            case ColumnConstraintCheckNumerical ignored -> false;
         };
     }
 }

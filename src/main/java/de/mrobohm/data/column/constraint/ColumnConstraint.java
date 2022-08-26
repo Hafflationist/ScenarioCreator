@@ -6,7 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public sealed interface ColumnConstraint extends Comparable<ColumnConstraint> permits
+public sealed interface ColumnConstraint extends Comparable<ColumnConstraint>
+        permits
+        ColumnConstraintCheckNumerical,
         ColumnConstraintForeignKey,
         ColumnConstraintForeignKeyInverse,
         ColumnConstraintLocalPredicate,

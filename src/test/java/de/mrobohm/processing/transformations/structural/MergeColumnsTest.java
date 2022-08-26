@@ -142,7 +142,7 @@ class MergeColumnsTest {
 
     @ParameterizedTest
     @ValueSource(booleans = {false, true})
-    void getCandidates(boolean keepForeignKeyIntegrity) {
+    void isExecutable(boolean keepForeignKeyIntegrity) {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var dataType = new DataType(DataTypeEnum.INT32, false);
