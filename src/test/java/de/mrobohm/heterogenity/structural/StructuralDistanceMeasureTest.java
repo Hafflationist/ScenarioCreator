@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity;
+package de.mrobohm.heterogenity.structural;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
@@ -16,7 +16,8 @@ import de.mrobohm.data.dataset.Value;
 import de.mrobohm.data.identification.IdSimple;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.table.Table;
-import de.mrobohm.heterogenity.ted.Ted;
+import de.mrobohm.heterogenity.structural.StructuralDistanceMeasureElementary;
+import de.mrobohm.heterogenity.structural.ted.Ted;
 import de.mrobohm.processing.integrity.IntegrityChecker;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;

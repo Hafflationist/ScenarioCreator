@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity;
+package de.mrobohm.heterogenity.constraintBased;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.identification.Id;
@@ -14,8 +14,8 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class ConstraintBasedDistanceMeasure {
-    private ConstraintBasedDistanceMeasure() {
+public final class FunctionalDependencyBasedDistanceMeasure {
+    private FunctionalDependencyBasedDistanceMeasure() {
     }
 
     public static double calculateDistanceRelative(

@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity.ted;
+package de.mrobohm.heterogenity.structural.ted;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.processing.integrity.IdentificationNumberCalculator;

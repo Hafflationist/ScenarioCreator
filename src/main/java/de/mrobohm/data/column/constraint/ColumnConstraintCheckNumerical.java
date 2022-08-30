@@ -13,6 +13,6 @@ public record ColumnConstraintCheckNumerical(ComparisonType comparisonType, doub
 
     @Override
     public double estimateRatioOfKickedValues(List<Value> values, DataType dataType) {
-        return 0;
+        throw new RuntimeException("Not implemented!");
     }
 }

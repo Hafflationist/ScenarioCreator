@@ -109,6 +109,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                             var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
                             yield ccu.withUniqueGroupId(newConstraintId);
                         }
+                        case ColumnConstraintCheckNumerical cccn -> cccn;
                     }).collect(Collectors.toCollection(TreeSet::new));
                     return (Column) switch (column) {
                         case ColumnLeaf leaf -> leaf

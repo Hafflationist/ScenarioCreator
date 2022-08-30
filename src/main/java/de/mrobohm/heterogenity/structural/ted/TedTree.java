@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity.ted;
+package de.mrobohm.heterogenity.structural.ted;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;

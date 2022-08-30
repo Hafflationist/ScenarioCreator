@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity;
+package de.mrobohm.heterogenity.constraintBased;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
@@ -26,7 +26,7 @@ import java.util.Random;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-class ConstraintBasedDistanceMeasureTest {
+class FunctionalDependencyBasedDistanceMeasureTest {
 
     @ParameterizedTest
     @ValueSource(ints = {
@@ -61,7 +61,7 @@ class ConstraintBasedDistanceMeasureTest {
         var newSchema = new Schema(new IdSimple(1001), name, Context.getDefault(), newTableSet);
 
         // --- Act
-        var constraintBasedDistance = ConstraintBasedDistanceMeasure.calculateDistanceAbsolute(schema, newSchema);
+        var constraintBasedDistance = FunctionalDependencyBasedDistanceMeasure.calculateDistanceAbsolute(schema, newSchema);
 
         // --- Assert
         System.out.println(constraintBasedDistance);
@@ -118,7 +118,7 @@ class ConstraintBasedDistanceMeasureTest {
         IntegrityChecker.assertValidSchema(newSchema);
 
         // --- Act
-        var constraintBasedDistance = ConstraintBasedDistanceMeasure.calculateDistanceAbsolute(schema, newSchema);
+        var constraintBasedDistance = FunctionalDependencyBasedDistanceMeasure.calculateDistanceAbsolute(schema, newSchema);
 
         // --- Assert
         System.out.println(constraintBasedDistance);

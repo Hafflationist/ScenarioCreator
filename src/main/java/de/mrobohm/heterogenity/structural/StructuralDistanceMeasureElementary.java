@@ -1,4 +1,4 @@
-package de.mrobohm.heterogenity;
+package de.mrobohm.heterogenity.structural;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.nesting.Column;

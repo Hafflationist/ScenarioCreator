@@ -7,12 +7,12 @@ import java.util.stream.IntStream;
 public class StringDistances {
 
     @Contract(pure = true)
-    public static int zeroOne(String a, String b) {
+    private static int zeroOne(String a, String b) {
         return a.equalsIgnoreCase(b) ? 0 : 1;
     }
 
     @Contract(pure = true)
-    public static int levenshtein(String a, String b) {
+    private static int levenshtein(String a, String b) {
         int[][] memMatrix = new int[a.length() + 1][b.length() + 1];
 
         for (int i = 0; i <= a.length(); i++) {

@@ -5,7 +5,7 @@ import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogenity.StringDistances;
-import de.mrobohm.heterogenity.ted.Ted;
+import de.mrobohm.heterogenity.structural.ted.Ted;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.SingleTransformationExecuter;
