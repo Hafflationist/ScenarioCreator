@@ -1,5 +1,7 @@
 package de.mrobohm.utils;
 
+import java.util.stream.Stream;
+
 public final class MMath {
     private MMath() {
     }
@@ -10,6 +12,7 @@ public final class MMath {
         var epsilon = 0.0001 * Math.min(p, q);
         return gcd(p, q, epsilon);
     }
+
     public static double gcd(double p, double q, double epsilon) {
         if (Math.abs(q) < epsilon) return p;
         else return gcd(q, p % q, epsilon);
@@ -24,4 +27,15 @@ public final class MMath {
 //        }
 //        return p;
 //    }
+
+    public static double avgWeighted(Stream<WeightedNumber> weightedNumberStream) {
+        var weightedNumberList = weightedNumberStream.toList();
+        var weightSum = weightedNumberList.stream().mapToDouble(WeightedNumber::weight).sum();
+        return weightedNumberList.stream()
+                .mapToDouble(weightedNumber -> weightedNumber.weight() * weightedNumber.number() / weightSum)
+                .sum();
+    }
+
+    public record WeightedNumber(Double weight, Double number) {
+    }
 }

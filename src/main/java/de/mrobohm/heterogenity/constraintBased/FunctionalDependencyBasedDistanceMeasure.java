@@ -6,7 +6,7 @@ import de.mrobohm.data.table.FunctionalDependency;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
-import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.MMath;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.SortedSet;
@@ -30,17 +30,13 @@ public final class FunctionalDependencyBasedDistanceMeasure {
     public static double calculateDistanceAbsolute(
             Schema schema1, Schema schema2
     ) {
-        var weightedDistList = BasedConstraintBasedBase
+        var weightedDistStream = BasedConstraintBasedBase
                 .findCorrespondingEntityPairs(schema1.tableSet().stream(), schema2.tableSet().stream())
-                .map(pair -> new Pair<>(
+                .map(pair -> new MMath.WeightedNumber(
                         weight(pair.first(), pair.second()),
                         diffOfTables(pair.first(), pair.second())
-                ))
-                .toList();
-        var weightSum = weightedDistList.stream().mapToDouble(Pair::first).sum();
-        return weightedDistList.stream()
-                .mapToDouble(pair -> pair.first() * pair.second() / weightSum)
-                .sum();
+                ));
+        return MMath.avgWeighted(weightedDistStream);
     }
 
     private static SortedSet<Id> translateIdSet(SortedSet<Id> idSet) {
