@@ -1,6 +1,6 @@
 package de.mrobohm.data.column.nesting;
 
-import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.constraint.ColumnConstraint;
 import de.mrobohm.data.dataset.Value;

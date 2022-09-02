@@ -26,6 +26,7 @@ public final class BasedConstraintBasedBase {
                                     .anyMatch(idList2::contains);
 
                         })
-                        .map(t2 -> new Pair<>(t1, t2)));
+                        .map(t2 -> new Pair<>(t1, t2))
+                );
     }
 }

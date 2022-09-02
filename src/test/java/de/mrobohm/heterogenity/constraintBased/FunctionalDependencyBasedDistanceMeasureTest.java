@@ -3,7 +3,7 @@ package de.mrobohm.heterogenity.constraintBased;
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
-import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;

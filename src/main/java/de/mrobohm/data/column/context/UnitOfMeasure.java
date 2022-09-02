@@ -1,4 +1,4 @@
-package de.mrobohm.data.column;
+package de.mrobohm.data.column.context;
 
 public enum UnitOfMeasure {
     Exa (15),

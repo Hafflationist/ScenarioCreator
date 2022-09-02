@@ -1,4 +1,4 @@
-package de.mrobohm.data.column;
+package de.mrobohm.data.column.context;
 
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;

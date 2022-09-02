@@ -1,7 +1,7 @@
 package de.mrobohm.processing.transformations.constraintBased.base;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.ColumnContext;
+import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;

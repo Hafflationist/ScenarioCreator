@@ -2,6 +2,9 @@ package de.mrobohm;
 
 import de.mrobohm.data.*;
 import de.mrobohm.data.column.*;
+import de.mrobohm.data.column.context.ColumnContext;
+import de.mrobohm.data.column.context.Encoding;
+import de.mrobohm.data.column.context.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.dataset.Value;
