@@ -30,7 +30,8 @@ public final class FunctionalDependencyBasedDistanceMeasure {
     public static double calculateDistanceAbsolute(
             Schema schema1, Schema schema2
     ) {
-        var weightedDistList = findCorrespondingTablePairs(schema1, schema2)
+        var weightedDistList = BasedConstraintBasedBase
+                .findCorrespondingEntityPairs(schema1.tableSet().stream(), schema2.tableSet().stream())
                 .map(pair -> new Pair<>(
                         weight(pair.first(), pair.second()),
                         diffOfTables(pair.first(), pair.second())
@@ -41,23 +42,6 @@ public final class FunctionalDependencyBasedDistanceMeasure {
                 .mapToDouble(pair -> pair.first() * pair.second() / weightSum)
                 .sum();
     }
-
-    private static Stream<Pair<Table, Table>> findCorrespondingTablePairs(Schema schema1, Schema schema2) {
-        return schema1.tableSet().stream()
-                .filter(t1 -> IdentificationNumberCalculator.extractIdSimple(t1.id()).count() <= 2)
-                .flatMap(t1 -> schema2.tableSet().stream()
-                        .filter(t2 -> {
-                            var idList2 = IdentificationNumberCalculator
-                                    .extractIdSimple(t2.id())
-                                    .collect(Collectors.toSet());
-                            if (idList2.size() > 2) return false;
-                            return IdentificationNumberCalculator.extractIdSimple(t1.id())
-                                    .anyMatch(idList2::contains);
-
-                        })
-                        .map(t2 -> new Pair<>(t1, t2)));
-    }
-
 
     private static SortedSet<Id> translateIdSet(SortedSet<Id> idSet) {
         return idSet.stream()
