@@ -225,6 +225,8 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                     && ccfka.foreignColumnId().equals(ccfkb.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfkia -> cb instanceof ColumnConstraintForeignKeyInverse ccfkib
                     && ccfkia.foreignColumnId().equals(ccfkib.foreignColumnId());
+            case ColumnConstraintCheckNumerical cccna -> cb instanceof ColumnConstraintCheckNumerical cccnb
+                    && cccna.equals(cccnb);
 
         }));
     }

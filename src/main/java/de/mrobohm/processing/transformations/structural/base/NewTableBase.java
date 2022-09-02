@@ -9,6 +9,7 @@ import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
 import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.context.Encoding;
+import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.data.column.context.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -89,7 +90,9 @@ public final class NewTableBase {
         var nc = tableName.guessNamingConvention();
         var newNameRawString = LinguisticUtils.merge(nc, tableName.rawString(), "id");
         var newName = new StringPlusNaked(newNameRawString, tableName.language());
-        var newColumnContext = new ColumnContext(Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical);
+        var newColumnContext = new ColumnContext(
+                Context.getDefault(), Encoding.UTF, UnitOfMeasure.None, Language.Technical, NumericalDistribution.getDefault()
+        );
         var newDataType = new DataType(DataTypeEnum.INT64, false);
         return new ColumnLeaf(columnId, newName, newDataType, SSet.of(), newColumnContext, newConstraintSet);
     }

@@ -4,6 +4,7 @@ import de.mrobohm.data.*;
 import de.mrobohm.data.column.*;
 import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.context.Encoding;
+import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.data.column.context.UnitOfMeasure;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -35,7 +36,9 @@ public class RandomSchemaGenerator {
 
     private static Column generateRandomColumn(Random random, Function<Random, String> nameGenerator) {
         var context = generateRandomContext(random);
-        var columnContext = new ColumnContext(context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random));
+        var columnContext = new ColumnContext(
+                context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random), NumericalDistribution.getDefault()
+        );
         return new ColumnLeaf(
                 new IdSimple(random.nextInt()),
                 new StringPlusNaked("Spalte_" + nameGenerator.apply(random), pickRandomLanguage(random)),
