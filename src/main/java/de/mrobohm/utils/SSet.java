@@ -1,9 +1,6 @@
 package de.mrobohm.utils;
 
-import java.util.Arrays;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -17,8 +14,8 @@ public final class SSet {
         return Arrays.stream(content).collect(Collectors.toCollection(TreeSet::new));
     }
 
-    public static <T> SortedSet<T> concat(SortedSet<T> set1, SortedSet<T> set2) {
-        return Stream.concat(set1.stream(), set2.stream()).collect(Collectors.toCollection(TreeSet::new));
+    public static <T> SortedSet<T> concat(Collection<T> col1, Collection<T> col2) {
+        return Stream.concat(col1.stream(), col2.stream()).collect(Collectors.toCollection(TreeSet::new));
     }
 
     public static <T> SortedSet<T> concat(SortedSet<T> set, Stream<T> stream) {
