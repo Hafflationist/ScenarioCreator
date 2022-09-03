@@ -20,8 +20,13 @@ public final class MMath {
     }
 
     public static double gcd(double p, double q, double epsilon) {
+        return gcdRec(Math.max(p, q), Math.min(p, q), epsilon);
+    }
+
+    private static double gcdRec(double p, double q, double epsilon) {
+        assert epsilon != 0.0;
         if (Math.abs(q) < epsilon) return p;
-        else return gcd(q, p % q, epsilon);
+        else return gcdRec(q, p % q, epsilon);
     }
 
     // non-recursive implementation

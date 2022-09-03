@@ -104,7 +104,6 @@ public class BinaryValueToTable implements SchemaTransformation {
                     var newConstraintSet = column.constraintSet().stream().map(c -> switch (c) {
                         case ColumnConstraintForeignKey ccfk -> ccfk;
                         case ColumnConstraintForeignKeyInverse ignore -> throw validationException;
-                        case ColumnConstraintLocalPredicate cclp -> cclp;
                         case ColumnConstraintUnique ccu -> {
                             var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
                             yield ccu.withUniqueGroupId(newConstraintId);

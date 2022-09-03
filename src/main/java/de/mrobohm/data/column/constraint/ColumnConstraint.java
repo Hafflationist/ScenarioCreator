@@ -11,7 +11,6 @@ public sealed interface ColumnConstraint extends Comparable<ColumnConstraint>
         ColumnConstraintCheckNumerical,
         ColumnConstraintForeignKey,
         ColumnConstraintForeignKeyInverse,
-        ColumnConstraintLocalPredicate,
         ColumnConstraintUnique {
 
     // Ich denke, dass es sich hier um ein relativ wichtiges Maß handelt, um zu entscheiden, wie stark man eine Beschränkung modifizieren kann.

@@ -2,6 +2,8 @@ package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.data.column.constraint.*;
+import de.mrobohm.data.column.constraint.numerical.CheckConjunction;
+import de.mrobohm.data.column.constraint.numerical.CheckDisjunction;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
@@ -109,7 +111,9 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .map(pair -> {
                     assert pair.second().isPresent();
                     var newId = new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
-                    // TODO-check: manage check constraints
+                    var newConstraintSet = mergeXor(
+                            pair.first().constraintSet(), pair.second().get().constraintSet()
+                    );
                     return (Column) switch (pair.first()) {
                         case ColumnLeaf leaf -> {
                             var newNd = (pair.second().get() instanceof ColumnLeaf)
@@ -120,10 +124,13 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                                     )
                                     : leaf.context().numericalDistribution();
 
-                            yield leaf.withId(newId).withContext(leaf.context().withNumericalDistribution(newNd));
+                            yield leaf
+                                    .withId(newId)
+                                    .withContext(leaf.context().withNumericalDistribution(newNd))
+                                    .withConstraintSet(newConstraintSet);
                         }
-                        case ColumnNode node -> node.withId(newId);
-                        case ColumnCollection col -> col.withId(newId);
+                        case ColumnNode node -> node.withId(newId).withConstraintSet(newConstraintSet);
+                        case ColumnCollection col -> col.withId(newId).withConstraintSet(newConstraintSet);
                     };
                 });
         var newColumnList = Stream.concat(mergedColumnStream, additionalColumnStream).toList();
@@ -144,6 +151,32 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 })
                 .collect(Collectors.toMap(Pair::first, Pair::second));
         return new DerivationIntegrationResult(newTable, idTranslationMap);
+    }
+
+    private SortedSet<ColumnConstraint> mergeXor(
+            SortedSet<ColumnConstraint> constraintSet1, SortedSet<ColumnConstraint> constraintSet2
+    ) {
+        var partition = StreamExtensions.partition(
+                constraintSet1.stream(),
+                c -> c instanceof ColumnConstraintCheckNumerical
+        );
+        var conjunction1 = new CheckConjunction(
+                partition.yes()
+                .map(c -> (ColumnConstraintCheckNumerical) c)
+                .map(ColumnConstraintCheckNumerical::checkExpression)
+                .collect(Collectors.toCollection(TreeSet::new))
+        );
+        var conjunction2 = new CheckConjunction(
+                constraintSet2.stream()
+                        .filter(c -> c instanceof ColumnConstraintCheckNumerical)
+                        .map(c -> (ColumnConstraintCheckNumerical) c)
+                        .map(ColumnConstraintCheckNumerical::checkExpression)
+                        .collect(Collectors.toCollection(TreeSet::new))
+        );
+        var newCheckExpression = new CheckDisjunction(SSet.of(conjunction1, conjunction2));
+        var newNumericalConstraint = new ColumnConstraintCheckNumerical(newCheckExpression);
+        // TODO: maybe (don't!) simplify checkExpression
+        return SSet.prepend(newNumericalConstraint, partition.no().collect(Collectors.toCollection(TreeSet::new)));
     }
 
     @Override
@@ -227,23 +260,24 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         return false;
     }
 
-    private boolean isSubsetConstraintSets(SortedSet<ColumnConstraint> constraintSetSuper, SortedSet<ColumnConstraint> constraintSetSub) {
+    private boolean isSubsetConstraintSets(
+            SortedSet<ColumnConstraint> constraintSetSuper, SortedSet<ColumnConstraint> constraintSetSub
+    ) {
         return constraintSetSub.stream().allMatch(ca -> constraintSetSuper.stream().anyMatch(cb -> switch (ca) {
             case ColumnConstraintPrimaryKey ignore -> cb instanceof ColumnConstraintPrimaryKey;
             case ColumnConstraintUnique ignore -> cb instanceof ColumnConstraintUnique;
-            case ColumnConstraintLocalPredicate cclpa ->
-                    cb instanceof ColumnConstraintLocalPredicate cclpb && cclpa.equals(cclpb);
             case ColumnConstraintForeignKey ccfka -> cb instanceof ColumnConstraintForeignKey ccfkb
                     && ccfka.foreignColumnId().equals(ccfkb.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfkia -> cb instanceof ColumnConstraintForeignKeyInverse ccfkib
                     && ccfkia.foreignColumnId().equals(ccfkib.foreignColumnId());
-            case ColumnConstraintCheckNumerical cccna -> cb instanceof ColumnConstraintCheckNumerical cccnb
-                    && cccna.equals(cccnb);
-
+            // the following constraints can be merged in the methode named mergeXor
+            case ColumnConstraintCheckNumerical ignore -> true;
         }));
     }
 
-    private boolean equalsConstraintSets(SortedSet<ColumnConstraint> constraintSetA, SortedSet<ColumnConstraint> constraintSetB) {
+    private boolean equalsConstraintSets(
+            SortedSet<ColumnConstraint> constraintSetA, SortedSet<ColumnConstraint> constraintSetB
+    ) {
         return isSubsetConstraintSets(constraintSetA, constraintSetB)
                 && isSubsetConstraintSets(constraintSetB, constraintSetA);
     }

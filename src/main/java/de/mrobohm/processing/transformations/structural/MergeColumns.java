@@ -165,7 +165,6 @@ public final class MergeColumns implements SchemaTransformation {
         return switch (constraint) {
             case ColumnConstraintForeignKey ignored -> keepForeignKeyIntegrity;
             case ColumnConstraintForeignKeyInverse ignored -> keepForeignKeyIntegrity;
-            case ColumnConstraintLocalPredicate ignored -> false;
             case ColumnConstraintPrimaryKey ignored -> true;
             case ColumnConstraintUnique ignored -> false;
             case ColumnConstraintCheckNumerical ignored -> false;

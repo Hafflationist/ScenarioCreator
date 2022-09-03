@@ -15,6 +15,10 @@ public final class CheckNumericalManager {
     }
 
     public static NumericalDistribution merge(NumericalDistribution nd1, NumericalDistribution nd2) {
+        if (Math.abs(nd1.stepSize()) < 0.001) {
+            return nd2;
+        }
+
         var commonStepSize = findGoodCommonStepSize(nd1.stepSize(), nd2.stepSize());
         var ndTrans1 = translateStepSize(nd1, commonStepSize);
         var ndTrans2 = translateStepSize(nd2, commonStepSize);
@@ -37,6 +41,8 @@ public final class CheckNumericalManager {
 
     private static double findGoodCommonStepSize(double ss1, double ss2) {
         // maybe we should set a lower limit...
+        assert ss1 != 0.0;
+        assert ss2 != 0.0;
         return MMath.gcd(ss1, ss2);
     }
 
