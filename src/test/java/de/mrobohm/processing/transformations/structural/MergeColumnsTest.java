@@ -3,12 +3,13 @@ package de.mrobohm.processing.transformations.structural;
 import de.mrobohm.data.Context;
 import de.mrobohm.data.Language;
 import de.mrobohm.data.Schema;
-import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
+import de.mrobohm.data.column.context.ColumnContext;
+import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.identification.IdMerge;
@@ -23,6 +24,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.SortedSet;
 
@@ -140,7 +142,39 @@ class MergeColumnsTest {
         IntegrityChecker.assertValidSchema(newSchema);
     }
 
-    @ParameterizedTest
+    @Test
+    void transformNdDeletion() {
+        // --- Arrange
+        var name = new StringPlusNaked("Spalte", Language.Mixed);
+        var dataType = new DataType(DataTypeEnum.INT32, false);
+        var nd = new NumericalDistribution(1.0, Map.of(1, 0.2, 2, 0.9));
+        var validColumn1 = new ColumnLeaf(new IdSimple(7), name, dataType,
+                ColumnContext.getDefaultWithNd(nd), SSet.of());
+        var validColumn2 = validColumn1.withId(new IdSimple(8));
+
+        var table = StructuralTestingUtils.createTable(
+                14, List.of(validColumn1, validColumn2)
+        );
+        var tableSet = SSet.of(table);
+        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        IntegrityChecker.assertValidSchema(schema);
+        var transformation = new MergeColumns(false);
+
+        // --- Act
+        var newSchema = transformation.transform(schema, new Random());
+
+        // --- Assert
+        var newTableSet = newSchema.tableSet();
+        Assertions.assertEquals(1, newTableSet.size());
+        var newTable = getTable(table.id(), newTableSet);
+        Assertions.assertEquals(1, newTable.columnList().size());
+        var newColumn = newTable.columnList().get(0);
+        assert newColumn instanceof ColumnLeaf;
+        Assertions.assertEquals(NumericalDistribution.getDefault(), ((ColumnLeaf) newColumn).context().numericalDistribution());
+        IntegrityChecker.assertValidSchema(newSchema);
+
+    }
+        @ParameterizedTest
     @ValueSource(booleans = {false, true})
     void isExecutable(boolean keepForeignKeyIntegrity) {
         // --- Arrange

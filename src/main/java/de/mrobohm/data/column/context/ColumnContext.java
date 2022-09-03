@@ -16,6 +16,13 @@ public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure un
         );
     }
 
+    public static ColumnContext getDefaultWithNd(NumericalDistribution nd) {
+        return new ColumnContext(
+                Context.getDefault(), Encoding.UTF, UnitOfMeasure.Pure,
+                Language.Technical, nd
+        );
+    }
+
     @Contract(pure = true)
     @NotNull
     public ColumnContext witchContext(Context newContext) {

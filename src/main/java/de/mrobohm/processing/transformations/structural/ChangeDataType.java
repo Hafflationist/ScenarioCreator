@@ -5,6 +5,7 @@ import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.constraint.ColumnConstraintPrimaryKey;
+import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.identification.Id;
@@ -36,7 +37,11 @@ public class ChangeDataType implements ColumnTransformation {
         }
 
         var newDataType = generateNewDataType(leaf.dataType(), random);
-        return List.of(leaf.withDataType(newDataType));
+        return List.of(
+                leaf
+                        .withDataType(newDataType)
+                        .withContext(leaf.context().withNumericalDistribution(NumericalDistribution.getDefault()))
+        );
     }
 
     private DataType generateNewDataType(DataType dt, Random random) {

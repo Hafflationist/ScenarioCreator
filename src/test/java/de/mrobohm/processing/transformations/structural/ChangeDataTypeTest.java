@@ -1,11 +1,12 @@
 package de.mrobohm.processing.transformations.structural;
 
 import de.mrobohm.data.Language;
-import de.mrobohm.data.column.context.ColumnContext;
 import de.mrobohm.data.column.DataType;
 import de.mrobohm.data.column.DataTypeEnum;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
+import de.mrobohm.data.column.context.ColumnContext;
+import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.data.column.nesting.Column;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 class ChangeDataTypeTest {
@@ -25,7 +27,10 @@ class ChangeDataTypeTest {
         // --- Arrange
         var name = new StringPlusNaked("Spalte", Language.Mixed);
         var validDataType = new DataType(DataTypeEnum.INT32, false);
-        var column = new ColumnLeaf(new IdSimple(1), name, validDataType, ColumnContext.getDefault(), SSet.of());
+        var nd = new NumericalDistribution(1.0, Map.of(1, 0.2, 2, 0.9));
+        var column = new ColumnLeaf(
+                new IdSimple(1), name, validDataType, ColumnContext.getDefaultWithNd(nd), SSet.of()
+        );
         var idGenerator = StructuralTestingUtils.getIdGenerator(0);
         var transformation = new ChangeDataType();
 
@@ -39,7 +44,7 @@ class ChangeDataTypeTest {
         Assertions.assertEquals(column.id(), newColumn.id());
         Assertions.assertEquals(column.name(), newColumn.name());
         Assertions.assertNotEquals(column.dataType(), newColumn.dataType());
-        Assertions.assertEquals(column.context(), newColumn.context());
+        Assertions.assertEquals(column.context().withNumericalDistribution(NumericalDistribution.getDefault()), newColumn.context());
         Assertions.assertEquals(column.constraintSet(), newColumn.constraintSet());
     }
 

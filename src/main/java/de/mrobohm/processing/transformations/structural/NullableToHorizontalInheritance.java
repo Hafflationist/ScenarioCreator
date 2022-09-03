@@ -65,6 +65,8 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         var newColumnList = originalTable.columnList().stream()
                 .filter(column -> !extractableColumnList.contains(column))
                 .map(column -> {
+                    // the numerical distribution stays the same...
+                    // the check constraints stay the same...
                     var newId = new IdPart(column.id(), 0, MergeOrSplitType.Xor);
                     return (Column) switch (column) {
                         case ColumnLeaf leaf -> leaf.withId(newId);

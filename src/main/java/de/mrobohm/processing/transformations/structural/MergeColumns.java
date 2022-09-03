@@ -129,6 +129,7 @@ public final class MergeColumns implements SchemaTransformation {
                         .map(valueB -> valueA + "|" + valueB)
                         .map(Value::new))
                 .collect(Collectors.toCollection(TreeSet::new));
+        // numerical distributions can be ignored, because their information cannot be bundled
         var newContext = ColumnContext.getDefault();
         return new ColumnLeaf(newId, newName, newDataType, newValueSet, newContext, SSet.of());
     }
@@ -141,7 +142,7 @@ public final class MergeColumns implements SchemaTransformation {
     }
 
     private boolean checkTable(Table table) {
-        if (table.columnList().size() < 3) return false;
+        if (table.columnList().size() < 2) return false;
 
         var validColumnsCount = getValidColumns(table.columnList()).size();
         return validColumnsCount >= 2;

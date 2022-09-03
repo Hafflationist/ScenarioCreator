@@ -11,6 +11,7 @@ import de.mrobohm.data.identification.IdMerge;
 import de.mrobohm.data.identification.MergeOrSplitType;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.SchemaTransformation;
+import de.mrobohm.processing.transformations.constraintBased.base.CheckNumericalManager;
 import de.mrobohm.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.structural.base.IdTranslation;
@@ -108,8 +109,19 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .map(pair -> {
                     assert pair.second().isPresent();
                     var newId = new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
+                    // TODO-check: manage check constraints
                     return (Column) switch (pair.first()) {
-                        case ColumnLeaf leaf -> leaf.withId(newId);
+                        case ColumnLeaf leaf -> {
+                            var newNd = (pair.second().get() instanceof ColumnLeaf)
+                                    ?
+                                    CheckNumericalManager.merge(
+                                            leaf.context().numericalDistribution(),
+                                            ((ColumnLeaf) pair.second().get()).context().numericalDistribution()
+                                    )
+                                    : leaf.context().numericalDistribution();
+
+                            yield leaf.withId(newId).withContext(leaf.context().withNumericalDistribution(newNd));
+                        }
                         case ColumnNode node -> node.withId(newId);
                         case ColumnCollection col -> col.withId(newId);
                     };
