@@ -14,8 +14,8 @@ class MMathTest {
     @Test
     void gcd() {
         // --- Arrange
-        var a = 0.0004;
-        var b = 0.00013678426758923;
+        var a = 0.4;
+        var b = 0.3;
 
         // --- Act
         var c = MMath.gcd(a, b);
