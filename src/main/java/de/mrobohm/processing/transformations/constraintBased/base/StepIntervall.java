@@ -2,6 +2,7 @@ package de.mrobohm.processing.transformations.constraintBased.base;
 
 import de.mrobohm.data.column.context.NumericalDistribution;
 import de.mrobohm.utils.MMath;
+import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 import org.jetbrains.annotations.NotNull;
@@ -30,11 +31,18 @@ public record StepIntervall(int step, double start, double end) implements Compa
                 });
     }
 
-    public static Stream<StepIntervall> fromNumericalDistribution(NumericalDistribution nd, double stepSize) {
+    public static Pair<Double, Double> extremes(NumericalDistribution nd) {
         var minStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).min().orElse(0);
         var maxStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).max().orElse(0);
         var globalStart = minStep * nd.stepSize();
         var globalEnd = maxStep * nd.stepSize();
+        return new Pair<>(globalStart, globalEnd);
+    }
+
+    public static Stream<StepIntervall> fromNumericalDistribution(NumericalDistribution nd, double stepSize) {
+        var extremePair = extremes(nd);
+        var globalStart = extremePair.first();
+        var globalEnd = extremePair.second();
 
         var positiveIntervallStream = Stream
                 .iterate(
@@ -51,6 +59,12 @@ public record StepIntervall(int step, double start, double end) implements Compa
         return Stream
                 .concat(positiveIntervallStream, negativeIntervallStream)
                 .filter(si -> si.step != 0);
+    }
+
+    public static SortedSet<StepIntervall> fillHoles(SortedSet<StepIntervall> stepIntervallSet) {
+        var from = stepIntervallSet.stream().mapToDouble(is -> is.start).min().orElse(Double.POSITIVE_INFINITY);
+        var to = stepIntervallSet.stream().mapToDouble(is -> is.end).max().orElse(Double.NEGATIVE_INFINITY);
+        return fillHoles(stepIntervallSet, from, to);
     }
 
     public static SortedSet<StepIntervall> fillHoles(SortedSet<StepIntervall> stepIntervallSet, double from, double to) {
