@@ -9,9 +9,9 @@ class TreeDataOperatorTest {
     @Test
     void replaceTreeEntityDeeplyNested() {
         // --- Arrange
-        var oldTe = new TreeLeaf<>(88);
-        var newTe = new TreeLeaf<>(23);
-        var oldTree = new TreeNode<>(0, SSet.of(
+        final var oldTe = new TreeLeaf<>(88);
+        final var newTe = new TreeLeaf<>(23);
+        final var oldTree = new TreeNode<>(0, SSet.of(
                 new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
@@ -34,7 +34,7 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(35)
                 ))
         ));
-        var expectedTree = new TreeNode<>(0, SSet.of(
+        final var expectedTree = new TreeNode<>(0, SSet.of(
                 new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
@@ -59,7 +59,7 @@ class TreeDataOperatorTest {
         ));
 
         // --- Act
-        var resultTree = TreeDataOperator.replaceTreeEntity(oldTree, oldTe, newTe);
+        final var resultTree = TreeDataOperator.replaceTreeEntity(oldTree, oldTe, newTe);
 
         // --- Assert
         Assertions.assertEquals(expectedTree, resultTree);
@@ -68,9 +68,9 @@ class TreeDataOperatorTest {
     @Test
     void replaceTreeEntityNested() {
         // --- Arrange
-        var oldTe = new TreeLeaf<>(88);
-        var newTe = new TreeLeaf<>(23);
-        var oldTree = new TreeNode<>(0, SSet.of(
+        final var oldTe = new TreeLeaf<>(88);
+        final var newTe = new TreeLeaf<>(23);
+        final var oldTree = new TreeNode<>(0, SSet.of(
                 new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
@@ -87,7 +87,7 @@ class TreeDataOperatorTest {
                         new TreeLeaf<>(35)
                 ))
         ));
-        var expectedTree = new TreeNode<>(0, SSet.of(
+        final var expectedTree = new TreeNode<>(0, SSet.of(
                 new TreeNode<>(1, SSet.of(
                         new TreeLeaf<>(11),
                         new TreeLeaf<>(12),
@@ -106,7 +106,7 @@ class TreeDataOperatorTest {
         ));
 
         // --- Act
-        var resultTree = TreeDataOperator.replaceTreeEntity(oldTree, oldTe, newTe);
+        final var resultTree = TreeDataOperator.replaceTreeEntity(oldTree, oldTe, newTe);
 
         // --- Assert
         Assertions.assertEquals(expectedTree, resultTree);
@@ -115,11 +115,11 @@ class TreeDataOperatorTest {
     @Test
     void replaceTreeEntitySurface() {
         // --- Arrange
-        var oldTe = new TreeLeaf<>(88);
-        var newTe = new TreeLeaf<>(23);
+        final var oldTe = new TreeLeaf<>(88);
+        final var newTe = new TreeLeaf<>(23);
 
         // --- Act
-        var resultTree = TreeDataOperator.replaceTreeEntity(oldTe, oldTe, newTe);
+        final var resultTree = TreeDataOperator.replaceTreeEntity(oldTe, oldTe, newTe);
 
         // --- Assert
         Assertions.assertEquals(newTe, resultTree);

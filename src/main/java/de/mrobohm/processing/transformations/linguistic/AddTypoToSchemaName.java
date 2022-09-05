@@ -22,7 +22,7 @@ public class AddTypoToSchemaName implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var newName = CharBase.introduceTypo(schema.name(), random);
+        final var newName = CharBase.introduceTypo(schema.name(), random);
         return schema.withName(newName);
     }
 

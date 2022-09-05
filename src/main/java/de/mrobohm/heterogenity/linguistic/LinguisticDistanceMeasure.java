@@ -24,40 +24,40 @@ public final class LinguisticDistanceMeasure {
     public static double calculateDistanceToRootRelative(
             Schema schema1, Schema schema2, BiFunction<StringPlus, StringPlus, Double> diff
     ) {
-        var distanceAbsolute = calculateDistanceToRootAbsolute(schema1, schema2, diff);
-        var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, true).count();
-        var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, true).count();
+        final var distanceAbsolute = calculateDistanceToRootAbsolute(schema1, schema2, diff);
+        final var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, true).count();
+        final var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, true).count();
         return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
     }
 
     public static double calculateDistanceToRootAbsolute(
             Schema schema1, Schema schema2, BiFunction<StringPlus, StringPlus, Double> diff
     ) {
-        var entitySet1 = reduce(schema1);
-        var entitySet2 = reduce(schema2);
-        var intersectingIdSet = entitySet1.stream()
+        final var entitySet1 = reduce(schema1);
+        final var entitySet2 = reduce(schema2);
+        final var intersectingIdSet = entitySet1.stream()
                 .map(Entity::id)
                 .filter(id -> entitySet2.stream().anyMatch(e -> e.id().equals(id)))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var easyMappingDist = entitySet1.stream()
+        final var easyMappingDist = entitySet1.stream()
                 .filter(e1 -> intersectingIdSet.contains(e1.id()))
                 .map(e1 -> new Pair<>(e1, entitySet2.stream().filter(e2 -> e2.id().equals(e1.id())).findFirst()))
                 .filter(pair -> pair.second().isPresent()) // eigentlich unnötig, nur für den Kompilierer
                 .mapToDouble(pair -> diff.apply(pair.first().name(), pair.second().get().name()))
                 .sum();
 
-        var mapping1Stream = EntityHandler
+        final var mapping1Stream = EntityHandler
                 .getNameMapping(entitySet1, entitySet2, intersectingIdSet);
-        var mapping2Stream = EntityHandler
+        final var mapping2Stream = EntityHandler
                 .getNameMapping(entitySet2, entitySet1, intersectingIdSet);
-        var difficultMappingDist = EntityHandler.mappingToDistance(mapping1Stream, diff)
+        final var difficultMappingDist = EntityHandler.mappingToDistance(mapping1Stream, diff)
                 + EntityHandler.mappingToDistance(mapping2Stream, diff);
 
         return easyMappingDist + difficultMappingDist;
     }
 
     private static SortedSet<Entity> reduce(Schema schema) {
-        var tableEntities = schema.tableSet().stream()
+        final var tableEntities = schema.tableSet().stream()
                 .flatMap(t -> StreamExtensions
                         .prepend(
                                 t.columnList().stream()

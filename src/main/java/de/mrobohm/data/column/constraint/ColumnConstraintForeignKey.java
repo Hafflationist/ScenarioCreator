@@ -30,11 +30,11 @@ public record ColumnConstraintForeignKey(Id foreignColumnId,
 
     @Contract(pure = true)
     private <T> double kickedRatio(List<Value> values, Function<String, T> converter) {
-        var convertedForeignValueSet = foreignValueSet
+        final var convertedForeignValueSet = foreignValueSet
                 .stream()
                 .map(v -> converter.apply(v.content()))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var obeyingValuesCount = values
+        final var obeyingValuesCount = values
                 .stream()
                 .map(v -> converter.apply(v.content()))
                 .filter(convertedForeignValueSet::contains)
@@ -44,7 +44,7 @@ public record ColumnConstraintForeignKey(Id foreignColumnId,
             return 0;
         }
 
-        var valuesCount = values.size();
+        final var valuesCount = values.size();
         return (double) (valuesCount - obeyingValuesCount) / valuesCount;
     }
 

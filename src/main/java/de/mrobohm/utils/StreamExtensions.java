@@ -48,10 +48,10 @@ public final class StreamExtensions {
     public static <T extends Comparable> Stream<T> replaceInStream(
             Stream<T> stream, Stream<T> originalElementStream, Stream<T> newElementStream
     ) {
-        var originalElementSet = originalElementStream.collect(Collectors.toCollection(TreeSet::new));
-        var list = stream.toList();
-        var firstHalf = list.stream().takeWhile(e -> !originalElementSet.contains(e)).toList();
-        var secondHalf = list.stream()
+        final var originalElementSet = originalElementStream.collect(Collectors.toCollection(TreeSet::new));
+        final var list = stream.toList();
+        final var firstHalf = list.stream().takeWhile(e -> !originalElementSet.contains(e)).toList();
+        final var secondHalf = list.stream()
                 .dropWhile(e -> !originalElementSet.contains(e))
                 .filter(e -> !originalElementSet.contains(e))
                 .toList();
@@ -61,11 +61,11 @@ public final class StreamExtensions {
     @NotNull
     public static <T, TException extends Throwable> T pickRandomOrThrow(Stream<T> stream, TException exception, Random random)
             throws TException {
-        var list = stream.toList();
+        final var list = stream.toList();
         if (list.isEmpty()) {
             throw exception;
         }
-        var randomPickOption = list.stream()
+        final var randomPickOption = list.stream()
                 .skip(random.nextLong(list.size()))
                 .findFirst();
         if (randomPickOption.isEmpty())
@@ -75,7 +75,7 @@ public final class StreamExtensions {
 
     @NotNull
     public static <T> Optional<T> tryPickRandom(Stream<T> stream, Random random) {
-        var list = stream.toList();
+        final var list = stream.toList();
         if (list.isEmpty()){
             return Optional.empty();
         }
@@ -91,7 +91,7 @@ public final class StreamExtensions {
             TException exception,
             Random random)
             throws TException {
-        var list = stream.collect(Collectors.toList());
+        final var list = stream.collect(Collectors.toList());
         Collections.shuffle(list, random); // Seltsame Magie (Unvorhersehbare SEITENEFFEKTE!) passiert hier.
         if (n > list.size()) {
             throw exception;
@@ -101,9 +101,9 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     public static <T> Partition<T> partition(Stream<T> stream, Function<T, Boolean> predicate) {
-        var list = stream.toList();
-        var yes = list.stream().filter(predicate::apply);
-        var no = list.stream().filter(e -> !predicate.apply(e));
+        final var list = stream.toList();
+        final var yes = list.stream().filter(predicate::apply);
+        final var no = list.stream().filter(e -> !predicate.apply(e));
         return new Partition<>(yes, no);
     }
 

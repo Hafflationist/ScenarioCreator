@@ -31,19 +31,19 @@ public class ColumnNodeToTable implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
+        final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
 
-        var columnNodeStream = table.columnList().stream()
+        final var columnNodeStream = table.columnList().stream()
                 .filter(c -> c instanceof ColumnNode);
-        var column = StreamExtensions.pickRandomOrThrow(columnNodeStream, exception, random);
+        final var column = StreamExtensions.pickRandomOrThrow(columnNodeStream, exception, random);
         if (!(column instanceof ColumnNode node)) {
             throw new RuntimeException("Should never happen");
         }
 
-        var newIdArray = idGenerator.apply(3);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
-        var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
-        var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
+        final var newIdArray = idGenerator.apply(3);
+        final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        final var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
+        final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
         return SSet.of(newTable, modifiedTable);
     }
 

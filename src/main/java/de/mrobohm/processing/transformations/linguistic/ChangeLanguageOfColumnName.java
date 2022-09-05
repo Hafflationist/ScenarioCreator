@@ -37,7 +37,7 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
         if (!canBeTranslated(column)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        var newNameOpt = _translation.translate(column.name(), random);
+        final var newNameOpt = _translation.translate(column.name(), random);
         if (newNameOpt.isEmpty()) {
             return List.of(column);
         }

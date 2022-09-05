@@ -13,7 +13,7 @@ public enum NamingConvention {
     TECHNICAL;          // 92630gezukw-.f-
 
     public static NamingConvention getRandom(Random random) {
-        var rnd = random.nextInt(0, 6);
+        final var rnd = random.nextInt(0, 6);
         return switch (rnd) {
             case 0 -> NamingConvention.CAMELCASE;
             case 1 -> NamingConvention.PASCALCASE;

@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
 
 public class IdTranslation {
     public static Schema translateConstraints(Schema schema, Map<Id, SortedSet<Id>> idTranslationMap, Set<Id> idPurgeSet) {
-        var newTableSet = schema.tableSet().stream().map(t -> {
-            var newColumnList = t.columnList().stream().map(column -> {
-                var newConstraintSet = column.constraintSet().stream()
+        final var newTableSet = schema.tableSet().stream().map(t -> {
+            final var newColumnList = t.columnList().stream().map(column -> {
+                final var newConstraintSet = column.constraintSet().stream()
                         .flatMap(c -> IdTranslation.translateConstraint(c, idTranslationMap, idPurgeSet).stream())
                         .collect(Collectors.toCollection(TreeSet::new));
                 if (column.constraintSet().equals(newConstraintSet)) {
@@ -32,7 +32,7 @@ public class IdTranslation {
                     case ColumnCollection col -> col.withConstraintSet(newConstraintSet);
                 };
             }).toList();
-            var newFunctionalDependencySet = translateFunctionalDependencySet(
+            final var newFunctionalDependencySet = translateFunctionalDependencySet(
                     t.functionalDependencySet(), idTranslationMap, idPurgeSet, t.columnList()
             );
             if (t.columnList().equals(newColumnList)
@@ -49,7 +49,7 @@ public class IdTranslation {
     private static SortedSet<ColumnConstraint> translateConstraint(
             ColumnConstraint constraint, Map<Id, SortedSet<Id>> idTranslationMap, Set<Id> idPurgeSet
     ) {
-        var containsPurgedId = switch (constraint) {
+        final var containsPurgedId = switch (constraint) {
             case ColumnConstraintForeignKey ccfk -> idPurgeSet.contains(ccfk.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfki -> idPurgeSet.contains(ccfki.foreignColumnId());
             default -> false;
@@ -57,7 +57,7 @@ public class IdTranslation {
         if (containsPurgedId) {
             return SSet.of();
         }
-        var containsChangedId = switch (constraint) {
+        final var containsChangedId = switch (constraint) {
             case ColumnConstraintForeignKey ccfk -> idTranslationMap.containsKey(ccfk.foreignColumnId());
             case ColumnConstraintForeignKeyInverse ccfki -> idTranslationMap.containsKey(ccfki.foreignColumnId());
             default -> false;
@@ -82,16 +82,16 @@ public class IdTranslation {
             Set<Id> idPurgeSet,
             List<Column> columnList
     ) {
-//        var newFdSet = fdSet.stream()
+//        final var newFdSet = fdSet.stream()
 //                .filter(fd -> fd.left().stream().noneMatch(idPurgeSet::contains))
 //                .map(fd -> {
-//                    var newLeft = translateSideOfFunctionalDependency(
+//                    final var newLeft = translateSideOfFunctionalDependency(
 //                            fd.left(), idTranslationMap, idPurgeSet, columnList
 //                    );
-//                    var newRight = translateSideOfFunctionalDependency(
+//                    final var newRight = translateSideOfFunctionalDependency(
 //                            fd.right(), idTranslationMap, idPurgeSet, columnList
 //                    );
-//                    var newFd = new FunctionalDependency(newLeft, newRight);
+//                    final var newFd = new FunctionalDependency(newLeft, newRight);
 //                    return fd.equals(newFd) ? fd : newFd;
 //                })
 //                .filter(fd -> !fd.left().isEmpty() && !fd.right().isEmpty())
@@ -106,17 +106,17 @@ public class IdTranslation {
             Set<Id> idPurgeSet,
             List<Column> columnList
     ) {
-        var columnIdSet = columnList.stream()
+        final var columnIdSet = columnList.stream()
                 .flatMap(column -> IdentificationNumberCalculator.columnToIdStream(column, false))
                 .collect(Collectors.toSet());
 
-        var newIdSet = idSet.stream()
+        final var newIdSet = idSet.stream()
                 .filter(id -> !idPurgeSet.contains(id))
                 .map(id -> {
                     if (!idTranslationMap.containsKey(id)) {
                         return id;
                     }
-                    var newIdList = idTranslationMap.get(id).stream()
+                    final var newIdList = idTranslationMap.get(id).stream()
                             .filter(columnIdSet::contains)
                             .toList();
 

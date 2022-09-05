@@ -42,7 +42,7 @@ public class SingleTransformationExecuter {
         if (!SingleTransformationChecker.checkTransformation(schema, transformation)) {
             throw new NoTableFoundException("SingleTransformationChecker.checkTransformation dais \"no!\"");
         }
-        var newSchema = switch (transformation) {
+        final var newSchema = switch (transformation) {
             case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);
             case SchemaTransformation st -> executeTransformationSchema(schema, st, random);
@@ -59,7 +59,7 @@ public class SingleTransformationExecuter {
     private Schema executeTransformationSchema(
             Schema schema, SchemaTransformation transformation, Random random
     ) {
-        var newSchema = transformation.transform(schema, random);
+        final var newSchema = transformation.transform(schema, random);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;
     }
@@ -68,7 +68,7 @@ public class SingleTransformationExecuter {
     @Contract(pure = true)
     @NotNull
     private Table chooseTable(SortedSet<Table> tableSet, Random random) throws NoTableFoundException {
-        var tableStream = tableSet.stream();
+        final var tableStream = tableSet.stream();
         return StreamExtensions.pickRandomOrThrow(tableStream, new NoTableFoundException(), random);
     }
 
@@ -77,10 +77,10 @@ public class SingleTransformationExecuter {
     private Schema executeTransformationTable(Schema schema, Table targetTable, SortedSet<Table> newTableSet) {
         assert schema.tableSet().contains(targetTable);
 
-        var filteredTableStream = schema.tableSet()
+        final var filteredTableStream = schema.tableSet()
                 .stream()
                 .filter(table -> !table.equals(targetTable));
-        var newTableStream = Stream.concat(filteredTableStream, newTableSet.stream());
+        final var newTableStream = Stream.concat(filteredTableStream, newTableSet.stream());
         return schema.withTableSet(newTableStream.collect(Collectors.toCollection(TreeSet::new)));
     }
 
@@ -89,10 +89,10 @@ public class SingleTransformationExecuter {
     @NotNull
     private Schema executeTransformationTable(Schema schema, TableTransformation transformation, Random random)
             throws NoTableFoundException {
-        var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
+        final var targetTable = chooseTable(transformation.getCandidates(schema.tableSet()), random);
         Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
-        var newTableSet = transformation.transform(targetTable, idGenerator, random);
-        var newSchema = executeTransformationTable(schema, targetTable, newTableSet);
+        final var newTableSet = transformation.transform(targetTable, idGenerator, random);
+        final var newSchema = executeTransformationTable(schema, targetTable, newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;
     }
@@ -104,18 +104,18 @@ public class SingleTransformationExecuter {
             throws NoColumnFoundException {
         assert schema != null;
 
-        var target = chooseColumn(schema, transformation::getCandidates, random);
-        var targetTable = target.first();
-        var targetColumn = target.second();
+        final var target = chooseColumn(schema, transformation::getCandidates, random);
+        final var targetTable = target.first();
+        final var targetColumn = target.second();
         Function<Integer, Id[]> idGenerator = n -> IdentificationNumberGenerator.generate(schema, n);
-        var newPartialColumnStream = transformation.transform(targetColumn, idGenerator, random).stream();
+        final var newPartialColumnStream = transformation.transform(targetColumn, idGenerator, random).stream();
 
-        var oldColumnStream = targetTable.columnList().stream();
-        var newColumnList = StreamExtensions
+        final var oldColumnStream = targetTable.columnList().stream();
+        final var newColumnList = StreamExtensions
                 .replaceInStream(oldColumnStream, targetColumn, newPartialColumnStream)
                 .toList();
-        var newTableSet = SSet.of(targetTable.withColumnList(newColumnList));
-        var newSchema = executeTransformationTable(schema, target.first(), newTableSet);
+        final var newTableSet = SSet.of(targetTable.withColumnList(newColumnList));
+        final var newSchema = executeTransformationTable(schema, target.first(), newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
         return newSchema;
     }
@@ -128,7 +128,7 @@ public class SingleTransformationExecuter {
     ) throws NoColumnFoundException {
         assert schema.tableSet().size() > 0;
 
-        var candidateStream = schema.tableSet()
+        final var candidateStream = schema.tableSet()
                 .stream()
                 .flatMap(t -> getCandidates.apply(t.columnList()).stream().map(column -> new Pair<>(t, column)));
         return StreamExtensions

@@ -27,11 +27,11 @@ public class GermaNetInterface implements LanguageCorpus {
     private final GermaNet _germanetFreq;
 
     public GermaNetInterface() throws XMLStreamException, IOException {
-        var data_path = GERMANET_FOLDER + "GN_V160/GN_V160_XML";
-        var freqListPath = GERMANET_FOLDER + "GN_V160-FreqLists/";
-        var nounFreqListPath = freqListPath + "noun_freqs_decow14_16.txt";
-        var verbFreqListPath = freqListPath + "verb_freqs_decow14_16.txt";
-        var adjFreqListPath = freqListPath + "adj_freqs_decow14_16.txt";
+        final var data_path = GERMANET_FOLDER + "GN_V160/GN_V160_XML";
+        final var freqListPath = GERMANET_FOLDER + "GN_V160-FreqLists/";
+        final var nounFreqListPath = freqListPath + "noun_freqs_decow14_16.txt";
+        final var verbFreqListPath = freqListPath + "verb_freqs_decow14_16.txt";
+        final var adjFreqListPath = freqListPath + "adj_freqs_decow14_16.txt";
         System.out.println(data_path);
         _germanet = new GermaNet(data_path, true);
         _germanetFreq = new GermaNet(data_path, nounFreqListPath, verbFreqListPath, adjFreqListPath);
@@ -39,7 +39,7 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     private static String englishSynsetToString(EnglishSynset ess) {
-        var posString = switch (ess.partOfSpeech()) {
+        final var posString = switch (ess.partOfSpeech()) {
             case NOUN -> "n";
             case VERB -> "v";
             case ADJECTIVE -> "a";
@@ -48,10 +48,10 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     private static EnglishSynset stringToEnglishSynset(String str) {
-        var strPartArray = str.split("-");
+        final var strPartArray = str.split("-");
         assert strPartArray.length == 3 : "Invalid interlingorecord string!";
-        var offset = Integer.parseInt(strPartArray[1]);
-        var pos = switch (strPartArray[2].toLowerCase()) {
+        final var offset = Integer.parseInt(strPartArray[1]);
+        final var pos = switch (strPartArray[2].toLowerCase()) {
             case "n" -> PartOfSpeech.NOUN;
             case "v" -> PartOfSpeech.VERB;
             case "a" -> PartOfSpeech.ADJECTIVE;
@@ -61,7 +61,7 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     public SortedSet<String> getSynonymes(String word) {
-        var synonymes = _germanet.getSynsets(word).stream().flatMap(ss -> ss.getAllOrthForms().stream());
+        final var synonymes = _germanet.getSynsets(word).stream().flatMap(ss -> ss.getAllOrthForms().stream());
         return synonymes.collect(Collectors.toCollection(TreeSet::new));
     }
 
@@ -78,14 +78,14 @@ public class GermaNetInterface implements LanguageCorpus {
 
     @Override
     public SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet) {
-        var possibleSynsets = _germanet.getSynsets(word);
-        var otherSynsets = otherWordSet.stream()
+        final var possibleSynsets = _germanet.getSynsets(word);
+        final var otherSynsets = otherWordSet.stream()
                 .flatMap(w -> _germanet.getSynsets(w).stream())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
-        var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
-        var distanceMax = Arrays.stream(distanceArray).max().orElse(Double.NEGATIVE_INFINITY);
+        final var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
+        final var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
+        final var distanceMax = Arrays.stream(distanceArray).max().orElse(Double.NEGATIVE_INFINITY);
 
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
@@ -102,7 +102,7 @@ public class GermaNetInterface implements LanguageCorpus {
 
     private double avgDistance(Synset synset, SortedSet<Synset> otherSynsets) {
         try {
-            var semanticUtils = _germanetFreq.getSemanticUtils();
+            final var semanticUtils = _germanetFreq.getSemanticUtils();
             return otherSynsets.stream()
                     .mapToDouble(ss -> 1 - Optional
                             .ofNullable(semanticUtils.getSimilarity(SEM_REL_MEASURE, synset, ss, 1))
@@ -115,12 +115,12 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     public Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
-        var ilId = englishSynsetToString(ess);
-        var preMap = _germanet.getIliRecords().stream()
+        final var ilId = englishSynsetToString(ess);
+        final var preMap = _germanet.getIliRecords().stream()
                 .filter(ili -> ili.getPwn30Id().toLowerCase().equals(ilId))
                 .flatMap(ili -> {
-                    var synset = _germanet.getLexUnitByID(ili.getLexUnitId()).getSynset();
-                    var gss = (GlobalSynset) new GermanSynset(synset.getId());
+                    final var synset = _germanet.getLexUnitByID(ili.getLexUnitId()).getSynset();
+                    final var gss = (GlobalSynset) new GermanSynset(synset.getId());
                     return synset.getAllOrthForms().stream().map(orthForm -> new Pair<>(orthForm, gss));
                 })
                 .collect(groupingBy(Pair::first));
@@ -144,7 +144,7 @@ public class GermaNetInterface implements LanguageCorpus {
 
     public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
         try {
-            var semanticUtils = _germanetFreq.getSemanticUtils();
+            final var semanticUtils = _germanetFreq.getSemanticUtils();
             return synsetIdSet1.stream()
                     .filter(gss -> gss instanceof GermanSynset)
                     .map(gss -> ((GermanSynset) gss).id())
@@ -166,8 +166,8 @@ public class GermaNetInterface implements LanguageCorpus {
     }
 
     public String pickRandomEnglishWord(Random random) {
-        var rte = new RuntimeException("REEE");
-        var validIliStream = _germanet.getIliRecords().stream()
+        final var rte = new RuntimeException("REEE");
+        final var validIliStream = _germanet.getIliRecords().stream()
                 .filter(ili -> !ili.getPwnWord().isBlank());
         return StreamExtensions
                 .pickRandomOrThrowMultiple(

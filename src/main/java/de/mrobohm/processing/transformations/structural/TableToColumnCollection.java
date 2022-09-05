@@ -49,7 +49,7 @@ public class TableToColumnCollection implements SchemaTransformation {
 
     @Override
     public boolean isExecutable(Schema schema) {
-        var tableSet = schema.tableSet();
+        final var tableSet = schema.tableSet();
         return tableSet.stream().anyMatch(t -> IngestionBase.canIngest(t, tableSet, _flags));
     }
 }

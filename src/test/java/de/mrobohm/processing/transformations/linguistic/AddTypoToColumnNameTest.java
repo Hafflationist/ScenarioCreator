@@ -19,20 +19,20 @@ class AddTypoToColumnNameTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column = new ColumnLeaf(
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column = new ColumnLeaf(
                 new IdSimple(1), name, dataType, SSet.of(), ColumnContext.getDefault(), SSet.of()
         );
-        var idGenerator = StructuralTestingUtils.getIdGenerator(2);
-        var transformation = new AddTypoToColumnName();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(2);
+        final var transformation = new AddTypoToColumnName();
 
         // --- Act
-        var newColumnList = transformation.transform(column, idGenerator, new Random());
+        final var newColumnList = transformation.transform(column, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());
-        var newColumn = newColumnList.get(0);
+        final var newColumn = newColumnList.get(0);
         Assertions.assertEquals(column.id(), newColumn.id());
         Assertions.assertNotEquals(column.name(), newColumn.name());
     }

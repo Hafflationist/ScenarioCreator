@@ -30,13 +30,13 @@ public class RandomSchemaGenerator {
     }
 
     private static Context generateRandomContext(Random random) {
-        var language = pickRandomLanguage(random);
+        final var language = pickRandomLanguage(random);
         return new Context(new SemanticDomain(1), language);
     }
 
     private static Column generateRandomColumn(Random random, Function<Random, String> nameGenerator) {
-        var context = generateRandomContext(random);
-        var columnContext = new ColumnContext(
+        final var context = generateRandomContext(random);
+        final var columnContext = new ColumnContext(
                 context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random), NumericalDistribution.getDefault()
         );
         return new ColumnLeaf(
@@ -50,7 +50,7 @@ public class RandomSchemaGenerator {
     }
 
     private static Table generateRandomTable(Random random, int maxColumns, Function<Random, String> nameGenerator) {
-        var context = generateRandomContext(random);
+        final var context = generateRandomContext(random);
         return new Table(
                 new IdSimple(random.nextInt()),
                 new StringPlusNaked("tabelle-" + nameGenerator.apply(random), pickRandomLanguage(random)),
@@ -69,8 +69,8 @@ public class RandomSchemaGenerator {
     public static Schema generateRandomSchema(
             Random random, int maxTables, int maxColumn, Function<Random, String> nameGenerator
     ) {
-        var context = generateRandomContext(random);
-        var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn, nameGenerator), random);
+        final var context = generateRandomContext(random);
+        final var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn, nameGenerator), random);
         return new Schema(
                 new IdSimple(random.nextInt()),
                 new StringPlusNaked(
@@ -82,12 +82,12 @@ public class RandomSchemaGenerator {
     }
 
     private static <T> List<T> generateRandomList(int min, int max, Function<Random, T> elementGenerator, Random random) {
-        var size = random.nextLong(min, max + 1);
+        final var size = random.nextLong(min, max + 1);
         return Stream.generate(() -> random).map(elementGenerator).limit(size).toList();
     }
 
     private static <T> SortedSet<T> generateRandomSet(int min, int max, Function<Random, T> elementGenerator, Random random) {
-        var size = random.nextLong(min, max + 1);
+        final var size = random.nextLong(min, max + 1);
         return Stream.generate(() -> random).map(elementGenerator).limit(size).collect(Collectors.toCollection(TreeSet::new));
     }
 

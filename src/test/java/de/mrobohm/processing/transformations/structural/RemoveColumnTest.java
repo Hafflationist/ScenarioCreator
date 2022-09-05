@@ -23,14 +23,14 @@ class RemoveColumnTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var idGenerator = StructuralTestingUtils.getIdGenerator(8);
-        var transformation = new RemoveColumn();
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(8);
+        final var transformation = new RemoveColumn();
 
         // --- Act
-        var newColumnList = transformation.transform(validColumn, idGenerator, new Random());
+        final var newColumnList = transformation.transform(validColumn, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(0, newColumnList.size());
@@ -39,20 +39,20 @@ class RemoveColumnTest {
     @Test
     void getCandidatesShouldHandleNormalCase() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(7), SSet.of())));
-        var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(8), SSet.of())));
-        var invalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(9))));
-        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) invalidColumn1, invalidColumn2, invalidColumn3, validColumn);
-        var transformation = new RemoveColumn();
+        final var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) invalidColumn1, invalidColumn2, invalidColumn3, validColumn);
+        final var transformation = new RemoveColumn();
 
         // --- Act
-        var newColumnList = transformation.getCandidates(columnList);
+        final var newColumnList = transformation.getCandidates(columnList);
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());
@@ -62,14 +62,14 @@ class RemoveColumnTest {
     @Test
     void getCandidatesShouldRejectSingletonList() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) validColumn);
-        var transformation = new RemoveColumn();
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var validColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) validColumn);
+        final var transformation = new RemoveColumn();
 
         // --- Act
-        var newColumnList = transformation.getCandidates(columnList);
+        final var newColumnList = transformation.getCandidates(columnList);
 
         // --- Assert
         Assertions.assertEquals(0, newColumnList.size());

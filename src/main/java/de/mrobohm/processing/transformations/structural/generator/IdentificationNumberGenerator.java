@@ -13,8 +13,8 @@ public final class IdentificationNumberGenerator {
     }
 
     public static Id[] generate(Schema schema, int n) {
-        var idStream = IdentificationNumberCalculator.getAllIds(schema, true);
-        var maxId = IdentificationNumberCalculator
+        final var idStream = IdentificationNumberCalculator.getAllIds(schema, true);
+        final var maxId = IdentificationNumberCalculator
                 .extractIdSimple(idStream)
                 .map(IdSimple::number)
                 .max(Comparator.naturalOrder())

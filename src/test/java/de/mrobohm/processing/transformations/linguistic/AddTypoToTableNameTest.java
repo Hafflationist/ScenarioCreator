@@ -18,17 +18,17 @@ class AddTypoToTableNameTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), SSet.of(), SSet.of());
-        var idGenerator = StructuralTestingUtils.getIdGenerator(2);
-        var transformation = new AddTypoToTableName();
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var table = new Table(new IdSimple(1), name, List.of(), Context.getDefault(), SSet.of(), SSet.of());
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(2);
+        final var transformation = new AddTypoToTableName();
 
         // --- Act
-        var newTableSet = transformation.transform(table, idGenerator, new Random());
+        final var newTableSet = transformation.transform(table, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());
-        var newTable = newTableSet.stream().toList().get(0);
+        final var newTable = newTableSet.stream().toList().get(0);
         Assertions.assertEquals(table.id(), newTable.id());
         Assertions.assertNotEquals(table.name(), newTable.name());
     }

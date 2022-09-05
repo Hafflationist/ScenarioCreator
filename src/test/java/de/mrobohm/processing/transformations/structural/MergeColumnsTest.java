@@ -31,7 +31,7 @@ import java.util.SortedSet;
 class MergeColumnsTest {
 
     Table getTable(Id id, SortedSet<Table> tableSet) {
-        var tableOpt = tableSet.stream().filter(t -> t.id().equals(id)).findFirst();
+        final var tableOpt = tableSet.stream().filter(t -> t.id().equals(id)).findFirst();
         assert tableOpt.isPresent();
         return tableOpt.get();
     }
@@ -39,51 +39,51 @@ class MergeColumnsTest {
     @Test
     void transformTrue() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var validDataType = new DataType(DataTypeEnum.NVARCHAR, false);
-        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var validDataType = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
                         new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
-        var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
-        var invalidColumn3 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn3 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(22))));
-        var validColumn1 = new ColumnLeaf(new IdSimple(7), name, validDataType,
+        final var validColumn1 = new ColumnLeaf(new IdSimple(7), name, validDataType,
                 ColumnContext.getDefault(), SSet.of());
-        var validColumn2 = validColumn1.withId(new IdSimple(8));
+        final var validColumn2 = validColumn1.withId(new IdSimple(8));
 
-        var invalidTable = StructuralTestingUtils.createTable(
+        final var invalidTable = StructuralTestingUtils.createTable(
                 10, List.of(invalidColumn1, semivalidColumn1)
         );
-        var semivalidTable = StructuralTestingUtils.createTable(
+        final var semivalidTable = StructuralTestingUtils.createTable(
                 11, List.of(invalidColumn2, semivalidColumn2, semivalidColumn3)
         );
-        var validTable = StructuralTestingUtils.createTable(
+        final var validTable = StructuralTestingUtils.createTable(
                 14, List.of(invalidColumn3, validColumn1, validColumn2)
         );
-        var tableSet = SSet.of(invalidTable, validTable, semivalidTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(invalidTable, validTable, semivalidTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new MergeColumns(true);
+        final var transformation = new MergeColumns(true);
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
-        var newTableSet = newSchema.tableSet();
+        final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(3, newTableSet.size());
-        var newInvalidTable = getTable(invalidTable.id(), newTableSet);
+        final var newInvalidTable = getTable(invalidTable.id(), newTableSet);
         Assertions.assertEquals(invalidTable, newInvalidTable);
-        var newSemivalidTable = getTable(semivalidTable.id(), newTableSet);
+        final var newSemivalidTable = getTable(semivalidTable.id(), newTableSet);
         Assertions.assertEquals(semivalidTable, newSemivalidTable);
-        var newValidTable = getTable(validTable.id(), newTableSet);
+        final var newValidTable = getTable(validTable.id(), newTableSet);
         Assertions.assertNotEquals(validTable, newValidTable);
         Assertions.assertEquals(validTable.name(), newValidTable.name());
         Assertions.assertNotEquals(validTable.columnList(), newValidTable.columnList());
@@ -97,42 +97,42 @@ class MergeColumnsTest {
     @Test
     void transformFalse() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
-        var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
                         new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
-        var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(21))));
 
-        var invalidTable = StructuralTestingUtils.createTable(
+        final var invalidTable = StructuralTestingUtils.createTable(
                 10, List.of(invalidColumn1, semivalidColumn1)
         );
-        var semivalidTable = StructuralTestingUtils.createTable(
+        final var semivalidTable = StructuralTestingUtils.createTable(
                 11, List.of(invalidColumn2, semivalidColumn2, semivalidColumn3)
         );
-        var tableSet = SSet.of(invalidTable, semivalidTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(invalidTable, semivalidTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new MergeColumns(false);
+        final var transformation = new MergeColumns(false);
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
-        var newTableSet = newSchema.tableSet();
+        final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(2, newTableSet.size());
-        var newInvalidTable = getTable(invalidTable.id(), newTableSet);
+        final var newInvalidTable = getTable(invalidTable.id(), newTableSet);
         Assertions.assertEquals(invalidTable.name(), newInvalidTable.name());
         Assertions.assertEquals(invalidTable.context(), newInvalidTable.context());
         Assertions.assertEquals(invalidTable.tableConstraintSet(), newInvalidTable.tableConstraintSet());
-        var newSemivalidTable = getTable(semivalidTable.id(), newTableSet);
+        final var newSemivalidTable = getTable(semivalidTable.id(), newTableSet);
         Assertions.assertNotEquals(semivalidTable, newSemivalidTable);
         Assertions.assertEquals(semivalidTable.name(), newSemivalidTable.name());
         Assertions.assertNotEquals(semivalidTable.columnList(), newSemivalidTable.columnList());
@@ -145,30 +145,30 @@ class MergeColumnsTest {
     @Test
     void transformNdDeletion() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var nd = new NumericalDistribution(1.0, Map.of(1, 0.2, 2, 0.9));
-        var validColumn1 = new ColumnLeaf(new IdSimple(7), name, dataType,
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var nd = new NumericalDistribution(1.0, Map.of(1, 0.2, 2, 0.9));
+        final var validColumn1 = new ColumnLeaf(new IdSimple(7), name, dataType,
                 ColumnContext.getDefaultWithNd(nd), SSet.of());
-        var validColumn2 = validColumn1.withId(new IdSimple(8));
+        final var validColumn2 = validColumn1.withId(new IdSimple(8));
 
-        var table = StructuralTestingUtils.createTable(
+        final var table = StructuralTestingUtils.createTable(
                 14, List.of(validColumn1, validColumn2)
         );
-        var tableSet = SSet.of(table);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(table);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new MergeColumns(false);
+        final var transformation = new MergeColumns(false);
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
-        var newTableSet = newSchema.tableSet();
+        final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(1, newTableSet.size());
-        var newTable = getTable(table.id(), newTableSet);
+        final var newTable = getTable(table.id(), newTableSet);
         Assertions.assertEquals(1, newTable.columnList().size());
-        var newColumn = newTable.columnList().get(0);
+        final var newColumn = newTable.columnList().get(0);
         assert newColumn instanceof ColumnLeaf;
         Assertions.assertEquals(NumericalDistribution.getDefault(), ((ColumnLeaf) newColumn).context().numericalDistribution());
         IntegrityChecker.assertValidSchema(newSchema);
@@ -178,33 +178,33 @@ class MergeColumnsTest {
     @ValueSource(booleans = {false, true})
     void isExecutable(boolean keepForeignKeyIntegrity) {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
-        var invalidColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(8))));
-        var validColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var validColumn2 = validColumn1.withId(new IdSimple(5));
+        final var validColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var validColumn2 = validColumn1.withId(new IdSimple(5));
 
-        var invalidTable = new Table(new IdSimple(10), name,
+        final var invalidTable = new Table(new IdSimple(10), name,
                 List.of(invalidColumn, semivalidColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var semivalidTable1 = new Table(new IdSimple(11), name,
+        final var semivalidTable1 = new Table(new IdSimple(11), name,
                 List.of(invalidColumn, semivalidColumn1, semivalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
-        var semivalidTable2 = new Table(new IdSimple(12), name,
+        final var semivalidTable2 = new Table(new IdSimple(12), name,
                 List.of(invalidColumn, semivalidColumn1, validColumn1), Context.getDefault(), SSet.of(), SSet.of());
-        var semivalidTable3 = new Table(new IdSimple(13), name,
+        final var semivalidTable3 = new Table(new IdSimple(13), name,
                 List.of(invalidColumn, validColumn1, semivalidColumn2), Context.getDefault(), SSet.of(), SSet.of());
-        var validTable = new Table(new IdSimple(14), name,
+        final var validTable = new Table(new IdSimple(14), name,
                 List.of(invalidColumn, validColumn1, validColumn2), Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(invalidTable, semivalidTable1, semivalidTable2, semivalidTable3, validTable);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
-        var transformation = new MergeColumns(keepForeignKeyIntegrity);
+        final var tableSet = SSet.of(invalidTable, semivalidTable1, semivalidTable2, semivalidTable3, validTable);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var transformation = new MergeColumns(keepForeignKeyIntegrity);
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertTrue(isExecutable);

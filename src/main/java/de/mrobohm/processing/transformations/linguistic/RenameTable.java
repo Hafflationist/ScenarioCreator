@@ -36,13 +36,13 @@ public class RenameTable implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var newName = getNewName(table.name(), random);
+        final var newName = getNewName(table.name(), random);
         return SSet.of(table.withName(newName));
     }
 
     @NotNull
     private StringPlus getNewName(StringPlus name, Random random) {
-        var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
+        final var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
             return new StringPlusNaked("Spalte" + random.nextInt(), Language.Technical);
         }

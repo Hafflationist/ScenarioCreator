@@ -34,13 +34,13 @@ public class ColumnLeafsToTable implements TableTransformation {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
 
-        var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
+        final var newColumnList = GroupingColumnsBase.findGroupableColumns(table.columnList(), random);
         assert newColumnList.size() > 0;
-        var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
-        var newIdArray = idGenerator.apply(3);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
-        var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
-        var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
+        final var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
+        final var newIdArray = idGenerator.apply(3);
+        final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        final var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
+        final var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
         return SSet.of(newTable, modifiedTable);
     }
 

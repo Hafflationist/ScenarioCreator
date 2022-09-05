@@ -28,8 +28,8 @@ public class AddTypoToColumnName implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
-        var newName = CharBase.introduceTypo(column.name(), random);
-        var newColumn = switch (column) {
+        final var newName = CharBase.introduceTypo(column.name(), random);
+        final var newColumn = switch (column) {
             case ColumnLeaf leaf -> leaf.withName(newName);
             case ColumnNode node -> node.withName(newName);
             case ColumnCollection col -> col.withName(newName);

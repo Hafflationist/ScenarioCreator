@@ -24,20 +24,20 @@ class RemoveTableTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
-        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
+        final var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var validTable = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
-        var idGenerator = StructuralTestingUtils.getIdGenerator(8);
-        var transformation = new RemoveTable();
+        final var validTable = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(8);
+        final var transformation = new RemoveTable();
 
         // --- Act
-        var candidates = transformation.transform(validTable, idGenerator, new Random());
+        final var candidates = transformation.transform(validTable, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(0, candidates.size());
@@ -46,26 +46,26 @@ class RemoveTableTest {
     @Test
     void getCandidates() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
-        var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(9), SSet.of())));
-        var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var validColumn2 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var validColumn2 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
 
-        var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
+        final var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = invalidTable1.withId(new IdSimple(11)).withColumnList(List.of(invalidColumn2));
-        var validTable1 = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
-        var validTable2 = invalidTable1.withId(new IdSimple(13)).withColumnList(List.of(validColumn2));
-        var tableSet = SSet.of(invalidTable1, invalidTable2, validTable1, validTable2);
-        var transformation = new RemoveTable();
+        final var invalidTable2 = invalidTable1.withId(new IdSimple(11)).withColumnList(List.of(invalidColumn2));
+        final var validTable1 = invalidTable1.withId(new IdSimple(12)).withColumnList(List.of(validColumn1));
+        final var validTable2 = invalidTable1.withId(new IdSimple(13)).withColumnList(List.of(validColumn2));
+        final var tableSet = SSet.of(invalidTable1, invalidTable2, validTable1, validTable2);
+        final var transformation = new RemoveTable();
 
         // --- Act
-        var candidates = transformation.getCandidates(tableSet);
+        final var candidates = transformation.getCandidates(tableSet);
 
         // --- Assert
         Assertions.assertEquals(2, candidates.size());

@@ -32,7 +32,7 @@ public class DeNullification implements ColumnTransformation {
             throw new TransformationCouldNotBeExecutedException("Column is not valid!");
         }
 
-        var newColumn = switch (column) {
+        final var newColumn = switch (column) {
             case ColumnLeaf leaf -> leaf.withDataType(leaf.dataType().withIsNullable(false));
             case ColumnCollection col -> col.withIsNullable(false);
             default -> throw new TransformationCouldNotBeExecutedException("Column is not valid!");
@@ -48,9 +48,9 @@ public class DeNullification implements ColumnTransformation {
     }
 
     private boolean isValid(Column column) {
-        var isNotNode = !(column instanceof ColumnNode);
-        var isNullable = column.isNullable();
-        var isNotForeignKey = !column.containsConstraint(ColumnConstraintForeignKey.class);
+        final var isNotNode = !(column instanceof ColumnNode);
+        final var isNullable = column.isNullable();
+        final var isNotForeignKey = !column.containsConstraint(ColumnConstraintForeignKey.class);
         return isNotNode && isNullable && isNotForeignKey;
     }
 }

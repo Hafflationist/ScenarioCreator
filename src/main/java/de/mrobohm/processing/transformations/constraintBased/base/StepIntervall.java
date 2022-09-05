@@ -24,33 +24,33 @@ public record StepIntervall(int step, double start, double end) implements Compa
     public static Stream<StepIntervall> fromNumericalDistribution(NumericalDistribution nd) {
         return nd.stepToOccurrences().keySet().stream()
                 .map(step -> {
-                    var shift = (step > 0) ? -1 : 1;
-                    var p1 = (step + shift) * nd.stepSize();
-                    var p2 = (step) * nd.stepSize();
+                    final var shift = (step > 0) ? -1 : 1;
+                    final var p1 = (step + shift) * nd.stepSize();
+                    final var p2 = (step) * nd.stepSize();
                     return new StepIntervall(step, Math.min(p1, p2), Math.max(p1, p2));
                 });
     }
 
     public static Pair<Double, Double> extremes(NumericalDistribution nd) {
-        var minStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).min().orElse(0);
-        var maxStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).max().orElse(0);
-        var globalStart = minStep * nd.stepSize();
-        var globalEnd = maxStep * nd.stepSize();
+        final var minStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).min().orElse(0);
+        final var maxStep = nd.stepToOccurrences().keySet().stream().mapToInt(x -> x).max().orElse(0);
+        final var globalStart = minStep * nd.stepSize();
+        final var globalEnd = maxStep * nd.stepSize();
         return new Pair<>(globalStart, globalEnd);
     }
 
     public static Stream<StepIntervall> fromNumericalDistribution(NumericalDistribution nd, double stepSize) {
-        var extremePair = extremes(nd);
-        var globalStart = extremePair.first();
-        var globalEnd = extremePair.second();
+        final var extremePair = extremes(nd);
+        final var globalStart = extremePair.first();
+        final var globalEnd = extremePair.second();
 
-        var positiveIntervallStream = Stream
+        final var positiveIntervallStream = Stream
                 .iterate(
                         new StepIntervall(0, 0.0, 0.0),
                         si -> si.start < globalEnd,
                         si -> new StepIntervall(si.step + 1, si.end, si.end + stepSize)
                 );
-        var negativeIntervallStream = Stream
+        final var negativeIntervallStream = Stream
                 .iterate(
                         new StepIntervall(0, 0.0, 0.0),
                         si -> si.end > globalStart,
@@ -62,8 +62,8 @@ public record StepIntervall(int step, double start, double end) implements Compa
     }
 
     public static SortedSet<StepIntervall> fillHoles(SortedSet<StepIntervall> stepIntervallSet) {
-        var from = stepIntervallSet.stream().mapToDouble(is -> is.start).min().orElse(Double.POSITIVE_INFINITY);
-        var to = stepIntervallSet.stream().mapToDouble(is -> is.end).max().orElse(Double.NEGATIVE_INFINITY);
+        final var from = stepIntervallSet.stream().mapToDouble(is -> is.start).min().orElse(Double.POSITIVE_INFINITY);
+        final var to = stepIntervallSet.stream().mapToDouble(is -> is.end).max().orElse(Double.NEGATIVE_INFINITY);
         return fillHoles(stepIntervallSet, from, to);
     }
 
@@ -71,20 +71,20 @@ public record StepIntervall(int step, double start, double end) implements Compa
         if (MMath.isApproxSame(from, to) || from > to) {
             return stepIntervallSet;
         }
-        var partition = StreamExtensions.partition(stepIntervallSet.stream(), si -> si.end < from);
-        var nextStepIntervallOpt = partition.no().min(Comparator.comparingDouble(a -> a.start));
+        final var partition = StreamExtensions.partition(stepIntervallSet.stream(), si -> si.end < from);
+        final var nextStepIntervallOpt = partition.no().min(Comparator.comparingDouble(a -> a.start));
         if (nextStepIntervallOpt.isEmpty()) {
             return SSet.prepend(new StepIntervall(Integer.MAX_VALUE, from, to), stepIntervallSet);
         }
-        var nextStepIntervall = nextStepIntervallOpt.get();
-        var prequel = partition.yes().collect(Collectors.toSet());
-        var newStepIntervall = (nextStepIntervall.start <= from * 1.001)
+        final var nextStepIntervall = nextStepIntervallOpt.get();
+        final var prequel = partition.yes().collect(Collectors.toSet());
+        final var newStepIntervall = (nextStepIntervall.start <= from * 1.001)
                 ? SSet.<StepIntervall>of()
                 : SSet.of(new StepIntervall(Integer.MAX_VALUE, from, nextStepIntervall.start));
-        var reducedStepIntervallSet = stepIntervallSet.stream()
+        final var reducedStepIntervallSet = stepIntervallSet.stream()
                 .filter(si -> !si.equals(nextStepIntervall) && !prequel.contains(si))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var additionalIntervallSet = fillHoles(reducedStepIntervallSet, nextStepIntervall.end, to);
+        final var additionalIntervallSet = fillHoles(reducedStepIntervallSet, nextStepIntervall.end, to);
         return SSet.concat(newStepIntervall, SSet.concat(stepIntervallSet, additionalIntervallSet));
     }
 
@@ -96,8 +96,8 @@ public record StepIntervall(int step, double start, double end) implements Compa
         if (!intersecting(si1, si2)) {
             return 0.0;
         }
-        var minEnd = Math.min(si1.end, si2.end);
-        var maxStart = Math.max(si1.start, si2.start);
+        final var minEnd = Math.min(si1.end, si2.end);
+        final var maxStart = Math.max(si1.start, si2.start);
         return Math.max(0.0, minEnd - maxStart);
     }
 

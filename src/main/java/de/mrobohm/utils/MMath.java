@@ -8,14 +8,14 @@ public final class MMath {
 
 
     public static boolean isApproxSame(double a, double b) {
-        var diff = Math.abs(a - b);
-        var epsilon = Math.max(Math.min(Math.abs(a), Math.abs(b)) * 0.0001, 1e-10);
+        final var diff = Math.abs(a - b);
+        final var epsilon = Math.max(Math.min(Math.abs(a), Math.abs(b)) * 0.0001, 1e-10);
         return diff < epsilon;
     }
 
     // recursive implementation
     public static double gcd(double p, double q) {
-        var epsilon = 0.0001 * Math.min(p, q);
+        final var epsilon = 0.0001 * Math.min(p, q);
         return gcd(p, q, epsilon);
     }
 
@@ -32,7 +32,7 @@ public final class MMath {
     // non-recursive implementation
 //    public static double gcd2(double p, double q) {
 //        while (Math.abs(q) >= 0.00001) {
-//            var temp = q;
+//            final var temp = q;
 //            q = p % q;
 //            p = temp;
 //        }
@@ -40,8 +40,8 @@ public final class MMath {
 //    }
 
     public static double avgWeighted(Stream<WeightedNumber> weightedNumberStream) {
-        var weightedNumberList = weightedNumberStream.toList();
-        var weightSum = weightedNumberList.stream().mapToDouble(WeightedNumber::weight).sum();
+        final var weightedNumberList = weightedNumberStream.toList();
+        final var weightSum = weightedNumberList.stream().mapToDouble(WeightedNumber::weight).sum();
         return weightedNumberList.stream()
                 .mapToDouble(weightedNumber -> weightedNumber.weight() * weightedNumber.number() / weightSum)
                 .sum();

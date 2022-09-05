@@ -19,7 +19,7 @@ public final class Saturation {
                                   Function<Schema, Schema> saturateSchema,
                                   Function<Table, Table> saturateTable,
                                   Function<Column, Column> saturateColumn) {
-        var newSchema = saturateSchema.apply(schema);
+        final var newSchema = saturateSchema.apply(schema);
         return maybeWithTableSet(newSchema, newSchema.tableSet()
                 .stream()
                 .map(saturateTable)

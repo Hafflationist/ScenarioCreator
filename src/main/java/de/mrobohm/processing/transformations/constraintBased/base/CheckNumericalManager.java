@@ -19,10 +19,10 @@ public final class CheckNumericalManager {
             return nd2;
         }
 
-        var commonStepSize = findGoodCommonStepSize(nd1.stepSize(), nd2.stepSize());
-        var ndTrans1 = translateStepSize(nd1, commonStepSize);
-        var ndTrans2 = translateStepSize(nd2, commonStepSize);
-        var newStepToOccurences = SSet
+        final var commonStepSize = findGoodCommonStepSize(nd1.stepSize(), nd2.stepSize());
+        final var ndTrans1 = translateStepSize(nd1, commonStepSize);
+        final var ndTrans2 = translateStepSize(nd2, commonStepSize);
+        final var newStepToOccurences = SSet
                 .concat(
                         ndTrans1.stepToOccurrences().keySet(),
                         ndTrans2.stepToOccurrences().keySet()
@@ -48,17 +48,17 @@ public final class CheckNumericalManager {
 
 
     private static NumericalDistribution translateStepSize(NumericalDistribution nd, double newStepSize) {
-        var originalStepIntervallStream = StepIntervall
+        final var originalStepIntervallStream = StepIntervall
                 .fromNumericalDistribution(nd)
                 .collect(Collectors.toCollection(TreeSet::new));
-        var newStepIntervallStream = StepIntervall
+        final var newStepIntervallStream = StepIntervall
                 .fromNumericalDistribution(nd, newStepSize)
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var newStepToOccurrences = newStepIntervallStream.stream()
+        final var newStepToOccurrences = newStepIntervallStream.stream()
                 .filter(nsi -> originalStepIntervallStream.stream().anyMatch(osi -> StepIntervall.intersecting(nsi, osi)))
                 .map(nsi -> {
-                    var intersectingIntervallsSet = originalStepIntervallStream.stream()
+                    final var intersectingIntervallsSet = originalStepIntervallStream.stream()
                             .filter(osi -> StepIntervall.intersecting(nsi, osi))
                             .collect(Collectors.toCollection(TreeSet::new));
                     return intervallInterpolation(nsi, intersectingIntervallsSet, nd);
@@ -73,27 +73,27 @@ public final class CheckNumericalManager {
     private static Pair<StepIntervall, Double> intervallInterpolation(
             StepIntervall si, SortedSet<StepIntervall> osiSet, NumericalDistribution nd
     ) {
-        var weightedNumberStream = StepIntervall
+        final var weightedNumberStream = StepIntervall
                 .fillHoles(osiSet, si.start(), si.end()).stream()
                 .map(osi -> {
-                    var weight = StepIntervall.intersectionLength(osi, si);
-                    var originalValue = nd.stepToOccurrences().getOrDefault(osi.step(), 0.0);
+                    final var weight = StepIntervall.intersectionLength(osi, si);
+                    final var originalValue = nd.stepToOccurrences().getOrDefault(osi.step(), 0.0);
                     return new MMath.WeightedNumber(weight, originalValue);
                 });
-        var newOccurrences = MMath.avgWeighted(weightedNumberStream);
+        final var newOccurrences = MMath.avgWeighted(weightedNumberStream);
         return new Pair<>(si, newOccurrences);
     }
 
     public static NumericalDistribution normalize(NumericalDistribution nd) {
-        var sum = nd.stepToOccurrences().values().stream().mapToDouble(x -> x).sum();
+        final var sum = nd.stepToOccurrences().values().stream().mapToDouble(x -> x).sum();
         if (Math.abs(sum - 1.0) < 0.00001) {
             return nd;
         }
-        var newStepToOccurrences = nd.stepToOccurrences().keySet().stream()
+        final var newStepToOccurrences = nd.stepToOccurrences().keySet().stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         step -> {
-                            var occurrences = nd.stepToOccurrences().get(step);
+                            final var occurrences = nd.stepToOccurrences().get(step);
                             return occurrences / sum;
                         }));
         return nd.withStepToOccurrences(newStepToOccurrences);

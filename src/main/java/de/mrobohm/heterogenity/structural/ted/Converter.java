@@ -19,7 +19,7 @@ final class Converter {
     }
 
     static TedTree schemaToTedTree(Schema schema) throws IOException {
-        var preorderSchema = schemaToPreorderNotation(schema);
+        final var preorderSchema = schemaToPreorderNotation(schema);
         return new TedTree(preorderSchema);
     }
 
@@ -32,20 +32,20 @@ final class Converter {
     }
 
     private static String schemaToPreorderNotation(Schema schema) {
-        var schemaLabel = idToLabel(schema.id());
-        var childLabelList = schema.tableSet().stream()
+        final var schemaLabel = idToLabel(schema.id());
+        final var childLabelList = schema.tableSet().stream()
                 .map(Converter::tableToPreorderNotation)
                 .collect(Collectors.joining(" "));
-        var childPart = schema.tableSet().isEmpty() ? "" : "(" + childLabelList + ")";
+        final var childPart = schema.tableSet().isEmpty() ? "" : "(" + childLabelList + ")";
         return schemaLabel + childPart;
     }
 
     private static String tableToPreorderNotation(Table table) {
-        var tableLabel = idToLabel(table.id());
-        var childLabelList = table.columnList().stream()
+        final var tableLabel = idToLabel(table.id());
+        final var childLabelList = table.columnList().stream()
                 .map(Converter::columnToPreorderNotation)
                 .collect(Collectors.joining(" "));
-        var childPart = table.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+        final var childPart = table.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
         return tableLabel + childPart;
     }
 
@@ -53,19 +53,19 @@ final class Converter {
         return switch (column) {
             case ColumnLeaf leaf -> idToLabel(leaf.id());
             case ColumnNode node -> {
-                var columnLabel = idToLabel(node.id());
-                var childLabelList = node.columnList().stream()
+                final var columnLabel = idToLabel(node.id());
+                final var childLabelList = node.columnList().stream()
                         .map(Converter::columnToPreorderNotation)
                         .collect(Collectors.joining(" "));
-                var childPart = node.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+                final var childPart = node.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
                 yield columnLabel + childPart;
             }
             case ColumnCollection col -> {
-                var columnLabel = idToLabel(col.id());
-                var childLabelList = col.columnList().stream()
+                final var columnLabel = idToLabel(col.id());
+                final var childLabelList = col.columnList().stream()
                         .map(Converter::columnToPreorderNotation)
                         .collect(Collectors.joining(" "));
-                var childPart = col.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
+                final var childPart = col.columnList().isEmpty() ? "" : "(" + childLabelList + ")";
                 yield columnLabel + childPart;
             }
         };

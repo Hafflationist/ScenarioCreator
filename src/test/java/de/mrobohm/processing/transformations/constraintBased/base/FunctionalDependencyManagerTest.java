@@ -40,7 +40,7 @@ class FunctionalDependencyManagerTest {
     @Test
     void getValidFdSetMerge() {
         // --- Arrange
-        var fdSetValid = SSet.of(
+        final var fdSetValid = SSet.of(
                 of(2, 3),
                 of(3, 4),
                 new FunctionalDependency(
@@ -52,7 +52,7 @@ class FunctionalDependencyManagerTest {
                         SSet.of(new IdSimple(1), new IdSimple(3))
                 )
         );
-        var fdSetInvalid = SSet.of(
+        final var fdSetInvalid = SSet.of(
                 of(3, 1),
                 of(3, 2),
                 of(1, 2),
@@ -61,14 +61,14 @@ class FunctionalDependencyManagerTest {
                         SSet.of(new IdSimple(1))
                 )
         );
-        var fdSet = SSet.concat(fdSetInvalid, fdSetValid);
-        var afterTransColumnList = fromIds(
+        final var fdSet = SSet.concat(fdSetInvalid, fdSetValid);
+        final var afterTransColumnList = fromIds(
                 new IdMerge(new IdSimple(1), new IdSimple(2), MergeOrSplitType.Xor),
                 new IdSimple(3), new IdSimple(4), new IdSimple(5), new IdSimple(6)
         );
 
         // --- Act
-        var afterTransFdSet = FunctionalDependencyManager.getValidFdSet(fdSet, afterTransColumnList);
+        final var afterTransFdSet = FunctionalDependencyManager.getValidFdSet(fdSet, afterTransColumnList);
 
         // --- Assert
         Assertions.assertEquals(fdSetValid.size(), afterTransFdSet.size());
@@ -77,24 +77,24 @@ class FunctionalDependencyManagerTest {
     @Test
     void getValidFdSetPart() {
         // --- Arrange
-        var fdSetValid = SSet.of(
+        final var fdSetValid = SSet.of(
                 of(3, 1),
                 of(3, 2),
                 of(1, 4) // because of XOR
         );
-        var fdSetInvalid = SSet.of(
+        final var fdSetInvalid = SSet.of(
                 of(2, 4),
                 of(2, 1)
         );
-        var fdSet = SSet.concat(fdSetInvalid, fdSetValid);
-        var afterTransColumnList = fromIds(
+        final var fdSet = SSet.concat(fdSetInvalid, fdSetValid);
+        final var afterTransColumnList = fromIds(
                 new IdPart(new IdSimple(1), 0, MergeOrSplitType.Xor),
                 new IdPart(new IdSimple(2), 0, MergeOrSplitType.And),
                 new IdSimple(3), new IdSimple(4), new IdSimple(5), new IdSimple(6)
         );
 
         // --- Act
-        var afterTransFdSet = FunctionalDependencyManager.getValidFdSet(fdSet, afterTransColumnList);
+        final var afterTransFdSet = FunctionalDependencyManager.getValidFdSet(fdSet, afterTransColumnList);
 
         // --- Assert
         Assertions.assertEquals(fdSetValid.size(), afterTransFdSet.size());
@@ -103,16 +103,16 @@ class FunctionalDependencyManagerTest {
     @Test
     void attributeClosure() {
         // --- Arrange
-        var fdSet = SSet.of(
+        final var fdSet = SSet.of(
                 of(1, 2),
                 of(2, 3),
                 of(3, 1),
                 of(4, 5)
         );
-        var attr = new IdSimple(1);
+        final var attr = new IdSimple(1);
 
         // --- Act
-        var attrClosure = FunctionalDependencyManager.attributeClosure(SSet.of(attr), fdSet);
+        final var attrClosure = FunctionalDependencyManager.attributeClosure(SSet.of(attr), fdSet);
 
         // --- Assert
         Assertions.assertTrue(attrClosure.contains(new IdSimple(2)));
@@ -124,25 +124,25 @@ class FunctionalDependencyManagerTest {
     @Test
     void minimalCover1() {
         // --- Arrange
-        var fdSet = SSet.of(
+        final var fdSet = SSet.of(
                 of(1, 2),
                 of(2, 3),
                 of(1, 3),
                 of(4, 5)
         );
-        var coverExpected1 = SSet.of(
+        final var coverExpected1 = SSet.of(
                 of(1, 2),
                 of(1, 3),
                 of(4, 5)
         );
-        var coverExpected2 = SSet.of(
+        final var coverExpected2 = SSet.of(
                 of(1, 2),
                 of(2, 3),
                 of(4, 5)
         );
 
         // --- Act
-        var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
+        final var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
 
         // --- Assert
         Assertions.assertEquals(coverExpected1.size(), coverActual.size());
@@ -152,7 +152,7 @@ class FunctionalDependencyManagerTest {
     @Test
     void minimalCover2() {
         // --- Arrange
-        var fdSet = SSet.of(
+        final var fdSet = SSet.of(
                 of(1, 2),
                 of(1, 3),
                 new FunctionalDependency(
@@ -160,11 +160,11 @@ class FunctionalDependencyManagerTest {
                         SSet.of(new IdSimple(2), new IdSimple(3))
                 )
         );
-        var coverExpected1 = SSet.of(
+        final var coverExpected1 = SSet.of(
                 of(1, 2),
                 of(1, 3)
         );
-        var coverExpected2 = SSet.of(
+        final var coverExpected2 = SSet.of(
                 new FunctionalDependency(
                         SSet.of(new IdSimple(1)),
                         SSet.of(new IdSimple(2), new IdSimple(3))
@@ -172,7 +172,7 @@ class FunctionalDependencyManagerTest {
         );
 
         // --- Act
-        var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
+        final var coverActual = FunctionalDependencyManager.minimalCover(fdSet);
 
         // --- Assert
         Assertions.assertTrue(coverActual.equals(coverExpected1) || coverActual.equals(coverExpected2));

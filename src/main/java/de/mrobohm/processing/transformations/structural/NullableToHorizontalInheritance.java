@@ -41,33 +41,33 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");
+        final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");
         if (!hasNullableColumnsAndNoInverseConstraints(table)) {
             throw exception;
         }
 
-        var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
-        var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size() + 1);
-        var doubledColumnIdSet = table.columnList().stream()
+        final var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
+        final var newIds = idGenerator.apply(table.columnList().size() - extractableColumnList.size() + 1);
+        final var doubledColumnIdSet = table.columnList().stream()
                 .filter(column -> !extractableColumnList.contains(column))
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
-        var newIdComplex = new NewIdComplex(
+        final var newIdComplex = new NewIdComplex(
                 newIds[newIds.length - 1],
                 doubledColumnIdSet
         );
-        var newBaseTable = createBaseTable(table, extractableColumnList);
-        var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
+        final var newBaseTable = createBaseTable(table, extractableColumnList);
+        final var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
         return SSet.of(newBaseTable, newDerivingTable);
     }
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList) {
-        var newColumnList = originalTable.columnList().stream()
+        final var newColumnList = originalTable.columnList().stream()
                 .filter(column -> !extractableColumnList.contains(column))
                 .map(column -> {
                     // the numerical distribution stays the same...
                     // the check constraints stay the same...
-                    var newId = new IdPart(column.id(), 0, MergeOrSplitType.Xor);
+                    final var newId = new IdPart(column.id(), 0, MergeOrSplitType.Xor);
                     return (Column) switch (column) {
                         case ColumnLeaf leaf -> leaf.withId(newId);
                         case ColumnNode node -> node.withId(newId);
@@ -75,7 +75,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                     };
                 })
                 .toList();
-        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 originalTable.functionalDependencySet(), newColumnList
         );
         return originalTable
@@ -87,7 +87,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         if (!newIdComplex.doubledColumnIdSet.contains(column.id())) {
             return column;
         }
-        var newId = new IdPart(column.id(), 1, MergeOrSplitType.Xor);
+        final var newId = new IdPart(column.id(), 1, MergeOrSplitType.Xor);
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withId(newId);
             case ColumnCollection col -> col.withId(newId);
@@ -98,12 +98,12 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     private Table createDerivingTable(Table baseTable, List<Column> extractableColumnList,
                                       NewIdComplex newIdComplex, Random random) {
         // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
-        var newName = LinguisticUtils.merge(baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random);
+        final var newName = LinguisticUtils.merge(baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random);
 
-        var newColumnList = baseTable.columnList().stream()
+        final var newColumnList = baseTable.columnList().stream()
                 .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex))
                 .toList();
-        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 baseTable.functionalDependencySet(), newColumnList
         );
         return baseTable
@@ -114,13 +114,13 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     }
 
     private List<Column> chooseExtendingColumns(List<Column> columnList, Random random) {
-        var candidateColumnList = columnList.stream()
+        final var candidateColumnList = columnList.stream()
                 .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
-        var num = random.nextInt(1, candidateColumnList.size() + 1);
-        var runtimeException = new RuntimeException("Should not happen! (BUG)");
+        final var num = random.nextInt(1, candidateColumnList.size() + 1);
+        final var runtimeException = new RuntimeException("Should not happen! (BUG)");
         return StreamExtensions
                 .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException, random)
                 .toList();
@@ -133,14 +133,14 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     }
 
     private boolean hasNullableColumnsAndNoInverseConstraints(Table table) {
-        var hasNullableColumns = table.columnList().stream().anyMatch(Column::isNullable);
-        var hasEnoughColumns = table.columnList().size() >= 2;
+        final var hasNullableColumns = table.columnList().stream().anyMatch(Column::isNullable);
+        final var hasEnoughColumns = table.columnList().size() >= 2;
         // TODO: Das Problem bei ausgehenden Fremdschlüsselbeziehungen ist die notwendige Duplikation der Beziehung, falls die Fremdschlüsselspalte keine Primärschlüsselspalte ist.
         // So eine Beziehung würde eine schemaweite Transformation erfordern.
         // Die Lösung wirkt anstrengend :(
-        var hasNoForeignKeyConstraints = table.columnList().stream()
+        final var hasNoForeignKeyConstraints = table.columnList().stream()
                 .noneMatch(column -> column.containsConstraint(ColumnConstraintForeignKey.class));
-        var hasNoInverseKeyConstraints = table.columnList().stream()
+        final var hasNoInverseKeyConstraints = table.columnList().stream()
                 .noneMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class));
         return hasNullableColumns && hasEnoughColumns && hasNoForeignKeyConstraints && hasNoInverseKeyConstraints;
     }

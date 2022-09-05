@@ -26,8 +26,8 @@ public class WordNetInterface implements LanguageCorpus {
     private final IRAMDictionary _dict;
 
     public WordNetInterface() throws IOException {
-        var path = DICT_FOLDER + File.separator + "dict";
-        var url = new URL("file", null, path);
+        final var path = DICT_FOLDER + File.separator + "dict";
+        final var url = new URL("file", null, path);
         _dict = new RAMDictionary(url, ILoadPolicy.NO_LOAD);
         _dict.open();
     }
@@ -50,7 +50,7 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     public SortedSet<String> getSynonymes(String wordStr) {
-        var idxWord = _dict.getIndexWord(wordStr, POS.NOUN);
+        final var idxWord = _dict.getIndexWord(wordStr, POS.NOUN);
         if (idxWord == null) {
             return SSet.of();
         }
@@ -85,13 +85,13 @@ public class WordNetInterface implements LanguageCorpus {
             return SSet.of();
         }
 
-        var possibleSynsets = _dict
+        final var possibleSynsets = _dict
                 .getIndexWord(word, POS.NOUN)
                 .getWordIDs().stream()
                 .map(_dict::getWord)
                 .map(IWord::getSynset)
                 .collect(Collectors.toSet());
-        var otherSynsets = otherWordSet.stream()
+        final var otherSynsets = otherWordSet.stream()
                 .filter(w -> _dict.getIndexWord(w, POS.NOUN) != null)
                 .flatMap(w -> _dict
                         .getIndexWord(w, POS.NOUN)
@@ -100,9 +100,9 @@ public class WordNetInterface implements LanguageCorpus {
                         .map(IWord::getSynset))
                 .collect(Collectors.toSet());
 
-        var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
-        var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
-        var distanceMax = Arrays.stream(distanceArray).max().orElse(Double.NEGATIVE_INFINITY);
+        final var distanceArray = possibleSynsets.stream().mapToDouble(ss -> avgDistance(ss, otherSynsets)).toArray();
+        final var distanceMin = Arrays.stream(distanceArray).min().orElse(Double.POSITIVE_INFINITY);
+        final var distanceMax = Arrays.stream(distanceArray).max().orElse(Double.NEGATIVE_INFINITY);
 
         return possibleSynsets.stream()
                 .filter(ss -> avgDistance(ss, otherSynsets, distanceMin, distanceMax) < 0.1)
@@ -119,9 +119,9 @@ public class WordNetInterface implements LanguageCorpus {
     private double avgDistance(ISynset synset, Set<ISynset> otherSynsets) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
-        var db = new MITWordNet(_dict);
-        var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
-        var concept = essToConcept(synset.getID());
+        final var db = new MITWordNet(_dict);
+        final var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
+        final var concept = essToConcept(synset.getID());
         return otherSynsets.stream()
                 .map(IItem::getID)
                 .map(this::essToConcept)
@@ -132,7 +132,7 @@ public class WordNetInterface implements LanguageCorpus {
 
     @Override
     public Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2Word(EnglishSynset ess) {
-        var pos = partOfSpeechToPos(ess.partOfSpeech());
+        final var pos = partOfSpeechToPos(ess.partOfSpeech());
         return _dict.getSynset(new SynsetID(ess.offset(), pos)).getWords().stream()
                 .map(IWord::getLemma)
                 .collect(Collectors.toMap(
@@ -150,15 +150,15 @@ public class WordNetInterface implements LanguageCorpus {
     }
 
     private Concept essToConcept(ISynsetID synsetId) {
-        var pos = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId.toString().toLowerCase().charAt(13));
+        final var pos = edu.uniba.di.lacam.kdde.lexical_db.item.POS.getPOS(synsetId.toString().toLowerCase().charAt(13));
         return new Concept(synsetId.toString(), pos);
     }
 
     public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
-        var db = new MITWordNet(_dict);
-        var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
+        final var db = new MITWordNet(_dict);
+        final var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
         return synsetIdSet1.stream()
                 .filter(gss -> gss instanceof EnglishSynset)
                 .map(gss -> (EnglishSynset) gss)
@@ -166,9 +166,9 @@ public class WordNetInterface implements LanguageCorpus {
                         .filter(gss -> gss instanceof EnglishSynset)
                         .map(gss -> (EnglishSynset) gss)
                         .mapToDouble(ess2 -> {
-                            var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
-                            var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
-                            var relatedness = relatednessCalculator
+                            final var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
+                            final var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+                            final var relatedness = relatednessCalculator
                                     .calcRelatednessOfSynsets(
                                             essToConcept(synsetId1),
                                             essToConcept(synsetId2))

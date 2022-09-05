@@ -21,16 +21,16 @@ public final class FunctionalDependencyBasedDistanceMeasure {
     public static double calculateDistanceRelative(
             Schema schema1, Schema schema2
     ) {
-        var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
-        var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
-        var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
+        final var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
+        final var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
+        final var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
         return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
     }
 
     public static double calculateDistanceAbsolute(
             Schema schema1, Schema schema2
     ) {
-        var weightedDistStream = BasedConstraintBasedBase
+        final var weightedDistStream = BasedConstraintBasedBase
                 .findCorrespondingEntityPairs(schema1.tableSet().stream(), schema2.tableSet().stream())
                 .map(pair -> new MMath.WeightedNumber(
                         weight(pair.first(), pair.second()),
@@ -49,8 +49,8 @@ public final class FunctionalDependencyBasedDistanceMeasure {
         return FunctionalDependencyManager.minimalCover(
                 table.functionalDependencySet().stream()
                         .map(fd -> {
-                            var newLeft = translateIdSet(fd.left());
-                            var newRight = translateIdSet(fd.right());
+                            final var newLeft = translateIdSet(fd.left());
+                            final var newRight = translateIdSet(fd.right());
                             return new FunctionalDependency(newLeft, newRight);
                         })
                         .collect(Collectors.toCollection(TreeSet::new))
@@ -58,25 +58,25 @@ public final class FunctionalDependencyBasedDistanceMeasure {
     }
 
     private static double diffOfTables(Table table1, Table table2) {
-        var fdSet1 = translatedTableFd(table1);
-        var fdSet2 = translatedTableFd(table2);
+        final var fdSet1 = translatedTableFd(table1);
+        final var fdSet2 = translatedTableFd(table2);
 
-        var memberShipPartition1 = StreamExtensions.partition(
+        final var memberShipPartition1 = StreamExtensions.partition(
                 fdSet1.stream(),
                 fd1 -> FunctionalDependencyManager.membership(fd1, fdSet2)
         );
-        var memberShipPartition2 = StreamExtensions.partition(
+        final var memberShipPartition2 = StreamExtensions.partition(
                 fdSet2.stream(),
                 fd2 -> FunctionalDependencyManager.membership(fd2, fdSet1)
         );
 
-        var nonIntersecting = Stream
+        final var nonIntersecting = Stream
                 .concat(memberShipPartition1.no(), memberShipPartition2.no())
                 .count();
-        var intersecting = Stream
+        final var intersecting = Stream
                 .concat(memberShipPartition1.yes(), memberShipPartition2.yes())
                 .count();
-        var union = nonIntersecting + intersecting;
+        final var union = nonIntersecting + intersecting;
         // jaccard / IOU -> inverse
         // I chose linear inversion because intersection could be 0
         if (union == 0) return 0.0;
@@ -84,10 +84,10 @@ public final class FunctionalDependencyBasedDistanceMeasure {
     }
 
     private static double weight(Table table1, Table table2) {
-        var table1Size = IdentificationNumberCalculator
+        final var table1Size = IdentificationNumberCalculator
                 .tableToIdStream(table1, false)
                 .count();
-        var table2Size = IdentificationNumberCalculator
+        final var table2Size = IdentificationNumberCalculator
                 .tableToIdStream(table2, false)
                 .count();
         return table1Size + (double) table2Size;

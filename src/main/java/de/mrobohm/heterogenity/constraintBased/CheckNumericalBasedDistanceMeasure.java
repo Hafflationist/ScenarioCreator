@@ -33,9 +33,9 @@ public final class CheckNumericalBasedDistanceMeasure {
     public static double calculateDistanceRelative(
             Schema schema1, Schema schema2
     ) {
-        var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
-        var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
-        var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
+        final var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
+        final var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
+        final var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
         return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
     }
 
@@ -73,8 +73,8 @@ public final class CheckNumericalBasedDistanceMeasure {
     }
 
     private static Map<Column, SortedSet<Column>> aggregate(Stream<Pair<Column, Column>> correspondence) {
-        var correspondenceList = correspondence.toList();
-        var allColumnList = Stream
+        final var correspondenceList = correspondence.toList();
+        final var allColumnList = Stream
                 .concat(
                         correspondenceList.stream().map(Pair::first),
                         correspondenceList.stream().map(Pair::second)
@@ -94,7 +94,7 @@ public final class CheckNumericalBasedDistanceMeasure {
         if (!(column instanceof ColumnLeaf)) {
             return 0.0;
         }
-        var columnLeafSet = columnSet.stream()
+        final var columnLeafSet = columnSet.stream()
                 .filter(col -> col instanceof ColumnLeaf)
                 .map(col -> (ColumnLeaf) col)
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -102,15 +102,15 @@ public final class CheckNumericalBasedDistanceMeasure {
             return 0.0;
         }
 
-        var checkExpression1 = new CheckConjunction(columnToCheckExpression(column));
-        var checkExpression2 = new CheckConjunction(
+        final var checkExpression1 = new CheckConjunction(columnToCheckExpression(column));
+        final var checkExpression2 = new CheckConjunction(
                 columnLeafSet.stream()
                         .map(CheckNumericalBasedDistanceMeasure::columnToCheckExpression)
                         .flatMap(Collection::stream)
                         .collect(Collectors.toCollection(TreeSet::new))
         );
 
-        var ndOpt = StreamExtensions
+        final var ndOpt = StreamExtensions
                 .prepend(
                         columnLeafSet.stream().map(ColumnLeaf::context).map(ColumnContext::numericalDistribution),
                         ((ColumnLeaf) column).context().numericalDistribution()
@@ -134,36 +134,36 @@ public final class CheckNumericalBasedDistanceMeasure {
     private static double diffOfCheckExpressions(
             CheckExpression checkExpression1, CheckExpression checkExpression2, NumericalDistribution nd
     ) {
-        var partialDistributionFunction = new Lagrange.PartialFunction(nd);
-        var fullDistributionFunction = Lagrange.polynomize(partialDistributionFunction);
+        final var partialDistributionFunction = new Lagrange.PartialFunction(nd);
+        final var fullDistributionFunction = Lagrange.polynomize(partialDistributionFunction);
 
-        var testValueSet = generateTestValues(nd);
-        var validSet1 = testValueSet.parallelStream()
+        final var testValueSet = generateTestValues(nd);
+        final var validSet1 = testValueSet.parallelStream()
                 .filter(testValue -> CheckExpressionEvaluation.evaluate(checkExpression1, testValue))
                 .collect(Collectors.toSet());
-        var validSet2 = testValueSet.parallelStream()
+        final var validSet2 = testValueSet.parallelStream()
                 .filter(testValue -> CheckExpressionEvaluation.evaluate(checkExpression2, testValue))
                 .collect(Collectors.toSet());
-        var validSet12 = validSet1.stream().filter(validSet2::contains).collect(Collectors.toSet());
-        var fullDistributionFunctionMemo = SSet
+        final var validSet12 = validSet1.stream().filter(validSet2::contains).collect(Collectors.toSet());
+        final var fullDistributionFunctionMemo = SSet
                 .concat(validSet1, validSet2).stream()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         fullDistributionFunction
                 ));
 
-        var weight12 = validSet12.stream().mapToDouble(fullDistributionFunctionMemo::get).sum();
-        var weightUnion = fullDistributionFunctionMemo.values().parallelStream().mapToDouble(x -> x).sum();
+        final var weight12 = validSet12.stream().mapToDouble(fullDistributionFunctionMemo::get).sum();
+        final var weightUnion = fullDistributionFunctionMemo.values().parallelStream().mapToDouble(x -> x).sum();
         return weight12 / weightUnion;
     }
 
     private static SortedSet<Double> generateTestValues(NumericalDistribution nd) {
-        var extremePair = StepIntervall.extremes(nd);
-        var min = extremePair.first();
-        var max = extremePair.second();
-        var length = max - min;
-        var extendedMin = min - length;
-        var distBetweenTestValues = (length * 3.0 / (SAMPLE_SIZE - 1));
+        final var extremePair = StepIntervall.extremes(nd);
+        final var min = extremePair.first();
+        final var max = extremePair.second();
+        final var length = max - min;
+        final var extendedMin = min - length;
+        final var distBetweenTestValues = (length * 3.0 / (SAMPLE_SIZE - 1));
         return Stream
                 .iterate(extendedMin, v -> v + distBetweenTestValues)
                 .limit(SAMPLE_SIZE)

@@ -19,7 +19,7 @@ public final class ConstraintBasedTestingUtils {
     }
 
     public static SortedSet<FunctionalDependency> generateFd(List<Column> columnList, Random random) {
-        var allIdSet = columnList.stream()
+        final var allIdSet = columnList.stream()
                 .flatMap(column -> IdentificationNumberCalculator.columnToIdStream(column, false))
                 .collect(Collectors.toCollection(TreeSet::new));
         if (allIdSet.size() < 2) {
@@ -32,14 +32,14 @@ public final class ConstraintBasedTestingUtils {
     }
 
     private static FunctionalDependency generateSingleFd(SortedSet<Id> allIdSet, Random random) {
-        var count = allIdSet.size();
-        var chosenSizeLeft = 1; //(random.nextInt(Math.min(2, count / 2)) + 1);
-        var chosenSizeRight = (random.nextInt(Math.min(3, count / 2)) + 1);
-        var rte = new RuntimeException("FEHLER");
-        var left = StreamExtensions
+        final var count = allIdSet.size();
+        final var chosenSizeLeft = 1; //(random.nextInt(Math.min(2, count / 2)) + 1);
+        final var chosenSizeRight = (random.nextInt(Math.min(3, count / 2)) + 1);
+        final var rte = new RuntimeException("FEHLER");
+        final var left = StreamExtensions
                 .pickRandomOrThrowMultiple(allIdSet.stream(), chosenSizeLeft, rte, random)
                 .collect(Collectors.toCollection(TreeSet::new));
-        var right = StreamExtensions
+        final var right = StreamExtensions
                 .pickRandomOrThrowMultiple(allIdSet.stream().filter(id -> !left.contains(id)), chosenSizeRight, rte, random)
                 .collect(Collectors.toCollection(TreeSet::new));
         return new FunctionalDependency(left, right);

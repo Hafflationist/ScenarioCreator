@@ -22,9 +22,9 @@ public class StringDistances {
                 } else if (l == 0) {
                     memMatrix[i][l] = i;
                 } else {
-                    var replace = memMatrix[i - 1][l - 1] + (a.charAt(i - 1) == b.charAt(l - 1) ? 0 : 1);
-                    var delete = memMatrix[i - 1][l] + 1;
-                    var insert = memMatrix[i][l - 1] + 1;
+                    final var replace = memMatrix[i - 1][l - 1] + (a.charAt(i - 1) == b.charAt(l - 1) ? 0 : 1);
+                    final var delete = memMatrix[i - 1][l] + 1;
+                    final var insert = memMatrix[i][l - 1] + 1;
                     memMatrix[i][l] = IntStream
                             .of(replace, delete, insert)
                             .min()
@@ -37,8 +37,8 @@ public class StringDistances {
 
     @Contract(pure = true)
     public static double levenshteinNorm(String a, String b) {
-        var maxLength = (double) Math.max(a.length(), b.length());
-        var levenshteinDist = (double) levenshtein(a, b);
+        final var maxLength = (double) Math.max(a.length(), b.length());
+        final var levenshteinDist = (double) levenshtein(a, b);
         return levenshteinDist / maxLength;
     }
 }

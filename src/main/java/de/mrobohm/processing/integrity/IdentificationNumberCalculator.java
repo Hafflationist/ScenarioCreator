@@ -36,9 +36,9 @@ public class IdentificationNumberCalculator {
     }
 
     public static Stream<Id> getAllIds(Schema schema, boolean checkConstraints) {
-        var tableSet = schema.tableSet();
-        var tableIdStream = tableSet.parallelStream().map(Table::id);
-        var columnIdStream = tableSet.parallelStream()
+        final var tableSet = schema.tableSet();
+        final var tableIdStream = tableSet.parallelStream().map(Table::id);
+        final var columnIdStream = tableSet.parallelStream()
                 .flatMap(t -> IdentificationNumberCalculator.tableToIdStream(t, checkConstraints));
         return Stream.concat(Stream.of(schema.id()), Stream.concat(tableIdStream, columnIdStream));
     }
@@ -49,7 +49,7 @@ public class IdentificationNumberCalculator {
     }
 
     public static Stream<Id> columnToIdStream(Column column, boolean checkConstraints) {
-        var constraintIdStream = checkConstraints
+        final var constraintIdStream = checkConstraints
                 ? constraintsToIdStream(column.constraintSet())
                 : Stream.<Id>empty();
         return switch (column) {

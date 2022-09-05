@@ -42,27 +42,27 @@ public class BinaryValueToTable implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two or three values!!");
-        var validTableStream = schema.tableSet().stream().filter(this::isTableValid);
-        var table = StreamExtensions.pickRandomOrThrow(validTableStream, tcnbee, random);
-        var validColumnStream = table.columnList().stream()
+        final var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two or three values!!");
+        final var validTableStream = schema.tableSet().stream().filter(this::isTableValid);
+        final var table = StreamExtensions.pickRandomOrThrow(validTableStream, tcnbee, random);
+        final var validColumnStream = table.columnList().stream()
                 .filter(column -> column instanceof ColumnLeaf)
                 .map(column -> (ColumnLeaf) column)
                 .filter(leaf -> leaf.valueSet().size() == 2 || leaf.valueSet().size() == 3);
-        var chosenSplitLeaf = StreamExtensions.pickRandomOrThrow(validColumnStream, tcnbee, random);
-        var newColumnList = table.columnList().stream()
+        final var chosenSplitLeaf = StreamExtensions.pickRandomOrThrow(validColumnStream, tcnbee, random);
+        final var newColumnList = table.columnList().stream()
                 .filter(column -> !column.equals(chosenSplitLeaf))
                 .toList();
-        var tableWithoutChosenSplitLeaf = table.withColumnList(newColumnList);
-        var valueList = chosenSplitLeaf.valueSet().stream().toList();
-        var tableSplitResult = splitTable(tableWithoutChosenSplitLeaf, valueList.size());
-        var addTableStream = StreamExtensions
+        final var tableWithoutChosenSplitLeaf = table.withColumnList(newColumnList);
+        final var valueList = chosenSplitLeaf.valueSet().stream().toList();
+        final var tableSplitResult = splitTable(tableWithoutChosenSplitLeaf, valueList.size());
+        final var addTableStream = StreamExtensions
                 .zip(
                         tableSplitResult.tableSet.stream(),
                         valueList.stream(),
                         (t, value) -> appendToName(t, value.content(), random)
                 );
-        var newTableSet = StreamExtensions.replaceInStream(
+        final var newTableSet = StreamExtensions.replaceInStream(
                 schema.tableSet().stream(),
                 table,
                 addTableStream
@@ -75,15 +75,15 @@ public class BinaryValueToTable implements SchemaTransformation {
     }
 
     private TableSplitResult splitTable(Table table, int n) {
-        var tableSet = Stream.iterate(0, x -> x + 1)
+        final var tableSet = Stream.iterate(0, x -> x + 1)
                 .limit(n)
                 .map(x -> splitTablePart(table, x))
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var idMapWrongType = tableSet.stream()
+        final var idMapWrongType = tableSet.stream()
                 .flatMap(this::getAllColumnIdPartStream)
                 .collect(groupingBy(IdPart::predecessorId));
-        var idMap = idMapWrongType.keySet().stream()
+        final var idMap = idMapWrongType.keySet().stream()
                 .collect(Collectors.toMap(id -> id, id -> (SortedSet<Id>) new TreeSet<Id>(idMapWrongType.get(id))));
         return new TableSplitResult(tableSet, idMap);
     }
@@ -96,16 +96,16 @@ public class BinaryValueToTable implements SchemaTransformation {
     }
 
     private Table splitTablePart(Table table, int partNum) {
-        var errorMsg = "Chosen table contains invalid constraints! This should be prevented by <getCandidates>!";
-        var validationException = new RuntimeException(errorMsg);
-        var newColumnList = table.columnList().stream()
+        final var errorMsg = "Chosen table contains invalid constraints! This should be prevented by <getCandidates>!";
+        final var validationException = new RuntimeException(errorMsg);
+        final var newColumnList = table.columnList().stream()
                 .map(column -> {
-                    var newId = new IdPart(column.id(), partNum, MergeOrSplitType.Xor);
-                    var newConstraintSet = column.constraintSet().stream().map(c -> switch (c) {
+                    final var newId = new IdPart(column.id(), partNum, MergeOrSplitType.Xor);
+                    final var newConstraintSet = column.constraintSet().stream().map(c -> switch (c) {
                         case ColumnConstraintForeignKey ccfk -> ccfk;
                         case ColumnConstraintForeignKeyInverse ignore -> throw validationException;
                         case ColumnConstraintUnique ccu -> {
-                            var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
+                            final var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
                             yield ccu.withUniqueGroupId(newConstraintId);
                         }
                         case ColumnConstraintCheckNumerical cccn -> cccn;
@@ -122,7 +122,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                                 .withConstraintSet(newConstraintSet);
                     };
                 }).toList();
-        var newFdSet = FunctionalDependencyManager.getValidFdSet(table.functionalDependencySet(), newColumnList);
+        final var newFdSet = FunctionalDependencyManager.getValidFdSet(table.functionalDependencySet(), newColumnList);
         return table
                 .withId(new IdPart(table.id(), partNum, MergeOrSplitType.Xor))
                 .withColumnList(newColumnList)
@@ -130,23 +130,23 @@ public class BinaryValueToTable implements SchemaTransformation {
     }
 
     private Table appendToName(Table table, String suffix, Random random) {
-        var suffixPlus = (StringPlus) new StringPlusNaked(suffix, Language.Technical);
-        var newName = LinguisticUtils.merge(table.name(), suffixPlus, random);
+        final var suffixPlus = (StringPlus) new StringPlusNaked(suffix, Language.Technical);
+        final var newName = LinguisticUtils.merge(table.name(), suffixPlus, random);
         return table.withName(newName);
     }
 
     // block foreign key constraints!
     private boolean isTableValid(Table table) {
 
-        var enoughNonPrimKeyColumns = table.columnList().stream()
+        final var enoughNonPrimKeyColumns = table.columnList().stream()
                 .anyMatch(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class));
 
-        var enoughColumns = table.columnList().size() >= 2;
+        final var enoughColumns = table.columnList().size() >= 2;
 
-        var isReferenced = table.columnList().stream()
+        final var isReferenced = table.columnList().stream()
                 .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class));
 
-        var splitColumnPresent = table.columnList().stream()
+        final var splitColumnPresent = table.columnList().stream()
                 .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
                 .filter(column -> !column.containsConstraint(ColumnConstraintForeignKey.class))
                 .filter(column -> !column.containsConstraint(ColumnConstraintForeignKeyInverse.class))

@@ -7,7 +7,7 @@ import java.util.Random;
 public record DataType(DataTypeEnum dataTypeEnum, boolean isNullable) implements Comparable<DataType> {
 
     public static DataType getRandom(Random random) {
-        var dataTypeEnum = DataTypeEnum.getRandom(random);
+        final var dataTypeEnum = DataTypeEnum.getRandom(random);
         return new DataType(dataTypeEnum, random.nextBoolean());
     }
 

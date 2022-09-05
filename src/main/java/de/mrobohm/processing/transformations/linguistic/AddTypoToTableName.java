@@ -28,7 +28,7 @@ public class AddTypoToTableName implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var newName = CharBase.introduceTypo(table.name(), random);
+        final var newName = CharBase.introduceTypo(table.name(), random);
         return SSet.of(table.withName(newName));
     }
 

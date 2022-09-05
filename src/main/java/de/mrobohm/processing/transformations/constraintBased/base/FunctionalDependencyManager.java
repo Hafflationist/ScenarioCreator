@@ -27,13 +27,13 @@ public final class FunctionalDependencyManager {
             SortedSet<FunctionalDependency> functionalDependencySet,
             List<Column> columnList
     ) {
-        var allColumnIdSet = columnList.stream()
+        final var allColumnIdSet = columnList.stream()
                 .flatMap(column -> IdentificationNumberCalculator.columnToIdStream(column, false))
                 .collect(Collectors.toSet());
         return functionalDependencySet.stream()
                 .map(fd -> {
-                    var newLeft = getValidLeftHandSide(fd.left(), allColumnIdSet);
-                    var newRight = getValidRightHandSide(fd.right(), allColumnIdSet);
+                    final var newLeft = getValidLeftHandSide(fd.left(), allColumnIdSet);
+                    final var newRight = getValidRightHandSide(fd.right(), allColumnIdSet);
                     return new FunctionalDependency(newLeft, newRight);
                 })
                 .filter(fd -> !fd.left().isEmpty())
@@ -47,7 +47,7 @@ public final class FunctionalDependencyManager {
         // Da Spalten eigentlich nicht gespalten werden, wird dieser Fall nicht beachtet.
         // (Können ColumnNodes gespalten werden?)
 
-        var predToIdPartMap = allColumnIdSet.stream()
+        final var predToIdPartMap = allColumnIdSet.stream()
                 .filter(id -> id instanceof IdPart idp && idp.splitType().equals(MergeOrSplitType.Xor)
                         || id instanceof IdMerge)
                 .flatMap(id -> switch (id) {
@@ -60,11 +60,11 @@ public final class FunctionalDependencyManager {
                 })
                 .collect(Collectors.toMap(Pair::first, Pair::second));
 
-        var newLeftHandSide = leftHandSide.stream()
+        final var newLeftHandSide = leftHandSide.stream()
                 .map(id -> predToIdPartMap.getOrDefault(id, id))
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var criticalIdSet = newLeftHandSide.stream()
+        final var criticalIdSet = newLeftHandSide.stream()
                 .filter(id -> !allColumnIdSet.contains(id))
                 .collect(Collectors.toSet());
         if (criticalIdSet.isEmpty()) {
@@ -74,12 +74,12 @@ public final class FunctionalDependencyManager {
     }
 
     private static SortedSet<Id> getValidRightHandSide(SortedSet<Id> rightHandSide, Set<Id> allColumnIdSet) {
-        var predToIdPartMap = allColumnIdSet.stream()
+        final var predToIdPartMap = allColumnIdSet.stream()
                 .filter(id -> id instanceof IdPart)
                 .map(id -> (IdPart) id)
                 .collect(Collectors.toMap(IdPart::predecessorId, idp -> (Id) idp));
 
-        var validIdMerge = allColumnIdSet.stream()
+        final var validIdMerge = allColumnIdSet.stream()
                 .filter(id -> id instanceof IdMerge)
                 .map(id -> (IdMerge) id)
                 .filter(idm -> rightHandSide.contains(idm.predecessorId1()) && rightHandSide.contains(idm.predecessorId2()))
@@ -95,9 +95,9 @@ public final class FunctionalDependencyManager {
     }
 
     public static Schema transClosure(Schema schema) {
-        var newTableSet = schema.tableSet().stream()
+        final var newTableSet = schema.tableSet().stream()
                 .map(t -> {
-                    var newFdSet = transClosure(t.functionalDependencySet());
+                    final var newFdSet = transClosure(t.functionalDependencySet());
                     if (newFdSet.equals(t.functionalDependencySet())) {
                         return t;
                     }
@@ -126,7 +126,7 @@ public final class FunctionalDependencyManager {
         return fdSet.stream()
                 .map(FunctionalDependency::left)
                 .flatMap(attrSet -> {
-                    var attrClosure = attributeClosure(attrSet, fdSet).stream()
+                    final var attrClosure = attributeClosure(attrSet, fdSet).stream()
                             .filter(id -> !attrSet.contains(id))
                             .collect(Collectors.toCollection(TreeSet::new));
                     if (groupRightSide) {
@@ -143,7 +143,7 @@ public final class FunctionalDependencyManager {
     public static SortedSet<Id> attributeClosure(SortedSet<Id> forColumnIdSet, SortedSet<FunctionalDependency> fdSet) {
         return StreamEx
                 .iterate(forColumnIdSet, acc -> {
-                    var newAttributes = fdSet.stream()
+                    final var newAttributes = fdSet.stream()
                             .filter(fd -> acc.containsAll(fd.left()))
                             .flatMap(fd -> fd.right().stream());
                     return SSet.concat(acc, newAttributes);
@@ -155,13 +155,13 @@ public final class FunctionalDependencyManager {
     }
 
     public static boolean membership(FunctionalDependency fd, SortedSet<FunctionalDependency> fdSet) {
-        var attrClosure = attributeClosure(fd.left(), fdSet);
+        final var attrClosure = attributeClosure(fd.left(), fdSet);
         return attrClosure.containsAll(fd.right());
     }
 
     public static SortedSet<FunctionalDependency> minimalCover(SortedSet<FunctionalDependency> fdSet) {
         return SSet.foldLeft(fdSet, fdSet, (acc, fd) -> {
-            var accWithoutFd = acc.stream()
+            final var accWithoutFd = acc.stream()
                     .filter(f -> !f.equals(fd))
                     .collect(Collectors.toCollection(TreeSet::new));
             if (membership(fd, accWithoutFd)) {

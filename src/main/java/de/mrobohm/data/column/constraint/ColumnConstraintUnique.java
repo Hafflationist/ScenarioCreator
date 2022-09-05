@@ -41,12 +41,12 @@ public sealed class ColumnConstraintUnique implements ColumnConstraint permits C
 
     @Contract(pure = true)
     private <T> double kickedRatio(List<Value> values, Function<String, T> converter) {
-        var distinctValuesCount = values
+        final var distinctValuesCount = values
                 .stream()
                 .map(v -> converter.apply(v.content()))
                 .distinct()
                 .count();
-        var valuesCount = values.size();
+        final var valuesCount = values.size();
         return (double) (valuesCount - distinctValuesCount) / valuesCount;
     }
 }

@@ -36,7 +36,7 @@ public class ChangeDataType implements ColumnTransformation {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnLeaf!");
         }
 
-        var newDataType = generateNewDataType(leaf.dataType(), random);
+        final var newDataType = generateNewDataType(leaf.dataType(), random);
         return List.of(
                 leaf
                         .withDataType(newDataType)
@@ -45,7 +45,7 @@ public class ChangeDataType implements ColumnTransformation {
     }
 
     private DataType generateNewDataType(DataType dt, Random random) {
-        var newDte = Stream
+        final var newDte = Stream
                 .generate(() -> DataTypeEnum.getRandom(random))
                 .dropWhile(proposal -> !dt.dataTypeEnum().isSmallerThan(proposal))
                 .findFirst()
@@ -60,11 +60,11 @@ public class ChangeDataType implements ColumnTransformation {
     }
 
     private boolean isValid(Column column) {
-        var constraintSet = column.constraintSet();
-        var noPrimaryKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
-        var noForeignKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
-        var noForeignKeyInverse = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
-        var canBeWidened = column instanceof ColumnLeaf leaf && leaf.dataType().dataTypeEnum() != DataTypeEnum.NVARCHAR;
+        final var constraintSet = column.constraintSet();
+        final var noPrimaryKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey);
+        final var noForeignKey = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKey);
+        final var noForeignKeyInverse = constraintSet.stream().noneMatch(c -> c instanceof ColumnConstraintForeignKeyInverse);
+        final var canBeWidened = column instanceof ColumnLeaf leaf && leaf.dataType().dataTypeEnum() != DataTypeEnum.NVARCHAR;
         return noPrimaryKey && noForeignKey && noForeignKeyInverse && canBeWidened;
     }
 }

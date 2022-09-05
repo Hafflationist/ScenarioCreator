@@ -19,7 +19,7 @@ public enum DataTypeEnum {
     // TODO: Add more
 
     public static DataTypeEnum getRandom(Random random) {
-        var rnd = random.nextInt(0, 10);
+        final var rnd = random.nextInt(0, 10);
         return switch (rnd) {
             case 0 -> DataTypeEnum.FLOAT16;
             case 1 -> DataTypeEnum.FLOAT32;

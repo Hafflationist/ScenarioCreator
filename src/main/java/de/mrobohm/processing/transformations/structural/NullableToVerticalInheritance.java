@@ -40,28 +40,28 @@ public class NullableToVerticalInheritance implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column!");
+        final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column!");
         if (!hasNullableColumns(table)) {
             throw exception;
         }
 
-        var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
-        var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList()).stream().map(Column::id).toList();
-        var newIds = idGenerator.apply(primaryKeyColumnList.size() + 4);
-        var primaryKeyColumnToNewId = Stream
+        final var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
+        final var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList()).stream().map(Column::id).toList();
+        final var newIds = idGenerator.apply(primaryKeyColumnList.size() + 4);
+        final var primaryKeyColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
                 .limit(primaryKeyColumnList.size())
                 .collect(Collectors.toMap(primaryKeyColumnList::get, idx -> newIds[idx]));
 
-        var newIdComplex = new NewIdComplex(
+        final var newIdComplex = new NewIdComplex(
                 newIds[newIds.length - 4],
                 newIds[newIds.length - 3],
                 newIds[newIds.length - 2],
                 newIds[newIds.length - 1],
                 primaryKeyColumnToNewId
         );
-        var newBaseTable = createBaseTable(table, extractableColumnList, newIdComplex);
-        var newDerivingTable = createDerivingTable(
+        final var newBaseTable = createBaseTable(table, extractableColumnList, newIdComplex);
+        final var newDerivingTable = createDerivingTable(
                 newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
         );
         return SSet.of(newBaseTable, newDerivingTable);
@@ -73,10 +73,10 @@ public class NullableToVerticalInheritance implements TableTransformation {
         }
         assert newIdComplex.primaryKeyColumnToNewId().containsKey(column.id())
                 : "Map should contain an id for every primary key column!";
-        var newConstraint = new ColumnConstraintForeignKeyInverse(
+        final var newConstraint = new ColumnConstraintForeignKeyInverse(
                 newIdComplex.primaryKeyColumnToNewId().get(column.id()), SSet.of()
         );
-        var newConstraintSet = StreamExtensions
+        final var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .collect(Collectors.toCollection(TreeSet::new));
         return switch (column) {
@@ -87,22 +87,22 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList, NewIdComplex newIdComplex) {
-        var newColumnList = originalTable.columnList().stream()
+        final var newColumnList = originalTable.columnList().stream()
                 .filter(c -> !extractableColumnList.contains(c))
                 .map(c -> addForeignIfPrimaryKey(c, newIdComplex))
                 .toList();
-        var newId = new IdPart(originalTable.id(), 0, MergeOrSplitType.Other);
+        final var newId = new IdPart(originalTable.id(), 0, MergeOrSplitType.Other);
 
         if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
-            var newPrimaryColumnConstraintSet = SSet.of(
+            final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyConstraintGroupId()),
                     new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId(), SSet.of())
             );
-            var newPrimaryColumn = NewTableBase.createNewIdColumn(
+            final var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyColumnId(),
                     originalTable.name(),
                     newPrimaryColumnConstraintSet);
-            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+            final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                     originalTable.functionalDependencySet(), newColumnList
             );
             return originalTable
@@ -110,7 +110,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList())
                     .withFunctionalDependencySet(newFunctionalDependencySet);
         }
-        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 originalTable.functionalDependencySet(), newColumnList
         );
         return originalTable
@@ -123,12 +123,12 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (!column.containsConstraint(ColumnConstraintPrimaryKey.class)) {
             return column;
         }
-        var newConstraint = new ColumnConstraintForeignKey(column.id(), SSet.of());
-        var newConstraintSet = StreamExtensions
+        final var newConstraint = new ColumnConstraintForeignKey(column.id(), SSet.of());
+        final var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .filter(c -> !(c instanceof ColumnConstraintForeignKeyInverse))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var newId = newIdComplex.primaryKeyColumnToNewId.get(column.id());
+        final var newId = newIdComplex.primaryKeyColumnToNewId.get(column.id());
         assert newId != null;
         return switch (column) {
             case ColumnLeaf leaf -> leaf
@@ -148,29 +148,29 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (!(baseTable.id() instanceof IdPart baseTableIdPart)) {
             throw new RuntimeException();
         }
-        var newId = new IdPart(
+        final var newId = new IdPart(
                 baseTableIdPart.predecessorId(),
                 baseTableIdPart.extensionNumber() + 1,
                 MergeOrSplitType.Other
         );
         // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
-        var newName = LinguisticUtils.merge(
+        final var newName = LinguisticUtils.merge(
                 baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random
         );
         if (generateSurrogateKeys) {
             // In this case a surrogate key and column must be generated
-            var newPrimaryColumnConstraintSet = SSet.of(
+            final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyDerivingConstraintGroupId()),
                     new ColumnConstraintForeignKey(newIdComplex.primaryKeyColumnId(), SSet.of())
             );
-            var newPrimaryColumn = NewTableBase.createNewIdColumn(
+            final var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyDerivingColumnId(),
                     newName,
                     newPrimaryColumnConstraintSet);
-            var newColumnList = Stream
+            final var newColumnList = Stream
                     .concat(Stream.of(newPrimaryColumn), extractableColumnList.stream())
                     .toList();
-            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+            final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                     baseTable.functionalDependencySet(), newColumnList
             );
             return baseTable
@@ -180,12 +180,12 @@ public class NullableToVerticalInheritance implements TableTransformation {
                     .withFunctionalDependencySet(newFunctionalDependencySet);
         } else {
             // otherwise we take the primary key columns (with reassigned id and modified constraints)
-            var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
+            final var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
                     .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex));
-            var newColumnList = Stream
+            final var newColumnList = Stream
                     .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
                     .toList();
-            var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+            final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                     baseTable.functionalDependencySet(), newColumnList
             );
             return baseTable
@@ -203,13 +203,13 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private List<Column> chooseExtendingColumns(List<Column> columnList, Random random) {
-        var candidateColumnList = columnList.stream()
+        final var candidateColumnList = columnList.stream()
                 .filter(column -> column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey))
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
-        var num = random.nextInt(1, candidateColumnList.size() + 1);
-        var runtimeException = new RuntimeException("Should not happen! (BUG)");
+        final var num = random.nextInt(1, candidateColumnList.size() + 1);
+        final var runtimeException = new RuntimeException("Should not happen! (BUG)");
         return StreamExtensions
                 .pickRandomOrThrowMultiple(candidateColumnList.stream(), num, runtimeException, random)
                 .toList();

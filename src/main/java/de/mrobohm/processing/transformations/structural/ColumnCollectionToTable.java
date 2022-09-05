@@ -30,22 +30,22 @@ public class ColumnCollectionToTable implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
+        final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
 
-        var columnCollectionList = table.columnList().stream()
+        final var columnCollectionList = table.columnList().stream()
                 .filter(c -> c instanceof ColumnCollection)
                 .toList();
-        var column = StreamExtensions.pickRandomOrThrow(columnCollectionList.stream(), exception, random);
+        final var column = StreamExtensions.pickRandomOrThrow(columnCollectionList.stream(), exception, random);
         if (!(column instanceof ColumnCollection collection)) {
             throw new RuntimeException("Should never happen");
         }
 
-        var newIdArray = idGenerator.apply(3);
-        var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
-        var newTable = NewTableBase.createNewTable(
+        final var newIdArray = idGenerator.apply(3);
+        final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
+        final var newTable = NewTableBase.createNewTable(
                 table, column.name(), collection.columnList(), newIds, false
         );
-        var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
+        final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
         return SSet.of(newTable, modifiedTable);
     }
 

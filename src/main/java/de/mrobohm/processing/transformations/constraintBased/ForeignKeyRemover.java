@@ -35,7 +35,7 @@ public class ForeignKeyRemover implements ColumnTransformation {
             throw new TransformationCouldNotBeExecutedException("No foreign key constraint found! Expected a column with a foreign key constraint!");
         }
 
-        var newConstraintSet = column.constraintSet().stream()
+        final var newConstraintSet = column.constraintSet().stream()
                 .filter(c -> !(c instanceof ColumnConstraintForeignKey))
                 .collect(Collectors.toCollection(TreeSet::new));
 

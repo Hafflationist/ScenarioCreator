@@ -18,8 +18,8 @@ final class TreeDataOperator {
         return switch (root) {
             case TreeLeaf ignore -> root;
             case TreeNode<TContent> tn -> {
-                var childSet = tn.childSet();
-                var newChildSet = childSet.stream()
+                final var childSet = tn.childSet();
+                final var newChildSet = childSet.stream()
                         .map(child -> replaceTreeEntity(child, oldEntity, newEntity))
                         .collect(Collectors.toCollection(TreeSet::new));
 

@@ -49,18 +49,18 @@ public final class MergeColumns implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
-        var validTableStream = schema.tableSet().stream().filter(this::checkTable);
-        var table = StreamExtensions.pickRandomOrThrow(validTableStream, exception, random);
-        var pair = getMergeableColumns(table, random);
-        var newColumn = generateNewColumn(pair.first(), pair.second(), random);
-        var filteredOldColumnStream = getNewColumnStream(table, pair);
+        final var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
+        final var validTableStream = schema.tableSet().stream().filter(this::checkTable);
+        final var table = StreamExtensions.pickRandomOrThrow(validTableStream, exception, random);
+        final var pair = getMergeableColumns(table, random);
+        final var newColumn = generateNewColumn(pair.first(), pair.second(), random);
+        final var filteredOldColumnStream = getNewColumnStream(table, pair);
 
-        var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
-        var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        final var newColumnList = StreamExtensions.prepend(filteredOldColumnStream, newColumn).toList();
+        final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 table.functionalDependencySet(), newColumnList
         );
-        var newTableSet = StreamExtensions
+        final var newTableSet = StreamExtensions
                 .replaceInStream(
                         schema.tableSet().stream(),
                         table,
@@ -69,7 +69,7 @@ public final class MergeColumns implements SchemaTransformation {
                                 .withFunctionalDependencySet(newFunctionalDependencySet)
                 )
                 .map(t -> {
-                    var ncl = getNewColumnStream(t, pair).toList();
+                    final var ncl = getNewColumnStream(t, pair).toList();
                     if (ncl.equals(t.columnList())) {
                         return t;
                     }
@@ -84,7 +84,7 @@ public final class MergeColumns implements SchemaTransformation {
                 .filter(column -> !column.equals(mergedColumns.first()))
                 .filter(column -> !column.equals(mergedColumns.second()))
                 .map(column -> {
-                    var newConstraintSet = column.constraintSet().stream()
+                    final var newConstraintSet = column.constraintSet().stream()
                             .filter(c -> switch (c) {
                                 case ColumnConstraintForeignKey ccfk ->
                                         !ccfk.foreignColumnId().equals(mergedColumns.first().id())
@@ -107,36 +107,36 @@ public final class MergeColumns implements SchemaTransformation {
 
 
     private Pair<ColumnLeaf, ColumnLeaf> getMergeableColumns(Table table, Random random) {
-        var validColumnStream = getValidColumns(table.columnList());
-        var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
-        var twoColumns = StreamExtensions.pickRandomOrThrowMultiple(
+        final var validColumnStream = getValidColumns(table.columnList());
+        final var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
+        final var twoColumns = StreamExtensions.pickRandomOrThrowMultiple(
                 validColumnStream.stream(), 2, exception, random
         );
-        var twoColumnsList = twoColumns.toList();
-        var firstColumn = twoColumnsList.get(0);
-        var secondColumn = twoColumnsList.get(1);
+        final var twoColumnsList = twoColumns.toList();
+        final var firstColumn = twoColumnsList.get(0);
+        final var secondColumn = twoColumnsList.get(1);
         return new Pair<>(firstColumn, secondColumn);
     }
 
     private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Random random) {
         // TODO this method can be improved dramatically!
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
-        var newId = new IdMerge(columnA.id(), columnB.id(), MergeOrSplitType.And);
-        var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
-        var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
-        var newValueSet = columnA.valueSet().stream()
+        final var newId = new IdMerge(columnA.id(), columnB.id(), MergeOrSplitType.And);
+        final var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);
+        final var newDataType = new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean());
+        final var newValueSet = columnA.valueSet().stream()
                 .flatMap(valueA -> columnB.valueSet().stream()
                         .map(valueB -> valueA + "|" + valueB)
                         .map(Value::new))
                 .collect(Collectors.toCollection(TreeSet::new));
         // numerical distributions can be ignored, because their information cannot be bundled
-        var newContext = ColumnContext.getDefault();
+        final var newContext = ColumnContext.getDefault();
         return new ColumnLeaf(newId, newName, newDataType, newValueSet, newContext, SSet.of());
     }
 
     @Override
     public boolean isExecutable(Schema schema) {
-        var tableSet = schema.tableSet();
+        final var tableSet = schema.tableSet();
         return tableSet.stream()
                 .anyMatch(this::checkTable);
     }
@@ -144,7 +144,7 @@ public final class MergeColumns implements SchemaTransformation {
     private boolean checkTable(Table table) {
         if (table.columnList().size() < 2) return false;
 
-        var validColumnsCount = getValidColumns(table.columnList()).size();
+        final var validColumnsCount = getValidColumns(table.columnList()).size();
         return validColumnsCount >= 2;
     }
 

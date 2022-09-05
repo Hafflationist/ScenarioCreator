@@ -17,19 +17,19 @@ class SSetTest {
     })
     void powerSet(int size) {
         // --- Arrange
-        var random = new Random();
-        var set = random.ints()
+        final var random = new Random();
+        final var set = random.ints()
                 .distinct()
                 .limit(size)
                 .boxed()
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Act
-        var powerSet = SSet.powerSet(set);
+        final var powerSet = SSet.powerSet(set);
 
         // --- Assert
         Assertions.assertEquals(0b1 << set.size(), powerSet.size());
-        var validElements = powerSet.stream().allMatch(set::containsAll);
+        final var validElements = powerSet.stream().allMatch(set::containsAll);
         Assertions.assertTrue(validElements);
     }
 
@@ -40,15 +40,15 @@ class SSetTest {
     })
     void foldLeft(int size) {
         // --- Arrange
-        var random = new Random();
-        var set = random.ints()
+        final var random = new Random();
+        final var set = random.ints()
                 .distinct()
                 .limit(size)
                 .boxed()
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Act
-        var sum = SSet.foldLeft(set, 0, Integer::sum);
+        final var sum = SSet.foldLeft(set, 0, Integer::sum);
 
         // --- Assert
         Assertions.assertEquals(set.stream().mapToInt(x -> x).sum(), sum);

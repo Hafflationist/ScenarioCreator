@@ -28,9 +28,9 @@ public final class SSet {
 
     public static <T> Set<SortedSet<T>> powerSet(SortedSet<T> set) {
         assert set.size() <= 22 : "Calculating the power set would exceed the capabilities of my computer. : (";
-        var list = set.stream().toList();
+        final var list = set.stream().toList();
 
-        var possibleIdxList = Stream
+        final var possibleIdxList = Stream
                 .iterate(0, x -> x + 1)
                 .limit(list.size())
                 .toList();
@@ -48,9 +48,9 @@ public final class SSet {
         if (set.isEmpty()){
             return seed;
         }
-        var head = set.first();
-        var tail = set.stream().skip(1).collect(Collectors.toCollection(TreeSet::new));
-        var newSeed = folder.apply(seed, head);
+        final var head = set.first();
+        final var tail = set.stream().skip(1).collect(Collectors.toCollection(TreeSet::new));
+        final var newSeed = folder.apply(seed, head);
         return foldLeft(tail, newSeed, folder);
         // in the case of stack problems (TCO won't be performed in JAVA):
 //        U result = seed;

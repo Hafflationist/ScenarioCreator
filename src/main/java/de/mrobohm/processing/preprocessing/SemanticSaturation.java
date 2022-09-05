@@ -28,7 +28,7 @@ public final class SemanticSaturation {
     }
 
     private static SortedSet<StringPlus> gatherAllNames(Schema schema) {
-        var schemaName = schema.name();
+        final var schemaName = schema.name();
         return Stream
                 .concat(
                         Stream.of(schemaName),
@@ -37,7 +37,7 @@ public final class SemanticSaturation {
     }
 
     private static Stream<StringPlus> gatherAllNames(Table table) {
-        var tableName = table.name();
+        final var tableName = table.name();
         return Stream.concat(
                 Stream.of(tableName),
                 table.columnList().stream().flatMap(SemanticSaturation::gatherAllNames));
@@ -55,7 +55,7 @@ public final class SemanticSaturation {
     }
 
     public Schema saturateSemantically(Schema schema) {
-        var allNames = gatherAllNames(schema).stream()
+        final var allNames = gatherAllNames(schema).stream()
                 .flatMap(s -> LinguisticUtils.tokenize(s).stream())
                 .collect(Collectors.toCollection(TreeSet::new));
 
@@ -69,7 +69,7 @@ public final class SemanticSaturation {
         return switch (entity.name()) {
             case StringPlusSemantical ignore -> entity;
             case StringPlusNaked oldName -> {
-                var newName = StringPlusSemantical.of(
+                final var newName = StringPlusSemantical.of(
                         oldName,
                         s -> _corpus.estimateSynsetId(s, context)
                 );

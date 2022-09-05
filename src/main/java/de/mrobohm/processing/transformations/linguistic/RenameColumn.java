@@ -43,7 +43,7 @@ public class RenameColumn implements ColumnTransformation {
         if (!hasMeaningfulName(column)) {
             throw TRANSFORMATION_EXCEPTION;
         }
-        var newName = getNewName(column.name(), random);
+        final var newName = getNewName(column.name(), random);
         return switch (column) {
             case ColumnLeaf c -> List.of(c.withName(newName));
             case ColumnNode c -> List.of(c.withName(newName));
@@ -53,7 +53,7 @@ public class RenameColumn implements ColumnTransformation {
 
     @NotNull
     private StringPlus getNewName(StringPlus name, Random random) {
-        var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
+        final var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
             return new StringPlusNaked("Spalte" + random.nextInt(), Language.Technical);
         }

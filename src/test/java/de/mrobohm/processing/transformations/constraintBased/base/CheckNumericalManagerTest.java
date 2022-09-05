@@ -26,13 +26,13 @@ class CheckNumericalManagerTest {
     @Test
     void merge() {
         // --- Arrange
-        var nd1 = new NumericalDistribution(1.0, Map.of(
+        final var nd1 = new NumericalDistribution(1.0, Map.of(
                 1, 0.2,
                 2, 0.3,
                 3, 0.4,
                 4, 0.5
         ));
-        var nd2 = new NumericalDistribution(0.5, Map.of(
+        final var nd2 = new NumericalDistribution(0.5, Map.of(
                 5, 0.8,
                 6, 0.7,
                 7, 0.6,
@@ -40,10 +40,10 @@ class CheckNumericalManagerTest {
         ));
 
         // --- Act
-        var newNd = CheckNumericalManager.merge(nd1, nd2);
+        final var newNd = CheckNumericalManager.merge(nd1, nd2);
 
         // --- Assert
-        var expectedNd = new NumericalDistribution(0.5, Map.of(
+        final var expectedNd = new NumericalDistribution(0.5, Map.of(
                 1, 0.2,
                 2, 0.2,
                 3, 0.3,
@@ -59,7 +59,7 @@ class CheckNumericalManagerTest {
     @Test
     void normalize() {
         // --- Arrange
-        var nd = new NumericalDistribution(1.0, Map.of(
+        final var nd = new NumericalDistribution(1.0, Map.of(
                 1, 0.5,
                 2, 0.3,
                 3, 1.5,
@@ -67,10 +67,10 @@ class CheckNumericalManagerTest {
         ));
 
         // --- Act
-        var ndNormalized = CheckNumericalManager.normalize(nd);
+        final var ndNormalized = CheckNumericalManager.normalize(nd);
 
         // -- Assert
-        var expectedNdNormalized = new NumericalDistribution(1.0, Map.of(
+        final var expectedNdNormalized = new NumericalDistribution(1.0, Map.of(
                 1, 0.5 / (0.5 + 0.3 + 1.5 + 0.8),
                 2, 0.3 / (0.5 + 0.3 + 1.5 + 0.8),
                 3, 1.5 / (0.5 + 0.3 + 1.5 + 0.8),

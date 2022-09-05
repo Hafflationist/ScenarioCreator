@@ -27,33 +27,33 @@ class GroupColumnLeafsToNodeNestedTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
-        var targetColumn = new ColumnNode(
+        final var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
+        final var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
+        final var targetColumn = new ColumnNode(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
                 SSet.of(), false
         );
-        var idGenerator = StructuralTestingUtils.getIdGenerator(8);
-        var transformation = new GroupColumnLeafsToNodeNested();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(8);
+        final var transformation = new GroupColumnLeafsToNodeNested();
 
         // --- Act
-        var newColumnList = transformation.transform(targetColumn, idGenerator, new Random());
+        final var newColumnList = transformation.transform(targetColumn, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());
         Assertions.assertTrue(newColumnList.stream().toList().get(0) instanceof ColumnNode);
-        var newColumn = (ColumnNode) newColumnList.stream().toList().get(0);
+        final var newColumn = (ColumnNode) newColumnList.stream().toList().get(0);
         Assertions.assertEquals(targetColumn.id(), newColumn.id());
         Assertions.assertEquals(targetColumn.name(), newColumn.name());
         Assertions.assertNotEquals(targetColumn.columnList(), newColumn.columnList());
         Assertions.assertEquals(targetColumn.constraintSet(), newColumn.constraintSet());
         Assertions.assertEquals(targetColumn.isNullable(), newColumn.isNullable());
 
-        var flattenedColumnSet = newColumn.columnList().stream().flatMap(column -> switch (column) {
+        final var flattenedColumnSet = newColumn.columnList().stream().flatMap(column -> switch (column) {
             case ColumnLeaf leaf -> Stream.of(leaf);
             case ColumnNode node -> node.columnList().stream();
             case ColumnCollection col -> col.columnList().stream();
@@ -65,26 +65,26 @@ class GroupColumnLeafsToNodeNestedTest {
     @Test
     void getCandidates() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidColumn = new ColumnNode(new IdSimple(2), name, List.of(columnLeaf), SSet.of(), false);
-        var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
-        var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
-        var validColumn1 = new ColumnNode(
+        final var invalidColumn = new ColumnNode(new IdSimple(2), name, List.of(columnLeaf), SSet.of(), false);
+        final var columnLeafGroupable1 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(3));
+        final var columnLeafGroupable2 = columnLeaf.withConstraintSet(SSet.of()).withId(new IdSimple(4));
+        final var validColumn1 = new ColumnNode(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
                 SSet.of(), false
         );
-        var validColumn2 = new ColumnCollection(
+        final var validColumn2 = new ColumnCollection(
                 new IdSimple(6), name, List.of(columnLeaf, columnLeafGroupable1, columnLeafGroupable2),
                 SSet.of(), false
         );
-        var columnList = List.of((Column) invalidColumn, validColumn1, validColumn2);
-        var transformation = new GroupColumnLeafsToNodeNested();
+        final var columnList = List.of((Column) invalidColumn, validColumn1, validColumn2);
+        final var transformation = new GroupColumnLeafsToNodeNested();
 
         // --- Act
-        var newColumnList = transformation.getCandidates(columnList);
+        final var newColumnList = transformation.getCandidates(columnList);
 
         // --- Assert
         Assertions.assertEquals(2, newColumnList.size());

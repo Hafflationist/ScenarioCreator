@@ -19,17 +19,17 @@ class BasedConstraintBasedBaseTest {
 
 
     private static EntityMock em(Id id) {
-        var name = new StringPlusNaked(id.toString(), Language.Technical);
+        final var name = new StringPlusNaked(id.toString(), Language.Technical);
         return new EntityMock(name, id);
     }
 
     @Test
     void findCorrespondingEntityPairs() {
         // --- Arrange
-        var merge56 = em(
+        final var merge56 = em(
                 new IdMerge(new IdSimple(5), new IdSimple(6), MergeOrSplitType.Other)
         );
-        var entityStream1 = Stream.<Entity>of(
+        final var entityStream1 = Stream.<Entity>of(
                 em(new IdSimple(-1)),
                 em(new IdSimple(2)),
                 em(new IdSimple(3)),
@@ -39,10 +39,10 @@ class BasedConstraintBasedBaseTest {
                 em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)),
                 em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other))
         );
-        var merge34 = em(
+        final var merge34 = em(
                 new IdMerge(new IdSimple(3), new IdSimple(4), MergeOrSplitType.Other)
         );
-        var entityStream2 = Stream.<Entity>of(
+        final var entityStream2 = Stream.<Entity>of(
                 em(new IdSimple(1)),
                 em(new IdSimple(2)),
                 merge34,
@@ -54,12 +54,12 @@ class BasedConstraintBasedBaseTest {
         );
 
         // --- Act
-        var correspondenceSet = BasedConstraintBasedBase
+        final var correspondenceSet = BasedConstraintBasedBase
                 .findCorrespondingEntityPairs(entityStream1, entityStream2)
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Assert
-        var expectedCorrespondenceSet = SSet.of(
+        final var expectedCorrespondenceSet = SSet.of(
                 new Pair<Entity, Entity>(em(new IdSimple(2)), em(new IdSimple(2))),
                 new Pair<Entity, Entity>(em(new IdSimple(3)), merge34),
                 new Pair<Entity, Entity>(em(new IdSimple(4)), merge34),
@@ -77,26 +77,26 @@ class BasedConstraintBasedBaseTest {
     @Test
     void findCorrespondingEntityPairs2() {
         // --- Arrange
-        var entityStream1 = Stream.<Entity>of(
+        final var entityStream1 = Stream.<Entity>of(
                 em(new IdPart(new IdSimple(7), 0, MergeOrSplitType.Other)),
                 em(new IdPart(new IdSimple(7), 1, MergeOrSplitType.Other)),
                 em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)),
                 em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other))
         );
-        var merge78 = em(
+        final var merge78 = em(
                 new IdMerge(new IdSimple(7), new IdSimple(8), MergeOrSplitType.Other)
         );
-        var entityStream2 = Stream.<Entity>of(
+        final var entityStream2 = Stream.<Entity>of(
                 merge78
         );
 
         // --- Act
-        var correspondenceSet = BasedConstraintBasedBase
+        final var correspondenceSet = BasedConstraintBasedBase
                 .findCorrespondingEntityPairs(entityStream1, entityStream2)
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Assert
-        var expectedCorrespondenceSet = SSet.of(
+        final var expectedCorrespondenceSet = SSet.of(
                 new Pair<Entity, Entity>(em(new IdPart(new IdSimple(7), 0, MergeOrSplitType.Other)), merge78),
                 new Pair<Entity, Entity>(em(new IdPart(new IdSimple(7), 1, MergeOrSplitType.Other)), merge78),
                 new Pair<Entity, Entity>(em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)), merge78),

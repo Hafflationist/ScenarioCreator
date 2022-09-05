@@ -16,12 +16,12 @@ class AddTypoToSchemaNameTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var schema = new Schema(new IdSimple(1), name, Context.getDefault(), SSet.of());
-        var transformation = new AddTypoToSchemaName();
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var schema = new Schema(new IdSimple(1), name, Context.getDefault(), SSet.of());
+        final var transformation = new AddTypoToSchemaName();
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         Assertions.assertEquals(schema.id(), newSchema.id());

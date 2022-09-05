@@ -33,18 +33,18 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Column invalid! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
+        final var exception = new TransformationCouldNotBeExecutedException("Column invalid! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
         if (!(column instanceof ColumnLeaf columnLeaf)) {
             throw exception;
         }
-        var newUnitOfMeasure = transformUnitOfMeasure(columnLeaf.context().unitOfMeasure(), random);
-        var newColumn = columnLeaf.withContext(columnLeaf.context().withUnitOfMeasure(newUnitOfMeasure));
+        final var newUnitOfMeasure = transformUnitOfMeasure(columnLeaf.context().unitOfMeasure(), random);
+        final var newColumn = columnLeaf.withContext(columnLeaf.context().withUnitOfMeasure(newUnitOfMeasure));
         return Collections.singletonList(newColumn);
     }
 
     @NotNull
     private UnitOfMeasure transformUnitOfMeasure(UnitOfMeasure unitOfMeasure, Random random) {
-        var unitOfMeasureStream = Stream.of(UnitOfMeasure.Exa,
+        final var unitOfMeasureStream = Stream.of(UnitOfMeasure.Exa,
                 UnitOfMeasure.Tera,
                 UnitOfMeasure.Giga,
                 UnitOfMeasure.Mega,

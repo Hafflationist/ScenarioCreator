@@ -27,7 +27,7 @@ public final class EntityHandler {
                         Entity::name,
                         e1 -> entitySet2.stream()
                                 .filter(e2 -> {
-                                    var e1IdSet = IdentificationNumberCalculator
+                                    final var e1IdSet = IdentificationNumberCalculator
                                             .extractIdSimple(e1.id())
                                             .collect(Collectors.toSet());
                                     return IdentificationNumberCalculator
@@ -43,18 +43,18 @@ public final class EntityHandler {
             Map<StringPlus, SortedSet<StringPlus>> mapping, BiFunction<StringPlus, StringPlus, Double> diff
     ) {
         // Hier muss noch beachtet werden, was mit doppelt gezählten Differenzen passiert!
-        var deterministicRandom = new Random(0);
+        final var deterministicRandom = new Random(0);
         return mapping.keySet().stream()
                 .mapToDouble(e -> {
-                    var mapped = mapping.get(e);
-                    var concatenatedStringOpt = mapped.stream()
+                    final var mapped = mapping.get(e);
+                    final var concatenatedStringOpt = mapped.stream()
                             .reduce((a, b) -> LinguisticUtils.merge(a, b, deterministicRandom));
                     if (concatenatedStringOpt.isEmpty()) {
                         return 0.0;
                     }
                     // Die Idee hinter dem aktuellen Gewicht: Jedes Element, das über eine 1:1-Korrespondenz hinaus geht,
                     // wird nur in der einen Hälfte berücksichtigt.
-                    var weight = 1.0 + ((mapped.size() - 1.0) / 2.0);
+                    final var weight = 1.0 + ((mapped.size() - 1.0) / 2.0);
                     return weight * diff.apply(e, concatenatedStringOpt.get());
                 })
                 .sum();

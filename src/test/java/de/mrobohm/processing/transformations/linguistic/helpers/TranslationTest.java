@@ -23,16 +23,16 @@ class TranslationTest {
 
     private Translation getTranslation(Map<String, SortedSet<GlobalSynset>> englishSynsetRecord2WordReturn,
                                        SortedSet<EnglishSynset> word2EnglishSynsetReturn) {
-        var languageCorpusMock = new LanguageCorpusMock(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
-        var ulc = new UnifiedLanguageCorpus(
+        final var languageCorpusMock = new LanguageCorpusMock(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
+        final var ulc = new UnifiedLanguageCorpus(
                 Map.of(Language.German, languageCorpusMock, Language.English, languageCorpusMock)
         );
         return new Translation(ulc);
     }
 
     private Translation getTranslation() {
-        var languageCorpusMock = new LanguageCorpusMock(null, null);
-        var ulc = new UnifiedLanguageCorpus(
+        final var languageCorpusMock = new LanguageCorpusMock(null, null);
+        final var ulc = new UnifiedLanguageCorpus(
                 Map.of(Language.German, languageCorpusMock, Language.English, languageCorpusMock)
         );
         return new Translation(ulc);
@@ -41,29 +41,29 @@ class TranslationTest {
     @Test
     void translate() {
         // --- Arrange
-        var validSegment = new StringPlusSemanticalSegment("Katze", SSet.of(new GermanSynset(1)));
-        var invalidSegment = new StringPlusSemanticalSegment("Unsinnnnn", SSet.of());
-        var expectedSegment = new StringPlusSemanticalSegment(
+        final var validSegment = new StringPlusSemanticalSegment("Katze", SSet.of(new GermanSynset(1)));
+        final var invalidSegment = new StringPlusSemanticalSegment("Unsinnnnn", SSet.of());
+        final var expectedSegment = new StringPlusSemanticalSegment(
                 "Cat", SSet.of(new EnglishSynset(2, PartOfSpeech.NOUN))
         );
-        var stringPlus = new StringPlusSemantical(List.of(
+        final var stringPlus = new StringPlusSemantical(List.of(
                 validSegment, invalidSegment
         ), NamingConvention.CAMELCASE);
 
-        var englishSynsetRecord2WordReturn =
+        final var englishSynsetRecord2WordReturn =
                 Map.of(expectedSegment.token(), expectedSegment.gssSet());
         SortedSet<EnglishSynset> word2EnglishSynsetReturn = SSet.of(new EnglishSynset(-1, PartOfSpeech.NOUN));
-        var translation = getTranslation(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
+        final var translation = getTranslation(englishSynsetRecord2WordReturn, word2EnglishSynsetReturn);
 
         // --- Act
-        var newStringPlusOpt = translation.translate(stringPlus, new Random());
+        final var newStringPlusOpt = translation.translate(stringPlus, new Random());
 
         // --- Assert
         Assertions.assertTrue(newStringPlusOpt.isPresent());
-        var newStringPlus = newStringPlusOpt.get();
+        final var newStringPlus = newStringPlusOpt.get();
         Assertions.assertNotEquals(stringPlus, newStringPlus);
         Assertions.assertTrue(newStringPlus instanceof StringPlusSemantical);
-        var newSps = (StringPlusSemantical) newStringPlus;
+        final var newSps = (StringPlusSemantical) newStringPlus;
         Assertions.assertEquals(stringPlus.namingConvention(), newSps.namingConvention());
         Assertions.assertEquals(stringPlus.segmentList().size(), newSps.segmentList().size());
         Assertions.assertEquals(stringPlus.segmentList().get(1), newSps.segmentList().get(1));
@@ -74,11 +74,11 @@ class TranslationTest {
     @Test
     void canBeTranslatedFalseEmptySps() {
         // --- Arrange
-        var stringPlus = new StringPlusSemantical(List.of(), NamingConvention.CAMELCASE);
-        var translation = getTranslation();
+        final var stringPlus = new StringPlusSemantical(List.of(), NamingConvention.CAMELCASE);
+        final var translation = getTranslation();
 
         // --- Act
-        var canBeTranslated = translation.canBeTranslated(stringPlus);
+        final var canBeTranslated = translation.canBeTranslated(stringPlus);
 
         // --- Assert
         Assertions.assertFalse(canBeTranslated);
@@ -87,14 +87,14 @@ class TranslationTest {
     @Test
     void canBeTranslatedFalseInvalidSps() {
         // --- Arrange
-        var stringPlus = new StringPlusSemantical(List.of(
+        final var stringPlus = new StringPlusSemantical(List.of(
                 new StringPlusSemanticalSegment("808", SSet.of()),
                 new StringPlusSemanticalSegment("111", SSet.of())
         ), NamingConvention.CAMELCASE);
-        var translation = getTranslation();
+        final var translation = getTranslation();
 
         // --- Act
-        var canBeTranslated = translation.canBeTranslated(stringPlus);
+        final var canBeTranslated = translation.canBeTranslated(stringPlus);
 
         // --- Assert
         Assertions.assertFalse(canBeTranslated);
@@ -103,14 +103,14 @@ class TranslationTest {
     @Test
     void canBeTranslatedTrue() {
         // --- Arrange
-        var stringPlus = new StringPlusSemantical(List.of(
+        final var stringPlus = new StringPlusSemantical(List.of(
                 new StringPlusSemanticalSegment("katze", SSet.of(new GermanSynset(1))),
                 new StringPlusSemanticalSegment("hugo", SSet.of())
         ), NamingConvention.CAMELCASE);
-        var translation = getTranslation();
+        final var translation = getTranslation();
 
         // --- Act
-        var canBeTranslated = translation.canBeTranslated(stringPlus);
+        final var canBeTranslated = translation.canBeTranslated(stringPlus);
 
         // --- Assert
         Assertions.assertTrue(canBeTranslated);

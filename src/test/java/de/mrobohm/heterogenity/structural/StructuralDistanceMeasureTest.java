@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 class StructuralDistanceMeasureTest {
 
     private String appendSpacesToName(String name) {
-        var spaces = "                             ";
+        final var spaces = "                             ";
         return name + spaces.substring(name.length());
     }
 
@@ -45,23 +45,23 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_BinaryValueToTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
-        var transformation = new BinaryValueToTable();
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
+        final var transformation = new BinaryValueToTable();
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -80,23 +80,23 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_RemoveColumn(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
-        var transformation = new RemoveColumn();
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
+        final var transformation = new RemoveColumn();
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -109,23 +109,23 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_RemoveTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
-        var transformation = new RemoveTable();
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
+        final var transformation = new RemoveTable();
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -137,22 +137,22 @@ class StructuralDistanceMeasureTest {
     @Test
     void calculateDistanceToRootAbsolute_Manual_Grouping() throws IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var columnNode = new ColumnNode(new IdSimple(105), name, columnList, SSet.of(), false);
-        var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
-        var newTable = rootTable.withColumnList(List.of(columnNode));
-        var newSchema = rootSchema.withTableSet(SSet.of(newTable));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var columnNode = new ColumnNode(new IdSimple(105), name, columnList, SSet.of(), false);
+        final var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
+        final var newTable = rootTable.withColumnList(List.of(columnNode));
+        final var newSchema = rootSchema.withTableSet(SSet.of(newTable));
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         System.out.println(appendSpacesToName("Manual_Grouping:") + diffElementary + "\t" + diffTed);
@@ -162,24 +162,24 @@ class StructuralDistanceMeasureTest {
     @Test
     void calculateDistanceToRootAbsolute_Manual_ChangeGrouping() throws IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnNode = new ColumnNode(new IdSimple(105), name, List.of(column4), SSet.of(), false);
-        var columnList = List.of((Column) column1, column2, column3, columnNode);
-        var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
-        var newColumnNode = columnNode.withColumnList(List.of(column3, column4));
-        var newColumnList = List.of((Column) column1, column2, newColumnNode);
-        var newTable = rootTable.withColumnList(newColumnList);
-        var newSchema = rootSchema.withTableSet(SSet.of(newTable));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnNode = new ColumnNode(new IdSimple(105), name, List.of(column4), SSet.of(), false);
+        final var columnList = List.of((Column) column1, column2, column3, columnNode);
+        final var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
+        final var newColumnNode = columnNode.withColumnList(List.of(column3, column4));
+        final var newColumnList = List.of((Column) column1, column2, newColumnNode);
+        final var newTable = rootTable.withColumnList(newColumnList);
+        final var newSchema = rootSchema.withTableSet(SSet.of(newTable));
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         System.out.println(appendSpacesToName("Manual_ChangeGrouping:") + diffElementary + "\t" + diffTed);
@@ -190,26 +190,26 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_ColumnCollectionToTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnCol = new ColumnCollection(new IdSimple(105), name, List.of(column3, column4), SSet.of(), false);
-        var columnList = List.of((Column) column1, column2, columnCol);
-        var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
-        var transformation = new ColumnCollectionToTable();
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnCol = new ColumnCollection(new IdSimple(105), name, List.of(column3, column4), SSet.of(), false);
+        final var columnList = List.of((Column) column1, column2, columnCol);
+        final var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
+        final var transformation = new ColumnCollectionToTable();
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -222,23 +222,23 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_GroupColumnLeafsToNode(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
-        var transformation = new GroupColumnLeafsToNode();
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
+        final var transformation = new GroupColumnLeafsToNode();
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -252,23 +252,23 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_MergeColumns(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("name", Language.Technical);
-        var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        var columnList = List.of((Column) column1, column2, column3, column4);
-        var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
-        var transformation = new MergeColumns(true);
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        final var rootTable = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
+        final var transformation = new MergeColumns(true);
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);
@@ -281,29 +281,29 @@ class StructuralDistanceMeasureTest {
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_TableToColumnCollection(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
-        var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
+        final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
-        var ingestingTable = new Table(
+        final var ingestingTable = new Table(
                 new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of(), SSet.of());
-        var ingestedTable = new Table(
+        final var ingestedTable = new Table(
                 new IdSimple(11), name, List.of(column1, ingestedColumn), Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(ingestingTable, ingestedTable);
-        var rootSchema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(ingestingTable, ingestedTable);
+        final var rootSchema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(rootSchema);
-        var transformation = new TableToColumnCollection(false);
-        var ste = new SingleTransformationExecuter(null);
-        var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var transformation = new TableToColumnCollection(false);
+        final var ste = new SingleTransformationExecuter(null);
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
 
         // --- Act
-        var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
-        var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
+        final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
+        final var diffTed = Ted.calculateDistanceAbsolute(rootSchema, newSchema);
 
         // --- Assert
         IntegrityChecker.assertValidSchema(rootSchema);

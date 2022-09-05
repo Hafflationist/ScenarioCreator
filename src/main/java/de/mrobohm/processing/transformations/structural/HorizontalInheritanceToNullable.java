@@ -58,16 +58,16 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var exception = new TransformationCouldNotBeExecutedException("Given schema did not include horizontal inheritance");
+        final var exception = new TransformationCouldNotBeExecutedException("Given schema did not include horizontal inheritance");
         if (!isExecutable(schema)) {
             throw exception;
         }
 
-        var ip = findDerivingTable(schema.tableSet(), random);
-        var derivationIntegrationResult = integrateDerivation(ip);
-        var oldTableStream = Stream.of(ip.base(), ip.derivation());
+        final var ip = findDerivingTable(schema.tableSet(), random);
+        final var derivationIntegrationResult = integrateDerivation(ip);
+        final var oldTableStream = Stream.of(ip.base(), ip.derivation());
 
-        var newTableSet = StreamExtensions
+        final var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), oldTableStream, derivationIntegrationResult.newTable())
                 .collect(Collectors.toCollection(TreeSet::new));
 
@@ -79,44 +79,44 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     private InheritancePair findDerivingTable(SortedSet<Table> tableSet, Random random) {
-        var ipStream = tableSet.stream()
+        final var ipStream = tableSet.stream()
                 .flatMap(t1 -> tableSet.stream().map(t2 -> new Pair<>(t1, t2)))
                 .map(pair -> new InheritancePair(pair.first(), pair.second()))
                 .filter(this::isDeriving);
-        var ipOptional = StreamExtensions.tryPickRandom(ipStream, random);
+        final var ipOptional = StreamExtensions.tryPickRandom(ipStream, random);
         assert ipOptional.isPresent() : "This should be handled before!";
         return ipOptional.get();
     }
 
     private DerivationIntegrationResult integrateDerivation(InheritancePair ip) {
-        var columnPairStream = ip.derivation().columnList().stream()
+        final var columnPairStream = ip.derivation().columnList().stream()
                 .map(derivationColumn ->
                         new Pair<>(derivationColumn, ip.base().columnList().stream()
                                 .filter(baseColumn -> equalsColumns(derivationColumn, baseColumn))
                                 .findFirst()));
-        var columnStreamShouldAdd = StreamExtensions
+        final var columnStreamShouldAdd = StreamExtensions
                 .partition(
                         columnPairStream,
                         pair -> pair.second().isEmpty()
                 );
 
-        var additionalColumnStream = columnStreamShouldAdd.yes()
+        final var additionalColumnStream = columnStreamShouldAdd.yes()
                 .map(pair -> switch (pair.first()) {
                     case ColumnLeaf leaf -> leaf.withDataType(leaf.dataType().withIsNullable(true));
                     case ColumnNode node -> node.withIsNullable(true);
                     case ColumnCollection col -> col.withIsNullable(true);
                 });
-        var mergeablePairList = columnStreamShouldAdd.no().toList();
-        var mergedColumnStream = mergeablePairList.stream()
+        final var mergeablePairList = columnStreamShouldAdd.no().toList();
+        final var mergedColumnStream = mergeablePairList.stream()
                 .map(pair -> {
                     assert pair.second().isPresent();
-                    var newId = new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
-                    var newConstraintSet = mergeXor(
+                    final var newId = new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
+                    final var newConstraintSet = mergeXor(
                             pair.first().constraintSet(), pair.second().get().constraintSet()
                     );
                     return (Column) switch (pair.first()) {
                         case ColumnLeaf leaf -> {
-                            var newNd = (pair.second().get() instanceof ColumnLeaf)
+                            final var newNd = (pair.second().get() instanceof ColumnLeaf)
                                     ?
                                     CheckNumericalManager.merge(
                                             leaf.context().numericalDistribution(),
@@ -133,17 +133,17 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                         case ColumnCollection col -> col.withId(newId).withConstraintSet(newConstraintSet);
                     };
                 });
-        var newColumnList = Stream.concat(mergedColumnStream, additionalColumnStream).toList();
-        var newFdSet = FunctionalDependencyManager.getValidFdSet(
+        final var newColumnList = Stream.concat(mergedColumnStream, additionalColumnStream).toList();
+        final var newFdSet = FunctionalDependencyManager.getValidFdSet(
                 ip.base.functionalDependencySet(), newColumnList
         );
-        var newTable = ip.base().withColumnList(newColumnList).withFunctionalDependencySet(newFdSet);
+        final var newTable = ip.base().withColumnList(newColumnList).withFunctionalDependencySet(newFdSet);
         // komplett falsch:
-        var idTranslationMap = mergeablePairList.stream()
+        final var idTranslationMap = mergeablePairList.stream()
                 .filter(pair -> pair.second().isPresent())
                 .flatMap(pair -> {
-                    var newId = (Id) new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
-                    var newIdSet = SSet.of(newId);
+                    final var newId = (Id) new IdMerge(pair.first().id(), pair.second().get().id(), MergeOrSplitType.Xor);
+                    final var newIdSet = SSet.of(newId);
                     return Stream.of(
                             new Pair<>(pair.first().id(), newIdSet),
                             new Pair<>(pair.second().get().id(), newIdSet)
@@ -156,25 +156,25 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     private SortedSet<ColumnConstraint> mergeXor(
             SortedSet<ColumnConstraint> constraintSet1, SortedSet<ColumnConstraint> constraintSet2
     ) {
-        var partition = StreamExtensions.partition(
+        final var partition = StreamExtensions.partition(
                 constraintSet1.stream(),
                 c -> c instanceof ColumnConstraintCheckNumerical
         );
-        var conjunction1 = new CheckConjunction(
+        final var conjunction1 = new CheckConjunction(
                 partition.yes()
                 .map(c -> (ColumnConstraintCheckNumerical) c)
                 .map(ColumnConstraintCheckNumerical::checkExpression)
                 .collect(Collectors.toCollection(TreeSet::new))
         );
-        var conjunction2 = new CheckConjunction(
+        final var conjunction2 = new CheckConjunction(
                 constraintSet2.stream()
                         .filter(c -> c instanceof ColumnConstraintCheckNumerical)
                         .map(c -> (ColumnConstraintCheckNumerical) c)
                         .map(ColumnConstraintCheckNumerical::checkExpression)
                         .collect(Collectors.toCollection(TreeSet::new))
         );
-        var newCheckExpression = new CheckDisjunction(SSet.of(conjunction1, conjunction2));
-        var newNumericalConstraint = new ColumnConstraintCheckNumerical(newCheckExpression);
+        final var newCheckExpression = new CheckDisjunction(SSet.of(conjunction1, conjunction2));
+        final var newNumericalConstraint = new ColumnConstraintCheckNumerical(newCheckExpression);
         // TODO: maybe (don't!) simplify checkExpression
         return SSet.prepend(newNumericalConstraint, partition.no().collect(Collectors.toCollection(TreeSet::new)));
     }
@@ -186,25 +186,25 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     private boolean isDeriving(InheritancePair ip) {
-        var relationshipCount = IngestionBase.getRelationshipCount(ip.base(), ip.derivation());
+        final var relationshipCount = IngestionBase.getRelationshipCount(ip.base(), ip.derivation());
         if (relationshipCount > 0 || ip.base().equals(ip.derivation())) {
             return false;
         }
 
-        var basePartition = StreamExtensions
+        final var basePartition = StreamExtensions
                 .partition(
                         ip.base().columnList().stream(),
                         column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)
                 );
 
-        var derivingPartition = StreamExtensions
+        final var derivingPartition = StreamExtensions
                 .partition(
                         ip.derivation().columnList().stream(),
                         column -> column.containsConstraint(ColumnConstraintPrimaryKey.class));
 
         // Check whether both primary key column lists are equal
-        var basePrimaryKeyColumnList = basePartition.yes().toList();
-        var derivingPrimaryKeyColumnList = derivingPartition.yes().toList();
+        final var basePrimaryKeyColumnList = basePartition.yes().toList();
+        final var derivingPrimaryKeyColumnList = derivingPartition.yes().toList();
         if (!equalsColumnList(basePrimaryKeyColumnList, derivingPrimaryKeyColumnList)) {
             return false;
         } else if (basePrimaryKeyColumnList.size() >= _primaryKeyCountThreshold) {
@@ -212,16 +212,16 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         }
 
         // Check whether there are enough equal columns
-        var jaccardIndex = jaccard(basePartition.no().toList(), derivingPartition.no().toList());
+        final var jaccardIndex = jaccard(basePartition.no().toList(), derivingPartition.no().toList());
         return jaccardIndex >= _jaccardThreshold && isSubset(ip.derivation().columnList(), ip.base().columnList());
     }
 
     private double jaccard(List<Column> columnListA, List<Column> columnListB) {
-        var intersection = columnListA.stream()
+        final var intersection = columnListA.stream()
                 .distinct()
                 .filter(c1 -> columnListB.stream().anyMatch(c2 -> equalsColumns(c1, c2)))
                 .count();
-        var union = Stream
+        final var union = Stream
                 .concat(
                         columnListA.stream(),
                         columnListB.stream().filter(c2 -> columnListA.stream().noneMatch(c1 -> equalsColumns(c1, c2))))

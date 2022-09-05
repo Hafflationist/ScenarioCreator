@@ -40,42 +40,42 @@ class FunctionalDependencyRemoverTest {
     })
     void transform(int seed) {
         // --- Arrange
-        var random = new Random(seed);
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column5 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column6 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column7 = new ColumnLeaf(new IdSimple(7), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column8 = new ColumnLeaf(new IdSimple(8), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column9 = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var random = new Random(seed);
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column5 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column6 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column7 = new ColumnLeaf(new IdSimple(7), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column8 = new ColumnLeaf(new IdSimple(8), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column9 = new ColumnLeaf(new IdSimple(9), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var table = StructuralTestingUtils.createTable(
+        final var table = StructuralTestingUtils.createTable(
                 101,
                 List.of(column1, column2, column3, column4, column5, column6, column7, column8, column9),
                 random
         );
-        var tableSet = SSet.of(table);
-        var schema = new Schema(new IdSimple(1001), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(table);
+        final var schema = new Schema(new IdSimple(1001), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var idGenerator = StructuralTestingUtils.getIdGenerator(600);
-        var transformation = new FunctionalDependencyRemover();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(600);
+        final var transformation = new FunctionalDependencyRemover();
 
         // --- Act
-        var newTableSet = transformation.transform(table, idGenerator, random);
+        final var newTableSet = transformation.transform(table, idGenerator, random);
 
         // --- Assert
-        var newSchema = new Schema(new IdSimple(1001), name, Context.getDefault(), newTableSet);
+        final var newSchema = new Schema(new IdSimple(1001), name, Context.getDefault(), newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
         Assertions.assertEquals(1, newTableSet.size());
-        var newTable = newTableSet.first();
-        var fdSetClosure = FunctionalDependencyManager.transClosure(
+        final var newTable = newTableSet.first();
+        final var fdSetClosure = FunctionalDependencyManager.transClosure(
                 table.functionalDependencySet()
         );
-        var newFdSetClosure = FunctionalDependencyManager.transClosure(
+        final var newFdSetClosure = FunctionalDependencyManager.transClosure(
                 newTable.functionalDependencySet()
         );
         Assertions.assertTrue(newFdSetClosure.size() < fdSetClosure.size());
@@ -96,14 +96,14 @@ class FunctionalDependencyRemoverTest {
     })
     void transform2(int seed) {
         // --- Arrange
-        var random = new Random(seed);
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var random = new Random(seed);
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var table = new Table(
+        final var table = new Table(
                 new IdSimple(101),
                 name,
                 List.of(column1, column2, column3),
@@ -115,19 +115,19 @@ class FunctionalDependencyRemoverTest {
                         new FunctionalDependency(SSet.of(column1.id()), SSet.of(column3.id())) // redundant
                 )
         );
-        var idGenerator = StructuralTestingUtils.getIdGenerator(600);
-        var transformation = new FunctionalDependencyRemover();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(600);
+        final var transformation = new FunctionalDependencyRemover();
 
         // --- Act
-        var newTableSet = transformation.transform(table, idGenerator, random);
+        final var newTableSet = transformation.transform(table, idGenerator, random);
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());
-        var newTable = newTableSet.first();
-        var fdSetClosure = FunctionalDependencyManager.transClosure(
+        final var newTable = newTableSet.first();
+        final var fdSetClosure = FunctionalDependencyManager.transClosure(
                 table.functionalDependencySet(), false
         ); // hier müssten 2 zurückgegeben werden
-        var newFdSetClosure = FunctionalDependencyManager.transClosure(
+        final var newFdSetClosure = FunctionalDependencyManager.transClosure(
                 newTable.functionalDependencySet(), false
         ); // hier nur eine
         Assertions.assertTrue(newFdSetClosure.size() < fdSetClosure.size());
@@ -137,26 +137,26 @@ class FunctionalDependencyRemoverTest {
     @Test
     void getCandidates() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
-        var column3 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column4 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
 
-        var validTable = StructuralTestingUtils.createTable(
+        final var validTable = StructuralTestingUtils.createTable(
                 101, List.of(column1, column2, column3, column4)
         );
-        var invalidTable = new Table(
+        final var invalidTable = new Table(
                 new IdSimple(102), name, List.of(column1, column2, column3, column4),
                 Context.getDefault(), SSet.of(), SSet.of()
         );
-        var tableSet = SSet.of(validTable, invalidTable);
-        var transformation = new FunctionalDependencyRemover();
+        final var tableSet = SSet.of(validTable, invalidTable);
+        final var transformation = new FunctionalDependencyRemover();
 
         // --- Act
-        var candidateSet = transformation.getCandidates(tableSet);
+        final var candidateSet = transformation.getCandidates(tableSet);
 
         // --- Assert
         Assertions.assertEquals(1, candidateSet.size());

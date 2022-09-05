@@ -33,12 +33,12 @@ public class UnifiedLanguageCorpus {
 
 
     private Optional<Pair<String, Language>> synonymize(String word, Random random) {
-        var synonymesByLanguage = synonymizeFully(word);
-        var synonymes = synonymesByLanguage.values().stream().flatMap(Collection::stream);
+        final var synonymesByLanguage = synonymizeFully(word);
+        final var synonymes = synonymesByLanguage.values().stream().flatMap(Collection::stream);
         return StreamExtensions
                 .tryPickRandom(synonymes, random)
                 .map(pickedSynonyme -> {
-                    var newLanguage = synonymesByLanguage.keySet().stream()
+                    final var newLanguage = synonymesByLanguage.keySet().stream()
                             .filter(language -> synonymesByLanguage.get(language).contains(pickedSynonyme))
                             .findFirst()
                             .orElse(Language.Technical);
@@ -48,20 +48,20 @@ public class UnifiedLanguageCorpus {
 
 
     public Optional<StringPlus> synonymizeRandomToken(StringPlus word, Random random) {
-        var nc = word.guessNamingConvention();
-        var wordTokenList = LinguisticUtils.tokenize(word);
-        var pickedToken = StreamExtensions
+        final var nc = word.guessNamingConvention();
+        final var wordTokenList = LinguisticUtils.tokenize(word);
+        final var pickedToken = StreamExtensions
                 .pickRandomOrThrow(wordTokenList.stream(), new RuntimeException(), random);
-        var pairOptional = synonymize(pickedToken, random);
+        final var pairOptional = synonymize(pickedToken, random);
         if (pairOptional.isEmpty()) {
             return Optional.empty();
         }
-        var pickedSynonyme = pairOptional.get().first();
-        var introducedLanguage = pairOptional.get().second();
-        var newLanguage = word.language() != introducedLanguage ? Language.Mixed : introducedLanguage;
-        var newWordTokenStream = wordTokenList.stream()
+        final var pickedSynonyme = pairOptional.get().first();
+        final var introducedLanguage = pairOptional.get().second();
+        final var newLanguage = word.language() != introducedLanguage ? Language.Mixed : introducedLanguage;
+        final var newWordTokenStream = wordTokenList.stream()
                 .map(t -> (t.equals(pickedToken)) ? pickedSynonyme : t);
-        var newWord = LinguisticUtils.merge(nc, newWordTokenStream.toArray(String[]::new));
+        final var newWord = LinguisticUtils.merge(nc, newWordTokenStream.toArray(String[]::new));
         return Optional.of(new StringPlusNaked(newWord, newLanguage));
     }
 
@@ -86,30 +86,30 @@ public class UnifiedLanguageCorpus {
     }
 
     public double semanticDiff(StringPlus word1, StringPlus word2) {
-        var synsetIdSetSet1 = stringPlusToSynsetIdSet(word1);
-        var synsetIdSetSet2 = stringPlusToSynsetIdSet(word2);
+        final var synsetIdSetSet1 = stringPlusToSynsetIdSet(word1);
+        final var synsetIdSetSet2 = stringPlusToSynsetIdSet(word2);
 
         if (word1.language().equals(word2.language())) {
             // hier kommt der entspannte Teil
-            var language = word1.language();
+            final var language = word1.language();
             return semanticDiffInner(synsetIdSetSet1, synsetIdSetSet2, language);
         }
-        var corpus1 = _corpora.get(word1.language());
-        var corpus2 = _corpora.get(word2.language());
+        final var corpus1 = _corpora.get(word1.language());
+        final var corpus2 = _corpora.get(word2.language());
 
-        var gssSetSet1 = synsetIdSetSet1.stream()
+        final var gssSetSet1 = synsetIdSetSet1.stream()
                 .map(corpus1::word2EnglishSynset)
                 .map(essSet -> essSet.stream()
                         .map(ess -> (GlobalSynset) ess)
                         .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var gssSetSet2 = synsetIdSetSet2.stream()
+        final var gssSetSet2 = synsetIdSetSet2.stream()
                 .map(corpus2::word2EnglishSynset)
                 .map(essSet -> essSet.stream()
                         .map(ess -> (GlobalSynset) ess)
                         .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
                 .collect(Collectors.toCollection(TreeSet::new));
-        var rawDist = semanticDiffInner(gssSetSet1, gssSetSet2, Language.English);
+        final var rawDist = semanticDiffInner(gssSetSet1, gssSetSet2, Language.English);
         return Math.sqrt(rawDist) * 0.8 + 0.2; // so schlau
     }
 
@@ -119,8 +119,8 @@ public class UnifiedLanguageCorpus {
         // Wir müssten jetzt die Namen in ihrer tokenisierten Form haben und müssen die semantische Ähnlichkeit bestimmen.
         // Ansatz: Man schaut sich bei jedem Token an, mit welchen Token vom anderen Wort er am besten passt.
         //         Ich muss die KIS-Folien studieren -> monge-elkan distance
-        var diffA = mongeElkanDiff(gssSetSet1, gssSetSet2, language);
-        var diffB = mongeElkanDiff(gssSetSet2, gssSetSet1, language);
+        final var diffA = mongeElkanDiff(gssSetSet1, gssSetSet2, language);
+        final var diffB = mongeElkanDiff(gssSetSet2, gssSetSet1, language);
         return (diffA + diffB) / 2.0;
     }
 
@@ -142,13 +142,13 @@ public class UnifiedLanguageCorpus {
 
     public SortedSet<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {
         assert _corpora.containsKey(targetLanguage) : "missing support for language!";
-        var validGssMap = segment.gssSet().stream()
+        final var validGssMap = segment.gssSet().stream()
                 .filter(gss -> gss.language() != targetLanguage)
                 .collect(groupingBy(GlobalSynset::language));
         assert !validGssMap.values().isEmpty() : "gss already in target language!";
         return validGssMap.keySet().stream()
                 .flatMap(lang -> {
-                    var gssSet = new TreeSet<>(validGssMap.get(lang));
+                    final var gssSet = new TreeSet<>(validGssMap.get(lang));
                     return _corpora.get(lang).word2EnglishSynset(gssSet).stream();
                 })
                 .map(_corpora.get(targetLanguage)::englishSynsetRecord2Word)

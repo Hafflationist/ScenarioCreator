@@ -15,7 +15,7 @@ class LagrangeTest {
         //, 3.8, 3.9, 4.0, 4.1, 4.2})
     void interpolate(double newValue) {
         // --- Arrange
-        var partialFunction = new Lagrange.PartialFunction(Map.of(
+        final var partialFunction = new Lagrange.PartialFunction(Map.of(
                 0.0, 2.0,
                 1.0, 3.0,
                 2.0, 12.0,
@@ -23,7 +23,7 @@ class LagrangeTest {
         ));
 
         // -- Act
-        var result = Lagrange.polynomize(partialFunction).apply(newValue);
+        final var result = Lagrange.polynomize(partialFunction).apply(newValue);
 
         // --- Assert
         Assertions.assertEquals(35.0, result);
@@ -32,7 +32,7 @@ class LagrangeTest {
     @Test
     void partialFunctionCtor() {
         // --- Arrange
-        var nd = new NumericalDistribution(0.25, Map.of(
+        final var nd = new NumericalDistribution(0.25, Map.of(
                 1, 0.1,
                 2, 0.2,
                 4, 0.8,
@@ -40,10 +40,10 @@ class LagrangeTest {
         ));
 
         // --- Act
-        var partialFunction = new Lagrange.PartialFunction(nd);
+        final var partialFunction = new Lagrange.PartialFunction(nd);
 
         // --- Assert
-        var expectedPartialFunction = new Lagrange.PartialFunction(Map.of(
+        final var expectedPartialFunction = new Lagrange.PartialFunction(Map.of(
                 0.125, 0.1,
                 0.375, 0.2,
                 0.625, 0.0,

@@ -18,8 +18,8 @@ public final class LinguisticUtils {
     // https://link.springer.com/content/pdf/10.1007/978-3-642-41338-4_19.pdf
     @NotNull
     public static List<String> tokenize(StringPlus mergedTokens) {
-        var namingConvention = mergedTokens.guessNamingConvention();
-        var stringStream = switch (namingConvention) {
+        final var namingConvention = mergedTokens.guessNamingConvention();
+        final var stringStream = switch (namingConvention) {
             // https://www.programcreek.com/2011/03/java-method-for-spliting-a-camelcase-string/
             case CAMELCASE, PASCALCASE ->
                     mergedTokens.rawString().split("(?<!(^|[A-Z]))(?=[A-Z])|(?<!^)(?=[A-Z][a-z])");
@@ -32,7 +32,7 @@ public final class LinguisticUtils {
 
     @NotNull
     public static String merge(NamingConvention nc, String... tokens) {
-        var tokenStream = Arrays.stream(tokens);
+        final var tokenStream = Arrays.stream(tokens);
         return switch (nc) {
             case CAMELCASE -> mergeCamelCase(tokens);
             case PASCALCASE -> mergePascalCase(tokens);
@@ -65,8 +65,8 @@ public final class LinguisticUtils {
             return String.join("", tokens).toLowerCase();
         }
 
-        var head = tokens[0];
-        var tail = Arrays.stream(tokens).skip(1).toArray(String[]::new);
+        final var head = tokens[0];
+        final var tail = Arrays.stream(tokens).skip(1).toArray(String[]::new);
         return head.toLowerCase() + mergePascalCase(tail);
     }
 
@@ -116,13 +116,13 @@ public final class LinguisticUtils {
             return merge(aSem, bSem, random);
         }
 
-        var a = aPlus.rawString();
-        var b = bPlus.rawString();
-        var language = merge(aPlus.language(), bPlus.language());
-        var namingConvention = merge(aPlus.guessNamingConvention(), bPlus.guessNamingConvention(), random);
+        final var a = aPlus.rawString();
+        final var b = bPlus.rawString();
+        final var language = merge(aPlus.language(), bPlus.language());
+        final var namingConvention = merge(aPlus.guessNamingConvention(), bPlus.guessNamingConvention(), random);
 
-        var useConjunction = random.nextInt() % 2 == 0;
-        var rawString = useConjunction
+        final var useConjunction = random.nextInt() % 2 == 0;
+        final var rawString = useConjunction
                 ? merge(namingConvention, a, generateConjunction(language), b)
                 : merge(namingConvention, a, b);
         return new StringPlusNaked(rawString, language);
@@ -130,11 +130,11 @@ public final class LinguisticUtils {
 
     @NotNull
     public static StringPlus merge(StringPlusSemantical sps1, StringPlusSemantical sps2, Random random) {
-        var segmentList = Stream.concat(
+        final var segmentList = Stream.concat(
                 sps1.segmentList().stream(),
                 sps2.segmentList().stream()
         ).toList();
-        var namingConvention = merge(sps1.guessNamingConvention(), sps2.guessNamingConvention(), random);
+        final var namingConvention = merge(sps1.guessNamingConvention(), sps2.guessNamingConvention(), random);
         return new StringPlusSemantical(segmentList, namingConvention);
     }
 

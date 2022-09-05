@@ -31,13 +31,13 @@ public class RenameSchema implements SchemaTransformation {
     @Override
     @NotNull
     public Schema transform(Schema schema, Random random) {
-        var newName = getNewName(schema.name(), random);
+        final var newName = getNewName(schema.name(), random);
         return schema.withName(newName);
     }
 
     @NotNull
     private StringPlus getNewName(StringPlus name, Random random) {
-        var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
+        final var newNameOptional = _unifiedLanguageCorpus.synonymizeRandomToken(name, random);
         if (newNameOptional.isEmpty()) {
             return new StringPlusNaked("Schema" + random.nextInt(), Language.Technical);
         }

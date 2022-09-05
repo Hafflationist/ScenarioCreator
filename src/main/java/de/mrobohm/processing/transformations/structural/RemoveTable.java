@@ -43,15 +43,15 @@ public class RemoveTable implements TableTransformation {
     }
 
     private boolean freeOfRelationships(Table table) {
-        var ownColumnIdSet = table.columnList().stream()
+        final var ownColumnIdSet = table.columnList().stream()
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
         return table.columnList().stream().noneMatch(column -> {
-            var hasForeignKeys = column.constraintSet().stream()
+            final var hasForeignKeys = column.constraintSet().stream()
                     .filter(c -> c instanceof ColumnConstraintForeignKey)
                     .map(c -> (ColumnConstraintForeignKey) c)
                     .anyMatch(c -> !ownColumnIdSet.contains(c.foreignColumnId()));
-            var hasForeignKeysInverse = column.constraintSet().stream()
+            final var hasForeignKeysInverse = column.constraintSet().stream()
                     .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
                     .map(c -> (ColumnConstraintForeignKeyInverse) c)
                     .anyMatch(c -> !ownColumnIdSet.contains(c.foreignColumnId()));

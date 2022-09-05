@@ -15,11 +15,11 @@ import java.util.Random;
 public class GroupingColumnsBase {
 
     public static List<Column> findGroupableColumns(List<Column> columnList, Random random) {
-        var validColumnList = columnList.stream().filter(GroupingColumnsBase::areConstraintsFine).toList();
-        var validColumnCount = validColumnList.size();
+        final var validColumnList = columnList.stream().filter(GroupingColumnsBase::areConstraintsFine).toList();
+        final var validColumnCount = validColumnList.size();
         assert validColumnCount > 0;
-        var groupSize = random.nextInt(validColumnCount) + 1;
-        var ex = new RuntimeException("This should never happen.");
+        final var groupSize = random.nextInt(validColumnCount) + 1;
+        final var ex = new RuntimeException("This should never happen.");
         return StreamExtensions
                 .pickRandomOrThrowMultiple(validColumnList.stream(), groupSize, ex, random)
                 .toList();
@@ -28,13 +28,13 @@ public class GroupingColumnsBase {
     public static ColumnNode createNewColumnNode(Id newId, List<Column> columnList, Random random) {
         assert columnList.size() > 0 : "createNewColumnNode wurde mit 0 Spalten aufgerufen!";
 
-        var newName = mergeNames(columnList, random);
+        final var newName = mergeNames(columnList, random);
         return new ColumnNode(newId, newName, columnList, SSet.of(), false);
     }
 
     public static StringPlus mergeNames(List<Column> columnList, Random random) {
         // TODO: Vllt könnte man hier ein besseren neuen Namen finden...
-        var allNames = columnList.stream().map(Column::name).toList();
+        final var allNames = columnList.stream().map(Column::name).toList();
         return allNames.stream()
                 .reduce((a, b) -> LinguisticUtils.merge(a, b, random))
                 .orElse(allNames.get(0));

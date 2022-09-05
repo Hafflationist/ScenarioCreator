@@ -15,7 +15,7 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
 
     @Override
     public Language language() {
-        var languageList = segmentList.stream()
+        final var languageList = segmentList.stream()
                 .flatMap(segment -> segment.gssSet().stream())
                 .map(GlobalSynset::language)
                 .distinct()
@@ -29,9 +29,9 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
     }
 
     public static StringPlusSemantical of(StringPlus stringPlus, Function<String, SortedSet<GlobalSynset>> synsetFinder) {
-        var nc = stringPlus.guessNamingConvention();
-        var tokens = LinguisticUtils.tokenize(stringPlus);
-        var segmentList = tokens.stream()
+        final var nc = stringPlus.guessNamingConvention();
+        final var tokens = LinguisticUtils.tokenize(stringPlus);
+        final var segmentList = tokens.stream()
                 .map(token -> new StringPlusSemanticalSegment(token, synsetFinder.apply(token)))
                 .toList();
 
@@ -40,7 +40,7 @@ public record StringPlusSemantical(List<StringPlusSemanticalSegment> segmentList
 
     @Override
     public String rawString() {
-        var tokenArray = segmentList.stream().map(StringPlusSemanticalSegment::token).toArray(String[]::new);
+        final var tokenArray = segmentList.stream().map(StringPlusSemanticalSegment::token).toArray(String[]::new);
         return LinguisticUtils.merge(namingConvention(), tokenArray);
     }
 

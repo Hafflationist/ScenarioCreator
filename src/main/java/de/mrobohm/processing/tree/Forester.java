@@ -31,7 +31,7 @@ public class Forester {
     }
 
     public SortedSet<Schema> createScenario(Schema rootSchema, TreeTargetDefinition ttd, Random random) {
-        var tree = new TreeLeaf<>(rootSchema);
+        final var tree = new TreeLeaf<>(rootSchema);
         return Stream
                 .iterate((TreeEntity<Schema>)tree, t -> step(t, ttd, random))
                 .limit(5)
@@ -41,15 +41,15 @@ public class Forester {
     }
 
     private TreeEntity<Schema> step(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
-        var chosenTe = chooseTreeEntityToExtend(te, ttd, random);
-        var transformationSet = getChosenTransformations(
+        final var chosenTe = chooseTreeEntityToExtend(te, ttd, random);
+        final var transformationSet = getChosenTransformations(
                 _transformationCollection,
                 ttd.keepForeignKeyIntegrity(),
                 ttd.shouldConserveAllRecords(),
                 ttd.shouldStayNormalized(),
                 ttd.conservesFlatRelations()
         );
-        var newTe = extendTreeEntity(te, transformationSet, random);
+        final var newTe = extendTreeEntity(te, transformationSet, random);
         return TreeDataOperator.replaceTreeEntity(te, chosenTe, newTe);
     }
 
@@ -57,7 +57,7 @@ public class Forester {
         return switch (te) {
             case TreeLeaf<Schema> tl -> SSet.of((TreeEntity<Schema>) tl);
             case TreeNode<Schema> tn -> {
-                var children = tn.childSet().parallelStream()
+                final var children = tn.childSet().parallelStream()
                         .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
                 yield Stream.concat(Stream.of(tn), children).collect(Collectors.toCollection(TreeSet::new));
             }
@@ -65,18 +65,18 @@ public class Forester {
     }
 
     private TreeEntity<Schema> chooseTreeEntityToExtend(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
-        var possibilitySet = getAllTreeEntitySet(te);
-        var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
+        final var possibilitySet = getAllTreeEntitySet(te);
+        final var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
         return StreamExtensions.pickRandomOrThrow(possibilitySet.stream(), rte, random);
     }
 
     private TreeEntity<Schema> extendTreeEntity(TreeEntity<Schema> te, SortedSet<Transformation> transformationSet, Random random) {
-        var newChild = createNewChild(te, transformationSet, random);
-        var oldChildSet = switch (te) {
+        final var newChild = createNewChild(te, transformationSet, random);
+        final var oldChildSet = switch (te) {
             case TreeNode<Schema> tn -> tn.childSet();
             case TreeLeaf ignore -> SSet.<TreeEntity<Schema>>of();
         };
-        var newChildSet = StreamExtensions
+        final var newChildSet = StreamExtensions
                 .prepend(oldChildSet.stream(), newChild)
                 .collect(Collectors.toCollection(TreeSet::new));
         return te.withChildren(newChildSet);
@@ -114,16 +114,16 @@ public class Forester {
             int acc
     ) {
         if (acc >= max) throw new RuntimeException("No suitable transformation could be found and performed!");
-        var rte = new RuntimeException("Not enough transformations given!");
+        final var rte = new RuntimeException("Not enough transformations given!");
         // TODO: check which transformations can be applied!
-        var schema = te.content();
-        var validTransformationStream = transformationSet.stream()
+        final var schema = te.content();
+        final var validTransformationStream = transformationSet.stream()
                 .filter(transformation -> SingleTransformationChecker.checkTransformation(schema, transformation));
-        var chosenTransformation = StreamExtensions.pickRandomOrThrow(
+        final var chosenTransformation = StreamExtensions.pickRandomOrThrow(
                 validTransformationStream, rte, random
         );
         try {
-            var newSchema = _singleTransformationExecuter.executeTransformation(
+            final var newSchema = _singleTransformationExecuter.executeTransformation(
                     te.content(), chosenTransformation, random
             );
             return new TreeLeaf<>(newSchema);

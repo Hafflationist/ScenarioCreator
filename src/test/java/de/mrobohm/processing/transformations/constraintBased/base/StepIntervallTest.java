@@ -17,7 +17,7 @@ class StepIntervallTest {
     @Test
     void fromNumericalDistribution() {
         // --- Arrange
-        var nd = new NumericalDistribution(1.0, Map.of(
+        final var nd = new NumericalDistribution(1.0, Map.of(
                 -3, 0.1,
                 -1, 0.1,
                 1, 0.1,
@@ -27,12 +27,12 @@ class StepIntervallTest {
         ));
 
         // --- Act
-        var siSet = StepIntervall
+        final var siSet = StepIntervall
                 .fromNumericalDistribution(nd)
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Assert
-        var expectedSiSet = SSet.of(
+        final var expectedSiSet = SSet.of(
                 new StepIntervall(-3, -3.0, -2.0),
                 new StepIntervall(-1, -1.0, 0.0),
                 new StepIntervall(1, 0.0, 1.0),
@@ -41,26 +41,26 @@ class StepIntervallTest {
                 new StepIntervall(5, 4.0, 5.0)
         );
         Assertions.assertEquals(expectedSiSet.size(), siSet.size());
-        var same = expectedSiSet.stream().allMatch(esi -> siSet.stream().anyMatch(si -> isApproxSame(si, esi)));
+        final var same = expectedSiSet.stream().allMatch(esi -> siSet.stream().anyMatch(si -> isApproxSame(si, esi)));
         Assertions.assertTrue(same);
     }
 
     @Test
     void fromNumericalDistributionWithStepSize() {
         // --- Arrange
-        var nd = new NumericalDistribution(2.0, Map.of(
+        final var nd = new NumericalDistribution(2.0, Map.of(
                 -1, 0.1,
                 1, 0.1,
                 2, 0.2
         ));
 
         // --- Act
-        var siSet = StepIntervall
+        final var siSet = StepIntervall
                 .fromNumericalDistribution(nd, 0.75)
                 .collect(Collectors.toCollection(TreeSet::new));
 
         // --- Assert
-        var expectedSiSet = SSet.of(
+        final var expectedSiSet = SSet.of(
                 new StepIntervall(-3, -2.25, -1.5),
                 new StepIntervall(-2, -1.5, -0.75),
                 new StepIntervall(-1, -0.75, 0.0),
@@ -72,7 +72,7 @@ class StepIntervallTest {
                 new StepIntervall(6, 3.75, 4.5)
         );
         Assertions.assertEquals(expectedSiSet.size(), siSet.size());
-        var same = expectedSiSet.stream().allMatch(esi -> siSet.stream().anyMatch(si -> isApproxSame(si, esi)));
+        final var same = expectedSiSet.stream().allMatch(esi -> siSet.stream().anyMatch(si -> isApproxSame(si, esi)));
         Assertions.assertTrue(same);
     }
 
@@ -80,7 +80,7 @@ class StepIntervallTest {
     @ValueSource(doubles = {5.0, 6.0})
     void fillHoles(double to) {
         // --- Arrange
-        var siSet = SSet.of(
+        final var siSet = SSet.of(
                 new StepIntervall(-3, -3.0, -2.0),
                 new StepIntervall(-1, -1.0, 0.0),
                 new StepIntervall(1, 0.0, 1.0),
@@ -90,10 +90,10 @@ class StepIntervallTest {
         );
 
         // --- Act
-        var siSetWithoutHoles = StepIntervall.fillHoles(siSet, -5.0, to);
+        final var siSetWithoutHoles = StepIntervall.fillHoles(siSet, -5.0, to);
 
         // -- Assert
-        var expectedSiSet = SSet.concat(SSet.of(
+        final var expectedSiSet = SSet.concat(SSet.of(
                         new StepIntervall(Integer.MAX_VALUE, -5.0, -3.0),
                         new StepIntervall(-3, -3.0, -2.0),
                         new StepIntervall(Integer.MAX_VALUE, -2.0, -1.0),
@@ -107,27 +107,27 @@ class StepIntervallTest {
                 to == 5.0 ? SSet.of() : SSet.of(new StepIntervall(Integer.MAX_VALUE, 5.0, 6.0))
         );
         Assertions.assertEquals(expectedSiSet.size(), siSetWithoutHoles.size());
-        var same = expectedSiSet.stream().allMatch(esi -> siSetWithoutHoles.stream().anyMatch(si -> isApproxSame(si, esi)));
+        final var same = expectedSiSet.stream().allMatch(esi -> siSetWithoutHoles.stream().anyMatch(si -> isApproxSame(si, esi)));
         Assertions.assertTrue(same);
     }
 
     @Test
     void intersecting() {
         // --- Arrange
-        var si1a = new StepIntervall(1, 1.0, 2.0);
-        var si1b = new StepIntervall(2, 0.0, 1.5);
-        var si2a = new StepIntervall(1, 1.0, 2.0);
-        var si2b = new StepIntervall(2, 1.3, 1.5);
-        var si3a = new StepIntervall(1, 1.0, 2.0);
-        var si3b = new StepIntervall(2, 0.0, 0.5);
+        final var si1a = new StepIntervall(1, 1.0, 2.0);
+        final var si1b = new StepIntervall(2, 0.0, 1.5);
+        final var si2a = new StepIntervall(1, 1.0, 2.0);
+        final var si2b = new StepIntervall(2, 1.3, 1.5);
+        final var si3a = new StepIntervall(1, 1.0, 2.0);
+        final var si3b = new StepIntervall(2, 0.0, 0.5);
 
         // --- Act
-        var intersecting1 = StepIntervall.intersecting(si1a, si1b);
-        var intersecting1i = StepIntervall.intersecting(si1b, si1a);
-        var intersecting2 = StepIntervall.intersecting(si2a, si2b);
-        var intersecting2i = StepIntervall.intersecting(si2b, si2a);
-        var intersecting3 = StepIntervall.intersecting(si3a, si3b);
-        var intersecting3i = StepIntervall.intersecting(si3b, si3a);
+        final var intersecting1 = StepIntervall.intersecting(si1a, si1b);
+        final var intersecting1i = StepIntervall.intersecting(si1b, si1a);
+        final var intersecting2 = StepIntervall.intersecting(si2a, si2b);
+        final var intersecting2i = StepIntervall.intersecting(si2b, si2a);
+        final var intersecting3 = StepIntervall.intersecting(si3a, si3b);
+        final var intersecting3i = StepIntervall.intersecting(si3b, si3a);
 
         // -- Assert
         Assertions.assertTrue(intersecting1);
@@ -141,20 +141,20 @@ class StepIntervallTest {
     @Test
     void intersectionLength() {
         // --- Arrange
-        var si1a = new StepIntervall(1, 1.0, 2.0);
-        var si1b = new StepIntervall(2, 0.0, 1.5);
-        var si2a = new StepIntervall(1, 1.0, 2.0);
-        var si2b = new StepIntervall(2, 1.3, 1.55);
-        var si3a = new StepIntervall(1, 1.0, 2.0);
-        var si3b = new StepIntervall(2, 0.0, 0.5);
+        final var si1a = new StepIntervall(1, 1.0, 2.0);
+        final var si1b = new StepIntervall(2, 0.0, 1.5);
+        final var si2a = new StepIntervall(1, 1.0, 2.0);
+        final var si2b = new StepIntervall(2, 1.3, 1.55);
+        final var si3a = new StepIntervall(1, 1.0, 2.0);
+        final var si3b = new StepIntervall(2, 0.0, 0.5);
 
         // --- Act
-        var intersecting1 = StepIntervall.intersectionLength(si1a, si1b);
-        var intersecting1i = StepIntervall.intersectionLength(si1b, si1a);
-        var intersecting2 = StepIntervall.intersectionLength(si2a, si2b);
-        var intersecting2i = StepIntervall.intersectionLength(si2b, si2a);
-        var intersecting3 = StepIntervall.intersectionLength(si3a, si3b);
-        var intersecting3i = StepIntervall.intersectionLength(si3b, si3a);
+        final var intersecting1 = StepIntervall.intersectionLength(si1a, si1b);
+        final var intersecting1i = StepIntervall.intersectionLength(si1b, si1a);
+        final var intersecting2 = StepIntervall.intersectionLength(si2a, si2b);
+        final var intersecting2i = StepIntervall.intersectionLength(si2b, si2a);
+        final var intersecting3 = StepIntervall.intersectionLength(si3a, si3b);
+        final var intersecting3i = StepIntervall.intersectionLength(si3b, si3a);
 
         // -- Assert
         Assertions.assertEquals(0.5, intersecting1);
@@ -168,12 +168,12 @@ class StepIntervallTest {
     @Test
     void isApproxSame() {
         // --- Arrange
-        var si0 = new StepIntervall(-3, -3.0, -2.0);
-        var si1 = new StepIntervall(-1, -1.0, 0.0);
-        var si2 = new StepIntervall(1, 0.0, 1.0);
-        var si3 = new StepIntervall(2, 1.0, 2.0);
-        var si4 = new StepIntervall(4, 3.0, 4.0);
-        var si5 = new StepIntervall(5, 4.0, 5.0);
+        final var si0 = new StepIntervall(-3, -3.0, -2.0);
+        final var si1 = new StepIntervall(-1, -1.0, 0.0);
+        final var si2 = new StepIntervall(1, 0.0, 1.0);
+        final var si3 = new StepIntervall(2, 1.0, 2.0);
+        final var si4 = new StepIntervall(4, 3.0, 4.0);
+        final var si5 = new StepIntervall(5, 4.0, 5.0);
 
         // --- Act & Assert
         Assertions.assertTrue(isApproxSame(si0, si0));

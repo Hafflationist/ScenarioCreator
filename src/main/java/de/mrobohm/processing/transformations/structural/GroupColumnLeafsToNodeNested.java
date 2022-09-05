@@ -30,22 +30,22 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
     @Override
     @NotNull
     public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
-        var transEx = new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
+        final var transEx = new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         if (!(hasColumnNodeOrCollectionGroupableColumns(column))) {
             throw transEx;
         }
 
-        var columnList = switch (column) {
+        final var columnList = switch (column) {
             case ColumnNode node -> node.columnList();
             case ColumnCollection collection -> collection.columnList();
             default -> throw transEx;
         };
 
-        var groupableColumnList = GroupingColumnsBase.findGroupableColumns(columnList, random);
-        var newIds = idGenerator.apply(1);
-        var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
+        final var groupableColumnList = GroupingColumnsBase.findGroupableColumns(columnList, random);
+        final var newIds = idGenerator.apply(1);
+        final var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
-        var newColumnList = StreamExtensions.replaceInStream(
+        final var newColumnList = StreamExtensions.replaceInStream(
                 columnList.stream(),
                 groupableColumnList.stream(),
                 newColumn).toList();

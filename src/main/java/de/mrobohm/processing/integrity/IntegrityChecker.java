@@ -30,21 +30,21 @@ public final class IntegrityChecker {
     }
 
     private static void assertUniquenessOfIds(Schema schema) {
-        var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
-        var nonUniqueIdSet = allIdList.stream()
+        final var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
+        final var nonUniqueIdSet = allIdList.stream()
                 .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
                 .collect(Collectors.toCollection(TreeSet::new));
         assert nonUniqueIdSet.isEmpty() : "Non unique ids found: " + nonUniqueIdSet;
     }
 
     private static void assertValidForeignKeyConstraints(Schema schema) {
-        var constraintIdPairList = extractConstraints(schema).toList();
+        final var constraintIdPairList = extractConstraints(schema).toList();
 
-        var problematicConstraints = constraintIdPairList.stream()
+        final var problematicConstraints = constraintIdPairList.stream()
                 .filter(pair -> pair.second() instanceof ColumnConstraintForeignKey)
                 .filter(pair -> {
-                    var sourceColumnId = pair.first();
-                    var constraintForeignKey = (ColumnConstraintForeignKey) pair.second();
+                    final var sourceColumnId = pair.first();
+                    final var constraintForeignKey = (ColumnConstraintForeignKey) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairList.stream()
                             .noneMatch(targetPair -> targetPair.first().equals(constraintForeignKey.foreignColumnId())
@@ -52,7 +52,7 @@ public final class IntegrityChecker {
                                     && inverse.foreignColumnId().equals(sourceColumnId));
                 })
                 .map(pair -> {
-                    var notFoundId = ((ColumnConstraintForeignKey) pair.second()).foreignColumnId();
+                    final var notFoundId = ((ColumnConstraintForeignKey) pair.second()).foreignColumnId();
                     return "relationship " + pair.first() + "->" + notFoundId + ": " + notFoundId + " or its (inverse) constraint part missing!\n";
                 })
                 .distinct()
@@ -60,11 +60,11 @@ public final class IntegrityChecker {
         assert problematicConstraints.isEmpty()
                 : "Invalid foreign key constraint found! (target missing: " + problematicConstraints + ")";
 
-        var problematicConstraints2 = constraintIdPairList.stream()
+        final var problematicConstraints2 = constraintIdPairList.stream()
                 .filter(pair -> pair.second() instanceof ColumnConstraintForeignKeyInverse)
                 .filter(pair -> {
-                    var sourceColumnId = pair.first();
-                    var constraintForeignKeyInverse = (ColumnConstraintForeignKeyInverse) pair.second();
+                    final var sourceColumnId = pair.first();
+                    final var constraintForeignKeyInverse = (ColumnConstraintForeignKeyInverse) pair.second();
                     // searching for corresponding ColumnConstraintForeignKeyInverse:
                     return constraintIdPairList.stream()
                             .noneMatch(targetPair -> targetPair.first().equals(constraintForeignKeyInverse.foreignColumnId())
@@ -72,7 +72,7 @@ public final class IntegrityChecker {
                                     && inverse.foreignColumnId().equals(sourceColumnId));
                 })
                 .map(pair -> {
-                    var notFoundId = ((ColumnConstraintForeignKeyInverse) pair.second()).foreignColumnId();
+                    final var notFoundId = ((ColumnConstraintForeignKeyInverse) pair.second()).foreignColumnId();
                     return "relationship " + notFoundId + "->" + pair.first() + ": " + notFoundId + " or its constraint part missing!\n";
                 })
                 .distinct()
@@ -88,7 +88,7 @@ public final class IntegrityChecker {
     }
 
     private static Stream<Pair<Id, ColumnConstraint>> extractConstraints(Column column) {
-        var constraints = switch (column) {
+        final var constraints = switch (column) {
             case ColumnLeaf leaf -> leaf.constraintSet().stream().map(c -> new Pair<>(leaf.id(), c));
             case ColumnNode node -> Stream.concat(
                     node.constraintSet().stream().map(c -> new Pair<>(node.id(), c)),
@@ -103,14 +103,14 @@ public final class IntegrityChecker {
     }
 
     private static void assertValidFunctionalDependencies(Schema schema) {
-        var errorReportSet = schema.tableSet().stream()
+        final var errorReportSet = schema.tableSet().stream()
                 .flatMap(t -> t.functionalDependencySet().stream()
                         .map(fd -> {
-                            var circle = fd.left().stream().anyMatch(fd.right()::contains);
-                            var allColumnIdInTableSet = t.columnList().stream()
+                            final var circle = fd.left().stream().anyMatch(fd.right()::contains);
+                            final var allColumnIdInTableSet = t.columnList().stream()
                                     .flatMap(column -> IdentificationNumberCalculator.columnToIdStream(column, false))
                                     .collect(Collectors.toSet());
-                            var invalidRefSet = Stream
+                            final var invalidRefSet = Stream
                                     .concat(fd.right().stream(), fd.left().stream())
                                     .filter(id -> !allColumnIdInTableSet.contains(id))
                                     .collect(Collectors.toSet());

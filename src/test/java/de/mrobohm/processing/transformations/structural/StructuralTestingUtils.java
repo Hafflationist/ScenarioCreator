@@ -33,8 +33,8 @@ public final class StructuralTestingUtils {
     }
 
     public static Table createTable(int idNum, List<Column> columnList, Random random) {
-        var name = new StringPlusNaked("Tabelle", Language.Mixed);
-        var fdSet = FunctionalDependencyManager.transClosure(
+        final var name = new StringPlusNaked("Tabelle", Language.Mixed);
+        final var fdSet = FunctionalDependencyManager.transClosure(
                 ConstraintBasedTestingUtils.generateFd(columnList, random)
         );
         return new Table(

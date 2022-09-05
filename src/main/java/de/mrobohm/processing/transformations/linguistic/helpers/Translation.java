@@ -25,10 +25,10 @@ public class Translation {
     }
 
     private Language chooseDifferentLanguage(Language exception, Random random) {
-        var rte = new RuntimeException("Fatal error! Not enough languages defined!");
-        var newLanguageStream = Arrays.stream(Language.values())
+        final var rte = new RuntimeException("Fatal error! Not enough languages defined!");
+        final var newLanguageStream = Arrays.stream(Language.values())
                 .filter(lang -> !Set.of(Language.Technical, Language.Mixed, exception).contains(lang));
-        var newLanguage = StreamExtensions.pickRandomOrThrow(newLanguageStream, rte, random);
+        final var newLanguage = StreamExtensions.pickRandomOrThrow(newLanguageStream, rte, random);
         assert !newLanguage.equals(exception) : "Local bug found!";
         return newLanguage;
     }
@@ -38,10 +38,10 @@ public class Translation {
         if (segment.gssSet().isEmpty()) {
             return Optional.empty();
         }
-        var rte = new RuntimeException("Should not happen.");
-        var randomGss = StreamExtensions.pickRandomOrThrow(segment.gssSet().stream(), rte, random);
-        var targetLanguage = chooseDifferentLanguage(randomGss.language(), random);
-        var translationPossibilitySet = _corpus.translate(segment, targetLanguage);
+        final var rte = new RuntimeException("Should not happen.");
+        final var randomGss = StreamExtensions.pickRandomOrThrow(segment.gssSet().stream(), rte, random);
+        final var targetLanguage = chooseDifferentLanguage(randomGss.language(), random);
+        final var translationPossibilitySet = _corpus.translate(segment, targetLanguage);
         return StreamExtensions.tryPickRandom(translationPossibilitySet.stream(), random);
     }
 
@@ -57,22 +57,22 @@ public class Translation {
         return switch (name) {
             case StringPlusNaked spn -> Optional.of(translateNaked(spn, random));
             case StringPlusSemantical sps -> {
-                var rte = new RuntimeException("StringPlus without segments are invalid");
-                var validSegmentStream = sps.segmentList().stream()
+                final var rte = new RuntimeException("StringPlus without segments are invalid");
+                final var validSegmentStream = sps.segmentList().stream()
                         .filter(segment -> segment.gssSet().size() > 0
                                 && !segment.gssSet().stream()
                                 .map(GlobalSynset::language)
                                 .allMatch(SSet.of(Language.Mixed, Language.Technical)::contains));
-                var chosenSegment = StreamExtensions.pickRandomOrThrow(
+                final var chosenSegment = StreamExtensions.pickRandomOrThrow(
                         validSegmentStream, rte, random
                 );
-                var newSegmentOpt = translate(chosenSegment, random);
+                final var newSegmentOpt = translate(chosenSegment, random);
                 if (newSegmentOpt.isEmpty()) {
 //                    throw new RuntimeException("No translation found!");
 //                    System.out.println("I'll fucking do it again!");
                     yield translateInner(name, random, acc + 1, max); // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg
                 }
-                var newSegmentList = StreamExtensions.replaceInStream(
+                final var newSegmentList = StreamExtensions.replaceInStream(
                         sps.segmentList().stream(), chosenSegment, newSegmentOpt.get()
                 ).toList();
                 yield Optional.of(sps.withSegmentList(newSegmentList));
@@ -84,18 +84,18 @@ public class Translation {
     private StringPlus translateNaked(StringPlusNaked name, Random random) {
         return switch (name.language()) {
             case English:
-                var germanRawString = translate(name.rawString(), Language.German, random);
+                final var germanRawString = translate(name.rawString(), Language.German, random);
                 // TODO: get translation
                 yield new StringPlusNaked(germanRawString, Language.German);
 
             case German:
-                var englishRawString = translate(name.rawString(), Language.English, random);
+                final var englishRawString = translate(name.rawString(), Language.English, random);
                 // TODO: get translation
                 yield new StringPlusNaked(englishRawString, Language.English);
 
             case Mixed:
-                var newLanguage = (random.nextInt() % 2 == 0) ? Language.German : Language.English;
-                var newRawString = name.rawString();
+                final var newLanguage = (random.nextInt() % 2 == 0) ? Language.German : Language.English;
+                final var newRawString = name.rawString();
                 // TODO: get translation
                 yield new StringPlusNaked(newRawString, newLanguage);
 

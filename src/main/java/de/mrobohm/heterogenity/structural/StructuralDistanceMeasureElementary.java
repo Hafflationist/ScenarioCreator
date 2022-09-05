@@ -25,57 +25,57 @@ public final class StructuralDistanceMeasureElementary {
     // Das Ziel müsste es sein nach der Kürzung des Id-Baums, analoge Operationen zu streichen, da sie sich ausgleichen.
 
     public static double calculateDistanceToRootRelative(Schema root, Schema schema) {
-        var distanceAbsolute = calculateDistanceToRootAbsolute(root, schema);
-        var rootSize = IdentificationNumberCalculator.getAllIds(root, true).count();
-        var schemaSize = IdentificationNumberCalculator.getAllIds(schema, true).count();
+        final var distanceAbsolute = calculateDistanceToRootAbsolute(root, schema);
+        final var rootSize = IdentificationNumberCalculator.getAllIds(root, true).count();
+        final var schemaSize = IdentificationNumberCalculator.getAllIds(schema, true).count();
         return (2.0 * distanceAbsolute) / (double) (rootSize + schemaSize);
     }
 
     public static int calculateDistanceToRootAbsolute(Schema root, Schema schema) {
-        var rootIdSet = IdentificationNumberCalculator
+        final var rootIdSet = IdentificationNumberCalculator
                 .getAllIds(root, false)
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var isRealRoot = rootIdSet.stream().allMatch(id -> id instanceof IdSimple);
+        final var isRealRoot = rootIdSet.stream().allMatch(id -> id instanceof IdSimple);
         assert isRealRoot : "root schema must contain only IdSimple!";
 
-        var rootSimpleIdSet = IdentificationNumberCalculator
+        final var rootSimpleIdSet = IdentificationNumberCalculator
                 .extractIdSimple(rootIdSet.stream())
                 .map(IdSimple::number)
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var schemaSimpleIdSet = IdentificationNumberCalculator
+        final var schemaSimpleIdSet = IdentificationNumberCalculator
                 .extractIdSimple(IdentificationNumberCalculator.getAllIds(schema, false))
                 .map(IdSimple::number)
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        var dropCount = (int) rootSimpleIdSet.stream().filter(idNum -> !schemaSimpleIdSet.contains(idNum)).count();
-        var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
+        final var dropCount = (int) rootSimpleIdSet.stream().filter(idNum -> !schemaSimpleIdSet.contains(idNum)).count();
+        final var createCount = (int) schemaSimpleIdSet.stream().filter(idNum -> !rootSimpleIdSet.contains(idNum)).count();
 
-        var schemaPathMap = getIdPathSet(schema);
-        var rootPathMap = getIdPathSet(root);
-        var entityModificationCount = diffEntity(schemaPathMap.keySet());
-        var entityNestingChanges = schemaPathMap.keySet().stream()
+        final var schemaPathMap = getIdPathSet(schema);
+        final var rootPathMap = getIdPathSet(root);
+        final var entityModificationCount = diffEntity(schemaPathMap.keySet());
+        final var entityNestingChanges = schemaPathMap.keySet().stream()
                 .filter(rootPathMap.keySet()::contains)
                 .map(id -> new Pair<>(schemaPathMap.get(id), rootPathMap.get(id)))
                 .mapToInt(StructuralDistanceMeasureElementary::diffEntityNestingChanges)
                 .sum();
-        var modificationCount = entityModificationCount + entityNestingChanges;
+        final var modificationCount = entityModificationCount + entityNestingChanges;
 
         return modificationCount + dropCount + createCount;
     }
 
     private static Map<Id, List<Id>> getIdPathSet(Schema schema) {
-        var rootId = schema.id();
+        final var rootId = schema.id();
         return IdentificationNumberCalculator
                 .getAllIds(schema, false)
                 .collect(Collectors.toMap(id -> id,
                         id -> {
-                            var tablePath = schema.tableSet().stream().flatMap(t -> {
+                            final var tablePath = schema.tableSet().stream().flatMap(t -> {
                                 if (t.id().equals(id)) {
                                     return Stream.of(t.id()); // Entity found! Id path finished!
                                 }
-                                var path = getIdPath(t.columnList(), id).toList();
+                                final var path = getIdPath(t.columnList(), id).toList();
                                 if (path.isEmpty()) {
                                     return Stream.of();
                                 }
@@ -95,7 +95,7 @@ public final class StructuralDistanceMeasureElementary {
     private static Stream<Id> getIdPathAcc(List<Column> columnList, Id id, List<Id> acc) {
         return columnList.stream()
                 .flatMap(column -> {
-                    var newPath = StreamExtensions.prepend(acc.stream(), column.id()).toList();
+                    final var newPath = StreamExtensions.prepend(acc.stream(), column.id()).toList();
                     if (column.id().equals(id)) {
                         return newPath.stream();
                     }
@@ -114,8 +114,8 @@ public final class StructuralDistanceMeasureElementary {
     }
 
     private static int diffEntityNestingChanges(Pair<List<Id>, List<Id>> combinedPathPair) {
-        var schemaPath = combinedPathPair.first();
-        var rootPath = combinedPathPair.second();
+        final var schemaPath = combinedPathPair.first();
+        final var rootPath = combinedPathPair.second();
         if (schemaPath.size() != rootPath.size()) {
             // change detected!
             return 1;
@@ -124,8 +124,8 @@ public final class StructuralDistanceMeasureElementary {
             // schema and leaf id are irrelevant
             return 0;
         }
-        var schemaPathTrimmed = schemaPath.subList(1, schemaPath.size() - 2);
-        var rootPathTrimmed = rootPath.subList(1, rootPath.size() - 2);
+        final var schemaPathTrimmed = schemaPath.subList(1, schemaPath.size() - 2);
+        final var rootPathTrimmed = rootPath.subList(1, rootPath.size() - 2);
         return schemaPathTrimmed.equals(rootPathTrimmed) ? 0 : 1;
     }
 

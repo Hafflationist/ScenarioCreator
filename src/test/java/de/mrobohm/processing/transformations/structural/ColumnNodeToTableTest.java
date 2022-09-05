@@ -28,33 +28,33 @@ class ColumnNodeToTableTest {
     @Test
     void transform() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var columnLeaf = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var columnLeafSub1 = columnLeaf.withId(new IdSimple(21));
-        var columnLeafSub2 = columnLeaf.withId(new IdSimple(22));
-        var columnNode = new ColumnNode(
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var columnLeaf = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var columnLeafSub1 = columnLeaf.withId(new IdSimple(21));
+        final var columnLeafSub2 = columnLeaf.withId(new IdSimple(22));
+        final var columnNode = new ColumnNode(
                 new IdSimple(14), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
-        var targetTable = StructuralTestingUtils.createTable(
+        final var targetTable = StructuralTestingUtils.createTable(
                 101, List.of(columnLeaf, columnNode, neutralColumn1, neutralColumn2)
         );
-        var idGenerator = StructuralTestingUtils.getIdGenerator(600);
-        var transformation = new ColumnNodeToTable();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(600);
+        final var transformation = new ColumnNodeToTable();
 
         // --- Act
-        var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());
         Assertions.assertFalse(newTableSet.contains(targetTable));
-        var newTableList = newTableSet.stream()
+        final var newTableList = newTableSet.stream()
                 .filter(t -> t.id() instanceof IdPart idp && idp.predecessorId().equals(targetTable.id()))
                 .toList();
-        var originTable = newTableList.stream()
+        final var originTable = newTableList.stream()
                 .filter(t -> t.name().equals(targetTable.name())).findFirst().get();
-        var extractedTable = newTableList.stream()
+        final var extractedTable = newTableList.stream()
                 .filter(t -> !t.name().equals(targetTable.name())).findFirst().get();
         Assertions.assertNotEquals(targetTable.columnList(), originTable.columnList());
         Assertions.assertEquals(targetTable.context(), originTable.context());
@@ -76,23 +76,23 @@ class ColumnNodeToTableTest {
     @Test
     void getCandidates() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var columnLeaf = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var invalidTable = new Table(new IdSimple(2), name, List.of(columnLeaf),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
-        var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
-        var columnNode = new ColumnNode(
+        final var columnLeafSub1 = columnLeaf.withId(new IdSimple(3));
+        final var columnLeafSub2 = columnLeaf.withId(new IdSimple(4));
+        final var columnNode = new ColumnNode(
                 new IdSimple(5), name, List.of(columnLeafSub1, columnLeafSub2), SSet.of(), false);
-        var validTable = new Table(
+        final var validTable = new Table(
                 new IdSimple(6), name, List.of(columnLeaf, columnNode),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(invalidTable, validTable);
-        var transformation = new ColumnNodeToTable();
+        final var tableSet = SSet.of(invalidTable, validTable);
+        final var transformation = new ColumnNodeToTable();
 
         // --- Act
-        var newTableSet = transformation.getCandidates(tableSet);
+        final var newTableSet = transformation.getCandidates(tableSet);
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());

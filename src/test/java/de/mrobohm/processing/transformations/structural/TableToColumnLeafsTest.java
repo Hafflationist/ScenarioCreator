@@ -30,46 +30,46 @@ class TableToColumnLeafsTest {
     @Test
     void transformWithoutDeletionOfIngestingColumn() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
-        var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
+        final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
-        var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
+        final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()),
                         new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of()))
         );
 
-        var table = StructuralTestingUtils.createTable(
+        final var table = StructuralTestingUtils.createTable(
                 12, List.of(column2)
         );
-        var ingestingTable = StructuralTestingUtils.createTable(
+        final var ingestingTable = StructuralTestingUtils.createTable(
                 10, List.of(ingestingColumn, neutralColumn1)
         );
-        var ingestedTable = StructuralTestingUtils.createTable(
+        final var ingestedTable = StructuralTestingUtils.createTable(
                 11, List.of(column1, ingestedColumn, neutralColumn2)
         );
-        var tableSet = SSet.of(ingestingTable, ingestedTable, table);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(ingestingTable, ingestedTable, table);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new TableToColumnLeafs(false, false);
+        final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
-        var oldIdSet = schema.tableSet().stream()
+        final var oldIdSet = schema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
-        var newIdSet = newSchema.tableSet().stream()
+        final var newIdSet = newSchema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -79,34 +79,34 @@ class TableToColumnLeafsTest {
     @Test
     void transformWithDeletionOfIngestingColumn() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
-        var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
+        final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
-        var ingestingTable = StructuralTestingUtils.createTable(
+        final var ingestingTable = StructuralTestingUtils.createTable(
                 10, List.of(ingestingColumn, neutralColumn1)
         );
-        var ingestedTable = StructuralTestingUtils.createTable(
+        final var ingestedTable = StructuralTestingUtils.createTable(
                 11, List.of(column1, ingestedColumn, neutralColumn2)
         );
-        var tableSet = SSet.of(ingestingTable, ingestedTable);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(ingestingTable, ingestedTable);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new TableToColumnLeafs(false, false);
+        final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
-        var newIdSet = newSchema.tableSet().stream()
+        final var newIdSet = newSchema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -119,31 +119,31 @@ class TableToColumnLeafsTest {
     @ParameterizedTest
     @ValueSource(ints = {0b00, 0b01, 0b10, 0b11})
     void isExecutableShouldReturnFalse(int flags) {
-        var shouldStayNormalized = (flags & 0b10) > 0;
-        var shouldConserveAllRecords = (flags & 0b01) > 0;
+        final var shouldStayNormalized = (flags & 0b10) > 0;
+        final var shouldConserveAllRecords = (flags & 0b01) > 0;
 
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
-        var column3 = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
+        final var column3 = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
 
-        var table1 = new Table(new IdSimple(10), name, List.of(column1),
+        final var table1 = new Table(new IdSimple(10), name, List.of(column1),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var table2 = new Table(new IdSimple(11), name, List.of(column1, column2),
+        final var table2 = new Table(new IdSimple(11), name, List.of(column1, column2),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var table3 = new Table(new IdSimple(14), name, List.of(column1, column2, column3),
+        final var table3 = new Table(new IdSimple(14), name, List.of(column1, column2, column3),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(table1, table2, table3);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
-        var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
+        final var tableSet = SSet.of(table1, table2, table3);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertFalse(isExecutable);
@@ -153,28 +153,28 @@ class TableToColumnLeafsTest {
     @ValueSource(booleans = {true, false})
     void isExecutableShouldReturnFalse2(boolean shouldConserveAllRecords) {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
+        final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of()))
         );
-        var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
+        final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
+        final var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
+        final var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(ingestingTable, ingestedTable);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
-        var transformation = new TableToColumnLeafs(true, shouldConserveAllRecords);
+        final var tableSet = SSet.of(ingestingTable, ingestedTable);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var transformation = new TableToColumnLeafs(true, shouldConserveAllRecords);
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertFalse(isExecutable);
@@ -183,37 +183,37 @@ class TableToColumnLeafsTest {
     @ParameterizedTest
     @ValueSource(ints = {0b00, 0b01, 0b10, 0b11})
     void isExecutableShouldReturnTrue(int flags) {
-        var shouldStayNormalized = (flags & 0b10) > 0;
-        var shouldConserveAllRecords = (flags & 0b01) > 0;
+        final var shouldStayNormalized = (flags & 0b10) > 0;
+        final var shouldConserveAllRecords = (flags & 0b01) > 0;
 
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
+        final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(!shouldConserveAllRecords), ColumnContext.getDefault(),
                 shouldStayNormalized
                         ? SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of()),
                         new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of()))
                         : SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of()))
         );
-        var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
+        final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(),
                 shouldStayNormalized
                         ? SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()),
                         new ColumnConstraintForeignKey(new IdSimple(2), SSet.of()))
                         : SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
         );
 
-        var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
+        final var ingestingTable = new Table(new IdSimple(10), name, List.of(ingestingColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
+        final var ingestedTable = new Table(new IdSimple(11), name, List.of(column1, ingestedColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(ingestingTable, ingestedTable);
-        var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
-        var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
+        final var tableSet = SSet.of(ingestingTable, ingestedTable);
+        final var schema = new Schema(new IdSimple(15), name, Context.getDefault(), tableSet);
+        final var transformation = new TableToColumnLeafs(shouldStayNormalized, shouldConserveAllRecords);
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertTrue(isExecutable);

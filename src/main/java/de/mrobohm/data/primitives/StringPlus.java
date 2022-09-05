@@ -9,8 +9,8 @@ public sealed interface StringPlus extends Comparable<StringPlus> permits String
 
 
     default NamingConvention guessNamingConvention() {
-        var isScreaming = capitalizationRatio(rawString()) > 0.5;
-        var isNumerical = letterRatio(rawString()) < 0.7;
+        final var isScreaming = capitalizationRatio(rawString()) > 0.5;
+        final var isNumerical = letterRatio(rawString()) < 0.7;
 
         if (rawString().equals("")) {
             return NamingConvention.UNDEFINED;
@@ -28,17 +28,17 @@ public sealed interface StringPlus extends Comparable<StringPlus> permits String
     }
 
     private double capitalizationRatio(String str) {
-        var relevantChars = str.chars()
+        final var relevantChars = str.chars()
                 .filter(Character::isLetter)
                 .boxed().toList();
-        var capitalizedChars = relevantChars.stream()
+        final var capitalizedChars = relevantChars.stream()
                 .filter(Character::isUpperCase)
                 .count();
         return ((double) capitalizedChars) / ((double) relevantChars.size());
     }
 
     private double letterRatio(String str) {
-        var letterChars = str.chars()
+        final var letterChars = str.chars()
                 .filter(Character::isLetter)
                 .count();
         return ((double) letterChars) / ((double) str.length());

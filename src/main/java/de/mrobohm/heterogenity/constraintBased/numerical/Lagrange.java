@@ -16,7 +16,7 @@ public final class Lagrange {
     public static Function<Double, Double> polynomize(PartialFunction partialFunction) {
         return xi -> partialFunction.func.keySet().stream()
                 .mapToDouble(x -> {
-                    double term = partialFunction.func.get(x);
+                    final var term = partialFunction.func.get(x);
                     return term * partialFunction.func.keySet().stream()
                             .filter(x2 -> !x.equals(x2))
                             .mapToDouble(x2 -> (xi - x2) / (x - x2))

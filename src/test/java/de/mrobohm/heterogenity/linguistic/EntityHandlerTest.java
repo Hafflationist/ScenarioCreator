@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 class EntityHandlerTest {
 
     private static EntityMock em(Id id) {
-        var name = new StringPlusNaked(id.toString(), Language.Technical);
+        final var name = new StringPlusNaked(id.toString(), Language.Technical);
         return new EntityMock(name, id);
     }
 
@@ -35,10 +35,10 @@ class EntityHandlerTest {
     @Test
     void getNameMapping() {
         // --- Arrange
-        var merge56 = em(
+        final var merge56 = em(
                 new IdMerge(new IdSimple(5), new IdSimple(6), MergeOrSplitType.Other)
         );
-        var entitySet1 = SSet.<Entity>of(
+        final var entitySet1 = SSet.<Entity>of(
                 em(new IdSimple(1)),
                 em(new IdSimple(2)),
                 em(new IdSimple(3)),
@@ -48,10 +48,10 @@ class EntityHandlerTest {
                 em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)),
                 em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other))
         );
-        var merge34 = em(
+        final var merge34 = em(
                 new IdMerge(new IdSimple(3), new IdSimple(4), MergeOrSplitType.Other)
         );
-        var entitySet2 = SSet.<Entity>of(
+        final var entitySet2 = SSet.<Entity>of(
                 em(new IdSimple(1)),
                 em(new IdSimple(2)),
                 merge34,
@@ -61,10 +61,10 @@ class EntityHandlerTest {
                 em(new IdPart(new IdSimple(7), 1, MergeOrSplitType.Other)),
                 em(new IdSimple(8))
         );
-        var intersectingIdSet = SSet.<Id>of(new IdSimple(1));
+        final var intersectingIdSet = SSet.<Id>of(new IdSimple(1));
 
         // --- Act
-        var mapping = EntityHandler.getNameMapping(entitySet1, entitySet2, intersectingIdSet);
+        final var mapping = EntityHandler.getNameMapping(entitySet1, entitySet2, intersectingIdSet);
 
         // --- Assert
         Assertions.assertEquals(entitySet1.size() - 1, mapping.keySet().size());
@@ -104,7 +104,7 @@ class EntityHandlerTest {
     @Test
     void mappingToDistanceTestSummation() {
         // --- Arrange
-        var mapping = Map.of(
+        final var mapping = Map.of(
                 spnDist(0.0), SSet.of(spnDist(1.0)),
                 spnDist(0.1), SSet.of(spnDist(1.0)),
                 spnDist(0.2), SSet.of(spnDist(1.0)),
@@ -112,10 +112,10 @@ class EntityHandlerTest {
         );
 
         // --- Act
-        var dist = EntityHandler.mappingToDistance(mapping, this::diff);
+        final var dist = EntityHandler.mappingToDistance(mapping, this::diff);
 
         // --- Assert
-        var abs = Math.abs(dist - 6.0);
+        final var abs = Math.abs(dist - 6.0);
         Assertions.assertTrue(abs < 1e-3);
     }
 
@@ -125,30 +125,30 @@ class EntityHandlerTest {
     })
     void mappingToDistanceTestWeight(int size) {
         // --- Arrange
-        var mapped = (SortedSet<StringPlus>) Stream
+        final var mapped = (SortedSet<StringPlus>) Stream
                 .iterate(65, x -> x + 1)
                 .map(Character::toString)
                 .map(this::spnDist)
                 .limit(size)
                 .collect(Collectors.toCollection(TreeSet::new));
-        var mapping = Map.of(
+        final var mapping = Map.of(
                 spnDist(1.0), mapped
         );
 
         // --- Act
-        var dist = EntityHandler.mappingToDistance(mapping, this::diff);
+        final var dist = EntityHandler.mappingToDistance(mapping, this::diff);
 
         // --- Assert
-        var expected = (size - 1) / 2.0 + 1.0;
-        var abs = Math.abs(dist - expected);
+        final var expected = (size - 1) / 2.0 + 1.0;
+        final var abs = Math.abs(dist - expected);
         Assertions.assertTrue(abs < 1e-3);
     }
 
     private double diff(StringPlus sp1, StringPlus sp2) {
-        var str1 = sp1.rawString().replaceAll("[^\\d.-]", "");
-        var str2 = sp2.rawString().replaceAll("[^\\d.-]", "");
-        var dist1 = parseDoubleOrDefault(str1, -Double.MAX_VALUE);
-        var dist2 = parseDoubleOrDefault(str2, -Double.MAX_VALUE);
+        final var str1 = sp1.rawString().replaceAll("[^\\d.-]", "");
+        final var str2 = sp2.rawString().replaceAll("[^\\d.-]", "");
+        final var dist1 = parseDoubleOrDefault(str1, -Double.MAX_VALUE);
+        final var dist2 = parseDoubleOrDefault(str2, -Double.MAX_VALUE);
         return Math.max(dist1, dist2);
     }
 

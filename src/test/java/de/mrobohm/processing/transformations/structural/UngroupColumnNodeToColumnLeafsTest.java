@@ -26,21 +26,21 @@ class UngroupColumnNodeToColumnLeafsTest {
     @ValueSource(booleans = {false, true})
     void transform(boolean isNodeNullable) {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var column2 = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
+        final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
-        var columnNode = new ColumnNode(new IdSimple(5), name,
+        final var columnNode = new ColumnNode(new IdSimple(5), name,
                 List.of(column1, column2), SSet.of(), isNodeNullable);
 
-        var idGenerator = StructuralTestingUtils.getIdGenerator(0);
-        var transformation = new UngroupColumnNodeToColumnLeafs();
+        final var idGenerator = StructuralTestingUtils.getIdGenerator(0);
+        final var transformation = new UngroupColumnNodeToColumnLeafs();
 
         // --- Act
-        var newColumnList = transformation.transform(columnNode, idGenerator, new Random());
+        final var newColumnList = transformation.transform(columnNode, idGenerator, new Random());
 
         // --- Assert
         Assertions.assertTrue(
@@ -54,24 +54,24 @@ class UngroupColumnNodeToColumnLeafsTest {
     @Test
     void getCandidates() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
-        var column3 = new ColumnLeaf(
+        final var column3 = new ColumnLeaf(
                 new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
-        var columnNode = new ColumnNode(new IdSimple(5), name,
+        final var columnNode = new ColumnNode(new IdSimple(5), name,
                 List.of(column2, column3), SSet.of(), false);
 
 
-        var columnList = List.of((Column) column1, column2, column3, columnNode);
-        var transformation = new UngroupColumnNodeToColumnLeafs();
+        final var columnList = List.of((Column) column1, column2, column3, columnNode);
+        final var transformation = new UngroupColumnNodeToColumnLeafs();
 
         // --- Act
-        var candidates = transformation.getCandidates(columnList);
+        final var candidates = transformation.getCandidates(columnList);
 
         // --- Assert
         Assertions.assertFalse(candidates.contains(column1));

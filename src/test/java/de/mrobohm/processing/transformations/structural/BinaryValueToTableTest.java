@@ -31,34 +31,34 @@ class BinaryValueToTableTest {
     @Test
     void transform2() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var validColumn = invalidColumn
+        final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
-        var targetTable = StructuralTestingUtils.createTable(
+        final var targetTable = StructuralTestingUtils.createTable(
                 6, List.of(invalidColumn, validColumn, neutralColumn1, neutralColumn2)
         );
-        var tableSet = SSet.of(targetTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(targetTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new BinaryValueToTable();
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         Assertions.assertEquals(2, newSchema.tableSet().size());
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
-        var tableList = newSchema.tableSet().stream().toList();
-        var table1 = tableList.get(0);
-        var table2 = tableList.get(1);
+        final var tableList = newSchema.tableSet().stream().toList();
+        final var table1 = tableList.get(0);
+        final var table2 = tableList.get(1);
         Assertions.assertFalse(
                 table1.columnList().stream()
                         .map(Column::id)
@@ -75,35 +75,35 @@ class BinaryValueToTableTest {
     @Test
     void transform3() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var validColumn = invalidColumn
+        final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
-        var targetTable = StructuralTestingUtils.createTable(
+        final var targetTable = StructuralTestingUtils.createTable(
                 6, List.of(invalidColumn, validColumn, neutralColumn1, neutralColumn2)
         );
-        var tableSet = SSet.of(targetTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(targetTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new BinaryValueToTable();
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         Assertions.assertEquals(3, newSchema.tableSet().size());
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
-        var tableList = newSchema.tableSet().stream().toList();
-        var table1 = tableList.get(0);
-        var table2 = tableList.get(1);
-        var table3 = tableList.get(2);
+        final var tableList = newSchema.tableSet().stream().toList();
+        final var table1 = tableList.get(0);
+        final var table2 = tableList.get(1);
+        final var table3 = tableList.get(2);
         Assertions.assertFalse(
                 table1.columnList().stream()
                         .map(Column::id)
@@ -125,43 +125,43 @@ class BinaryValueToTableTest {
     @Test
     void transform2WithForeignKeyConstraints() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        final var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn3 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(12), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn3 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of())));
-        var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
+        final var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
-        var validColumn = invalidColumn
+        final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(4));
-        var referencedTable = StructuralTestingUtils.createTable(
+        final var referencedTable = StructuralTestingUtils.createTable(
                 20, List.of(referencedColumn, neutralColumn1)
         );
-        var targetTable = StructuralTestingUtils.createTable(
+        final var targetTable = StructuralTestingUtils.createTable(
                 21, List.of(validColumn, referencingColumn, neutralColumn2, neutralColumn3)
         );
-        var tableSet = SSet.of(referencedTable, targetTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(referencedTable, targetTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new BinaryValueToTable();
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         Assertions.assertEquals(3, newSchema.tableSet().size());
         Assertions.assertTrue(newSchema.tableSet().stream().anyMatch(t -> t.id().equals(referencedTable.id())));
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
-        var tableList = newSchema.tableSet().stream().toList();
-        var table1 = tableList.get(0);
-        var table2 = tableList.get(1);
+        final var tableList = newSchema.tableSet().stream().toList();
+        final var table1 = tableList.get(0);
+        final var table2 = tableList.get(1);
         Assertions.assertFalse(
                 table1.columnList().stream()
                         .map(Column::id)
@@ -178,44 +178,44 @@ class BinaryValueToTableTest {
     @Test
     void transform3WithForeignKeyConstraints() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
-        var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
+        final var invalidColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var neutralColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var neutralColumn3 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
-        var referencedColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var neutralColumn3 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
+        final var referencedColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
-        var referencingColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
+        final var referencingColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
-        var validColumn = invalidColumn
+        final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(7));
-        var referencedTable = StructuralTestingUtils.createTable(
+        final var referencedTable = StructuralTestingUtils.createTable(
                 10, List.of(referencedColumn, neutralColumn1)
         );
-        var targetTable = StructuralTestingUtils.createTable(
+        final var targetTable = StructuralTestingUtils.createTable(
                 11, List.of(validColumn, referencingColumn, neutralColumn2, neutralColumn3)
         );
-        var tableSet = SSet.of(referencedTable, targetTable);
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var tableSet = SSet.of(referencedTable, targetTable);
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
         IntegrityChecker.assertValidSchema(schema);
-        var transformation = new BinaryValueToTable();
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random());
 
         // --- Assert
         Assertions.assertEquals(4, newSchema.tableSet().size());
         Assertions.assertTrue(newSchema.tableSet().stream().anyMatch(t -> t.id().equals(referencedTable.id())));
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
-        var tableList = newSchema.tableSet().stream().toList();
-        var table1 = tableList.get(0);
-        var table2 = tableList.get(1);
-        var table3 = tableList.get(2);
+        final var tableList = newSchema.tableSet().stream().toList();
+        final var table1 = tableList.get(0);
+        final var table2 = tableList.get(1);
+        final var table3 = tableList.get(2);
         Assertions.assertFalse(
                 table1.columnList().stream()
                         .map(Column::id)
@@ -245,35 +245,35 @@ class BinaryValueToTableTest {
     @Test
     void getCandidatesContainsValidTable1() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
-        var validColumn = primColumn
+        final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn));
-        var invalidTable2 = StructuralTestingUtils.createTable(2, List.of(primColumn));
-        var invalidTable3 = StructuralTestingUtils.createTable(4, List.of(validColumn));
-        var invalidTable4 = StructuralTestingUtils.createTable(4, List.of(primColumn, validColumn, invalidColumn));
-        var invalidTable5 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn, neutralColumn));
-        var validTable1 = StructuralTestingUtils.createTable(6, List.of(primColumn, validColumn));
-        var tableSet = SSet.of(
+        final var invalidTable1 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn));
+        final var invalidTable2 = StructuralTestingUtils.createTable(2, List.of(primColumn));
+        final var invalidTable3 = StructuralTestingUtils.createTable(4, List.of(validColumn));
+        final var invalidTable4 = StructuralTestingUtils.createTable(4, List.of(primColumn, validColumn, invalidColumn));
+        final var invalidTable5 = StructuralTestingUtils.createTable(2, List.of(primColumn, invalidColumn, neutralColumn));
+        final var validTable1 = StructuralTestingUtils.createTable(6, List.of(primColumn, validColumn));
+        final var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable1
         );
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
-        var transformation = new BinaryValueToTable();
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertTrue(isExecutable);
@@ -282,31 +282,31 @@ class BinaryValueToTableTest {
     @Test
     void getCandidatesContainsValidTable2() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
-        var validColumn = primColumn
+        final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+        final var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
+        final var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
+        final var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+        final var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+        final var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var validTable2 = new Table(
+        final var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
@@ -314,15 +314,15 @@ class BinaryValueToTableTest {
                 SSet.of(),
                 SSet.of()
         );
-        var tableSet = SSet.of(
+        final var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable2
         );
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
-        var transformation = new BinaryValueToTable();
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertTrue(isExecutable);
@@ -331,31 +331,31 @@ class BinaryValueToTableTest {
     @Test
     void getCandidatesContainsValidTable3() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
-        var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("M"), new Value("W"), new Value("D"));
+        final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
-        var validColumn = primColumn
+        final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+        final var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
+        final var invalidTable2 = new Table(new IdSimple(2), name, List.of(primColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
+        final var invalidTable3 = new Table(new IdSimple(4), name, List.of(validColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+        final var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+        final var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var validTable2 = new Table(
+        final var validTable2 = new Table(
                 new IdSimple(6),
                 name,
                 List.of(primColumn, validColumn, neutralColumn),
@@ -363,15 +363,15 @@ class BinaryValueToTableTest {
                 SSet.of(),
                 SSet.of()
         );
-        var tableSet = SSet.of(
+        final var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5,
                 validTable2
         );
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
-        var transformation = new BinaryValueToTable();
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertTrue(isExecutable);
@@ -380,44 +380,44 @@ class BinaryValueToTableTest {
     @Test
     void getCandidatesContainsNoValidTable() {
         // --- Arrange
-        var name = new StringPlusNaked("Spalte", Language.Mixed);
-        var dataType = new DataType(DataTypeEnum.INT32, false);
-        var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        var valueSetInvalid = SSet.of(
+        final var name = new StringPlusNaked("Spalte", Language.Mixed);
+        final var dataType = new DataType(DataTypeEnum.INT32, false);
+        final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
+        final var valueSetInvalid = SSet.of(
                 new Value("Männlein"),
                 new Value("Weiblein"),
                 new Value("Weiblein2"),
                 new Value("Weiblein3")
         );
-        var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
+        final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
-        var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
+        final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
-        var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
+        final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), valueSetInvalid)));
-        var validColumn = primColumn
+        final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
                 .withId(new IdSimple(3));
 
-        var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
+        final var invalidTable1 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable2 = new Table(new IdSimple(2), name,
+        final var invalidTable2 = new Table(new IdSimple(2), name,
                 List.of(primColumn), Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable3 = new Table(new IdSimple(4), name,
+        final var invalidTable3 = new Table(new IdSimple(4), name,
                 List.of(validColumn), Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
+        final var invalidTable4 = new Table(new IdSimple(4), name, List.of(primColumn, validColumn, invalidColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
+        final var invalidTable5 = new Table(new IdSimple(2), name, List.of(primColumn, invalidColumn, neutralColumn),
                 Context.getDefault(), SSet.of(), SSet.of());
-        var tableSet = SSet.of(
+        final var tableSet = SSet.of(
                 invalidTable1, invalidTable2, invalidTable3, invalidTable4, invalidTable5
         );
-        var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
-        var transformation = new BinaryValueToTable();
+        final var schema = new Schema(new IdSimple(0), name, Context.getDefault(), tableSet);
+        final var transformation = new BinaryValueToTable();
 
         // --- Act
-        var isExecutable = transformation.isExecutable(schema);
+        final var isExecutable = transformation.isExecutable(schema);
 
         // --- Assert
         Assertions.assertFalse(isExecutable);

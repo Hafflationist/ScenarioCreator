@@ -119,7 +119,7 @@ public class TransformationCollection {
             boolean shouldStayNormalized,
             boolean conservesFlatRelations
     ) {
-        var params = new TransformationParams(keepForeignKeyIntegrity, shouldConserveAllRecords, shouldStayNormalized);
+        final var params = new TransformationParams(keepForeignKeyIntegrity, shouldConserveAllRecords, shouldStayNormalized);
         return Stream
                 .concat(
                         _allColumnTransformationSet.stream(),
