@@ -2,7 +2,11 @@ package de.mrobohm.data.column.constraint.numerical;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface CheckExpression extends Comparable<CheckExpression> {
+public sealed interface CheckExpression extends Comparable<CheckExpression>
+        permits
+        CheckPrimitive,
+        CheckConjunction,
+        CheckDisjunction {
 
     @Override
     default int compareTo(@NotNull CheckExpression otherExpression) {
