@@ -32,7 +32,8 @@ public final class Lagrange {
             this(StepIntervall
                     .fillHoles(StepIntervall
                             .fromNumericalDistribution(nd)
-                            .collect(Collectors.toCollection(TreeSet::new))
+                            .collect(Collectors.toCollection(TreeSet::new)),
+                            1.25
                     ).stream()
                     .collect(Collectors.toMap(
                             is -> (is.start() + is.end()) / 2.0,

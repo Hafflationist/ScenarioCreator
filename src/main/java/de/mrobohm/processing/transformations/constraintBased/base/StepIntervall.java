@@ -67,6 +67,14 @@ public record StepIntervall(int step, double start, double end) implements Compa
         return fillHoles(stepIntervallSet, from, to);
     }
 
+    public static SortedSet<StepIntervall> fillHoles(SortedSet<StepIntervall> stepIntervallSet, double stretchFactor) {
+        final var from = stepIntervallSet.stream().mapToDouble(is -> is.start).min().orElse(Double.POSITIVE_INFINITY);
+        final var to = stepIntervallSet.stream().mapToDouble(is -> is.end).max().orElse(Double.NEGATIVE_INFINITY);
+        final var length = to - from;
+        final var additionalPart = (stretchFactor - 1.0) * length / 2.0;
+        return fillHoles(stepIntervallSet, from - additionalPart, to + additionalPart);
+    }
+
     public static SortedSet<StepIntervall> fillHoles(SortedSet<StepIntervall> stepIntervallSet, double from, double to) {
         if (MMath.isApproxSame(from, to) || from > to) {
             return stepIntervallSet;

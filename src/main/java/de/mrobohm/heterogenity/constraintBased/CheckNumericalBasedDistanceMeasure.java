@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 
 public final class CheckNumericalBasedDistanceMeasure {
 
-    private static final int SAMPLE_SIZE = 1_000_000;
+    private static final int SAMPLE_SIZE = 100;
 
     private CheckNumericalBasedDistanceMeasure() {
     }
@@ -42,8 +42,7 @@ public final class CheckNumericalBasedDistanceMeasure {
     public static double calculateDistanceAbsolute(
             Schema schema1, Schema schema2
     ) {
-        return aggregate(findCorrespondingTablePairs(schema1, schema2))
-                .entrySet().stream()
+        return aggregate(findCorrespondingTablePairs(schema1, schema2)).entrySet().stream()
                 .mapToDouble(entry -> diffOfColumns(entry.getKey(), entry.getValue()))
                 .sum();
     }
@@ -74,18 +73,26 @@ public final class CheckNumericalBasedDistanceMeasure {
 
     private static Map<Column, SortedSet<Column>> aggregate(Stream<Pair<Column, Column>> correspondence) {
         final var correspondenceList = correspondence.toList();
-        final var allColumnList = Stream
-                .concat(
-                        correspondenceList.stream().map(Pair::first),
-                        correspondenceList.stream().map(Pair::second)
-                )
-                .collect(Collectors.toSet());
-        return allColumnList.stream()
+        final var aggregated1 = aggregate(correspondenceList, Pair::first, Pair::second);
+        final var aggregated2 = aggregate(correspondenceList, Pair::second, Pair::first);
+        return SSet.concat(aggregated1.keySet(), aggregated2.keySet()).stream()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        key -> aggregated1.getOrDefault(key, aggregated2.getOrDefault(key, SSet.of()))
+                ));
+    }
+
+    private static <T> Map<Column, SortedSet<Column>> aggregate(
+            List<T> correspondenceList, Function<T, Column> first, Function<T, Column> second
+    ) {
+        return correspondenceList.stream()
+                .map(first)
+                .distinct()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         column -> correspondenceList.stream()
-                                .filter(corr -> Set.of(corr.first().id(), corr.second().id()).contains(column.id()))
-                                .flatMap(corr -> Stream.of(corr.first(), corr.second()))
+                                .filter(corr -> column.id().equals(first.apply(corr).id()))
+                                .map(second)
                                 .collect(Collectors.toCollection(TreeSet::new)))
                 );
     }
@@ -152,18 +159,23 @@ public final class CheckNumericalBasedDistanceMeasure {
                         fullDistributionFunction
                 ));
 
-        final var weight12 = validSet12.stream().mapToDouble(fullDistributionFunctionMemo::get).sum();
+        final var weight12 = validSet12.stream()
+                .mapToDouble(fullDistributionFunctionMemo::get)
+                .map(x -> Math.max(x, 0.0))
+                .sum();
         final var weightUnion = fullDistributionFunctionMemo.values().parallelStream().mapToDouble(x -> x).sum();
-        return weight12 / weightUnion;
+        return 1.0 - weight12 / weightUnion;
     }
 
     private static SortedSet<Double> generateTestValues(NumericalDistribution nd) {
         final var extremePair = StepIntervall.extremes(nd);
         final var min = extremePair.first();
         final var max = extremePair.second();
-        final var length = max - min;
-        final var extendedMin = min - length;
-        final var distBetweenTestValues = (length * 3.0 / (SAMPLE_SIZE - 1));
+        final var factor = 1.0;
+        final var extendedLength = (max - min) * factor;
+        final var lengthExtension = (extendedLength - (max - min)) / 2.0;
+        final var extendedMin = min - lengthExtension;
+        final var distBetweenTestValues = (extendedLength / (SAMPLE_SIZE - 1));
         return Stream
                 .iterate(extendedMin, v -> v + distBetweenTestValues)
                 .limit(SAMPLE_SIZE)

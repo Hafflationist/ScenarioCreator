@@ -50,6 +50,11 @@ class LagrangeTest {
                 0.875, 0.8,
                 1.125, 0.5
         ));
-        Assertions.assertEquals(expectedPartialFunction, partialFunction);
+        Assertions.assertEquals(expectedPartialFunction.func().keySet().size() + 2, partialFunction.func().keySet().size());
+        Assertions.assertEquals(0.1, partialFunction.func().get(0.125));
+        Assertions.assertEquals(0.2, partialFunction.func().get(0.375));
+        Assertions.assertEquals(0.0, partialFunction.func().get(0.625));
+        Assertions.assertEquals(0.8, partialFunction.func().get(0.875));
+        Assertions.assertEquals(0.5, partialFunction.func().get(1.125));
     }
 }
