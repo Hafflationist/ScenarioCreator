@@ -1,76 +1,55 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
-/******************************************************************************
- *  Compilation:  javac NFA.java
- *  Execution:    java NFA regexp text
- *  Dependencies: Stack.java List.java DirectedGraph.java DirectedDepthFirstSearch.java
- *
- *  % java NFA "(A*B|AC)D" AAAABD
- *  true
- *
- *  % java NFA "(A*B|AC)D" AAAAC
- *  false
- *
- *  % java NFA "(a|(bc)*d)*" abcbcd
- *  true
- *
- *  % java NFA "(a|(bc)*d)*" abcbcbcdaaaabcbcdaaaddd
- *  true
- *
- *  Remarks
- *  -----------
- *  The following features are not supported:
- *    - The + operator
- *    - Multiway or
- *    - Metacharacters in the text
- *    - Character classes.
- *
- ******************************************************************************/
 
+import de.mrobohm.utils.Pair;
+
+import java.util.HashSet;
 import java.util.Stack;
 
 public class NFA {
 
-    private final DirectedGraph graph;     // digraph of epsilon transitions
-    private final String regexp;     // regular expression
-    private final int m;       // number of characters in regular expression
-
-    /**
-     * Initializes the NFA from the specified regular expression.
-     *
-     * @param  regexp the regular expression
-     */
-    public NFA(String regexp) {
-        this.regexp = regexp;
-        m = regexp.length();
-        Stack<Integer> ops = new Stack<Integer>();
-        graph = new DirectedGraph(m+1);
-        for (int i = 0; i < m; i++) {
+    //  Supported features:
+    //  - kleen star *
+    //  - coproduct (|)
+    //  - precedence (())
+    //  Example inputs:
+    // "(A*B|AC)D"
+    // "(A*B|AC)D"
+    // "(a|(bc)*d)*"
+    // "(a|(bc)*d)*"
+    public static DirectedGraph regexToNfaGraph(String regex) {
+        final var ops = new Stack<Integer>();
+        final var edges = new HashSet<Pair<Integer, Integer>>();
+        for (var i = 0; i < regex.length(); i++) {
             int lp = i;
-            if (regexp.charAt(i) == '(' || regexp.charAt(i) == '|')
+            if (regex.charAt(i) == '(' || regex.charAt(i) == '|') {
                 ops.push(i);
-            else if (regexp.charAt(i) == ')') {
+            } else if (regex.charAt(i) == ')') {
                 int or = ops.pop();
 
                 // 2-way or operator
-                if (regexp.charAt(or) == '|') {
+                if (regex.charAt(or) == '|') {
                     lp = ops.pop();
-                    graph.addEdge(lp, or+1);
-                    graph.addEdge(or, i);
-                }
-                else if (regexp.charAt(or) == '(')
+                    edges.add(new Pair<>(lp, or + 1));
+                    edges.add(new Pair<>(or, i));
+                } else if (regex.charAt(or) == '(') {
                     lp = or;
-                else assert false;
+                } else {
+                    assert false;
+                }
             }
 
-            // closure operator (uses 1-character lookahead)
-            if (i < m-1 && regexp.charAt(i+1) == '*') {
-                graph.addEdge(lp, i+1);
-                graph.addEdge(i+1, lp);
+            // closure op (uses one step lookahead)
+            if (i < regex.length() - 1 && regex.charAt(i + 1) == '*') {
+                edges.add(new Pair<>(lp, i + 1));
+                edges.add(new Pair<>(i + 1, lp));
             }
-            if (regexp.charAt(i) == '(' || regexp.charAt(i) == '*' || regexp.charAt(i) == ')')
-                graph.addEdge(i, i+1);
+            if (regex.charAt(i) == '(' || regex.charAt(i) == '*' || regex.charAt(i) == ')') {
+                edges.add(new Pair<>(i, i + 1));
+            }
         }
-        if (ops.size() != 0)
+        if (ops.size() != 0) {
             throw new IllegalArgumentException("Invalid regular expression");
+        }
+        return new DirectedGraph(edges);
     }
 }
