@@ -6,7 +6,7 @@ public class NfaToDfa {
     private static Set<State> set1 = new HashSet<>();
     private static Set<State> set2 = new HashSet<>();
 
-    public static DFA generateDFA(NFA nfa) {
+    public static DFA convert(NFA nfa) {
         // Creating the DFA
         DFA dfa = new DFA();
 
@@ -43,7 +43,7 @@ public class NfaToDfa {
                 set1 = new HashSet<>();
                 set2 = new HashSet<>();
 
-                moveStates(symbol, state.getStates(), set1);
+                moveStates(symbol, state.getStateSet(), set1);
                 removeEpsilonTransition();
 
                 boolean found = false;
@@ -52,7 +52,7 @@ public class NfaToDfa {
                 for (int i = 0; i < dfa.getDfa().size(); i++) {
                     st = dfa.getDfa().get(i);
 
-                    if (st.getStates().containsAll(set2)) {
+                    if (st.getStateSet().containsAll(set2)) {
                         found = true;
                         break;
                     }
