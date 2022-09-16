@@ -1,55 +1,50 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
-import de.mrobohm.utils.Pair;
-
-import java.util.HashSet;
-import java.util.Stack;
+import java.util.LinkedList;
+import java.util.Objects;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class NFA {
 
-    //  Supported features:
-    //  - kleen star *
-    //  - coproduct (|)
-    //  - precedence (())
-    //  Example inputs:
-    // "(A*B|AC)D"
-    // "(A*B|AC)D"
-    // "(a|(bc)*d)*"
-    // "(a|(bc)*d)*"
-    public static DirectedGraph regexToNfaGraph(String regex) {
-        final var ops = new Stack<Integer>();
-        final var edges = new HashSet<Pair<Integer, Integer>>();
-        for (var i = 0; i < regex.length(); i++) {
-            int lp = i;
-            if (regex.charAt(i) == '(' || regex.charAt(i) == '|') {
-                ops.push(i);
-            } else if (regex.charAt(i) == ')') {
-                int or = ops.pop();
+    public static final char EPSILON = '%';
+    private final LinkedList<State> nfa = new LinkedList<>();
 
-                // 2-way or operator
-                if (regex.charAt(or) == '|') {
-                    lp = ops.pop();
-                    edges.add(new Pair<>(lp, or + 1));
-                    edges.add(new Pair<>(or, i));
-                } else if (regex.charAt(or) == '(') {
-                    lp = or;
-                } else {
-                    assert false;
-                }
-            }
+    public static boolean isInputCharacter(char c) {
+        return Character.isDigit(c) || Character.isLetter(c) || c == NFA.EPSILON;
+    }
 
-            // closure op (uses one step lookahead)
-            if (i < regex.length() - 1 && regex.charAt(i + 1) == '*') {
-                edges.add(new Pair<>(lp, i + 1));
-                edges.add(new Pair<>(i + 1, lp));
-            }
-            if (regex.charAt(i) == '(' || regex.charAt(i) == '*' || regex.charAt(i) == ')') {
-                edges.add(new Pair<>(i, i + 1));
-            }
-        }
-        if (ops.size() != 0) {
-            throw new IllegalArgumentException("Invalid regular expression");
-        }
-        return new DirectedGraph(edges);
+    public static Stream<Character> inputAlphabet() {
+        var alphabet = Stream.concat(
+                Stream.of('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', 'ẞ'),
+                Stream.concat(
+                        IntStream.rangeClosed('A', 'Z').mapToObj(var -> (char) var),
+                        IntStream.rangeClosed('a', 'z').mapToObj(var -> (char) var)
+                )
+        );
+        var digits = IntStream.rangeClosed('0', '9').mapToObj(var -> (char) var);
+        return Stream.concat(alphabet, digits).filter(NFA::isInputCharacter);
+    }
+
+    public LinkedList<State> getNfa() {
+        return nfa;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NFA nfa1 = (NFA) o;
+        return Objects.equals(nfa, nfa1.nfa);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(nfa);
+    }
+
+    @Override
+    public String toString() {
+        return "NFA{" + "nfa=" + nfa + '}';
     }
 }
