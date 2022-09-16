@@ -51,7 +51,7 @@ public abstract class PersistentStack<T> {
 
         @Override
         public Optional<T> peek() {
-            return new Optional.of(element);
+            return Optional.of(element);
         }
 
         @Override
