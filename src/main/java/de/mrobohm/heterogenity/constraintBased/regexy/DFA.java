@@ -4,12 +4,17 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 public class DFA {
-    private final LinkedList<State> dfa = new LinkedList<> ();
+    private final LinkedList<StateDet> dfa;
 
-    public DFA () {
+    public DFA() {
+        this.dfa = new LinkedList<>();
     }
 
-    public LinkedList<State> getDfa() {
+    public DFA(LinkedList<StateDet> dfa) {
+        this.dfa = dfa;
+    }
+
+    public LinkedList<StateDet> getDfa() {
         return dfa;
     }
 

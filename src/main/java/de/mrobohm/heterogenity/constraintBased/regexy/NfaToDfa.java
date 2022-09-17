@@ -1,6 +1,9 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.Stack;
 
 public class NfaToDfa {
     private static Set<State> set1 = new HashSet<>();
@@ -8,7 +11,7 @@ public class NfaToDfa {
 
     public static DFA convert(NFA nfa) {
         // Creating the DFA
-        DFA dfa = new DFA();
+        NFA dfa = new NFA();
 
         // Clearing all the states ID for the DFA
         int stateId = 0;
@@ -25,12 +28,12 @@ public class NfaToDfa {
 
         // Run the first remove Epsilon the get states that
         // run with epsilon
-        removeEpsilonTransition();
+        removeEpsilonTransition(new HashSet<>(nfa.getNfa()));
 
         // Create the start state of DFA and add to the stack
         State dfaStart = new State(set2, stateId++);
 
-        dfa.getDfa().addLast(dfaStart);
+        dfa.getNfa().addLast(dfaStart);
         unprocessed.addLast(dfaStart);
 
         // While there is elements in the stack
@@ -43,16 +46,16 @@ public class NfaToDfa {
                 set1 = new HashSet<>();
                 set2 = new HashSet<>();
 
-                moveStates(symbol, state.getStateSet(), set1);
-                removeEpsilonTransition();
+                moveStates(symbol, state.getStateSet(nfa.getNfa().stream()), set1);
+                removeEpsilonTransition(new HashSet<>(nfa.getNfa()));
 
                 boolean found = false;
                 State st = null;
 
-                for (int i = 0; i < dfa.getDfa().size(); i++) {
-                    st = dfa.getDfa().get(i);
+                for (int i = 0; i < dfa.getNfa().size(); i++) {
+                    st = dfa.getNfa().get(i);
 
-                    if (st.getStateSet().containsAll(set2)) {
+                    if (st.getStateSet(nfa.getNfa().stream()).containsAll(set2)) {
                         found = true;
                         break;
                     }
@@ -62,7 +65,7 @@ public class NfaToDfa {
                 if (!found) {
                     State p = new State(set2, stateId++);
                     unprocessed.addLast(p);
-                    dfa.getDfa().addLast(p);
+                    dfa.getNfa().addLast(p);
                     state.addTransition(p, symbol);
 
                     // Already in the DFA set
@@ -71,10 +74,10 @@ public class NfaToDfa {
                 }
             }
         }
-        return dfa;
+        return dfa.determinise();
     }
 
-    private static void removeEpsilonTransition() {
+    private static void removeEpsilonTransition(Set<State> allStateSet) {
         Stack<State> stack = new Stack<>();
         set2 = set1;
 
@@ -84,7 +87,7 @@ public class NfaToDfa {
 
         while (!stack.isEmpty()) {
             State st = stack.pop();
-            ArrayList<State> epsilonStates = st.getAllTransitions(NFA.EPSILON);
+            var epsilonStates = st.getAllTransitions(NFA.EPSILON);
 
             for (State p : epsilonStates) {
                 if (set2.contains(p)) continue;
@@ -95,9 +98,8 @@ public class NfaToDfa {
     }
 
     private static void moveStates(Character c, Set<State> states, Set<State> set) {
-        ArrayList<State> temp = new ArrayList<>(states);
-        for (State st : temp) {
-            ArrayList<State> allStates = st.getAllTransitions(c);
+        for (State st : states) {
+            var allStates = st.getAllTransitions(c);
 
             set.addAll(allStates);
         }

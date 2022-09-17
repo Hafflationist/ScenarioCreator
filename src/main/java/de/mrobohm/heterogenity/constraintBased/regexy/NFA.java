@@ -2,6 +2,7 @@ package de.mrobohm.heterogenity.constraintBased.regexy;
 
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -28,6 +29,10 @@ public class NFA {
 
     public LinkedList<State> getNfa() {
         return nfa;
+    }
+
+    public DFA determinise() {
+        return new DFA(nfa.stream().map(State::determinise).collect(Collectors.toCollection(LinkedList::new)));
     }
 
     @Override
