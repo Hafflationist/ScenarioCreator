@@ -89,11 +89,11 @@ public class RegexToNfa {
             final var end = new State(incs.lastUsedStateId + 2);
 
             // Add transition to start and end state
-            start.addTransition(end, 'e');
-            start.addTransition(nfa.getNfa().getFirst(), 'e');
+            start.addTransition(end, NFA.EPSILON);
+            start.addTransition(nfa.getNfa().getFirst(), NFA.EPSILON);
 
-            nfa.getNfa().getLast().addTransition(end, 'e');
-            nfa.getNfa().getLast().addTransition(nfa.getNfa().getFirst(), 'e');
+            nfa.getNfa().getLast().addTransition(end, NFA.EPSILON);
+            nfa.getNfa().getLast().addTransition(nfa.getNfa().getFirst(), NFA.EPSILON);
 
             nfa.getNfa().addFirst(start);
             nfa.getNfa().addLast(end);
@@ -113,7 +113,7 @@ public class RegexToNfa {
 
                 // Add transition to the end of nfa 1 to the beginning of nfa 2
                 // the transition uses empty string
-                nfa1.getNfa().getLast().addTransition(nfa2.getNfa().getFirst(), 'e');
+                nfa1.getNfa().getLast().addTransition(nfa2.getNfa().getFirst(), NFA.EPSILON);
 
                 // Add all states in nfa2 to the end of nfa1
                 for (State s : nfa2.getNfa()) {

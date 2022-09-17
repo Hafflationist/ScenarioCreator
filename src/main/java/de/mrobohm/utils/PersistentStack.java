@@ -8,11 +8,11 @@ public abstract class PersistentStack<T> {
         return new EmptyNode<>();
     }
 
-    abstract Optional<PersistentStack<T>> pop();
+    public abstract Optional<PersistentStack<T>> pop();
 
-    abstract Optional<T> peek();
+    public abstract Optional<T> peek();
 
-    abstract boolean isEmpty();
+    public abstract boolean isEmpty();
 
     public PersistentStack<T> push(T element) {
         return new LinkNode(this, element);

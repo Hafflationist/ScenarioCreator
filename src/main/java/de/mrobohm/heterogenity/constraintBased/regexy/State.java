@@ -89,6 +89,6 @@ public class State {
 
     @Override
     public int hashCode() {
-        return Objects.hash(stateId, nextState, acceptState);
+        return Objects.hash(stateId, nextStateToString(), acceptState);
     }
 }
