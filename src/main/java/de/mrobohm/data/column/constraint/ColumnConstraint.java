@@ -9,6 +9,7 @@ import java.util.List;
 public sealed interface ColumnConstraint extends Comparable<ColumnConstraint>
         permits
         ColumnConstraintCheckNumerical,
+        ColumnConstraintCheckRegex,
         ColumnConstraintForeignKey,
         ColumnConstraintForeignKeyInverse,
         ColumnConstraintUnique {

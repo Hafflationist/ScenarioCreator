@@ -109,6 +109,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                             yield ccu.withUniqueGroupId(newConstraintId);
                         }
                         case ColumnConstraintCheckNumerical cccn -> cccn;
+                        case ColumnConstraintCheckRegex cccr -> cccr;
                     }).collect(Collectors.toCollection(TreeSet::new));
                     return (Column) switch (column) {
                         case ColumnLeaf leaf -> leaf

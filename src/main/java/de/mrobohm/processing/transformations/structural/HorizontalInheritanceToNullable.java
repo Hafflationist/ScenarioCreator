@@ -272,6 +272,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                     && ccfkia.foreignColumnId().equals(ccfkib.foreignColumnId());
             // the following constraints can be merged in the methode named mergeXor
             case ColumnConstraintCheckNumerical ignore -> true;
+            case ColumnConstraintCheckRegex ignore -> true;
         }));
     }
 
