@@ -26,8 +26,6 @@ public class NfaToDfa {
         // Add first state to the set1
         set1.add(nfa.getNfa().getFirst());
 
-        // Run the first remove Epsilon the get states that
-        // run with epsilon
         removeEpsilonTransition(new HashSet<>(nfa.getNfa()));
 
         // Create the start state of DFA and add to the stack
@@ -61,7 +59,7 @@ public class NfaToDfa {
                     }
                 }
 
-                // Not in the DFA set, add it
+                // Not in the DFA set; add it
                 if (!found) {
                     State p = new State(set2, stateId++);
                     unprocessed.addLast(p);

@@ -31,6 +31,10 @@ public class StateDet {
         return _isAcceptState;
     }
 
+    public Map<Character, Integer> getNextState() {
+        return _nextState;
+    }
+
     public void setAcceptState(boolean acceptState) {
         this._isAcceptState = acceptState;
     }
