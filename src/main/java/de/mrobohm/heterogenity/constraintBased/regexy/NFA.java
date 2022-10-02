@@ -1,9 +1,11 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
+import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -11,14 +13,14 @@ import java.util.stream.Stream;
 
 public class NFA {
 
-    public static final char EPSILON = '%';
+    public static final char EPSILON = '-';
 
     private final State _initState;
     private final LinkedList<State> nfa;
 
     public NFA(State initState, SortedSet<State> allStateSet) {
         _initState = initState;
-        nfa = new LinkedList(StreamExtensions.prepend(allStateSet.stream().filter(s -> s.getStateId() != initState.getStateId()), initState).toList());
+        nfa = new LinkedList<>(StreamExtensions.prepend(allStateSet.stream().filter(s -> s.getStateId() != initState.getStateId()), initState).toList());
     }
 
     public NFA() {
@@ -53,6 +55,21 @@ public class NFA {
 
     public Stream<State> getAcceptStateSet() {
         return nfa.stream().filter(State::isAcceptState);
+    }
+
+    public Stream<State> next(State state, char character) {
+        return state.getNextState().getOrDefault(character, SSet.of()).stream()
+                .map(sid -> this.getNfa().stream().filter(s -> s.getStateId() == sid).findFirst())
+                .filter(Optional::isPresent)
+                .map(Optional::get);
+    }
+
+    public Stream<State> next(State state) {
+        return state.getNextState().values().stream()
+                .flatMap(SortedSet::stream)
+                .map(sid -> this.getNfa().stream().filter(s -> s.getStateId() == sid).findFirst())
+                .filter(Optional::isPresent)
+                .map(Optional::get);
     }
 
     public DFA determinise() {
