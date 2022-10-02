@@ -2,6 +2,8 @@ package de.mrobohm.heterogenity.constraintBased.regexy.minimizer;
 
 import de.mrobohm.heterogenity.constraintBased.regexy.DFA;
 import de.mrobohm.heterogenity.constraintBased.regexy.StateDet;
+import de.mrobohm.utils.SSet;
+import de.mrobohm.utils.StreamExtensions;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,9 +11,10 @@ import java.util.stream.Stream;
 
 public class DfaMinimization {
 
-    public static DFA minimize(DFA dfa) {
+    public static DFA minimize(DFA preDfa) {
+        final var dfa = removeUnreachableStates(preDfa);
 
-        final var stateList = dfa.getDfa();
+        final var stateList = dfa.stateSet();
         var groups = (List<Group>) new ArrayList<Group>();
 
         // stores the group of non-final states
@@ -29,9 +32,6 @@ public class DfaMinimization {
 
         //initial set of groups
         System.out.println("initially - \n" + groups);
-
-        //remove all the states from the groups that are unreachable
-        groups = removeUnreachableStates(groups, stateList);
 
         //set of groups after removing unreachable states
         System.out.println("removed unreachable - \n" + groups);
@@ -67,48 +67,29 @@ public class DfaMinimization {
 
         final var newStateList = groups.stream()
                 .flatMap(Collection::stream)
-                .collect(Collectors.toCollection(LinkedList::new));
+                .toList();
 
-        return new DFA(newStateList);
+        return new DFA(newStateList.get(0), new TreeSet<>(newStateList));
     }
 
-    /*
-     * Breadth First Search implementation to remove unreachable states
-     * returns list of groups free from unreachable states
-     * */
-    private static List<Group> removeUnreachableStates(List<Group> groups, LinkedList<StateDet> stateList) {
+    public static DFA removeUnreachableStates(DFA dfa) {
+        final var closureSet = getClosure(dfa, dfa.initState())
+                .collect(Collectors.toCollection(TreeSet::new));
+        return new DFA(dfa.initState(), closureSet);
+    }
+    private static Stream<StateDet> getClosure(DFA dfa, StateDet state) {
+        return getClosureInner(dfa, state, SSet.of());
+    }
 
-        final var reachable = new boolean[stateList.size()];
-        reachable[0] = true;
-        final var queue = new LinkedList<Integer>();
-        queue.add(stateList.get(0).id());
-
-        while (!queue.isEmpty()) {
-            final var currentSid = queue.remove(0);
-            final var currentNextStateSet = stateList.stream()
-                    .filter(s -> s.id() == currentSid)
-                    .findFirst()
-                    .map(StateDet::transitionMap)
-                    .map(Map::entrySet)
-                    .orElse(Set.of());
-            for (Map.Entry<Character, Integer> e : currentNextStateSet) {
-                final var sid = e.getValue();
-                if (!reachable[sid]) {
-                    queue.add(sid);
-                    reachable[sid] = true;
-                }
-            }
-        }
-
-        //remove all the states that are not visible/reachable
-        System.out.println(Arrays.toString(reachable));
-        var reachableStateSet = Stream.iterate(0, i -> i + 1)
-                .limit(stateList.size())
-                .filter(i -> reachable[i])
-                .map(stateList::get)
-                .collect(Collectors.toSet());
-
-        return groups.stream().map(group -> group.intersection(reachableStateSet)).toList();
+    private static Stream<StateDet> getClosureInner(DFA dfa, StateDet state, SortedSet<StateDet> knownStateSet) {
+        final var epsilonNext = dfa.next(state).toList();
+        final var newKnownStateSet = SSet.concat(epsilonNext, knownStateSet);
+        return StreamExtensions.prepend(
+                epsilonNext.stream()
+                        .filter(s -> !knownStateSet.contains(s))
+                        .flatMap(s -> getClosureInner(dfa, s, newKnownStateSet)),
+                state
+        );
     }
 
     /*

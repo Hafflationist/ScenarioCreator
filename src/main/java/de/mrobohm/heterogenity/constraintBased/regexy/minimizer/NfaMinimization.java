@@ -16,6 +16,10 @@ public final class NfaMinimization {
     private NfaMinimization() {
     }
 
+    public static NFA reduce(NFA nfa) {
+        return removeUnreachableStates(removeEpsilonTransition(nfa));
+    }
+
     public static NFA removeEpsilonTransition(NFA nfa) {
         final var partitionWithEpsilon = StreamExtensions.partition(
                 nfa.stateSet().stream(),

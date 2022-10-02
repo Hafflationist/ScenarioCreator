@@ -3,9 +3,11 @@ package de.mrobohm.heterogenity.constraintBased.regexy;
 import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public record NFA (State initState, SortedSet<State> stateSet){
@@ -21,19 +23,6 @@ public record NFA (State initState, SortedSet<State> stateSet){
 
     public static boolean isInputCharacter(char c) {
         return Character.isDigit(c) || Character.isLetter(c) || c == NFA.EPSILON;
-    }
-
-    public static Stream<Character> inputAlphabet() {
-        var alphabet = Stream.concat(
-                Stream.of('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', 'ẞ'),
-                Stream.concat(
-                        IntStream.rangeClosed('A', 'Z').mapToObj(var -> (char) var),
-                        IntStream.rangeClosed('a', 'z').mapToObj(var -> (char) var)
-                )
-        );
-        var digits = IntStream.rangeClosed('0', '9').mapToObj(var -> (char) var);
-        return Stream.concat(alphabet, digits).filter(NFA::isInputCharacter);
-        //return Stream.of('a', 'b', 'c');
     }
 
     public Stream<State> next(State state, char character) {
@@ -66,6 +55,6 @@ public record NFA (State initState, SortedSet<State> stateSet){
 
     @Override
     public String toString() {
-        return "NFA{" + "nfa=" + stateSet + '}';
+        return "NFA{ initId=" + initState.id() + "; nfa=" + stateSet + '}';
     }
 }
