@@ -1,71 +1,61 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
-import java.util.*;
+import de.mrobohm.utils.Pair;
+import de.mrobohm.utils.StreamExtensions;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class StateDet {
-    private final int _stateId;
-    private final Map<Character, Integer> _nextState;
-    private boolean _isAcceptState;
+public record StateDet(int id,
+                       Map<Character, Integer> transitionMap,
+                       boolean isAcceptState) implements Comparable<StateDet> {
 
-    // This constructor is used for DFA
-    public StateDet(int id, Map<Character, Integer> nextState, boolean isAcceptState) {
-        this._stateId = id;
-        this._nextState = nextState;
-        this._isAcceptState = isAcceptState;
+    public StateDet withId(int newId) {
+        return new StateDet(newId, transitionMap, isAcceptState);
     }
 
-    public void setTransition(StateDet next, char key) {
-        this._nextState.put(key, next._stateId);
+    public StateDet withNextState(Map<Character, Integer> newNextState) {
+        return new StateDet(id, newNextState, isAcceptState);
     }
 
-    public Optional<Integer> getTransition(char c) {
-        return Optional.ofNullable(this._nextState.get(c));
+    public StateDet withIsAcceptState(boolean newIsAcceptState) {
+        return new StateDet(id, transitionMap, newIsAcceptState);
     }
 
-    public int getStateId() {
-        return _stateId;
+    public StateDet withAdditionalTransition(char character, int targetStateId) {
+        final var newNextStateMap = StreamExtensions
+                .prepend(
+                        transitionMap.entrySet().stream()
+                                .filter(e -> !e.getKey().equals(character))
+                                .map(e -> new Pair<>(e.getKey(), e.getValue())),
+                        new Pair<>(character, targetStateId)
+                )
+                .collect(Collectors.toMap(
+                        Pair::first,
+                        Pair::second
+                ));
+        return new StateDet(id, newNextStateMap, isAcceptState);
     }
-
-    public boolean isAcceptState() {
-        return _isAcceptState;
-    }
-
-    public Map<Character, Integer> getNextState() {
-        return _nextState;
-    }
-
-    public void setAcceptState(boolean acceptState) {
-        this._isAcceptState = acceptState;
-    }
-
 
     @Override
     public String toString() {
         return "q{" +
-                " transitions=" + nextStateToString() +
-                ", accept=" + _isAcceptState +
-                " }";
+                "id=" + id +
+                ", (->)=" + nextStateToString() +
+                ", accept=" + isAcceptState +
+                '}';
     }
 
     private String nextStateToString() {
-        return _nextState.entrySet().stream()
-                .map(entry -> "(" + _stateId + "-" + entry.getKey() + "->" + entry.getValue() + ")")
-                .collect(Collectors.joining(", "));
+        return transitionMap.entrySet().stream().map(entry -> {
+            final var stateIdStr = entry.getValue().toString();
+            return "(" + id + "-" + entry.getKey() + "->" + stateIdStr + ")";
+        }).collect(Collectors.joining(", "));
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final var state = (StateDet) o;
-        return _stateId == state._stateId
-                && _isAcceptState == state._isAcceptState
-                && nextStateToString().equals(state.nextStateToString());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(_stateId, _nextState, _isAcceptState);
+    public int compareTo(@NotNull StateDet o) {
+        return this.toString().compareTo(o.toString());
     }
 }

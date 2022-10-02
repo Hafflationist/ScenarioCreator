@@ -18,8 +18,8 @@ public final class NfaMinimization {
 
     public static NFA removeEpsilonTransition(NFA nfa) {
         final var partitionWithEpsilon = StreamExtensions.partition(
-                nfa.getNfa().stream(),
-                s -> s.getNextState().containsKey(NFA.EPSILON)
+                nfa.stateSet().stream(),
+                s -> s.transitionMap().containsKey(NFA.EPSILON)
         );
         final var statesWithEpsilonSet = partitionWithEpsilon.yes().toList();
         if (statesWithEpsilonSet.isEmpty()) {
@@ -28,7 +28,7 @@ public final class NfaMinimization {
         final var newStateSetHalf = statesWithEpsilonSet.stream().map(state -> {
             final var epsilonClosure = getEpsilonClosure(nfa, state).toList();
             final var epsilonClosureTransitionSet = epsilonClosure.stream()
-                    .flatMap(s -> s.getNextState().entrySet().stream())
+                    .flatMap(s -> s.transitionMap().entrySet().stream())
                     .collect(Collectors.toSet());
             final var newNextState = epsilonClosureTransitionSet.stream().map(Map.Entry::getKey)
                     .filter(c -> c != NFA.EPSILON)
@@ -50,7 +50,7 @@ public final class NfaMinimization {
                 .concat(newStateSetHalf, partitionWithEpsilon.no())
                 .collect(Collectors.toCollection(TreeSet::new));
         final var newInitState = newStateSet.stream()
-                .filter(s -> s.getStateId() == nfa.getInitState().getStateId())
+                .filter(s -> s.id() == nfa.initState().id())
                 .findFirst();
         assert newInitState.isPresent();
         return new NFA(newInitState.get(), newStateSet);
@@ -72,9 +72,9 @@ public final class NfaMinimization {
     }
 
     public static NFA removeUnreachableStates(NFA nfa) {
-        final var closureSet = getClosure(nfa, nfa.getInitState())
+        final var closureSet = getClosure(nfa, nfa.initState())
                 .collect(Collectors.toCollection(TreeSet::new));
-        return new NFA(nfa.getInitState(), closureSet);
+        return new NFA(nfa.initState(), closureSet);
     }
     private static Stream<State> getClosure(NFA nfa, State state) {
         return getClosureInner(nfa, state, SSet.of());

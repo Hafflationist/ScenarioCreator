@@ -31,8 +31,8 @@ class NfaMinimizationTest {
         final var nfaWithoutEpsilon = NfaMinimization.removeEpsilonTransition(nfa);
 
         // --- Assert
-        final var containsEpsilon = nfaWithoutEpsilon.getNfa().stream()
-                .anyMatch(state -> state.getNextState().containsKey(NFA.EPSILON));
+        final var containsEpsilon = nfaWithoutEpsilon.stateSet().stream()
+                .anyMatch(state -> state.transitionMap().containsKey(NFA.EPSILON));
         Assertions.assertFalse(containsEpsilon);
 
         System.out.println("\nnfa:");

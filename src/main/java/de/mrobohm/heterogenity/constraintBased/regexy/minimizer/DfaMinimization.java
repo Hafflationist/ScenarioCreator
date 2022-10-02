@@ -49,7 +49,7 @@ public class DfaMinimization {
 //        int idx = 0;
 //        for (Group g : groups) {
 //            for (StateDet s : g) {
-//                map.put(s.getStateId(), idx);
+//                map.put(s.id(), idx);
 //            }
 //            idx++;
 //        }
@@ -59,8 +59,8 @@ public class DfaMinimization {
 //        Set<String> trans = new HashSet<>();
 //        for (Group g : groups) {
 //            for (StateDet s : g) {
-//                for (Map.Entry<Character, Integer> e : s.getNextState().entrySet()) {
-//                    trans.add(map.get(s.getStateId()) + " " + e.getKey() + " " + map.get(e.getValue()));
+//                for (Map.Entry<Character, Integer> e : s.transitionMap().entrySet()) {
+//                    trans.add(map.get(s.id()) + " " + e.getKey() + " " + map.get(e.getValue()));
 //                }
 //            }
 //        }
@@ -81,14 +81,14 @@ public class DfaMinimization {
         final var reachable = new boolean[stateList.size()];
         reachable[0] = true;
         final var queue = new LinkedList<Integer>();
-        queue.add(stateList.get(0).getStateId());
+        queue.add(stateList.get(0).id());
 
         while (!queue.isEmpty()) {
             final var currentSid = queue.remove(0);
             final var currentNextStateSet = stateList.stream()
-                    .filter(s -> s.getStateId() == currentSid)
+                    .filter(s -> s.id() == currentSid)
                     .findFirst()
-                    .map(StateDet::getNextState)
+                    .map(StateDet::transitionMap)
                     .map(Map::entrySet)
                     .orElse(Set.of());
             for (Map.Entry<Character, Integer> e : currentNextStateSet) {
@@ -161,8 +161,8 @@ public class DfaMinimization {
     }
 
     private static boolean areStatesUnique(List<Group> groups, StateDet state1, StateDet state2) {
-        for (Map.Entry<Character, Integer> e : state1.getNextState().entrySet()) {
-            if (!containedBySameGroup(groups, e.getValue(), state2.getNextState().get(e.getKey()))) {
+        for (Map.Entry<Character, Integer> e : state1.transitionMap().entrySet()) {
+            if (!containedBySameGroup(groups, e.getValue(), state2.transitionMap().get(e.getKey()))) {
                 return true;
             }
         }
@@ -176,8 +176,8 @@ public class DfaMinimization {
     private static boolean containedBySameGroup(List<Group> groups, int stateId1, int stateId2) {
         return groups.stream().anyMatch(group ->
         {
-            var contains1 = group.stream().anyMatch(s -> s.getStateId() == stateId1);
-            var contains2 = group.stream().anyMatch(s -> s.getStateId() == stateId2);
+            var contains1 = group.stream().anyMatch(s -> s.id() == stateId1);
+            var contains2 = group.stream().anyMatch(s -> s.id() == stateId2);
             return contains1 && contains2;
         });
     }

@@ -3,29 +3,20 @@ package de.mrobohm.heterogenity.constraintBased.regexy;
 import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.LinkedList;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-public class NFA {
+public record NFA (State initState, SortedSet<State> stateSet){
 
     public static final char EPSILON = '-';
 
-    private final State _initState;
-    private final LinkedList<State> nfa;
-
-    public NFA(State initState, SortedSet<State> allStateSet) {
-        _initState = initState;
-        nfa = new LinkedList<>(StreamExtensions.prepend(allStateSet.stream().filter(s -> s.getStateId() != initState.getStateId()), initState).toList());
-    }
-
-    public NFA() {
-        _initState = null;
-        nfa = new LinkedList<>();
+    public NFA(State initState, SortedSet<State> stateSet) {
+        this.initState = initState;
+        this.stateSet = StreamExtensions
+                .prepend(stateSet.stream().filter(s -> s.id() != initState.id()), initState)
+                .collect(Collectors.toCollection(TreeSet::new));
     }
 
     public static boolean isInputCharacter(char c) {
@@ -45,35 +36,19 @@ public class NFA {
         //return Stream.of('a', 'b', 'c');
     }
 
-    public State getInitState() {
-        return _initState == null ? nfa.getFirst() : _initState;
-    }
-
-    public LinkedList<State> getNfa() {
-        return nfa;
-    }
-
-    public Stream<State> getAcceptStateSet() {
-        return nfa.stream().filter(State::isAcceptState);
-    }
-
     public Stream<State> next(State state, char character) {
-        return state.getNextState().getOrDefault(character, SSet.of()).stream()
-                .map(sid -> this.getNfa().stream().filter(s -> s.getStateId() == sid).findFirst())
+        return state.transitionMap().getOrDefault(character, SSet.of()).stream()
+                .map(sid -> this.stateSet().stream().filter(s -> s.id() == sid).findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get);
     }
 
     public Stream<State> next(State state) {
-        return state.getNextState().values().stream()
+        return state.transitionMap().values().stream()
                 .flatMap(SortedSet::stream)
-                .map(sid -> this.getNfa().stream().filter(s -> s.getStateId() == sid).findFirst())
+                .map(sid -> this.stateSet().stream().filter(s -> s.id() == sid).findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get);
-    }
-
-    public DFA determinise() {
-        return new DFA(nfa.stream().map(State::determinise).collect(Collectors.toCollection(LinkedList::new)));
     }
 
     @Override
@@ -81,16 +56,16 @@ public class NFA {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NFA nfa1 = (NFA) o;
-        return Objects.equals(nfa, nfa1.nfa);
+        return Objects.equals(stateSet, nfa1.stateSet) && Objects.equals(initState, nfa1.initState);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(nfa);
+        return Objects.hash(stateSet) ^ Objects.hash(initState);
     }
 
     @Override
     public String toString() {
-        return "NFA{" + "nfa=" + nfa + '}';
+        return "NFA{" + "nfa=" + stateSet + '}';
     }
 }
