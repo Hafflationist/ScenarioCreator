@@ -43,15 +43,14 @@ public class StateDet {
     @Override
     public String toString() {
         return "q{" +
-                "id=" + _stateId +
-                ", (->)=" + nextStateToString() +
+                " transitions=" + nextStateToString() +
                 ", accept=" + _isAcceptState +
-                '}';
+                " }";
     }
 
     private String nextStateToString() {
         return _nextState.entrySet().stream()
-                .map(entry -> "(" + entry.getKey() + "->" + entry.getValue() + ")")
+                .map(entry -> "(" + _stateId + "-" + entry.getKey() + "->" + entry.getValue() + ")")
                 .collect(Collectors.joining(", "));
     }
 

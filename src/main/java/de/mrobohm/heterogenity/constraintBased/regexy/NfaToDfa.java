@@ -1,13 +1,11 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-import java.util.Stack;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class NfaToDfa {
-    private static Set<State> set1 = new HashSet<>();
-    private static Set<State> set2 = new HashSet<>();
+    private static SortedSet<State> set1 = new TreeSet<>();
+    private static SortedSet<State> set2 = new TreeSet<>();
 
     public static DFA convert(NFA nfa) {
         // Creating the DFA
@@ -20,8 +18,8 @@ public class NfaToDfa {
         LinkedList<State> unprocessed = new LinkedList<>();
 
         // Create sets
-        set1 = new HashSet<>();
-        set2 = new HashSet<>();
+        set1 = new TreeSet<>();
+        set2 = new TreeSet<>();
 
         // Add first state to the set1
         set1.add(nfa.getNfa().getFirst());
@@ -41,11 +39,11 @@ public class NfaToDfa {
 
             // Check if input symbol
             for (Character symbol : NFA.inputAlphabet().toList()) {
-                set1 = new HashSet<>();
-                set2 = new HashSet<>();
+                set1 = new TreeSet<>();
+                set2 = new TreeSet<>();
 
-                moveStates(symbol, state.getStateSet(nfa.getNfa().stream()), set1);
-                removeEpsilonTransition(new HashSet<>(nfa.getNfa()));
+                moveStates(symbol, state.getStateSet(nfa.getNfa().stream()), set1, new HashSet<>(nfa.getNfa()));
+                removeEpsilonTransition(new HashSet<>(Stream.concat(dfa.getNfa().stream(), nfa.getNfa().stream()).toList()));
 
                 boolean found = false;
                 State st = null;
@@ -85,7 +83,7 @@ public class NfaToDfa {
 
         while (!stack.isEmpty()) {
             State st = stack.pop();
-            var epsilonStates = st.getAllTransitions(NFA.EPSILON);
+            var epsilonStates = st.getAllTransitions(NFA.EPSILON, allStateSet);
 
             for (State p : epsilonStates) {
                 if (set2.contains(p)) continue;
@@ -95,10 +93,9 @@ public class NfaToDfa {
         }
     }
 
-    private static void moveStates(Character c, Set<State> states, Set<State> set) {
+    private static void moveStates(Character c, SortedSet<State> states, Set<State> set, Set<State> allStateSet) {
         for (State st : states) {
-            var allStates = st.getAllTransitions(c);
-
+            var allStates = st.getAllTransitions(c, allStateSet);
             set.addAll(allStates);
         }
     }
