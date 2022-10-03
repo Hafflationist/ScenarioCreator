@@ -56,6 +56,17 @@ public record DFA(StateDet initState, SortedSet<StateDet> stateSet) {
                 .orElse(false);
     }
 
+    public DFA negate() {
+        final var newStateSet = stateSet.stream()
+                .map(s -> s.withIsAcceptState(!s.isAcceptState()))
+                .collect(Collectors.toCollection(TreeSet::new));
+        final var newInitStateOpt = newStateSet.stream()
+                .filter(s -> s.id() == initState.id())
+                .findFirst();
+        assert newInitStateOpt.isPresent();
+        return new DFA(newInitStateOpt.get(), newStateSet);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
