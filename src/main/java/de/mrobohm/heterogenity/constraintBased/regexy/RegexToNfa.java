@@ -8,6 +8,7 @@ import de.mrobohm.utils.StreamExtensions;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,6 +35,7 @@ public final class RegexToNfa {
                 yield sum(nfa1, nfa2);
             }
             case RegularTerminal rt -> terminal(rt.terminal());
+            case RegularWildcard rw -> wildcard();
         };
     }
 
@@ -93,7 +95,7 @@ public final class RegexToNfa {
     private static NFA reidentification(NFA baseNfa, NFA toBeRenamedNfa) {
         final var maxIdBase = baseNfa.stateSet().stream().mapToInt(State::id).max().orElse(0);
         final var idStream = Stream.iterate(maxIdBase + 1, i -> i + 1);
-        final var translationMap= StreamExtensions
+        final var translationMap = StreamExtensions
                 .zip(
                         toBeRenamedNfa.stateSet().stream(),
                         idStream,
@@ -120,5 +122,18 @@ public final class RegexToNfa {
                 .findFirst();
         assert newInitStateOpt.isPresent();
         return new NFA(newInitStateOpt.get(), newStateSet);
+    }
+
+    private static NFA wildcard() {
+        final var transitionMap = NfaToDfa.inputAlphabet()
+                .collect(Collectors.toMap(
+                        Function.identity(),
+                        ignore -> SSet.of(1)
+                ));
+        final var initState = new State(
+                0, transitionMap, false
+        );
+        final var endState = new State(1, Map.of(), true);
+        return new NFA(initState, SSet.of(initState, endState));
     }
 }
