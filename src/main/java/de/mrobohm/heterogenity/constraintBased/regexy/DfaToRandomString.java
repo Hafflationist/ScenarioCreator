@@ -20,7 +20,7 @@ public final class DfaToRandomString {
         return generate(dfa, initState, "", "", random);
     }
 
-    public static String generate(
+    private static String generate(
             DFA dfa, StateDet state, String acc, String lastAcceptedString, Random random
     ) {
         if (state.isAcceptState() && random.nextInt(12) == 7) {
