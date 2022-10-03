@@ -76,22 +76,8 @@ public final class NfaMinimization {
     }
 
     public static NFA removeUnreachableStates(NFA nfa) {
-        final var closureSet = getClosure(nfa, nfa.initState())
+        final var closureSet = nfa.getClosure(nfa.initState())
                 .collect(Collectors.toCollection(TreeSet::new));
         return new NFA(nfa.initState(), closureSet);
-    }
-    private static Stream<State> getClosure(NFA nfa, State state) {
-        return getClosureInner(nfa, state, SSet.of());
-    }
-
-    private static Stream<State> getClosureInner(NFA nfa, State state, SortedSet<State> knownStateSet) {
-        final var epsilonNext = nfa.next(state).toList();
-        final var newKnownStateSet = SSet.concat(epsilonNext, knownStateSet);
-        return StreamExtensions.prepend(
-                epsilonNext.stream()
-                        .filter(s -> !knownStateSet.contains(s))
-                        .flatMap(s -> getClosureInner(nfa, s, newKnownStateSet)),
-                state
-        );
     }
 }

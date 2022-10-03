@@ -2,12 +2,9 @@ package de.mrobohm.heterogenity.constraintBased.regexy.minimizer;
 
 import de.mrobohm.heterogenity.constraintBased.regexy.DFA;
 import de.mrobohm.heterogenity.constraintBased.regexy.StateDet;
-import de.mrobohm.utils.SSet;
-import de.mrobohm.utils.StreamExtensions;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DfaMinimization {
 
@@ -73,23 +70,9 @@ public class DfaMinimization {
     }
 
     public static DFA removeUnreachableStates(DFA dfa) {
-        final var closureSet = getClosure(dfa, dfa.initState())
+        final var closureSet = dfa.getClosure(dfa.initState())
                 .collect(Collectors.toCollection(TreeSet::new));
         return new DFA(dfa.initState(), closureSet);
-    }
-    private static Stream<StateDet> getClosure(DFA dfa, StateDet state) {
-        return getClosureInner(dfa, state, SSet.of());
-    }
-
-    private static Stream<StateDet> getClosureInner(DFA dfa, StateDet state, SortedSet<StateDet> knownStateSet) {
-        final var epsilonNext = dfa.next(state).toList();
-        final var newKnownStateSet = SSet.concat(epsilonNext, knownStateSet);
-        return StreamExtensions.prepend(
-                epsilonNext.stream()
-                        .filter(s -> !knownStateSet.contains(s))
-                        .flatMap(s -> getClosureInner(dfa, s, newKnownStateSet)),
-                state
-        );
     }
 
     /*

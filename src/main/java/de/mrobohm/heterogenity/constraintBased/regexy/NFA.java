@@ -40,6 +40,21 @@ public record NFA (State initState, SortedSet<State> stateSet){
                 .map(Optional::get);
     }
 
+    public Stream<State> getClosure(State state) {
+        return getClosureInner(state, SSet.of());
+    }
+
+    private Stream<State> getClosureInner(State state, SortedSet<State> knownStateSet) {
+        final var epsilonNext = next(state).toList();
+        final var newKnownStateSet = SSet.concat(epsilonNext, knownStateSet);
+        return StreamExtensions.prepend(
+                epsilonNext.stream()
+                        .filter(s -> !knownStateSet.contains(s))
+                        .flatMap(s -> getClosureInner(s, newKnownStateSet)),
+                state
+        );
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
