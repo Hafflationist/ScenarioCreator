@@ -1,5 +1,6 @@
 package de.mrobohm.heterogenity.constraintBased.regexy;
 
+import de.mrobohm.data.column.constraint.regexy.RegularExpression;
 import de.mrobohm.heterogenity.constraintBased.regexy.minimizer.NfaMinimization;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.SSet;
@@ -11,7 +12,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public final class NfaToDfa {
@@ -21,12 +21,12 @@ public final class NfaToDfa {
     public static DFA convert(NFA preNfa) {
         final var nfa = NfaMinimization.reduce(preNfa);
         final var powerStateSet = SSet.powerSet(nfa.stateSet());
-        final var multiStateSet= powerStateSet.stream()
+        final var multiStateSet = powerStateSet.stream()
                 .map(stateSet -> {
-                    final var fullTransition= inputAlphabet()
+                    final var fullTransition = RegularExpression.inputAlphabet()
                             .collect(Collectors.toMap(
                                     Function.identity(),
-                                    character -> (SortedSet<Integer>)stateSet.stream()
+                                    character -> (SortedSet<Integer>) stateSet.stream()
                                             .flatMap(s -> s.transitionMap().getOrDefault(character, SSet.of()).stream())
                                             .collect(Collectors.toCollection(TreeSet::new))
                             ));
@@ -39,19 +39,6 @@ public final class NfaToDfa {
                 .findFirst();
         assert initMultiStateOpt.isPresent();
         return multiStatesToDfa(initMultiStateOpt.get(), multiStateSet);
-    }
-
-    public static Stream<Character> inputAlphabet() {
-        var alphabet = Stream.concat(
-                Stream.of('ä', 'ö', 'ü', 'ß', 'Ä', 'Ö', 'Ü', 'ẞ'),
-                Stream.concat(
-                        IntStream.rangeClosed('A', 'Z').mapToObj(var -> (char) var),
-                        IntStream.rangeClosed('a', 'z').mapToObj(var -> (char) var)
-                )
-        );
-        var digits = IntStream.rangeClosed('0', '9').mapToObj(var -> (char) var);
-//        return Stream.concat(alphabet, digits).filter(NFA::isInputCharacter);
-        return Stream.of('a', 'b', 'c');
     }
 
     private static DFA multiStatesToDfa(MultiState initState, Set<MultiState> multiStateSet) {

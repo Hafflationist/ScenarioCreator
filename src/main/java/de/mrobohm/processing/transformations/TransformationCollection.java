@@ -2,6 +2,7 @@ package de.mrobohm.processing.transformations;
 
 import de.mrobohm.processing.transformations.constraintBased.ForeignKeyRemover;
 import de.mrobohm.processing.transformations.constraintBased.FunctionalDependencyRemover;
+import de.mrobohm.processing.transformations.constraintBased.RegularCheckModifier;
 import de.mrobohm.processing.transformations.contextual.ChangeUnitOfMeasure;
 import de.mrobohm.processing.transformations.linguistic.*;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
@@ -36,6 +37,7 @@ public class TransformationCollection {
         return SSet.of(
                 // constraintBased
                 new ForeignKeyRemover(),
+                new RegularCheckModifier(),
                 // contextual
                 new ChangeUnitOfMeasure(),
                 // linguistic

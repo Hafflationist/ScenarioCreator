@@ -125,7 +125,7 @@ public final class RegexToNfa {
     }
 
     private static NFA wildcard() {
-        final var transitionMap = NfaToDfa.inputAlphabet()
+        final var transitionMap = RegularExpression.inputAlphabet()
                 .collect(Collectors.toMap(
                         Function.identity(),
                         ignore -> SSet.of(1)
