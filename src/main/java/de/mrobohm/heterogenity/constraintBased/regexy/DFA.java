@@ -40,6 +40,22 @@ public record DFA(StateDet initState, SortedSet<StateDet> stateSet) {
         );
     }
 
+    public boolean acceptsString(String input) {
+        final var charStream = input.chars().mapToObj(i -> (char) i);
+        return StreamExtensions
+                .foldLeft(
+                        charStream,
+                        Optional.of(initState),
+                        (stateDetOpt, character) -> {
+                            if (stateDetOpt.isEmpty()) return Optional.empty();
+                            final var newStateId = stateDetOpt.get().transitionMap().getOrDefault(character, Integer.MAX_VALUE);
+                            return stateSet.stream().filter(s -> s.id() == newStateId).findFirst();
+                        }
+                )
+                .map(StateDet::isAcceptState)
+                .orElse(false);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -76,7 +76,7 @@ public final class StreamExtensions {
     @NotNull
     public static <T> Optional<T> tryPickRandom(Stream<T> stream, Random random) {
         final var list = stream.toList();
-        if (list.isEmpty()){
+        if (list.isEmpty()) {
             return Optional.empty();
         }
         return list.stream()
@@ -140,6 +140,23 @@ public final class StreamExtensions {
         return (a.isParallel() || b.isParallel())
                 ? StreamSupport.stream(split, true)
                 : StreamSupport.stream(split, false);
+    }
+
+    public static <U, T> U foldLeft(Stream<T> stream, U seed, BiFunction<U, ? super T, U> folder) {
+        final var list = stream.toList();
+        if (list.isEmpty()) {
+            return seed;
+        }
+        final var head = list.get(0);
+        final var tail = list.stream().skip(1);
+        final var newSeed = folder.apply(seed, head);
+        return foldLeft(tail, newSeed, folder);
+        // in the case of stack problems (TCO won't be performed in JAVA):
+//        U result = seed;
+//        for (T element : list) {
+//            result = folder.apply(result, element);
+//        }
+//        return result;
     }
 
     public record Partition<T>(Stream<T> yes, Stream<T> no) {

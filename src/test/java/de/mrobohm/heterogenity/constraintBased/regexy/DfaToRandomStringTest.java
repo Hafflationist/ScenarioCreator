@@ -2,6 +2,7 @@ package de.mrobohm.heterogenity.constraintBased.regexy;
 
 import de.mrobohm.data.column.constraint.regexy.RegularKleene;
 import de.mrobohm.data.column.constraint.regexy.RegularTerminal;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -24,6 +25,11 @@ class DfaToRandomStringTest {
         final var randomString4 = DfaToRandomString.generate(dfa, random);
 
         // --- Assert
+        Assertions.assertTrue(dfa.acceptsString(randomString));
+        Assertions.assertTrue(dfa.acceptsString(randomString2));
+        Assertions.assertTrue(dfa.acceptsString(randomString3));
+        Assertions.assertTrue(dfa.acceptsString(randomString4));
+        Assertions.assertFalse(dfa.acceptsString(randomString + 'b'));
 //        System.out.println(nfa);
 //        System.out.println(dfa);
         System.out.println(randomString);
