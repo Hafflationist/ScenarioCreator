@@ -35,7 +35,7 @@ public class Forester {
         return Stream
                 .iterate((TreeEntity<Schema>)tree, t -> step(t, ttd, random))
                 .limit(5)
-                .flatMap(te -> getAllTreeEntitySet(te).stream())
+                .flatMap(te -> TreeDataOperator.getAllTreeEntitySet(te).stream())
                 .map(TreeEntity::content)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
@@ -53,19 +53,8 @@ public class Forester {
         return TreeDataOperator.replaceTreeEntity(te, chosenTe, newTe);
     }
 
-    private SortedSet<TreeEntity<Schema>> getAllTreeEntitySet(TreeEntity<Schema> te) {
-        return switch (te) {
-            case TreeLeaf<Schema> tl -> SSet.of((TreeEntity<Schema>) tl);
-            case TreeNode<Schema> tn -> {
-                final var children = tn.childSet().parallelStream()
-                        .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
-                yield Stream.concat(Stream.of(tn), children).collect(Collectors.toCollection(TreeSet::new));
-            }
-        };
-    }
-
     private TreeEntity<Schema> chooseTreeEntityToExtend(TreeEntity<Schema> te, TreeTargetDefinition ttd, Random random) {
-        final var possibilitySet = getAllTreeEntitySet(te);
+        final var possibilitySet = TreeDataOperator.getAllTreeEntitySet(te);
         final var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
         return StreamExtensions.pickRandomOrThrow(possibilitySet.stream(), rte, random);
     }
@@ -115,7 +104,6 @@ public class Forester {
     ) {
         if (acc >= max) throw new RuntimeException("No suitable transformation could be found and performed!");
         final var rte = new RuntimeException("Not enough transformations given!");
-        // TODO: check which transformations can be applied!
         final var schema = te.content();
         final var validTransformationStream = transformationSet.stream()
                 .filter(transformation -> SingleTransformationChecker.checkTransformation(schema, transformation));
