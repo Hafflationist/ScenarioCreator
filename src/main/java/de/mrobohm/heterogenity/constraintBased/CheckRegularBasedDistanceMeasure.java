@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 public final class CheckRegularBasedDistanceMeasure {
 
-    private static final int SAMPLE_SIZE = 100;
+    private static final int SAMPLE_SIZE = 1000;
 
     private CheckRegularBasedDistanceMeasure() {
     }
@@ -130,11 +130,17 @@ public final class CheckRegularBasedDistanceMeasure {
         final var dfa1 = regexToDfa(regularExpression1);
         final var dfa2 = regexToDfa(regularExpression2);
         final var testValues = generateTestValues(dfa1, dfa2, SAMPLE_SIZE, random);
-        final var acceptedByBoth = testValues.stream()
+        final var acceptedBy1 = testValues.parallelStream()
                 .filter(dfa1::acceptsString)
+                .collect(Collectors.toSet());
+        final var acceptedBy2 = testValues.parallelStream()
                 .filter(dfa2::acceptsString)
                 .collect(Collectors.toSet());
-        return (double) acceptedByBoth.size() / (double) testValues.size();
+        final var acceptedByBoth = acceptedBy1.stream()
+                .filter(acceptedBy2::contains)
+                .collect(Collectors.toSet());
+        final var acceptedByOne = SSet.concat(acceptedBy1, acceptedBy2);
+        return 1.0 - ((double) acceptedByBoth.size() / (double) acceptedByOne.size());
     }
 
     private static DFA regexToDfa(RegularExpression regex) {
@@ -154,7 +160,11 @@ public final class CheckRegularBasedDistanceMeasure {
 
     private static SortedSet<String> generateTestValues(DFA dfa, int n, Random random) {
         return Stream
-                .generate(() -> DfaToRandomString.generate(dfa, random))
+                .generate(() -> 0)
+                .parallel()
+                .limit(n * 2)
+                .map(ignore -> DfaToRandomString.generate(dfa, random))
+                .distinct()
                 .limit(n)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
