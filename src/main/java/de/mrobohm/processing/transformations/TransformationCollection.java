@@ -134,8 +134,10 @@ public class TransformationCollection {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private record TransformationParams(boolean keepForeignKeyIntegrity,
-                                        boolean shouldConserveAllRecords,
-                                        boolean shouldStayNormalized) {
+    private record TransformationParams(
+            boolean keepForeignKeyIntegrity,
+            boolean shouldConserveAllRecords,
+            boolean shouldStayNormalized
+    ) {
     }
 }

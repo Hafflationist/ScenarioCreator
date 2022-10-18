@@ -1,5 +1,8 @@
 package de.mrobohm.processing.tree;
 
+import de.mrobohm.processing.tree.generic.TreeDataOperator;
+import de.mrobohm.processing.tree.generic.TreeLeaf;
+import de.mrobohm.processing.tree.generic.TreeNode;
 import de.mrobohm.utils.SSet;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

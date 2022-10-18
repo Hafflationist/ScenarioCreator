@@ -1,4 +1,4 @@
-package de.mrobohm.processing.tree;
+package de.mrobohm.processing.tree.generic;
 
 import de.mrobohm.utils.SSet;
 
@@ -7,11 +7,11 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-final class TreeDataOperator {
+public final class TreeDataOperator {
     private TreeDataOperator() {
     }
 
-    static <TContent> TreeEntity<TContent> replaceTreeEntity(
+    public static <TContent> TreeEntity<TContent> replaceTreeEntity(
             TreeEntity<TContent> root,
             TreeEntity<TContent> oldEntity,
             TreeEntity<TContent> newEntity
@@ -36,7 +36,7 @@ final class TreeDataOperator {
     }
 
 
-    static <TContent> SortedSet<TreeEntity<TContent>> getAllTreeEntitySet(TreeEntity<TContent> te) {
+    public static <TContent> SortedSet<TreeEntity<TContent>> getAllTreeEntitySet(TreeEntity<TContent> te) {
         return switch (te) {
             case TreeLeaf<TContent> tl -> SSet.of((TreeEntity<TContent>) tl);
             case TreeNode<TContent> tn -> {

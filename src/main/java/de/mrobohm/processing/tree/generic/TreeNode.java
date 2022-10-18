@@ -1,4 +1,4 @@
-package de.mrobohm.processing.tree;
+package de.mrobohm.processing.tree.generic;
 
 import java.util.SortedSet;
 

@@ -14,8 +14,7 @@ import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
-import de.mrobohm.processing.tree.Forester;
-import de.mrobohm.processing.tree.TreeTargetDefinition;
+import de.mrobohm.processing.tree.*;
 import de.mrobohm.utils.Pair;
 import de.mrobohm.utils.SSet;
 import org.apache.commons.io.FileUtils;
@@ -27,7 +26,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
@@ -235,7 +233,6 @@ public class Main {
             final var random = new Random(seed);
             final var seedFile = Path.of(pathStr, "scenario/seed.txt").toFile();
             try (final var writer = new FileWriter(seedFile)) {
-//                writer.write("hugo");
                 writer.write(Integer.toString(seed));
             }
 
@@ -245,28 +242,32 @@ public class Main {
                     random, 3, 3, gni::pickRandomEnglishWord
             );
             final var schema = ss.saturateSemantically(schemaNaked);
-
-            final var ste = new SingleTransformationExecuter(ss);
+            final var swad = new SchemaWithAdditionalData(schema, List.of());
             final var translation = new Translation(ulc);
-            final var tc = new TransformationCollection(ulc, translation);
-            final var forester = new Forester(ste, tc);
-            final var ttd = new TreeTargetDefinition(
+            final var forester = new Forester(
+                    new SingleTransformationExecuter(ss),
+                    new TransformationCollection(ulc, translation),
+                    DistanceMeasures.getDefault(),
+                    DistanceDefinition.getDefault(),
+                    DistanceDefinition.getDefault()
+            );
+            final var tgd = new TreeGenerationDefinition(
                     true, true, true, false
             );
-            final var schemaList = forester.createScenario(schema, ttd, random).stream().toList();
-            System.out.println("Working Directory = " + System.getProperty("user.dir"));
-            SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
-            IntStream.range(0, schemaList.size())
-                    .forEach(idx -> {
-                        final var newSchema = schemaList.get(idx);
-                        final var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
-                        try {
-                            SchemaFileHandler.save(newSchema, path);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        System.out.println("Saved schema in \"" + path + "\"");
-                    });
+//            final var schemaList = forester.createNext(swad, tgd, SSet.of(), random).stream().toList();
+//            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+//            SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
+//            IntStream.range(0, schemaList.size())
+//                    .forEach(idx -> {
+//                        final var newSchema = schemaList.get(idx);
+//                        final var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
+//                        try {
+//                            SchemaFileHandler.save(newSchema, path);
+//                        } catch (IOException e) {
+//                            throw new RuntimeException(e);
+//                        }
+//                        System.out.println("Saved schema in \"" + path + "\"");
+//                    });
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -301,6 +302,7 @@ public class Main {
             System.out.println(e.getMessage());
         }
     }
+
     public static void main(String[] args) throws XMLStreamException, IOException {
         final var path = args[0];
 //        writeRandomSchema(path);
