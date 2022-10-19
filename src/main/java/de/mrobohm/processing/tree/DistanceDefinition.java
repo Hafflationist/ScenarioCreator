@@ -23,6 +23,33 @@ public record DistanceDefinition(
                 && contextual.min <= distance.contextual() && distance.contextual() <= contextual().max;
     }
 
+    public Distance min() {
+        return new Distance(
+                structural.min,
+                linguistic.min,
+                constraintBased.min,
+                contextual.min
+        );
+    }
+
+    public Distance avg() {
+        return new Distance(
+                structural.avg,
+                linguistic.avg,
+                constraintBased.avg,
+                contextual.avg
+        );
+    }
+
+    public Distance max() {
+        return new Distance(
+                structural.max,
+                linguistic.max,
+                constraintBased.max,
+                contextual.max
+        );
+    }
+
     public double diff(double min, double max, double value) {
         return Math.min(Math.abs(min - value), Math.abs(max - value));
     }
