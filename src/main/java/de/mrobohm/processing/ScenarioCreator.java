@@ -1,8 +1,8 @@
 package de.mrobohm.processing;
 
 import de.mrobohm.data.Schema;
-import de.mrobohm.heterogenity.Distance;
-import de.mrobohm.processing.transformations.SingleTransformationExecuter;
+import de.mrobohm.heterogeneity.Distance;
+import de.mrobohm.processing.transformations.SingleTransformationExecutor;
 import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.tree.*;
 import de.mrobohm.utils.SSet;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScenarioCreator {
-    private final SingleTransformationExecuter _singleTransformationExecuter;
+    private final SingleTransformationExecutor _singleTransformationExecutor;
 
     private final TransformationCollection _transformationCollection;
 
@@ -23,12 +23,12 @@ public class ScenarioCreator {
     private final DistanceDefinition _validDefinition;
 
     public ScenarioCreator(
-            SingleTransformationExecuter singleTransformationExecuter,
+            SingleTransformationExecutor singleTransformationExecutor,
             TransformationCollection transformationCollection,
             DistanceMeasures measures,
             DistanceDefinition validDefinition
     ) {
-        _singleTransformationExecuter = singleTransformationExecuter;
+        _singleTransformationExecutor = singleTransformationExecutor;
         _transformationCollection = transformationCollection;
         _measures = measures;
         _validDefinition = validDefinition;
@@ -49,7 +49,7 @@ public class ScenarioCreator {
                                     existingSchemaSet, sizeOfScenario
                             );
                             final var forester = new Forester(
-                                    _singleTransformationExecuter,
+                                    _singleTransformationExecutor,
                                     _transformationCollection,
                                     _measures,
                                     _validDefinition,

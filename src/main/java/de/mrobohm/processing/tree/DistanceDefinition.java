@@ -1,6 +1,6 @@
 package de.mrobohm.processing.tree;
 
-import de.mrobohm.heterogenity.Distance;
+import de.mrobohm.heterogeneity.Distance;
 
 public record DistanceDefinition(
         Target structural,

@@ -4,11 +4,11 @@ import de.mrobohm.data.Language;
 import de.mrobohm.data.primitives.StringPlus;
 import de.mrobohm.data.primitives.StringPlusNaked;
 import de.mrobohm.data.primitives.synset.GermanSynset;
-import de.mrobohm.heterogenity.StringDistances;
-import de.mrobohm.heterogenity.structural.ted.Ted;
+import de.mrobohm.heterogeneity.StringDistances;
+import de.mrobohm.heterogeneity.structural.ted.Ted;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
-import de.mrobohm.processing.transformations.SingleTransformationExecuter;
+import de.mrobohm.processing.transformations.SingleTransformationExecutor;
 import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
 import de.mrobohm.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
@@ -245,7 +245,7 @@ public class Main {
             final var swad = new SchemaWithAdditionalData(schema, List.of());
             final var translation = new Translation(ulc);
             final var forester = new Forester(
-                    new SingleTransformationExecuter(ss),
+                    new SingleTransformationExecutor(ss),
                     new TransformationCollection(ulc, translation),
                     DistanceMeasures.getDefault(),
                     DistanceDefinition.getDefault(),

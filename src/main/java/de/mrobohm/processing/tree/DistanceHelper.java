@@ -1,7 +1,7 @@
 package de.mrobohm.processing.tree;
 
 import de.mrobohm.data.Schema;
-import de.mrobohm.heterogenity.Distance;
+import de.mrobohm.heterogeneity.Distance;
 
 import java.util.List;
 import java.util.SortedSet;

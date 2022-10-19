@@ -2,7 +2,7 @@ package de.mrobohm.processing.tree;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.processing.transformations.SingleTransformationChecker;
-import de.mrobohm.processing.transformations.SingleTransformationExecuter;
+import de.mrobohm.processing.transformations.SingleTransformationExecutor;
 import de.mrobohm.processing.transformations.Transformation;
 import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.transformations.exceptions.NoColumnFoundException;
@@ -25,7 +25,7 @@ public class Forester {
 
     private static final int NUMBER_OF_STEPS = 10;
 
-    private final SingleTransformationExecuter _singleTransformationExecuter;
+    private final SingleTransformationExecutor _singleTransformationExecutor;
 
     private final TransformationCollection _transformationCollection;
 
@@ -35,13 +35,13 @@ public class Forester {
     private final DistanceDefinition _targetDefinition;
 
     public Forester(
-            SingleTransformationExecuter singleTransformationExecuter,
+            SingleTransformationExecutor singleTransformationExecutor,
             TransformationCollection transformationCollection,
             DistanceMeasures measures,
             DistanceDefinition validDefinition,
             DistanceDefinition targetDefinition
     ) {
-        _singleTransformationExecuter = singleTransformationExecuter;
+        _singleTransformationExecutor = singleTransformationExecutor;
         _transformationCollection = transformationCollection;
         _measures = measures;
         _validDefinition = validDefinition;
@@ -186,7 +186,7 @@ public class Forester {
                 validTransformationStream, rte, random
         );
         try {
-            final var newSchema = _singleTransformationExecuter.executeTransformation(
+            final var newSchema = _singleTransformationExecutor.executeTransformation(
                     schema, chosenTransformation, random
             );
             final var newDistanceList = DistanceHelper.distanceList(newSchema, oldSchemaSet, _measures);
