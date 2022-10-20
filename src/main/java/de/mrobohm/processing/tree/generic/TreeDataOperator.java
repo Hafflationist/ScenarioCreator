@@ -1,7 +1,6 @@
 package de.mrobohm.processing.tree.generic;
 
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -20,15 +19,14 @@ public final class TreeDataOperator {
         return switch (root) {
             case TreeLeaf ignore -> root;
             case TreeNode<TContent> tn -> {
-                final var childSet = tn.childSet();
-                final var newChildSet = childSet.parallelStream()
+                final var childList = tn.childList();
+                final var newChildList = childList.parallelStream()
                         .map(child -> replaceTreeEntity(child, oldEntity, newEntity))
-                        .collect(Collectors.toSet());
-
-                if (newChildSet.equals(childSet)) {
+                        .toList();
+                if (newChildList.equals(childList)) {
                     yield root;
                 }
-                yield root.withChildren(new TreeSet<>(newChildSet));
+                yield root.withChildren(newChildList);
             }
         };
     }
@@ -38,7 +36,7 @@ public final class TreeDataOperator {
         return switch (te) {
             case TreeLeaf<TContent> tl -> Set.of((TreeEntity<TContent>) tl);
             case TreeNode<TContent> tn -> {
-                final var children = tn.childSet().parallelStream()
+                final var children = tn.childList().parallelStream()
                         .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
                 yield Stream.concat(Stream.of(tn), children).collect(Collectors.toSet());
             }

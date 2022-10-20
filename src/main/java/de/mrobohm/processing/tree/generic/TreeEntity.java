@@ -2,13 +2,13 @@ package de.mrobohm.processing.tree.generic;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.SortedSet;
+import java.util.List;
 
-public sealed interface TreeEntity<TContent> extends Comparable<TreeEntity> permits TreeLeaf, TreeNode {
+public sealed interface TreeEntity<TContent> extends Comparable<TreeEntity<TContent>> permits TreeLeaf, TreeNode {
     TContent content();
 
-    default TreeNode<TContent> withChildren(SortedSet<TreeEntity<TContent>> newChildSet) {
-        return new TreeNode<>(content(), newChildSet);
+    default TreeNode<TContent> withChildren(List<TreeEntity<TContent>> newChildList) {
+        return new TreeNode<>(content(), newChildList);
     }
 
     @Override

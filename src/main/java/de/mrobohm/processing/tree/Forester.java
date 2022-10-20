@@ -11,13 +11,9 @@ import de.mrobohm.processing.tree.generic.TreeDataOperator;
 import de.mrobohm.processing.tree.generic.TreeEntity;
 import de.mrobohm.processing.tree.generic.TreeLeaf;
 import de.mrobohm.processing.tree.generic.TreeNode;
-import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
 
-import java.util.Comparator;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -63,24 +59,12 @@ public class Forester implements IForester {
             Random random
     ) {
         final var tree = new TreeLeaf<>(rootSchema);
-        final var inter1 = Stream
+        final var swadSet = Stream
                 .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, random))
                 .limit(NUMBER_OF_STEPS)
-                .toList();
-        System.out.println("inter1 done");
-        final var inter2 = inter1.stream()
                 .flatMap(te -> TreeDataOperator.getAllTreeEntitySet(te).stream())
-                .toList();
-        System.out.println("inter2 done");
-        final var inter3 = inter2.stream()
                 .map(TreeEntity::content)
-                .toList();
-        System.out.println("inter3 done");
-        final var inter4 = inter3.stream()
                 .filter(swad -> !swad.equals(rootSchema))
-                .toList();
-        System.out.println("inter4 done");
-        final var swadSet = inter4.stream()
                 .collect(Collectors.toCollection(TreeSet::new));
         return chooseBestChild(swadSet, random);
     }
@@ -155,14 +139,14 @@ public class Forester implements IForester {
             Random random
     ) {
         final var newChild = createNewChild(te, transformationSet, oldSchemaSet, random);
-        final var oldChildSet = switch (te) {
-            case TreeNode<SchemaWithAdditionalData> tn -> tn.childSet();
-            case TreeLeaf ignore -> SSet.<TreeEntity<SchemaWithAdditionalData>>of();
+        final var oldChildList = switch (te) {
+            case TreeNode<SchemaWithAdditionalData> tn -> tn.childList();
+            case TreeLeaf ignore -> List.<TreeEntity<SchemaWithAdditionalData>>of();
         };
-        final var newChildSet = StreamExtensions
-                .prepend(oldChildSet.stream(), newChild)
-                .collect(Collectors.toCollection(TreeSet::new));
-        return te.withChildren(newChildSet);
+        final var newChildList = StreamExtensions
+                .prepend(oldChildList.stream(), newChild)
+                .toList();
+        return te.withChildren(newChildList);
     }
 
     private SortedSet<Transformation> getChosenTransformations(
