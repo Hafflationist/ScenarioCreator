@@ -22,16 +22,20 @@ public class ScenarioCreator {
 
     private final DistanceDefinition _validDefinition;
 
+    private final Forester.Injection _foresterInjection;
+
     public ScenarioCreator(
             SingleTransformationExecutor singleTransformationExecutor,
             TransformationCollection transformationCollection,
             DistanceMeasures measures,
-            DistanceDefinition validDefinition
+            DistanceDefinition validDefinition,
+            Forester.Injection foresterInjection
     ) {
         _singleTransformationExecutor = singleTransformationExecutor;
         _transformationCollection = transformationCollection;
         _measures = measures;
         _validDefinition = validDefinition;
+        _foresterInjection = foresterInjection;
     }
 
     public SortedSet<Schema> create(Schema startSchema, int sizeOfScenario, Random random) {
@@ -48,7 +52,7 @@ public class ScenarioCreator {
                             final var targetDefinition = calcTargetDefinition(
                                     existingSchemaSet, sizeOfScenario
                             );
-                            final var forester = new Forester(
+                            final var forester = _foresterInjection.get(
                                     _singleTransformationExecutor,
                                     _transformationCollection,
                                     _measures,

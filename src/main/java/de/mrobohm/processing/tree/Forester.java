@@ -48,6 +48,10 @@ public class Forester {
         _targetDefinition = targetDefinition;
     }
 
+    public Injection getRealForesterInjection() {
+        return Forester::new;
+    }
+
     public SchemaWithAdditionalData createNext(
             SchemaWithAdditionalData rootSchema,
             TreeGenerationDefinition tgd,
@@ -108,15 +112,15 @@ public class Forester {
     }
 
     private SchemaWithAdditionalData chooseBestChild(SortedSet<SchemaWithAdditionalData> swadSet, Random random) {
-        final var targetNodeStream= swadSet.stream()
+        final var targetNodeStream = swadSet.stream()
                 .filter(swad -> DistanceHelper.isValid(
                         swad.distanceList(), _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE
                 ));
         final var targetNodeOpt = StreamExtensions.tryPickRandom(targetNodeStream, random);
         if (targetNodeOpt.isPresent()) {
-           return targetNodeOpt.get();
+            return targetNodeOpt.get();
         }
-        final var validNodeStream= swadSet.stream()
+        final var validNodeStream = swadSet.stream()
                 .filter(swad -> DistanceHelper.isValid(
                         swad.distanceList(), _validDefinition, DistanceHelper.AggregationMethod.CONJUNCTION
                 ));
@@ -195,5 +199,16 @@ public class Forester {
         } catch (NoTableFoundException | NoColumnFoundException e) {
             return createNewChildInner(te, transformationSet, oldSchemaSet, random, max, acc + 1);
         }
+    }
+
+    @FunctionalInterface
+    public interface Injection {
+        Forester get(
+                SingleTransformationExecutor singleTransformationExecutor,
+                TransformationCollection transformationCollection,
+                DistanceMeasures measures,
+                DistanceDefinition validDefinition,
+                DistanceDefinition targetDefinition
+        );
     }
 }
