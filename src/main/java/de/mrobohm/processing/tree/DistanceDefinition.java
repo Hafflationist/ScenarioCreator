@@ -63,9 +63,18 @@ public record DistanceDefinition(
 
     public record Target(double min, double avg, double max) {
         public Target {
-            assert min <= avg;
-            assert avg <= max;
+            assert min <= avg || Double.isNaN(avg);
+            assert avg <= max || Double.isNaN(avg);
         }
 
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Target target = (Target) o;
+            return (Math.abs(target.min - min) <= (Math.min(Math.abs(target.min), Math.abs(min)) / 1e3) || Double.isNaN(target.min) && Double.isNaN(min))
+                    && (Math.abs(target.avg - avg) <= (Math.min(Math.abs(target.avg), Math.abs(avg)) / 1e3) || Double.isNaN(target.avg) && Double.isNaN(avg))
+                    && (Math.abs(target.max - max) <= (Math.min(Math.abs(target.max), Math.abs(max)) / 1e3) || Double.isNaN(target.max) && Double.isNaN(max));
+        }
     }
 }

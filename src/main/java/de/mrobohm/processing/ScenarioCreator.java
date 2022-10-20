@@ -2,8 +2,6 @@ package de.mrobohm.processing;
 
 import de.mrobohm.data.Schema;
 import de.mrobohm.heterogeneity.Distance;
-import de.mrobohm.processing.transformations.SingleTransformationExecutor;
-import de.mrobohm.processing.transformations.TransformationCollection;
 import de.mrobohm.processing.tree.*;
 import de.mrobohm.utils.SSet;
 import de.mrobohm.utils.StreamExtensions;
@@ -14,26 +12,19 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScenarioCreator {
-    private final SingleTransformationExecutor _singleTransformationExecutor;
-
-    private final TransformationCollection _transformationCollection;
-
-    private final DistanceMeasures _measures;
 
     private final DistanceDefinition _validDefinition;
 
     private final Forester.Injection _foresterInjection;
 
+    /**
+     * Besides of managing most lines in this class calculate the limits for target nodes
+     * A definition of "target node" can be found in "Similarity-driven Schema Transformation for Test Data Generation" (4/6)
+     */
     public ScenarioCreator(
-            SingleTransformationExecutor singleTransformationExecutor,
-            TransformationCollection transformationCollection,
-            DistanceMeasures measures,
             DistanceDefinition validDefinition,
             Forester.Injection foresterInjection
     ) {
-        _singleTransformationExecutor = singleTransformationExecutor;
-        _transformationCollection = transformationCollection;
-        _measures = measures;
         _validDefinition = validDefinition;
         _foresterInjection = foresterInjection;
     }
@@ -53,9 +44,6 @@ public class ScenarioCreator {
                                     existingSchemaSet, sizeOfScenario
                             );
                             final var forester = _foresterInjection.get(
-                                    _singleTransformationExecutor,
-                                    _transformationCollection,
-                                    _measures,
                                     _validDefinition,
                                     targetDefinition
                             );
@@ -96,7 +84,7 @@ public class ScenarioCreator {
                 .sum();
 
         final var existingSchemas = existingSchemaSet.size();
-        final var heterogeneityWeWantToReach = missingDistanceRelations(existingSchemas, sizeOfScenario) * validAvg;
+        final var heterogeneityWeWantToReach = missingDistanceRelations(0, sizeOfScenario) * validAvg;
         final var missingRelationsNextRun = missingDistanceRelations(existingSchemas + 1, sizeOfScenario);
         final var missingHeterogeneity = heterogeneityWeWantToReach - alreadyReachedHeterogeneity;
         final var targetMin = Math.max(

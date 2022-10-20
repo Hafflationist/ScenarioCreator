@@ -7,6 +7,7 @@ import de.mrobohm.data.primitives.synset.GermanSynset;
 import de.mrobohm.heterogeneity.StringDistances;
 import de.mrobohm.heterogeneity.structural.ted.Ted;
 import de.mrobohm.inout.SchemaFileHandler;
+import de.mrobohm.processing.ScenarioCreator;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.SingleTransformationExecutor;
 import de.mrobohm.processing.transformations.TransformationCollection;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Main {
@@ -242,32 +244,30 @@ public class Main {
                     random, 3, 3, gni::pickRandomEnglishWord
             );
             final var schema = ss.saturateSemantically(schemaNaked);
-            final var swad = new SchemaWithAdditionalData(schema, List.of());
             final var translation = new Translation(ulc);
-            final var forester = new Forester(
+            final var creator = new ScenarioCreator(DistanceDefinition.getDefault(), ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
                     new TransformationCollection(ulc, translation),
                     DistanceMeasures.getDefault(),
-                    DistanceDefinition.getDefault(),
-                    DistanceDefinition.getDefault()
-            );
-            final var tgd = new TreeGenerationDefinition(
-                    true, true, true, false
-            );
-//            final var schemaList = forester.createNext(swad, tgd, SSet.of(), random).stream().toList();
-//            System.out.println("Working Directory = " + System.getProperty("user.dir"));
-//            SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
-//            IntStream.range(0, schemaList.size())
-//                    .forEach(idx -> {
-//                        final var newSchema = schemaList.get(idx);
-//                        final var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
-//                        try {
-//                            SchemaFileHandler.save(newSchema, path);
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                        System.out.println("Saved schema in \"" + path + "\"");
-//                    });
+                    validDefinition,
+                    targetDefinition
+            )));
+            System.out.println("Preparations finished");
+            final var schemaList = creator.create(schema, 5, random).stream().toList();
+            System.out.println("Scenario created!");
+            System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
+            IntStream.range(0, schemaList.size())
+                    .forEach(idx -> {
+                        final var newSchema = schemaList.get(idx);
+                        final var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
+                        try {
+                            SchemaFileHandler.save(newSchema, path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                        System.out.println("Saved schema in \"" + path + "\"");
+                    });
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
@@ -310,8 +310,8 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-//        testForester(path);
-        testTreeEditDistance();
+        testForester(path);
+//        testTreeEditDistance();
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {

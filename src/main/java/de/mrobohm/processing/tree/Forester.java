@@ -21,9 +21,9 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class Forester {
+public class Forester implements IForester {
 
-    private static final int NUMBER_OF_STEPS = 10;
+    private static final int NUMBER_OF_STEPS = 8;
 
     private final SingleTransformationExecutor _singleTransformationExecutor;
 
@@ -48,8 +48,12 @@ public class Forester {
         _targetDefinition = targetDefinition;
     }
 
-    public Injection getRealForesterInjection() {
-        return Forester::new;
+    public static IForester.Injection getRealForesterInjection(
+            SingleTransformationExecutor singleTransformationExecutor,
+            TransformationCollection transformationCollection,
+            DistanceMeasures measures
+    ) {
+        return (a, b) -> new Forester(singleTransformationExecutor, transformationCollection, measures, a, b);
     }
 
     public SchemaWithAdditionalData createNext(
@@ -59,12 +63,24 @@ public class Forester {
             Random random
     ) {
         final var tree = new TreeLeaf<>(rootSchema);
-        final var swadSet = Stream
+        final var inter1 = Stream
                 .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, random))
-                .limit(10)
+                .limit(NUMBER_OF_STEPS)
+                .toList();
+        System.out.println("inter1 done");
+        final var inter2 = inter1.stream()
                 .flatMap(te -> TreeDataOperator.getAllTreeEntitySet(te).stream())
+                .toList();
+        System.out.println("inter2 done");
+        final var inter3 = inter2.stream()
                 .map(TreeEntity::content)
+                .toList();
+        System.out.println("inter3 done");
+        final var inter4 = inter3.stream()
                 .filter(swad -> !swad.equals(rootSchema))
+                .toList();
+        System.out.println("inter4 done");
+        final var swadSet = inter4.stream()
                 .collect(Collectors.toCollection(TreeSet::new));
         return chooseBestChild(swadSet, random);
     }
@@ -92,7 +108,7 @@ public class Forester {
     ) {
         // Falls ein Knoten bereits das Ziel erfüllt, soll ein zufälliger Knoten erweitert werden
         final var possibilitySet = TreeDataOperator.getAllTreeEntitySet(te);
-        final var targetNodeExists = possibilitySet.stream()
+        final var targetNodeExists = possibilitySet.parallelStream()
                 .map(TreeEntity::content)
                 .map(SchemaWithAdditionalData::distanceList)
                 .allMatch(dl -> DistanceHelper.isValid(dl, _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE));
@@ -199,16 +215,5 @@ public class Forester {
         } catch (NoTableFoundException | NoColumnFoundException e) {
             return createNewChildInner(te, transformationSet, oldSchemaSet, random, max, acc + 1);
         }
-    }
-
-    @FunctionalInterface
-    public interface Injection {
-        Forester get(
-                SingleTransformationExecutor singleTransformationExecutor,
-                TransformationCollection transformationCollection,
-                DistanceMeasures measures,
-                DistanceDefinition validDefinition,
-                DistanceDefinition targetDefinition
-        );
     }
 }

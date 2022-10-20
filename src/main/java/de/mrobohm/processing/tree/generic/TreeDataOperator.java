@@ -1,8 +1,6 @@
 package de.mrobohm.processing.tree.generic;
 
-import de.mrobohm.utils.SSet;
-
-import java.util.SortedSet;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,26 +21,26 @@ public final class TreeDataOperator {
             case TreeLeaf ignore -> root;
             case TreeNode<TContent> tn -> {
                 final var childSet = tn.childSet();
-                final var newChildSet = childSet.stream()
+                final var newChildSet = childSet.parallelStream()
                         .map(child -> replaceTreeEntity(child, oldEntity, newEntity))
-                        .collect(Collectors.toCollection(TreeSet::new));
+                        .collect(Collectors.toSet());
 
                 if (newChildSet.equals(childSet)) {
                     yield root;
                 }
-                yield root.withChildren(newChildSet);
+                yield root.withChildren(new TreeSet<>(newChildSet));
             }
         };
     }
 
 
-    public static <TContent> SortedSet<TreeEntity<TContent>> getAllTreeEntitySet(TreeEntity<TContent> te) {
+    public static <TContent> Set<TreeEntity<TContent>> getAllTreeEntitySet(TreeEntity<TContent> te) {
         return switch (te) {
-            case TreeLeaf<TContent> tl -> SSet.of((TreeEntity<TContent>) tl);
+            case TreeLeaf<TContent> tl -> Set.of((TreeEntity<TContent>) tl);
             case TreeNode<TContent> tn -> {
                 final var children = tn.childSet().parallelStream()
                         .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
-                yield Stream.concat(Stream.of(tn), children).collect(Collectors.toCollection(TreeSet::new));
+                yield Stream.concat(Stream.of(tn), children).collect(Collectors.toSet());
             }
         };
     }
