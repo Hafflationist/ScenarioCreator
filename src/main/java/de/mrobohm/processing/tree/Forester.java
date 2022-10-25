@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 
 public class Forester implements IForester {
 
-    private static final int NUMBER_OF_STEPS = 8;
+    private static final int NUMBER_OF_STEPS = 16;
 
     private final SingleTransformationExecutor _singleTransformationExecutor;
 
@@ -42,14 +42,6 @@ public class Forester implements IForester {
         _measures = measures;
         _validDefinition = validDefinition;
         _targetDefinition = targetDefinition;
-    }
-
-    public static IForester.Injection getRealForesterInjection(
-            SingleTransformationExecutor singleTransformationExecutor,
-            TransformationCollection transformationCollection,
-            DistanceMeasures measures
-    ) {
-        return (a, b) -> new Forester(singleTransformationExecutor, transformationCollection, measures, a, b);
     }
 
     public SchemaWithAdditionalData createNext(
@@ -83,7 +75,7 @@ public class Forester implements IForester {
                 tgd.shouldStayNormalized(),
                 tgd.conservesFlatRelations()
         );
-        final var newTe = extendTreeEntity(oldTree, transformationSet, oldSchemaSet, random);
+        final var newTe = extendTreeEntity(chosenTe, transformationSet, oldSchemaSet, random);
         return TreeDataOperator.replaceTreeEntity(oldTree, chosenTe, newTe);
     }
 
