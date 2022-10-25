@@ -40,7 +40,7 @@ public class RandomSchemaGenerator {
                 context, Encoding.UTF, UnitOfMeasure.Pure, pickRandomLanguage(random), NumericalDistribution.getDefault()
         );
         return new ColumnLeaf(
-                new IdSimple(random.nextInt()),
+                new IdSimple(random.nextInt(10000)),
                 new StringPlusNaked("Spalte_" + nameGenerator.apply(random), pickRandomLanguage(random)),
                 new DataType(DataTypeEnum.NVARCHAR, random.nextBoolean()),
                 SSet.of(new Value("1"), new Value("2"), new Value("3")),
@@ -52,7 +52,7 @@ public class RandomSchemaGenerator {
     private static Table generateRandomTable(Random random, int maxColumns, Function<Random, String> nameGenerator) {
         final var context = generateRandomContext(random);
         return new Table(
-                new IdSimple(random.nextInt()),
+                new IdSimple(random.nextInt(10000)),
                 new StringPlusNaked("tabelle-" + nameGenerator.apply(random), pickRandomLanguage(random)),
                 generateRandomList(
                         2,
@@ -72,7 +72,7 @@ public class RandomSchemaGenerator {
         final var context = generateRandomContext(random);
         final var tableSet = generateRandomSet(1, maxTables, r -> generateRandomTable(r, maxColumn, nameGenerator), random);
         return new Schema(
-                new IdSimple(random.nextInt()),
+                new IdSimple(random.nextInt(10000)),
                 new StringPlusNaked(
                         "SCHEMA_" + nameGenerator.apply(random).toUpperCase(), pickRandomLanguage(random)
                 ),

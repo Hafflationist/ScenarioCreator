@@ -1,12 +1,13 @@
 package de.mrobohm.processing.transformations.linguistic;
 
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
 import de.mrobohm.data.column.nesting.ColumnLeaf;
 import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
+import de.mrobohm.processing.transformations.ColumnTransformation;
 import de.mrobohm.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import de.mrobohm.processing.transformations.linguistic.helpers.Translation;
-import de.mrobohm.processing.transformations.ColumnTransformation;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -44,7 +45,7 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
         return switch (column) {
             case ColumnLeaf c -> List.of(c.withName(newNameOpt.get()));
             case ColumnNode c -> List.of(c.withName(newNameOpt.get()));
-            default -> throw new IllegalStateException("Unexpected value: " + column);
+            case ColumnCollection c -> List.of(c.withName(newNameOpt.get()));
         };
     }
 

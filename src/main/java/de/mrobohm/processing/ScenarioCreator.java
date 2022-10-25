@@ -39,6 +39,10 @@ public class ScenarioCreator {
         );
         return StreamExtensions.<SortedSet<SchemaWithAdditionalData>, Integer>foldLeft(indexStream, SSet.of(),
                         (existingSchemaSet, existingSchemas) -> {
+                            System.out.println("idx=" + existingSchemas + " | schemaSet=" + existingSchemaSet.size() + "    | (rnd:" + random.nextInt(1000) + ")");
+                            if(existingSchemas != existingSchemaSet.size()) {
+                                System.out.println("REEE");
+                            }
                             assert existingSchemas == existingSchemaSet.size();
                             final var targetDefinition = calcTargetDefinition(
                                     existingSchemaSet, sizeOfScenario

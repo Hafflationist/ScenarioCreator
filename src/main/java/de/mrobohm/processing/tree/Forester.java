@@ -54,7 +54,7 @@ public class Forester implements IForester {
         final var swadSet = Stream
                 .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, random))
                 .limit(NUMBER_OF_STEPS)
-                .flatMap(te -> TreeDataOperator.getAllTreeEntitySet(te).stream())
+                .flatMap(te -> TreeDataOperator.getAllTreeEntityList(te).stream())
                 .map(TreeEntity::content)
                 .filter(swad -> !swad.equals(rootSchema))
                 .collect(Collectors.toCollection(TreeSet::new));
@@ -83,16 +83,16 @@ public class Forester implements IForester {
             TreeEntity<SchemaWithAdditionalData> te, Random random
     ) {
         // Falls ein Knoten bereits das Ziel erfüllt, soll ein zufälliger Knoten erweitert werden
-        final var possibilitySet = TreeDataOperator.getAllTreeEntitySet(te);
-        final var targetNodeExists = possibilitySet.parallelStream()
+        final var possibilityList = TreeDataOperator.getAllTreeEntityList(te);
+        final var targetNodeExists = possibilityList.parallelStream()
                 .map(TreeEntity::content)
                 .map(SchemaWithAdditionalData::distanceList)
                 .allMatch(dl -> DistanceHelper.isValid(dl, _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE));
-        final var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntitySet>!");
+        final var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntityList>!");
         if (targetNodeExists) {
-            return StreamExtensions.pickRandomOrThrow(possibilitySet.stream(), rte, random);
+            return StreamExtensions.pickRandomOrThrow(possibilityList.stream(), rte, random);
         }
-        final var chosenNodeOpt = possibilitySet.stream()
+        final var chosenNodeOpt = possibilityList.stream()
                 .min(Comparator.comparing(node -> {
                     final var distAvg = DistanceHelper.avg(node.content().distanceList());
                     return _targetDefinition.diff(distAvg);

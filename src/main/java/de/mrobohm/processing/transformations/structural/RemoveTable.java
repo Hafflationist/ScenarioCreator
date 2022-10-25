@@ -3,6 +3,9 @@ package de.mrobohm.processing.transformations.structural;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKey;
 import de.mrobohm.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import de.mrobohm.data.column.nesting.Column;
+import de.mrobohm.data.column.nesting.ColumnCollection;
+import de.mrobohm.data.column.nesting.ColumnLeaf;
+import de.mrobohm.data.column.nesting.ColumnNode;
 import de.mrobohm.data.identification.Id;
 import de.mrobohm.data.table.Table;
 import de.mrobohm.processing.transformations.TableTransformation;
@@ -46,16 +49,25 @@ public class RemoveTable implements TableTransformation {
         final var ownColumnIdSet = table.columnList().stream()
                 .map(Column::id)
                 .collect(Collectors.toCollection(TreeSet::new));
-        return table.columnList().stream().noneMatch(column -> {
-            final var hasForeignKeys = column.constraintSet().stream()
-                    .filter(c -> c instanceof ColumnConstraintForeignKey)
-                    .map(c -> (ColumnConstraintForeignKey) c)
-                    .anyMatch(c -> !ownColumnIdSet.contains(c.foreignColumnId()));
-            final var hasForeignKeysInverse = column.constraintSet().stream()
-                    .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
-                    .map(c -> (ColumnConstraintForeignKeyInverse) c)
-                    .anyMatch(c -> !ownColumnIdSet.contains(c.foreignColumnId()));
-            return hasForeignKeys || hasForeignKeysInverse;
-        });
+        return table.columnList().stream().allMatch(column -> freeOfRelationships(column, ownColumnIdSet));
+    }
+
+    private boolean freeOfRelationships(Column column, SortedSet<Id> ownColumnIdSet) {
+        final var freeOfForeignKeys = column.constraintSet().stream()
+                .filter(c -> c instanceof ColumnConstraintForeignKey)
+                .map(c -> (ColumnConstraintForeignKey) c)
+                .allMatch(c -> ownColumnIdSet.contains(c.foreignColumnId()));
+        final var freeOfForeignKeysInverse = column.constraintSet().stream()
+                .filter(c -> c instanceof ColumnConstraintForeignKeyInverse)
+                .map(c -> (ColumnConstraintForeignKeyInverse) c)
+                .anyMatch(c -> ownColumnIdSet.contains(c.foreignColumnId()));
+        final var nestedResult = switch (column) {
+            case ColumnLeaf ignore -> true;
+            case ColumnNode node ->
+                    node.columnList().stream().allMatch(columnInner -> freeOfRelationships(columnInner, ownColumnIdSet));
+            case ColumnCollection col ->
+                    col.columnList().stream().allMatch(columnInner -> freeOfRelationships(columnInner, ownColumnIdSet));
+        };
+        return freeOfForeignKeys && freeOfForeignKeysInverse && nestedResult;
     }
 }

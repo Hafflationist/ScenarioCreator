@@ -42,6 +42,8 @@ public class SingleTransformationExecutor {
         if (!SingleTransformationChecker.checkTransformation(schema, transformation)) {
             throw new NoTableFoundException("SingleTransformationChecker.checkTransformation dais \"no!\"");
         }
+        final var transformationName = transformation.getClass().getName();
+        System.out.println("Executing " + transformationName.substring(38) + " (" + random.nextInt(1000) + ")");
         final var newSchema = switch (transformation) {
             case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);
@@ -83,7 +85,6 @@ public class SingleTransformationExecutor {
         final var newTableStream = Stream.concat(filteredTableStream, newTableSet.stream());
         return schema.withTableSet(newTableStream.collect(Collectors.toCollection(TreeSet::new)));
     }
-
 
     @Contract(pure = true)
     @NotNull

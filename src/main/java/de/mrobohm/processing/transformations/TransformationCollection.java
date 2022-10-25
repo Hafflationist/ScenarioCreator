@@ -36,7 +36,6 @@ public class TransformationCollection {
     ) {
         return SSet.of(
                 // constraintBased
-                new ForeignKeyRemover(),
                 new RegularCheckModifier(),
                 // contextual
                 new ChangeUnitOfMeasure(),
@@ -69,8 +68,8 @@ public class TransformationCollection {
                 new ColumnLeafsToTable(),
                 new ColumnNodeToTable(),
                 new GroupColumnLeafsToNode(),
-                new NullableToHorizontalInheritance(),
-                new NullableToVerticalInheritance(),
+//                new NullableToHorizontalInheritance(),
+//                new NullableToVerticalInheritance(),
                 new RemoveTable()
         );
     }
@@ -100,6 +99,7 @@ public class TransformationCollection {
     ) {
         return SSet.of(
                 // constraintBased
+                new ForeignKeyRemover(),
                 // contextual
                 // linguistic
                 new AddTypoToSchemaName(),

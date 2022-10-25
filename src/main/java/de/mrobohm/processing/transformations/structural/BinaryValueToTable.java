@@ -96,38 +96,54 @@ public class BinaryValueToTable implements SchemaTransformation {
     }
 
     private Table splitTablePart(Table table, int partNum) {
-        final var errorMsg = "Chosen table contains invalid constraints! This should be prevented by <getCandidates>!";
-        final var validationException = new RuntimeException(errorMsg);
         final var newColumnList = table.columnList().stream()
-                .map(column -> {
-                    final var newId = new IdPart(column.id(), partNum, MergeOrSplitType.Xor);
-                    final var newConstraintSet = column.constraintSet().stream().map(c -> switch (c) {
-                        case ColumnConstraintForeignKey ccfk -> ccfk;
-                        case ColumnConstraintForeignKeyInverse ignore -> throw validationException;
-                        case ColumnConstraintUnique ccu -> {
-                            final var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
-                            yield ccu.withUniqueGroupId(newConstraintId);
-                        }
-                        case ColumnConstraintCheckNumerical cccn -> cccn;
-                        case ColumnConstraintCheckRegex cccr -> cccr;
-                    }).collect(Collectors.toCollection(TreeSet::new));
-                    return (Column) switch (column) {
-                        case ColumnLeaf leaf -> leaf
-                                .withId(newId)
-                                .withConstraintSet(newConstraintSet);
-                        case ColumnNode node -> node
-                                .withId(newId)
-                                .withConstraintSet(newConstraintSet);
-                        case ColumnCollection col -> col
-                                .withId(newId)
-                                .withConstraintSet(newConstraintSet);
-                    };
-                }).toList();
+                .map(column -> splitColumnPart(column, partNum))
+                .toList();
         final var newFdSet = FunctionalDependencyManager.getValidFdSet(table.functionalDependencySet(), newColumnList);
         return table
                 .withId(new IdPart(table.id(), partNum, MergeOrSplitType.Xor))
                 .withColumnList(newColumnList)
                 .withFunctionalDependencySet(newFdSet);
+    }
+
+    private Column splitColumnPart(Column column, int partNum)  {
+        final var errorMsg = "Chosen table contains invalid constraints! This should be prevented by <getCandidates>!";
+        final var validationException = new RuntimeException(errorMsg);
+        final var newId = new IdPart(column.id(), partNum, MergeOrSplitType.Xor);
+        final var newConstraintSet = column.constraintSet().stream().map(c -> switch (c) {
+            case ColumnConstraintForeignKey ccfk -> ccfk;
+            case ColumnConstraintForeignKeyInverse ignore -> throw validationException;
+            case ColumnConstraintUnique ccu -> {
+                final var newConstraintId = new IdPart(ccu.getUniqueGroupId(), partNum, MergeOrSplitType.Xor);
+                yield ccu.withUniqueGroupId(newConstraintId);
+            }
+            case ColumnConstraintCheckNumerical cccn -> cccn;
+            case ColumnConstraintCheckRegex cccr -> cccr;
+        }).collect(Collectors.toCollection(TreeSet::new));
+        return switch (column) {
+            case ColumnLeaf leaf -> leaf
+                    .withId(newId)
+                    .withConstraintSet(newConstraintSet);
+            case ColumnNode node ->  {
+                final var newColumnList = node.columnList().stream()
+                        .map(columnInner -> splitColumnPart(columnInner, partNum))
+                        .toList();
+                yield node
+                        .withId(newId)
+                        .withConstraintSet(newConstraintSet)
+                        .withColumnList(newColumnList);
+            }
+            case ColumnCollection col -> {
+                final var newColumnList = col.columnList().stream()
+                        .map(columnInner -> splitColumnPart(columnInner, partNum))
+                        .toList();
+                yield col
+                        .withId(newId)
+                        .withConstraintSet(newConstraintSet)
+                        .withColumnList(newColumnList);
+            }
+        };
+
     }
 
     private Table appendToName(Table table, String suffix, Random random) {

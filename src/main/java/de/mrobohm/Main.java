@@ -8,6 +8,7 @@ import de.mrobohm.heterogeneity.StringDistances;
 import de.mrobohm.heterogeneity.structural.ted.Ted;
 import de.mrobohm.inout.SchemaFileHandler;
 import de.mrobohm.processing.ScenarioCreator;
+import de.mrobohm.processing.integrity.IdentificationNumberCalculator;
 import de.mrobohm.processing.preprocessing.SemanticSaturation;
 import de.mrobohm.processing.transformations.SingleTransformationExecutor;
 import de.mrobohm.processing.transformations.TransformationCollection;
@@ -244,6 +245,15 @@ public class Main {
                     random, 3, 3, gni::pickRandomEnglishWord
             );
             final var schema = ss.saturateSemantically(schemaNaked);
+
+            final var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
+            final var nonUniqueIdSet = allIdList.stream()
+                    .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
+                    .collect(Collectors.toCollection(TreeSet::new));
+            if(!nonUniqueIdSet.isEmpty()){
+                return; // Generation of start schema broken... (skip and forget)
+            }
+
             final var translation = new Translation(ulc);
             final var creator = new ScenarioCreator(DistanceDefinition.getDefault(), ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
@@ -252,7 +262,7 @@ public class Main {
                     validDefinition,
                     targetDefinition
             )));
-            System.out.println("Preparations finished");
+            System.out.println("Preparations finished (rnd: " + random.nextInt(1000) + ")");
             final var schemaList = creator.create(schema, 5, random).stream().toList();
             System.out.println("Scenario created!");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
@@ -277,7 +287,7 @@ public class Main {
     private static void testForester(String path) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 1500; i < Integer.MAX_VALUE; i++) {
+        for (int i = 99; i < Integer.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
             testForesterInner(path, i, ulc, germanet);
             System.out.println("Anlauf " + i + " vollständig");

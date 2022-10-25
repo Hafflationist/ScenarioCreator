@@ -1,7 +1,6 @@
 package de.mrobohm.processing.tree.generic;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.Stream;
 
 public final class TreeDataOperator {
@@ -32,13 +31,13 @@ public final class TreeDataOperator {
     }
 
 
-    public static <TContent> Set<TreeEntity<TContent>> getAllTreeEntitySet(TreeEntity<TContent> te) {
+    public static <TContent> List<TreeEntity<TContent>> getAllTreeEntityList(TreeEntity<TContent> te) {
         return switch (te) {
-            case TreeLeaf<TContent> tl -> Set.of((TreeEntity<TContent>) tl);
+            case TreeLeaf<TContent> tl -> List.of((TreeEntity<TContent>) tl);
             case TreeNode<TContent> tn -> {
                 final var children = tn.childList().parallelStream()
-                        .flatMap(tnc -> getAllTreeEntitySet(tnc).stream());
-                yield Stream.concat(Stream.of(tn), children).collect(Collectors.toSet());
+                        .flatMap(tnc -> getAllTreeEntityList(tnc).stream());
+                yield Stream.concat(Stream.of(tn), children).toList();
             }
         };
     }

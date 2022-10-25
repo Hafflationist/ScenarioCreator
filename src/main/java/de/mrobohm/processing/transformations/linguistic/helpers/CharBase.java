@@ -60,6 +60,7 @@ public final class CharBase {
     }
 
     public static String randomSwap(String cleanString, Random random) {
+        if (cleanString.length() < 2) return cleanString;
         final var sb = new StringBuilder(cleanString);
         final var firstIdx = random.nextInt(sb.length() - 1);
         final var pairSeq = sb.subSequence(firstIdx, firstIdx + 2);
