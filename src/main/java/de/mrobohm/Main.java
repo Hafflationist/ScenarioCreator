@@ -287,7 +287,7 @@ public class Main {
     private static void testForester(String path) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 99; i < Integer.MAX_VALUE; i++) {
+        for (int i = 21; i < Integer.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
             testForesterInner(path, i, ulc, germanet);
             System.out.println("Anlauf " + i + " vollständig");

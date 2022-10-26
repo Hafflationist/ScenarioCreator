@@ -68,8 +68,8 @@ public class TransformationCollection {
                 new ColumnLeafsToTable(),
                 new ColumnNodeToTable(),
                 new GroupColumnLeafsToNode(),
-//                new NullableToHorizontalInheritance(),
-//                new NullableToVerticalInheritance(),
+                new NullableToHorizontalInheritance(),
+                new NullableToVerticalInheritance(),
                 new RemoveTable()
         );
     }

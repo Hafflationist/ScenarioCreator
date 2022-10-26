@@ -67,12 +67,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 .map(column -> {
                     // the numerical distribution stays the same...
                     // the check constraints stay the same...
-                    final var newId = new IdPart(column.id(), 0, MergeOrSplitType.Xor);
-                    return (Column) switch (column) {
-                        case ColumnLeaf leaf -> leaf.withId(newId);
-                        case ColumnNode node -> node.withId(newId);
-                        case ColumnCollection col -> col.withId(newId);
-                    };
+                    return appendExtensionNumberToId(column, 0);
                 })
                 .toList();
         final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
@@ -87,11 +82,29 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         if (!newIdComplex.doubledColumnIdSet.contains(column.id())) {
             return column;
         }
-        final var newId = new IdPart(column.id(), 1, MergeOrSplitType.Xor);
+        return appendExtensionNumberToId(column, 1);
+    }
+
+    private Column appendExtensionNumberToId(Column column, int extensionNumber) {
+        final var newId = new IdPart(column.id(), extensionNumber, MergeOrSplitType.Xor);
         return switch (column) {
             case ColumnLeaf leaf -> leaf.withId(newId);
-            case ColumnCollection col -> col.withId(newId);
-            case ColumnNode node -> node.withId(newId);
+            case ColumnNode node -> {
+                final var newColumnList = node.columnList().stream()
+                        .map(columnInner -> appendExtensionNumberToId(columnInner, extensionNumber))
+                        .toList();
+                yield node
+                        .withId(newId)
+                        .withColumnList(newColumnList);
+            }
+            case ColumnCollection col -> {
+                final var newColumnList = col.columnList().stream()
+                        .map(columnInner -> appendExtensionNumberToId(columnInner, extensionNumber))
+                        .toList();
+                yield col
+                        .withId(newId)
+                        .withColumnList(newColumnList);
+            }
         };
     }
 

@@ -204,7 +204,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
     private List<Column> chooseExtendingColumns(List<Column> columnList, Random random) {
         final var candidateColumnList = columnList.stream()
-                .filter(column -> column.constraintSet().stream().noneMatch(c -> c instanceof ColumnConstraintPrimaryKey))
+                .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
+                .filter(column -> !column.containsConstraint(ColumnConstraintForeignKey.class))
+                .filter(column -> !column.containsConstraint(ColumnConstraintForeignKeyInverse.class))
                 .filter(Column::isNullable)
                 .toList();
         assert !candidateColumnList.isEmpty();
@@ -222,7 +224,18 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private boolean hasNullableColumns(Table table) {
-        return table.columnList().size() >= 2 && table.columnList().stream().anyMatch(Column::isNullable);
+        // TODO: handling of foreign keys could be added
+        final var primaryKeyIsNotForeignKeyOrInverseForeignKey =
+                table.columnList().stream()
+                        .filter(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class))
+                        .allMatch(column -> !column.containsConstraint(ColumnConstraintForeignKey.class)
+                        && !column.containsConstraint(ColumnConstraintForeignKeyInverse.class)
+                        );
+        return primaryKeyIsNotForeignKeyOrInverseForeignKey && table.columnList().size() >= 2 && table.columnList().stream()
+                .anyMatch(column -> column.isNullable()
+                        && !column.containsConstraint(ColumnConstraintForeignKey.class)
+                        && !column.containsConstraint(ColumnConstraintForeignKeyInverse.class)
+                );
     }
 
     private record NewIdComplex(Id primaryKeyColumnId,
