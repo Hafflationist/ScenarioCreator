@@ -1,4 +1,4 @@
-package processing.transformations.constraintBased.base;
+package scenarioCreator.generation.processing.transformations.constraintBased.base;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

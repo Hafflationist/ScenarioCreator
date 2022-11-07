@@ -1,8 +1,8 @@
 package scenarioCreator.data;
 
+import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
-import org.jetbrains.annotations.NotNull;
 
 public interface Entity extends Comparable<Entity> {
     StringPlus name();

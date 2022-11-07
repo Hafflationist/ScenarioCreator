@@ -1,10 +1,9 @@
 package scenarioCreator.data.column.nesting;
 
+import scenarioCreator.data.Entity;
 import scenarioCreator.data.column.constraint.ColumnConstraint;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
-import scenarioCreator.data.Entity;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.SortedSet;
 

@@ -1,4 +1,4 @@
-package heterogeneity.constraintBased.regexy.minimizer;
+package scenarioCreator.generation.heterogeneity.constraintBased.regexy.minimizer;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import scenarioCreator.data.column.constraint.regexy.RegularSum;
 import scenarioCreator.data.column.constraint.regexy.RegularTerminal;
 import scenarioCreator.generation.heterogeneity.constraintBased.regexy.NFA;
 import scenarioCreator.generation.heterogeneity.constraintBased.regexy.RegexToNfa;
-import scenarioCreator.generation.heterogeneity.constraintBased.regexy.minimizer.NfaMinimization;
 
 class NfaMinimizationTest {
 

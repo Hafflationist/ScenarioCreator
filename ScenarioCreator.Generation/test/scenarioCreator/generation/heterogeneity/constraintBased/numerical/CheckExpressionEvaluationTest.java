@@ -1,4 +1,4 @@
-package heterogeneity.constraintBased.numerical;
+package scenarioCreator.generation.heterogeneity.constraintBased.numerical;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

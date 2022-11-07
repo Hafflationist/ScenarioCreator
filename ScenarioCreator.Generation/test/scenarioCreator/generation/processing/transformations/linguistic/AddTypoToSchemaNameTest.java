@@ -1,4 +1,4 @@
-package processing.transformations.linguistic;
+package scenarioCreator.generation.processing.transformations.linguistic;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

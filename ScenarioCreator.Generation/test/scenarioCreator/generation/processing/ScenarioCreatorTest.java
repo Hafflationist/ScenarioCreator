@@ -1,4 +1,4 @@
-package processing;
+package scenarioCreator.generation.processing;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.parallel.Execution;

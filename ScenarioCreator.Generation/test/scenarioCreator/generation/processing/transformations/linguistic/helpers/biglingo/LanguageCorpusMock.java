@@ -1,4 +1,4 @@
-package processing.transformations.linguistic.helpers.biglingo;
+package scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo;
 
 import scenarioCreator.data.primitives.synset.EnglishSynset;
 import scenarioCreator.data.primitives.synset.GlobalSynset;

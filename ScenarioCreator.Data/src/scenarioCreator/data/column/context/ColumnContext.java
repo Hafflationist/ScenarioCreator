@@ -1,9 +1,9 @@
 package scenarioCreator.data.column.context;
 
-import scenarioCreator.data.Context;
-import scenarioCreator.data.Language;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.Context;
+import scenarioCreator.data.Language;
 
 public record ColumnContext(Context context, Encoding encoding, UnitOfMeasure unitOfMeasure,
                             Language language, NumericalDistribution numericalDistribution)

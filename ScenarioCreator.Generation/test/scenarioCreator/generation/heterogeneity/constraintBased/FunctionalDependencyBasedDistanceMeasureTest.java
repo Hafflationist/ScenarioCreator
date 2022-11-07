@@ -1,8 +1,7 @@
-package heterogeneity.constraintBased;
+package scenarioCreator.generation.heterogeneity.constraintBased;
 
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.data.Context;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.Schema;
@@ -15,10 +14,10 @@ import scenarioCreator.data.column.context.ColumnContext;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
 import scenarioCreator.generation.processing.transformations.constraintBased.FunctionalDependencyRemover;
 import scenarioCreator.generation.processing.transformations.structural.NullableToHorizontalInheritance;
+import scenarioCreator.generation.processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 

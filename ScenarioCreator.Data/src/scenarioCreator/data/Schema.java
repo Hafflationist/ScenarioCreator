@@ -1,10 +1,10 @@
 package scenarioCreator.data;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.table.Table;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.SortedSet;

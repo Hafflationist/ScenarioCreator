@@ -1,9 +1,9 @@
 package scenarioCreator.data.column.constraint;
 
+import org.jetbrains.annotations.Contract;
 import scenarioCreator.data.column.DataType;
 import scenarioCreator.data.dataset.Value;
 import scenarioCreator.data.identification.Id;
-import org.jetbrains.annotations.Contract;
 
 import java.math.BigDecimal;
 import java.sql.Date;

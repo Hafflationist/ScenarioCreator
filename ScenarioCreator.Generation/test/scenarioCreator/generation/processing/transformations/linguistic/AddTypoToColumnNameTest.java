@@ -1,8 +1,7 @@
-package processing.transformations.linguistic;
+package scenarioCreator.generation.processing.transformations.linguistic;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.column.DataType;
 import scenarioCreator.data.column.DataTypeEnum;
@@ -10,7 +9,7 @@ import scenarioCreator.data.column.context.ColumnContext;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.linguistic.AddTypoToColumnName;
+import scenarioCreator.generation.processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.utils.SSet;
 
 import java.util.Random;

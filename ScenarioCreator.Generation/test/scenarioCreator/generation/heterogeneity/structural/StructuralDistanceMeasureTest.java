@@ -1,4 +1,4 @@
-package heterogeneity.structural;
+package scenarioCreator.generation.heterogeneity.structural;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

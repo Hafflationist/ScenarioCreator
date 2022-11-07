@@ -3,6 +3,7 @@ package scenarioCreator.generation.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import scenarioCreator.utils.SSet;
 
 import java.util.Random;
 import java.util.TreeSet;

@@ -1,7 +1,7 @@
 package scenarioCreator.data.primitives;
 
-import scenarioCreator.data.primitives.synset.GlobalSynset;
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.primitives.synset.GlobalSynset;
 
 import java.util.SortedSet;
 

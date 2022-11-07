@@ -1,14 +1,13 @@
-package processing.transformations.linguistic;
+package scenarioCreator.generation.processing.transformations.linguistic;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.data.Context;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.generation.processing.transformations.linguistic.AddTypoToTableName;
+import scenarioCreator.generation.processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;

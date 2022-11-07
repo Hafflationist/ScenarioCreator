@@ -1,4 +1,4 @@
-package heterogeneity.constraintBased;
+package scenarioCreator.generation.heterogeneity.constraintBased;
 
 import org.junit.jupiter.api.Test;
 import scenarioCreator.data.Context;
@@ -16,7 +16,6 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.generation.heterogeneity.constraintBased.CheckRegularBasedDistanceMeasure;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;

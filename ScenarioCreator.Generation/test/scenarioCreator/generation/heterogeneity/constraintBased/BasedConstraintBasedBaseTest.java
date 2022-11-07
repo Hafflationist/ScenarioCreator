@@ -1,13 +1,12 @@
-package heterogeneity.constraintBased;
+package scenarioCreator.generation.heterogeneity.constraintBased;
 
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.testng.annotations.Test;
 import scenarioCreator.data.Entity;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.identification.*;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.heterogeneity.constraintBased.BasedConstraintBasedBase;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 

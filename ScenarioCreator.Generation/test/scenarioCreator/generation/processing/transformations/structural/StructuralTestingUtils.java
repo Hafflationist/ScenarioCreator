@@ -1,4 +1,4 @@
-package processing.transformations.structural;
+package scenarioCreator.generation.processing.transformations.structural;
 
 import scenarioCreator.data.Context;
 import scenarioCreator.data.Language;

@@ -1,7 +1,7 @@
 package scenarioCreator.data.table;
 
-import scenarioCreator.data.identification.Id;
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.identification.Id;
 
 import java.util.SortedSet;
 

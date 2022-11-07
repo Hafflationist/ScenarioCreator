@@ -1,4 +1,4 @@
-package processing.transformations.structural;
+package scenarioCreator.generation.processing.transformations.structural;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.ColumnCollectionToTable;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;

@@ -1,7 +1,7 @@
 package scenarioCreator.data.dataset;
 
-import scenarioCreator.data.column.nesting.ColumnLeaf;
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.column.nesting.ColumnLeaf;
 
 import java.util.Map;
 

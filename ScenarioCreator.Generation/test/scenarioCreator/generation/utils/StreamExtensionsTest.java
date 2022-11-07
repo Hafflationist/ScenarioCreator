@@ -2,6 +2,7 @@ package scenarioCreator.generation.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import scenarioCreator.utils.StreamExtensions;
 
 import java.util.Random;
 import java.util.stream.Stream;

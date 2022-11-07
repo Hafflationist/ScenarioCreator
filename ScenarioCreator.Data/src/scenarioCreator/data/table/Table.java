@@ -1,12 +1,12 @@
 package scenarioCreator.data.table;
 
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.Context;
+import scenarioCreator.data.Entity;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
-import scenarioCreator.data.Context;
-import scenarioCreator.data.Entity;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.SortedSet;

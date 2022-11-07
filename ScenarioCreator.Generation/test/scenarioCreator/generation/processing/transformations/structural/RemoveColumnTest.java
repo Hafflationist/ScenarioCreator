@@ -1,4 +1,4 @@
-package processing.transformations.structural;
+package scenarioCreator.generation.processing.transformations.structural;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,6 @@ import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.structural.RemoveColumn;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;

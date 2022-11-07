@@ -1,4 +1,4 @@
-package heterogeneity.linguistic;
+package scenarioCreator.generation.heterogeneity.linguistic;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -9,7 +9,6 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.identification.*;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.heterogeneity.linguistic.EntityHandler;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
 import scenarioCreator.utils.SSet;
 

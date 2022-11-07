@@ -1,8 +1,8 @@
 package scenarioCreator.data.column.constraint;
 
+import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.column.DataType;
 import scenarioCreator.data.dataset.Value;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 

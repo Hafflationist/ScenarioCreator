@@ -1,7 +1,7 @@
 package scenarioCreator.data.column.constraint;
 
-import scenarioCreator.data.identification.Id;
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.identification.Id;
 
 public final class ColumnConstraintPrimaryKey extends ColumnConstraintUnique {
 

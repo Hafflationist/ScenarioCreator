@@ -1,4 +1,4 @@
-package processing.transformations.structural;
+package scenarioCreator.generation.processing.transformations.structural;
 
 import junit.framework.AssertionFailedError;
 import org.junit.jupiter.api.Assertions;

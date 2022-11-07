@@ -1,11 +1,10 @@
-package heterogeneity.constraintBased.regexy;
+package scenarioCreator.generation.heterogeneity.constraintBased.regexy;
 
 import org.junit.jupiter.api.Test;
 import scenarioCreator.data.column.constraint.regexy.RegularConcatenation;
 import scenarioCreator.data.column.constraint.regexy.RegularKleene;
 import scenarioCreator.data.column.constraint.regexy.RegularSum;
 import scenarioCreator.data.column.constraint.regexy.RegularTerminal;
-import scenarioCreator.generation.heterogeneity.constraintBased.regexy.RegexToNfa;
 
 class RegexToNfaTest {
 

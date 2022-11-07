@@ -1,10 +1,9 @@
-package processing.transformations.constraintBased;
+package scenarioCreator.generation.processing.transformations.constraintBased;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.column.DataType;
 import scenarioCreator.data.column.DataTypeEnum;
@@ -15,7 +14,7 @@ import scenarioCreator.data.column.context.ColumnContext;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.constraintBased.RegularCheckModifier;
+import scenarioCreator.generation.processing.transformations.structural.StructuralTestingUtils;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;

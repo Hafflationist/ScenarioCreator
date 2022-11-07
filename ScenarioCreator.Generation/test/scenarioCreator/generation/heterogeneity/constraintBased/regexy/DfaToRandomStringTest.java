@@ -1,4 +1,4 @@
-package heterogeneity.constraintBased.regexy;
+package scenarioCreator.generation.heterogeneity.constraintBased.regexy;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -6,9 +6,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import scenarioCreator.data.column.constraint.regexy.RegularExpression;
 import scenarioCreator.data.column.constraint.regexy.RegularKleene;
 import scenarioCreator.data.column.constraint.regexy.RegularTerminal;
-import scenarioCreator.generation.heterogeneity.constraintBased.regexy.DfaToRandomString;
-import scenarioCreator.generation.heterogeneity.constraintBased.regexy.NfaToDfa;
-import scenarioCreator.generation.heterogeneity.constraintBased.regexy.RegexToNfa;
 
 import java.util.Random;
 

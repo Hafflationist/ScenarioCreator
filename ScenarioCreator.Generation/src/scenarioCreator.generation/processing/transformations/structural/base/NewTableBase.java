@@ -51,7 +51,7 @@ public final class NewTableBase {
                 .withId(new IdPart(oldTable.id(), 0, MergeOrSplitType.And));
     }
 
-    private static ColumnLeaf createNewForeignKeyColumn(NewTableBase.NewIds newIds, StringPlus tableName, boolean oneToOne) {
+    private static ColumnLeaf createNewForeignKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
         final var constraintSetOneToOne = SSet.of(
                 new ColumnConstraintForeignKey(newIds.targetColumn, SSet.of()),
                 (ColumnConstraint) new ColumnConstraintForeignKeyInverse(newIds.targetColumn, SSet.of()));
