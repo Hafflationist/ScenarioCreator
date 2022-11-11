@@ -154,32 +154,57 @@ public class WordNetInterface implements LanguageCorpus {
         return new Concept(synsetId.toString(), pos);
     }
 
-    public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
+//    public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
+//        WS4JConfiguration.getInstance().setMemoryDB(false);
+//        WS4JConfiguration.getInstance().setMFS(true);
+//        final var db = new MITWordNet(_dict);
+//        final var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
+//        return synsetIdSet1.stream()
+//                .filter(gss -> gss instanceof EnglishSynset)
+//                .map(gss -> (EnglishSynset) gss)
+//                .mapToDouble(ess1 -> synsetIdSet2.stream()
+//                        .filter(gss -> gss instanceof EnglishSynset)
+//                        .map(gss -> (EnglishSynset) gss)
+//                        .mapToDouble(ess2 -> {
+//                            final var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
+//                            final var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+//                            final var relatedness = relatednessCalculator
+//                                    .calcRelatednessOfSynsets(
+//                                            essToConcept(synsetId1),
+//                                            essToConcept(synsetId2))
+//                                    .getScore();
+//                            assert 0.0 <= relatedness;
+//                            assert relatedness <= 1.0;
+//                            return 1.0 - relatedness;
+//                        })
+//                        .min()
+//                        .orElse(1.0))
+//                .min()
+//                .orElse(1.0);
+//    }
+
+    @Override
+    public double diff(GlobalSynset gss1, GlobalSynset gss2) {
+        assert gss1 instanceof EnglishSynset;
+        assert gss2 instanceof EnglishSynset;
+        final var ess1 = (EnglishSynset) gss1;
+        final var ess2 = (EnglishSynset) gss2;
         WS4JConfiguration.getInstance().setMemoryDB(false);
         WS4JConfiguration.getInstance().setMFS(true);
         final var db = new MITWordNet(_dict);
         final var relatednessCalculator = new Lin(db);   // Resulting values are normalized [0, 1]
-        return synsetIdSet1.stream()
-                .filter(gss -> gss instanceof EnglishSynset)
-                .map(gss -> (EnglishSynset) gss)
-                .mapToDouble(ess1 -> synsetIdSet2.stream()
-                        .filter(gss -> gss instanceof EnglishSynset)
-                        .map(gss -> (EnglishSynset) gss)
-                        .mapToDouble(ess2 -> {
-                            final var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
-                            final var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
-                            final var relatedness = relatednessCalculator
-                                    .calcRelatednessOfSynsets(
-                                            essToConcept(synsetId1),
-                                            essToConcept(synsetId2))
-                                    .getScore();
-                            assert 0.0 <= relatedness;
-                            assert relatedness <= 1.0;
-                            return 1.0 - relatedness;
-                        })
-                        .min()
-                        .orElse(1.0))
-                .min()
-                .orElse(1.0);
+        final var synsetId1 = new SynsetID(ess1.offset(), partOfSpeechToPos(ess1.partOfSpeech()));
+        final var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
+        final var concept1 = essToConcept(synsetId1);
+        final var concept2 = essToConcept(synsetId2);
+        if(concept1.toString().equals("SID-00000000-N")){
+            System.out.println("REEE");
+        }
+        final var relatedness = relatednessCalculator
+                .calcRelatednessOfSynsets(concept1, concept2)
+                .getScore();
+        assert 0.0 <= relatedness;
+        assert relatedness <= 1.0;
+        return 1.0 - relatedness;
     }
 }

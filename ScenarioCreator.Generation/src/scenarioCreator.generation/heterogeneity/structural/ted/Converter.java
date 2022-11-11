@@ -18,9 +18,13 @@ final class Converter {
     private Converter() {
     }
 
-    static TedTree schemaToTedTree(Schema schema) throws IOException {
+    static TedTree schemaToTedTree(Schema schema) {
         final var preorderSchema = schemaToPreorderNotation(schema);
-        return new TedTree(preorderSchema);
+        try {
+            return new TedTree(preorderSchema);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String idToLabel(Id id) {

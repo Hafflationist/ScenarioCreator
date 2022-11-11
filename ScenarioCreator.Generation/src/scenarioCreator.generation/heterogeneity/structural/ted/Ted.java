@@ -11,9 +11,9 @@ public final class Ted {
 
     public static double calculateDistanceRelative(Schema schema1, Schema schema2) throws IOException {
         final var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
-        final var rootSize = IdentificationNumberCalculator.getAllIds(schema1, true).count();
-        final var schemaSize = IdentificationNumberCalculator.getAllIds(schema2, true).count();
-        return (2.0 * distanceAbsolute) / (double) (rootSize + schemaSize);
+        final var schemaSize1 = IdentificationNumberCalculator.getAllIds(schema1, true).count();
+        final var schemaSize2 = IdentificationNumberCalculator.getAllIds(schema2, true).count();
+        return (2.0 * distanceAbsolute) / (double) (schemaSize1 + schemaSize2);
     }
 
     public static int calculateDistanceAbsolute(Schema schema1, Schema schema2) throws IOException {

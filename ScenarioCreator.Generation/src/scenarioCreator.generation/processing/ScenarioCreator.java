@@ -2,10 +2,7 @@ package scenarioCreator.generation.processing;
 
 import scenarioCreator.data.Schema;
 import scenarioCreator.generation.heterogeneity.Distance;
-import scenarioCreator.generation.processing.tree.DistanceDefinition;
-import scenarioCreator.generation.processing.tree.Forester;
-import scenarioCreator.generation.processing.tree.SchemaWithAdditionalData;
-import scenarioCreator.generation.processing.tree.TreeGenerationDefinition;
+import scenarioCreator.generation.processing.tree.*;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -57,17 +54,35 @@ public class ScenarioCreator {
                             final var existingSchemaPureSet = existingSchemaSet.stream()
                                     .map(SchemaWithAdditionalData::schema)
                                     .collect(Collectors.toCollection(TreeSet::new));
-                            final var newSwad = forester.createNext(
-                                    swad, tgd, existingSchemaPureSet, random
+                            return recursiveNewSwad(
+                                    forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, random
                             );
-                            return SSet.prepend(newSwad, existingSchemaSet);
                         })
                 .stream()
                 .map(SchemaWithAdditionalData::schema)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
-    private DistanceDefinition calcTargetDefinition(SortedSet<SchemaWithAdditionalData> existingSchemaSet, int sizeOfScenario) {
+    private SortedSet<SchemaWithAdditionalData> recursiveNewSwad(
+            IForester forester,
+            SchemaWithAdditionalData root,
+            TreeGenerationDefinition tgd,
+            SortedSet<Schema> existingSchemaPureSet,
+            SortedSet<SchemaWithAdditionalData> existingSchemaSet,
+            Random random) {
+        final var newSwad = forester.createNext(
+                root, tgd, existingSchemaPureSet, random
+        );
+        final var  newSwadSet= SSet.prepend(newSwad, existingSchemaSet);
+        if (newSwadSet.size() == existingSchemaSet.size()) {
+            return recursiveNewSwad(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, random);
+        }
+        return newSwadSet;
+    }
+
+    private DistanceDefinition calcTargetDefinition(
+            SortedSet<SchemaWithAdditionalData> existingSchemaSet, int sizeOfScenario
+    ) {
         return new DistanceDefinition(
                 calcTargetDefinitionSingle(existingSchemaSet, sizeOfScenario, Distance::structural),
                 calcTargetDefinitionSingle(existingSchemaSet, sizeOfScenario, Distance::linguistic),

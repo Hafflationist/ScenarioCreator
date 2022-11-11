@@ -142,24 +142,28 @@ public class GermaNetInterface implements LanguageCorpus {
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
+
     public double lowestSemanticDistance(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
+        return synsetIdSet1.stream()
+                .mapToDouble(gss1 -> synsetIdSet2.stream()
+                        .mapToDouble(gss2 -> diff(gss1, gss2))
+                        .min()
+                        .orElse(1.0))
+                .min()
+                .orElse(1.0);
+    }
+
+    @Override
+    public double diff(GlobalSynset gss1, GlobalSynset gss2) {
         try {
+            assert gss1 instanceof GermanSynset;
+            assert gss2 instanceof GermanSynset;
             final var semanticUtils = _germanetFreq.getSemanticUtils();
-            return synsetIdSet1.stream()
-                    .filter(gss -> gss instanceof GermanSynset)
-                    .map(gss -> ((GermanSynset) gss).id())
-                    .map(_germanet::getSynsetByID)
-                    .mapToDouble(synset1 -> synsetIdSet2.stream()
-                            .filter(gss -> gss instanceof GermanSynset)
-                            .map(gss -> ((GermanSynset) gss).id())
-                            .map(_germanet::getSynsetByID)
-                            .mapToDouble(synset2 -> 1.0 - semanticUtils.getSimilarity(
-                                    SEM_REL_MEASURE, synset1, synset2, 1
-                            ))
-                            .min()
-                            .orElse(1.0))
-                    .min()
-                    .orElse(1.0);
+            final var synset1 = _germanet.getSynsetByID(((GermanSynset) gss1).id());
+            final var synset2 = _germanet.getSynsetByID(((GermanSynset) gss2).id());
+            return 1.0 - Optional.ofNullable(semanticUtils.getSimilarity(
+                    SEM_REL_MEASURE, synset1, synset2, 1
+            )).orElse(0.0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

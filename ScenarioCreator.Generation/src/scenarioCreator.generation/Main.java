@@ -7,6 +7,9 @@ import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
 import scenarioCreator.generation.heterogeneity.StringDistances;
+import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
+import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
+import scenarioCreator.generation.heterogeneity.linguistic.LinguisticDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.structural.ted.Ted;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.ScenarioCreator;
@@ -258,6 +261,7 @@ public class Main {
             final var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
                     random, 3, 3, gni::pickRandomEnglishWord
             );
+            assert !schemaNaked.tableSet().isEmpty();
             final var schema = ss.saturateSemantically(schemaNaked);
 
             final var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
@@ -268,11 +272,29 @@ public class Main {
                 return; // Generation of start schema broken... (skip and forget)
             }
 
+            final var distanceMeasures = new DistanceMeasures(
+                    (s1, s2) -> {
+                        try {
+                            return Ted.calculateDistanceRelative(s1, s2);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    },
+                    (s1, s2) -> LinguisticDistanceMeasure.calculateDistanceToRootRelative(s1, s2, ulc::semanticDiff),
+                    (s1, s2) -> {
+                        final var numDist = CheckNumericalBasedDistanceMeasure.calculateDistanceRelative(s1, s2);
+                        final var regDist = CheckNumericalBasedDistanceMeasure.calculateDistanceRelative(s1, s2);
+                        final var funDist = FunctionalDependencyBasedDistanceMeasure.calculateDistanceRelative(s1, s2);
+                        return (numDist + regDist + funDist) / 3.0;
+                    },
+                    (__, ___) -> 0.0
+            );
+
             final var translation = new Translation(ulc);
             final var creator = new ScenarioCreator(DistanceDefinition.getDefault(), ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
                     new TransformationCollection(ulc, translation),
-                    DistanceMeasures.getDefault(),
+                    distanceMeasures,
                     validDefinition,
                     targetDefinition
             )));
@@ -301,7 +323,7 @@ public class Main {
     private static void testForester(String path) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 21; i < Integer.MAX_VALUE; i++) {
+        for (int i = 38; i < Integer.MAX_VALUE; i++) {
             System.out.println("Starte Anlauf " + i + "...");
             testForesterInner(path, i, ulc, germanet);
             System.out.println("Anlauf " + i + " vollständig");

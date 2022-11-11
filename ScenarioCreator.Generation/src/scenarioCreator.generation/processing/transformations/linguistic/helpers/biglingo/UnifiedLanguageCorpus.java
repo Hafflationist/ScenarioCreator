@@ -5,6 +5,7 @@ import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.StringPlusSemantical;
 import scenarioCreator.data.primitives.StringPlusSemanticalSegment;
+import scenarioCreator.data.primitives.synset.EnglishSynset;
 import scenarioCreator.data.primitives.synset.GlobalSynset;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
 import scenarioCreator.utils.Pair;
@@ -73,71 +74,81 @@ public class UnifiedLanguageCorpus {
                 .orElse(SSet.of());
     }
 
-    public SortedSet<SortedSet<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
+    public List<SortedSet<GlobalSynset>> stringPlusToSynsetIdSet(StringPlus word) {
         return switch (word) {
             case StringPlusSemantical sps -> sps.segmentList().stream()
-                    .map(StringPlusSemanticalSegment::gssSet)
-                    .collect(Collectors.toCollection(TreeSet::new));
-            case StringPlusNaked spn -> SSet.of(_corpora
-                    .get(spn.language())
-                    .estimateSynset(spn.rawString(), SSet.of())
-            );
+                     .map(StringPlusSemanticalSegment::gssSet)
+                     .toList();
+            case StringPlusNaked spn -> {
+                if(!_corpora.containsKey(spn.language())){
+                   yield List.of();
+                }
+                yield List.of(_corpora
+                        .get(spn.language())
+                        .estimateSynset(spn.rawString(), SSet.of())
+                );
+            }
         };
     }
 
     public double semanticDiff(StringPlus word1, StringPlus word2) {
         final var synsetIdSetSet1 = stringPlusToSynsetIdSet(word1);
         final var synsetIdSetSet2 = stringPlusToSynsetIdSet(word2);
-
-        if (word1.language().equals(word2.language())) {
-            // hier kommt der entspannte Teil
-            final var language = word1.language();
-            return semanticDiffInner(synsetIdSetSet1, synsetIdSetSet2, language);
-        }
-        final var corpus1 = _corpora.get(word1.language());
-        final var corpus2 = _corpora.get(word2.language());
-
-        final var gssSetSet1 = synsetIdSetSet1.stream()
-                .map(corpus1::word2EnglishSynset)
-                .map(essSet -> essSet.stream()
-                        .map(ess -> (GlobalSynset) ess)
-                        .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
-                .collect(Collectors.toCollection(TreeSet::new));
-        final var gssSetSet2 = synsetIdSetSet2.stream()
-                .map(corpus2::word2EnglishSynset)
-                .map(essSet -> essSet.stream()
-                        .map(ess -> (GlobalSynset) ess)
-                        .collect(Collectors.toCollection(() -> (SortedSet<GlobalSynset>) new TreeSet<GlobalSynset>())))
-                .collect(Collectors.toCollection(TreeSet::new));
-        final var rawDist = semanticDiffInner(gssSetSet1, gssSetSet2, Language.English);
-        return Math.sqrt(rawDist) * 0.8 + 0.2; // so schlau
+        return semanticDiffInner(synsetIdSetSet1, synsetIdSetSet2);
     }
 
-    private double semanticDiffInner(SortedSet<SortedSet<GlobalSynset>> gssSetSet1,
-                                     SortedSet<SortedSet<GlobalSynset>> gssSetSet2,
-                                     Language language) {
+    private double semanticDiffInner(List<SortedSet<GlobalSynset>> gssSetList1,
+                                     List<SortedSet<GlobalSynset>> gssSetList2) {
         // Wir müssten jetzt die Namen in ihrer tokenisierten Form haben und müssen die semantische Ähnlichkeit bestimmen.
         // Ansatz: Man schaut sich bei jedem Token an, mit welchen Token vom anderen Wort er am besten passt.
         //         Ich muss die KIS-Folien studieren -> monge-elkan distance
-        final var diffA = mongeElkanDiff(gssSetSet1, gssSetSet2, language);
-        final var diffB = mongeElkanDiff(gssSetSet2, gssSetSet1, language);
+        final var diffA = mongeElkanDiff(gssSetList1, gssSetList2);
+        final var diffB = mongeElkanDiff(gssSetList2, gssSetList1);
         return (diffA + diffB) / 2.0;
     }
 
-    private double mongeElkanDiff(SortedSet<SortedSet<GlobalSynset>> gssSetSet1,
-                                  SortedSet<SortedSet<GlobalSynset>> gssSetSet2,
-                                  Language language) {
-        return gssSetSet1.stream()
-                .mapToDouble(gssSet1 -> gssSetSet2.stream()
-                        .mapToDouble(gssSet2 -> semanticDiff(gssSet1, gssSet2, language))
+    private double mongeElkanDiff(List<SortedSet<GlobalSynset>> gssSetList1,
+                                  List<SortedSet<GlobalSynset>> gssSetList2) {
+        return gssSetList1.stream()
+                .mapToDouble(gssSet1 -> gssSetList2.stream()
+                        .mapToDouble(gssSet2 -> semanticDiff(gssSet1, gssSet2))
                         .min()
                         .orElse(1.0))
                 .average() // vllt doch Summe?
                 .orElse(1.0);
     }
 
-    private double semanticDiff(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2, Language language) {
-        return _corpora.get(language).lowestSemanticDistance(synsetIdSet1, synsetIdSet2);
+    private double semanticDiff(SortedSet<GlobalSynset> synsetIdSet1, SortedSet<GlobalSynset> synsetIdSet2) {
+        return synsetIdSet1.stream()
+                .mapToDouble(gss1 -> synsetIdSet2.stream()
+                        .mapToDouble(gss2 -> semanticDiff(gss1, gss2))
+                        .min()
+                        .orElse(1.0))
+                .min()
+                .orElse(1.0);
+    }
+
+    private double semanticDiff(GlobalSynset gss1, GlobalSynset gss2) {
+        if (gss1.language() == gss2.language()) {
+            // Der entspannte Fall:
+            assert _corpora.containsKey(gss1.language());
+            _corpora.get(gss1.language()).diff(gss1, gss2);
+        }
+        final var englishGss1 = _corpora.get(gss1.language()).word2EnglishSynset(SSet.of(gss1));
+        final var englishGss2 = _corpora.get(gss2.language()).word2EnglishSynset(SSet.of(gss2));
+        final var rawDist = minDiff(englishGss1, englishGss2);
+        return Math.sqrt(rawDist) * 0.8 + 0.2; // so schlau
+    }
+
+    private double minDiff(SortedSet<EnglishSynset> essSet1,
+                           SortedSet<EnglishSynset> essSet2) {
+        return essSet1.stream()
+                .mapToDouble(ess1 -> essSet2.stream()
+                        .mapToDouble(ess2 -> _corpora.get(Language.English).diff(ess1, ess2))
+                        .min()
+                        .orElse(1.0))
+                .average() // vllt doch Summe?
+                .orElse(1.0);
     }
 
     public SortedSet<StringPlusSemanticalSegment> translate(StringPlusSemanticalSegment segment, Language targetLanguage) {

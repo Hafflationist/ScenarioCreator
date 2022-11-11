@@ -40,6 +40,9 @@ public class RemoveTable implements TableTransformation {
     @Override
     @NotNull
     public SortedSet<Table> getCandidates(SortedSet<Table> tableSet) {
+        if (tableSet.size() <= 1){
+            return SSet.of();
+        }
         return tableSet.stream()
                 .filter(this::freeOfRelationships)
                 .collect(Collectors.toCollection(TreeSet::new));

@@ -10,12 +10,10 @@ import scenarioCreator.data.identification.*;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
-import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
+import java.util.List;
 import java.util.stream.Stream;
 
 class EntityHandlerTest {
@@ -31,6 +29,14 @@ class EntityHandlerTest {
         } catch (NumberFormatException e) {
             return defaultValue;
         }
+    }
+
+    private static List<StringPlus> get(List<Pair<StringPlus, List<StringPlus>>> mapping, StringPlus key) {
+      return mapping.stream()
+              .filter(pair -> pair.first().equals(key))
+              .findFirst()
+              .map(Pair::second)
+              .orElse(List.of());
     }
 
     @Test
@@ -68,48 +74,48 @@ class EntityHandlerTest {
         final var mapping = EntityHandler.getNameMapping(entitySet1, entitySet2, intersectingIdSet);
 
         // --- Assert
-        Assertions.assertEquals(entitySet1.size() - 1, mapping.keySet().size());
+        Assertions.assertEquals(entitySet1.size() - 1, mapping.size());
         Assertions.assertEquals(
                 SSet.of(em(new IdSimple(2)).name),
-                mapping.get(em(new IdSimple(2)).name)
+                get(mapping, em(new IdSimple(2)).name)
         );
         Assertions.assertEquals(
                 SSet.of(merge34.name),
-                mapping.get(em(new IdSimple(3)).name)
+                get(mapping, em(new IdSimple(3)).name)
         );
         Assertions.assertEquals(
                 SSet.of(merge34.name),
-                mapping.get(em(new IdSimple(4)).name)
+                get(mapping, em(new IdSimple(4)).name)
         );
         Assertions.assertEquals(
                 SSet.of(em(new IdSimple(5)).name, em(new IdSimple(6)).name),
-                mapping.get(merge56.name)
+                get(mapping, merge56.name)
         );
         Assertions.assertEquals(
                 SSet.of(
                         em(new IdPart(new IdSimple(7), 0, MergeOrSplitType.Other)).name,
                         em(new IdPart(new IdSimple(7), 1, MergeOrSplitType.Other)).name
                 ),
-                mapping.get(em(new IdSimple(7)).name)
+                get(mapping, em(new IdSimple(7)).name)
         );
         Assertions.assertEquals(
                 SSet.of(em(new IdSimple(8)).name),
-                mapping.get(em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)).name)
+                get(mapping, em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)).name)
         );
         Assertions.assertEquals(
                 SSet.of(em(new IdSimple(8)).name),
-                mapping.get(em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other)).name)
+                get(mapping, em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other)).name)
         );
     }
 
     @Test
     void mappingToDistanceTestSummation() {
         // --- Arrange
-        final var mapping = Map.of(
-                spnDist(0.0), SSet.of(spnDist(1.0)),
-                spnDist(0.1), SSet.of(spnDist(1.0)),
-                spnDist(0.2), SSet.of(spnDist(1.0)),
-                spnDist(0.3), SSet.of(spnDist(3.0))
+        final var mapping = List.of(
+                new Pair<>(spnDist(0.0), List.of(spnDist(1.0))),
+                new Pair<>(spnDist(0.1), List.of(spnDist(1.0))),
+                new Pair<>(spnDist(0.2), List.of(spnDist(1.0))),
+                new Pair<>(spnDist(0.3), List.of(spnDist(3.0)))
         );
 
         // --- Act
@@ -126,14 +132,14 @@ class EntityHandlerTest {
     })
     void mappingToDistanceTestWeight(int size) {
         // --- Arrange
-        final var mapped = (SortedSet<StringPlus>) Stream
+        final var mapped = (List<StringPlus>) Stream
                 .iterate(65, x -> x + 1)
                 .map(Character::toString)
                 .map(this::spnDist)
                 .limit(size)
-                .collect(Collectors.toCollection(TreeSet::new));
-        final var mapping = Map.of(
-                spnDist(1.0), mapped
+                .toList();
+        final var mapping = List.of(
+                new Pair<>(spnDist(1.0), mapped)
         );
 
         // --- Act

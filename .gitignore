@@ -7,3 +7,12 @@
 /target/**
 /lib/**
 .attach_pid*
+**/out/**
+**/out/*
+**/out/
+*/out/**
+*/out/*
+*/out/
+/out/**
+/out/*
+/out/
