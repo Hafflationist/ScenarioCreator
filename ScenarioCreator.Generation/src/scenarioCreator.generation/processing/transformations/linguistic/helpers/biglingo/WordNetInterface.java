@@ -197,6 +197,7 @@ public class WordNetInterface implements LanguageCorpus {
         final var synsetId2 = new SynsetID(ess2.offset(), partOfSpeechToPos(ess2.partOfSpeech()));
         final var concept1 = essToConcept(synsetId1);
         final var concept2 = essToConcept(synsetId2);
+        // The following check is important! Maybe toString() has some side effect (I hate them)
         if(concept1.toString().equals("SID-00000000-N")){
             System.out.println("REEE");
         }
