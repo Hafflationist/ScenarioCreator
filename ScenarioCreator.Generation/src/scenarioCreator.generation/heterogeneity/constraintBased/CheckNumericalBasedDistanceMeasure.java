@@ -11,7 +11,6 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.*;
 import scenarioCreator.generation.heterogeneity.constraintBased.numerical.CheckExpressionEvaluation;
 import scenarioCreator.generation.heterogeneity.constraintBased.numerical.Lagrange;
-import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.CheckNumericalManager;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.StepIntervall;
 import scenarioCreator.utils.Pair;
@@ -33,10 +32,11 @@ public final class CheckNumericalBasedDistanceMeasure {
     public static double calculateDistanceRelative(
             Schema schema1, Schema schema2
     ) {
-        final var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2);
-        final var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
-        final var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
-        return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
+        return aggregate(findCorrespondingTablePairs(schema1, schema2)).entrySet().stream()
+                .mapToDouble(entry -> diffOfColumns(entry.getKey(), entry.getValue()))
+                .filter(x -> !Double.isNaN(x))
+                .average()
+                .orElse(0.0);
     }
 
     public static double calculateDistanceAbsolute(
@@ -44,6 +44,7 @@ public final class CheckNumericalBasedDistanceMeasure {
     ) {
         return aggregate(findCorrespondingTablePairs(schema1, schema2)).entrySet().stream()
                 .mapToDouble(entry -> diffOfColumns(entry.getKey(), entry.getValue()))
+                .filter(x -> !Double.isNaN(x))
                 .sum();
     }
 
@@ -99,14 +100,14 @@ public final class CheckNumericalBasedDistanceMeasure {
 
     private static double diffOfColumns(Column column, SortedSet<Column> columnSet) {
         if (!(column instanceof ColumnLeaf)) {
-            return 0.0;
+            return Double.NaN;
         }
         final var columnLeafSet = columnSet.stream()
                 .filter(col -> col instanceof ColumnLeaf)
                 .map(col -> (ColumnLeaf) col)
                 .collect(Collectors.toCollection(TreeSet::new));
         if (columnLeafSet.isEmpty()) {
-            return 0.0;
+            return Double.NaN;
         }
 
         final var checkExpression1 = new CheckConjunction(columnToCheckExpression(column));
@@ -124,7 +125,7 @@ public final class CheckNumericalBasedDistanceMeasure {
                 )
                 .reduce(CheckNumericalManager::merge);
         if (ndOpt.isEmpty()) {
-            return 0.0;
+            return Double.NaN;
         }
 
         return diffOfCheckExpressions(checkExpression1, checkExpression2, ndOpt.get());
@@ -171,7 +172,7 @@ public final class CheckNumericalBasedDistanceMeasure {
         final var extremePair = StepIntervall.extremes(nd);
         final var min = extremePair.first();
         final var max = extremePair.second();
-        final var factor = 1.0;
+        final var factor = 1.2;
         final var extendedLength = (max - min) * factor;
         final var lengthExtension = (extendedLength - (max - min)) / 2.0;
         final var extendedMin = min - lengthExtension;

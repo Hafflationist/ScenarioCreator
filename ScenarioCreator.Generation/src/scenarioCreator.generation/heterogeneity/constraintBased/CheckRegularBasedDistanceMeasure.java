@@ -10,7 +10,6 @@ import scenarioCreator.generation.heterogeneity.constraintBased.regexy.DFA;
 import scenarioCreator.generation.heterogeneity.constraintBased.regexy.DfaToRandomString;
 import scenarioCreator.generation.heterogeneity.constraintBased.regexy.NfaToDfa;
 import scenarioCreator.generation.heterogeneity.constraintBased.regexy.RegexToNfa;
-import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
@@ -29,10 +28,11 @@ public final class CheckRegularBasedDistanceMeasure {
     public static double calculateDistanceRelative(
             Schema schema1, Schema schema2, Random random
     ) {
-        final var distanceAbsolute = calculateDistanceAbsolute(schema1, schema2, random);
-        final var schema1Size = IdentificationNumberCalculator.getAllIds(schema1, false).count();
-        final var schema2Size = IdentificationNumberCalculator.getAllIds(schema2, false).count();
-        return (2.0 * distanceAbsolute) / (double) (schema1Size + schema2Size);
+        return aggregate(findCorrespondingTablePairs(schema1, schema2)).entrySet().stream()
+                .mapToDouble(entry -> diffOfColumns(entry.getKey(), entry.getValue(), random))
+                .filter(x -> !Double.isNaN(x))
+                .average()
+                .orElse(0.0);
     }
 
     public static double calculateDistanceAbsolute(
@@ -40,6 +40,7 @@ public final class CheckRegularBasedDistanceMeasure {
     ) {
         return aggregate(findCorrespondingTablePairs(schema1, schema2)).entrySet().stream()
                 .mapToDouble(entry -> diffOfColumns(entry.getKey(), entry.getValue(), random))
+                .filter(x -> !Double.isNaN(x))
                 .sum();
     }
 
@@ -95,14 +96,14 @@ public final class CheckRegularBasedDistanceMeasure {
 
     private static double diffOfColumns(Column column, SortedSet<Column> columnSet, Random random) {
         if (!(column instanceof ColumnLeaf)) {
-            return 0.0;
+            return Double.NaN;
         }
         final var columnLeafSet = columnSet.stream()
                 .filter(col -> col instanceof ColumnLeaf)
                 .map(col -> (ColumnLeaf) col)
                 .collect(Collectors.toCollection(TreeSet::new));
         if (columnLeafSet.isEmpty()) {
-            return 0.0;
+            return Double.NaN;
         }
 
         final var regex = columnToRegularExpression(column);
@@ -112,7 +113,7 @@ public final class CheckRegularBasedDistanceMeasure {
                     return diffOfRegularExpressions(regex, otherRegex, random);
                 })
                 .average()
-                .orElse(0.0);
+                .orElse(Double.NaN);
     }
 
     private static RegularExpression columnToRegularExpression(Column column) {
