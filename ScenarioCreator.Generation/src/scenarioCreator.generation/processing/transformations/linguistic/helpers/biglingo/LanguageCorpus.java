@@ -17,6 +17,5 @@ public interface LanguageCorpus {
 
     SortedSet<EnglishSynset> word2EnglishSynset(SortedSet<GlobalSynset> gssSet);
 
-
     double diff(GlobalSynset gss1, GlobalSynset gss2);
 }

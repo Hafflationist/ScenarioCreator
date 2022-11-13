@@ -44,7 +44,7 @@ public class LanguageCorpusMock implements LanguageCorpus {
     }
 
     @Override
-    public double lowestSemanticDistance(SortedSet<GlobalSynset> gssSet1, SortedSet<GlobalSynset> gssSet2) {
+    public double diff(GlobalSynset gss1, GlobalSynset gss2) {
         return 0;
     }
 }

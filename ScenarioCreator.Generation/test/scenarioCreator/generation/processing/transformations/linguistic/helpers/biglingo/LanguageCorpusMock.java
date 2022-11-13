@@ -2,7 +2,6 @@ package scenarioCreator.generation.processing.transformations.linguistic.helpers
 
 import scenarioCreator.data.primitives.synset.EnglishSynset;
 import scenarioCreator.data.primitives.synset.GlobalSynset;
-import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.LanguageCorpus;
 
 import java.util.Map;
 import java.util.SortedSet;
@@ -45,7 +44,7 @@ public class LanguageCorpusMock implements LanguageCorpus {
     }
 
     @Override
-    public double lowestSemanticDistance(SortedSet<GlobalSynset> gssSet1, SortedSet<GlobalSynset> gssSet2) {
+    public double diff(GlobalSynset gss1, GlobalSynset gss2) {
         return 0;
     }
 }
