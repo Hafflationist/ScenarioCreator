@@ -21,7 +21,6 @@ import scenarioCreator.data.dataset.Value;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.generation.heterogeneity.structural.StructuralDistanceMeasureElementary;
 import scenarioCreator.generation.heterogeneity.structural.ted.Ted;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
 import scenarioCreator.generation.processing.transformations.SingleTransformationExecutor;
@@ -106,20 +105,26 @@ class StructuralDistanceMeasureTest {
         Assertions.assertTrue(diffElementary > 0);
     }
 
+    private Table getTable(int n) {
+        final var name = new StringPlusNaked("name", Language.Technical);
+        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
+        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
+        final var column1 = new ColumnLeaf(new IdSimple(n+ 101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column2 = new ColumnLeaf(new IdSimple(n+102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column3 = new ColumnLeaf(new IdSimple(n+103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var column4 = new ColumnLeaf(new IdSimple(n+104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
+        final var columnList = List.of((Column) column1, column2, column3, column4);
+        return new Table(new IdSimple(n+201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
+    }
+
     @ParameterizedTest
     @MethodSource("argSource")
     void calculateDistanceToRootAbsolute_RemoveTable(int seed) throws NoTableFoundException, NoColumnFoundException, IOException {
         // --- Arrange
         final var name = new StringPlusNaked("name", Language.Technical);
-        final var dt = new DataType(DataTypeEnum.NVARCHAR, false);
-        final var vs = SSet.of(new Value("Weiblein"), new Value("Männlein"));
-        final var column1 = new ColumnLeaf(new IdSimple(101), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        final var column2 = new ColumnLeaf(new IdSimple(102), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        final var column3 = new ColumnLeaf(new IdSimple(103), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        final var column4 = new ColumnLeaf(new IdSimple(104), name, dt, vs, ColumnContext.getDefault(), SSet.of());
-        final var columnList = List.of((Column) column1, column2, column3, column4);
-        final var table = new Table(new IdSimple(201), name, columnList, Context.getDefault(), SSet.of(), SSet.of());
-        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
+        final var table1 = getTable(0);
+        final var table2 = getTable(5);
+        final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table1, table2));
         final var transformation = new RemoveTable();
         final var ste = new SingleTransformationExecutor(null);
         final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));

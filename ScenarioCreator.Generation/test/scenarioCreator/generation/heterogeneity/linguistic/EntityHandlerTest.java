@@ -76,34 +76,34 @@ class EntityHandlerTest {
         // --- Assert
         Assertions.assertEquals(entitySet1.size() - 1, mapping.size());
         Assertions.assertEquals(
-                SSet.of(em(new IdSimple(2)).name),
+                List.of(em(new IdSimple(2)).name),
                 get(mapping, em(new IdSimple(2)).name)
         );
         Assertions.assertEquals(
-                SSet.of(merge34.name),
+                List.of(merge34.name),
                 get(mapping, em(new IdSimple(3)).name)
         );
         Assertions.assertEquals(
-                SSet.of(merge34.name),
+                List.of(merge34.name),
                 get(mapping, em(new IdSimple(4)).name)
         );
         Assertions.assertEquals(
-                SSet.of(em(new IdSimple(5)).name, em(new IdSimple(6)).name),
+                List.of(em(new IdSimple(5)).name, em(new IdSimple(6)).name),
                 get(mapping, merge56.name)
         );
         Assertions.assertEquals(
-                SSet.of(
+                List.of(
                         em(new IdPart(new IdSimple(7), 0, MergeOrSplitType.Other)).name,
                         em(new IdPart(new IdSimple(7), 1, MergeOrSplitType.Other)).name
                 ),
                 get(mapping, em(new IdSimple(7)).name)
         );
         Assertions.assertEquals(
-                SSet.of(em(new IdSimple(8)).name),
+                List.of(em(new IdSimple(8)).name),
                 get(mapping, em(new IdPart(new IdSimple(8), 0, MergeOrSplitType.Other)).name)
         );
         Assertions.assertEquals(
-                SSet.of(em(new IdSimple(8)).name),
+                List.of(em(new IdSimple(8)).name),
                 get(mapping, em(new IdPart(new IdSimple(8), 1, MergeOrSplitType.Other)).name)
         );
     }
