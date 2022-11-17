@@ -11,6 +11,7 @@ public interface IForester {
             SchemaWithAdditionalData rootSchema,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
+            int newChildren,
             Random random
     );
 

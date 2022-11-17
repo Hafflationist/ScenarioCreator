@@ -48,11 +48,12 @@ public class Forester implements IForester {
             SchemaWithAdditionalData rootSchema,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
+            int newChildren,
             Random random
     ) {
         final var tree = new TreeLeaf<>(rootSchema);
         final var swadSet = Stream
-                .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, random))
+                .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, newChildren, random))
                 .limit(NUMBER_OF_STEPS)
                 .flatMap(te -> TreeDataOperator.getAllTreeEntityList(te).stream())
                 .map(TreeEntity::content)
@@ -65,6 +66,7 @@ public class Forester implements IForester {
             TreeEntity<SchemaWithAdditionalData> oldTree,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
+            int newChildren,
             Random random
     ) {
         final var chosenTe = chooseTreeEntityToExtend(oldTree, random);
@@ -75,7 +77,9 @@ public class Forester implements IForester {
                 tgd.shouldStayNormalized(),
                 tgd.conservesFlatRelations()
         );
-        final var newTe = extendTreeEntity(chosenTe, transformationSet, oldSchemaSet, random);
+        final var newTe = extendTreeEntity(
+                chosenTe, transformationSet, oldSchemaSet, newChildren, random
+        );
         return TreeDataOperator.replaceTreeEntity(oldTree, chosenTe, newTe);
     }
 
@@ -128,15 +132,19 @@ public class Forester implements IForester {
             TreeEntity<SchemaWithAdditionalData> te,
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
+            int newChildrenNum,
             Random random
     ) {
-        final var newChild = createNewChild(te, transformationSet, oldSchemaSet, random);
+        final var newChildren = Stream
+                .iterate(0, o -> 0)
+                .map(o -> createNewChild(te, transformationSet, oldSchemaSet, random))
+                .limit(newChildrenNum);
         final var oldChildList = switch (te) {
             case TreeNode<SchemaWithAdditionalData> tn -> tn.childList();
             case TreeLeaf ignore -> List.<TreeEntity<SchemaWithAdditionalData>>of();
         };
-        final var newChildList = StreamExtensions
-                .prepend(oldChildList.stream(), newChild)
+        final var newChildList = Stream
+                .concat(oldChildList.stream(), newChildren)
                 .toList();
         return te.withChildren(newChildList);
     }

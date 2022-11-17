@@ -112,6 +112,7 @@ public class UnifiedLanguageCorpus {
         return gssSetList1.stream()
                 .mapToDouble(gssSet1 -> gssSetList2.stream()
                         .mapToDouble(gssSet2 -> semanticDiff(gssSet1, gssSet2))
+                        .filter(x -> !Double.isNaN(x))
                         .min()
                         .orElse(1.0))
                 .average() // vllt doch Summe?
@@ -122,6 +123,7 @@ public class UnifiedLanguageCorpus {
         return synsetIdSet1.stream()
                 .mapToDouble(gss1 -> synsetIdSet2.stream()
                         .mapToDouble(gss2 -> semanticDiff(gss1, gss2))
+                        .filter(x -> !Double.isNaN(x))
                         .min()
                         .orElse(1.0))
                 .min()
@@ -132,7 +134,7 @@ public class UnifiedLanguageCorpus {
         if (gss1.language() == gss2.language()) {
             // Der entspannte Fall:
             assert _corpora.containsKey(gss1.language());
-            _corpora.get(gss1.language()).diff(gss1, gss2);
+            return _corpora.get(gss1.language()).diff(gss1, gss2);
         }
         final var englishGss1 = _corpora.get(gss1.language()).word2EnglishSynset(SSet.of(gss1));
         final var englishGss2 = _corpora.get(gss2.language()).word2EnglishSynset(SSet.of(gss2));
@@ -145,6 +147,7 @@ public class UnifiedLanguageCorpus {
         return essSet1.stream()
                 .mapToDouble(ess1 -> essSet2.stream()
                         .mapToDouble(ess2 -> _corpora.get(Language.English).diff(ess1, ess2))
+                        .filter(x -> !Double.isNaN(x))
                         .min()
                         .orElse(1.0))
                 .average() // vllt doch Summe?

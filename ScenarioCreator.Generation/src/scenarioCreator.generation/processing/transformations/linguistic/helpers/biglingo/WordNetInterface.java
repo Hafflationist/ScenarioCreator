@@ -169,8 +169,8 @@ public class WordNetInterface implements LanguageCorpus {
         final var concept1 = essToConcept(synsetId1);
         final var concept2 = essToConcept(synsetId2);
         // The following check is important! Maybe toString() has some side effect (I hate them)
-        if(concept1.toString().equals("SID-00000000-N")){
-            System.out.println("REEE");
+        if(concept1.toString().equals("SID-00000000-N") || concept2.toString().equals("SID-00000000-N")){
+            return Double.NaN;
         }
         final var relatedness = relatednessCalculator
                 .calcRelatednessOfSynsets(concept1, concept2)

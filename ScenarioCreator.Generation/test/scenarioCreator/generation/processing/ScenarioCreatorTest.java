@@ -11,7 +11,6 @@ import scenarioCreator.data.Schema;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.generation.heterogeneity.Distance;
-import scenarioCreator.generation.processing.ScenarioCreator;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
 import scenarioCreator.generation.processing.tree.IForester;
 import scenarioCreator.generation.processing.tree.SchemaWithAdditionalData;
@@ -47,7 +46,7 @@ class ScenarioCreatorTest {
         );
 
         // --- Act
-        final var scenario = creator.create(startSchema, scenarioSize, new Random());
+        final var scenario = creator.create(startSchema, scenarioSize, 1, new Random());
 
         // -- Assert
         // we don't really care about the scenario
@@ -91,7 +90,7 @@ class ScenarioCreatorTest {
         Assertions.assertEquals(expectedTargetValues, targetValues);
     }
 
-    class ForesterCallLogger implements IForester {
+    static class ForesterCallLogger implements IForester {
         private static final List<CtorCallArguments> _ctorCalls = new ArrayList<>();
 
         public ForesterCallLogger(
@@ -119,6 +118,7 @@ class ScenarioCreatorTest {
                 SchemaWithAdditionalData rootSchema,
                 TreeGenerationDefinition tgd,
                 SortedSet<Schema> oldSchemaSet,
+                int newChildren,
                 Random random
         ) {
             final var newSchemaId = oldSchemaSet.size();

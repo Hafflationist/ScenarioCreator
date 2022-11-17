@@ -147,6 +147,7 @@ public class GermaNetInterface implements LanguageCorpus {
         return synsetIdSet1.stream()
                 .mapToDouble(gss1 -> synsetIdSet2.stream()
                         .mapToDouble(gss2 -> diff(gss1, gss2))
+                        .filter(x -> !Double.isNaN(x))
                         .min()
                         .orElse(1.0))
                 .min()

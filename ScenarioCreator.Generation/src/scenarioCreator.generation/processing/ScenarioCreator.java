@@ -29,7 +29,7 @@ public class ScenarioCreator {
         _foresterInjection = foresterInjection;
     }
 
-    public SortedSet<Schema> create(Schema startSchema, int sizeOfScenario, Random random) {
+    public SortedSet<Schema> create(Schema startSchema, int sizeOfScenario, int newChildren, Random random) {
         final var swad = new SchemaWithAdditionalData(startSchema, List.of());
         final var indexStream = Stream
                 .iterate(0, i -> i + 1)
@@ -55,7 +55,7 @@ public class ScenarioCreator {
                                     .map(SchemaWithAdditionalData::schema)
                                     .collect(Collectors.toCollection(TreeSet::new));
                             return recursiveNewSwad(
-                                    forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, random
+                                    forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random
                             );
                         })
                 .stream()
@@ -69,13 +69,14 @@ public class ScenarioCreator {
             TreeGenerationDefinition tgd,
             SortedSet<Schema> existingSchemaPureSet,
             SortedSet<SchemaWithAdditionalData> existingSchemaSet,
+            int newChildren,
             Random random) {
         final var newSwad = forester.createNext(
-                root, tgd, existingSchemaPureSet, random
+                root, tgd, existingSchemaPureSet, newChildren, random
         );
         final var  newSwadSet= SSet.prepend(newSwad, existingSchemaSet);
         if (newSwadSet.size() == existingSchemaSet.size()) {
-            return recursiveNewSwad(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, random);
+            return recursiveNewSwad(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random);
         }
         return newSwadSet;
     }

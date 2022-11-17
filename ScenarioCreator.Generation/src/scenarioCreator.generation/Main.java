@@ -299,7 +299,7 @@ public class Main {
                     targetDefinition
             )));
             System.out.println("Preparations finished (rnd: " + random.nextInt(1000) + ")");
-            final var schemaList = creator.create(schema, 5, random).stream().toList();
+            final var schemaList = creator.create(schema, 5, 1, random).stream().toList();
             System.out.println("Scenario created!");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
