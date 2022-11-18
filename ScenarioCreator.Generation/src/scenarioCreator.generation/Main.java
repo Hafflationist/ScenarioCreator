@@ -291,22 +291,27 @@ public class Main {
             );
 
             final var translation = new Translation(ulc);
-            final var creator = new ScenarioCreator(DistanceDefinition.getDefault(), ((validDefinition, targetDefinition) -> new Forester(
+            final var creator = new ScenarioCreator(DistanceDefinition.getDefault(0.2, 0.7), ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
                     new TransformationCollection(ulc, translation),
                     distanceMeasures,
                     validDefinition,
-                    targetDefinition
+                    targetDefinition,
+                    16
             )));
             System.out.println("Preparations finished (rnd: " + random.nextInt(1000) + ")");
-            final var schemaList = creator.create(schema, 5, 1, random).stream().toList();
+            final var schemaList = creator
+                    .create(schema, 5, 1, random)
+                    .sarList()
+                    .stream()
+                    .toList();
             System.out.println("Scenario created!");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
             SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
             IntStream.range(0, schemaList.size())
                     .forEach(idx -> {
                         final var newSchema = schemaList.get(idx);
-                        final var path = Path.of(pathStr, "scenario/schemaDerivative" + idx + ".yaml");
+                        final var path = Path.of(pathStr, "scenario/schemaDerivativeSar" + idx + ".yaml");
                         try {
                             SchemaFileHandler.save(newSchema, path);
                         } catch (IOException e) {
@@ -323,11 +328,12 @@ public class Main {
     private static void testForester(String path) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        for (int i = 38; i < Integer.MAX_VALUE; i++) {
-            System.out.println("Starte Anlauf " + i + "...");
-            testForesterInner(path, i, ulc, germanet);
-            System.out.println("Anlauf " + i + " vollständig");
-        }
+        testForesterInner(path, 38, ulc, germanet);
+//        for (int i = 38; i < Integer.MAX_VALUE; i++) {
+//            System.out.println("Starte Anlauf " + i + "...");
+//            testForesterInner(path, i, ulc, germanet);
+//            System.out.println("Anlauf " + i + " vollständig");
+//        }
     }
 
     private static void testTreeEditDistance() {
@@ -350,13 +356,14 @@ public class Main {
     }
 
     public static void main(String[] args) throws XMLStreamException, IOException {
+        Evaluation.getInitSchema();
         final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        testForester(path);
+//        testForester(path);
 //        testTreeEditDistance();
     }
 

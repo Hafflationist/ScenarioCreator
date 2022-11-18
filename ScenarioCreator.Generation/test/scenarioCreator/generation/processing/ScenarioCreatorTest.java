@@ -11,10 +11,7 @@ import scenarioCreator.data.Schema;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.generation.heterogeneity.Distance;
-import scenarioCreator.generation.processing.tree.DistanceDefinition;
-import scenarioCreator.generation.processing.tree.IForester;
-import scenarioCreator.generation.processing.tree.SchemaWithAdditionalData;
-import scenarioCreator.generation.processing.tree.TreeGenerationDefinition;
+import scenarioCreator.generation.processing.tree.*;
 import scenarioCreator.utils.SSet;
 
 import java.util.ArrayList;
@@ -114,7 +111,7 @@ class ScenarioCreatorTest {
         }
 
         @Override
-        public SchemaWithAdditionalData createNext(
+        public SchemaAsResult createNext(
                 SchemaWithAdditionalData rootSchema,
                 TreeGenerationDefinition tgd,
                 SortedSet<Schema> oldSchemaSet,
@@ -132,7 +129,7 @@ class ScenarioCreatorTest {
             final var distanceList = oldSchemaSet.stream()
                     .map(s -> new Distance(0.2, 0.2, 0.2, 0.2))
                     .toList();
-            return new SchemaWithAdditionalData(newSchema, distanceList);
+            return new SchemaAsResult(newSchema, distanceList, List.of(), false, false);
         }
 
         record CtorCallArguments(

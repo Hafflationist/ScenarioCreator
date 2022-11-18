@@ -7,7 +7,7 @@ import java.util.SortedSet;
 
 public interface IForester {
 
-    SchemaWithAdditionalData createNext(
+    SchemaAsResult createNext(
             SchemaWithAdditionalData rootSchema,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,

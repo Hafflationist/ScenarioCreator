@@ -16,6 +16,13 @@ public record DistanceDefinition(
         );
     }
 
+    public static DistanceDefinition getDefault(double min, double max) {
+        final var defaultTarget = new Target(min, (min + max) / 2.0, max);
+        return new DistanceDefinition(
+                defaultTarget, defaultTarget, defaultTarget, defaultTarget
+        );
+    }
+
     public boolean isValid(Distance distance) {
         return structural.min <= distance.structural() && distance.structural() <= structural.max
                 && linguistic.min <= distance.linguistic() && distance.linguistic() <= linguistic().max

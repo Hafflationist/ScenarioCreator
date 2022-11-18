@@ -29,60 +29,58 @@ public class ScenarioCreator {
         _foresterInjection = foresterInjection;
     }
 
-    public SortedSet<Schema> create(Schema startSchema, int sizeOfScenario, int newChildren, Random random) {
-        final var swad = new SchemaWithAdditionalData(startSchema, List.of());
+    public Scenario create(Schema startSchema, int sizeOfScenario, int newChildren, Random random) {
+        final var swad = new SchemaWithAdditionalData(startSchema, List.of(), List.of());
         final var indexStream = Stream
                 .iterate(0, i -> i + 1)
                 .limit(sizeOfScenario);
         final var tgd = new TreeGenerationDefinition(
                 true, true, true, false
         );
-        return StreamExtensions.<SortedSet<SchemaWithAdditionalData>, Integer>foldLeft(indexStream, SSet.of(),
-                        (existingSchemaSet, existingSchemas) -> {
-                            System.out.println("idx=" + existingSchemas + " | schemaSet=" + existingSchemaSet.size() + "    | (rnd:" + random.nextInt(1000) + ")");
-                            if(existingSchemas != existingSchemaSet.size()) {
-                                System.out.println("REEE");
-                            }
-                            assert existingSchemas == existingSchemaSet.size();
-                            final var targetDefinition = calcTargetDefinition(
-                                    existingSchemaSet, sizeOfScenario
-                            );
-                            final var forester = _foresterInjection.get(
-                                    _validDefinition,
-                                    targetDefinition
-                            );
-                            final var existingSchemaPureSet = existingSchemaSet.stream()
-                                    .map(SchemaWithAdditionalData::schema)
-                                    .collect(Collectors.toCollection(TreeSet::new));
-                            return recursiveNewSwad(
-                                    forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random
-                            );
-                        })
-                .stream()
-                .map(SchemaWithAdditionalData::schema)
-                .collect(Collectors.toCollection(TreeSet::new));
+        final var sarSet = StreamExtensions.<SortedSet<SchemaAsResult>, Integer>foldLeft(indexStream, SSet.of(),
+                (existingSchemaSet, existingSchemas) -> {
+                    System.out.println("idx=" + existingSchemas + " | schemaSet=" + existingSchemaSet.size() + "    | (rnd:" + random.nextInt(1000) + ")");
+                    if (existingSchemas != existingSchemaSet.size()) {
+                        System.out.println("REEE");
+                    }
+                    assert existingSchemas == existingSchemaSet.size();
+                    final var targetDefinition = calcTargetDefinition(
+                            existingSchemaSet, sizeOfScenario
+                    );
+                    final var forester = _foresterInjection.get(
+                            _validDefinition,
+                            targetDefinition
+                    );
+                    final var existingSchemaPureSet = existingSchemaSet.stream()
+                            .map(SchemaAsResult::schema)
+                            .collect(Collectors.toCollection(TreeSet::new));
+                    return recursiveNewSar(
+                            forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random
+                    );
+                });
+        return new Scenario(sarSet, avgDistance(sarSet));
     }
 
-    private SortedSet<SchemaWithAdditionalData> recursiveNewSwad(
+    private SortedSet<SchemaAsResult> recursiveNewSar(
             IForester forester,
             SchemaWithAdditionalData root,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> existingSchemaPureSet,
-            SortedSet<SchemaWithAdditionalData> existingSchemaSet,
+            SortedSet<SchemaAsResult> existingSchemaSet,
             int newChildren,
             Random random) {
-        final var newSwad = forester.createNext(
+        final var newSar = forester.createNext(
                 root, tgd, existingSchemaPureSet, newChildren, random
         );
-        final var  newSwadSet= SSet.prepend(newSwad, existingSchemaSet);
-        if (newSwadSet.size() == existingSchemaSet.size()) {
-            return recursiveNewSwad(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random);
+        final var newSarSet = SSet.prepend(newSar, existingSchemaSet);
+        if (newSarSet.size() == existingSchemaSet.size()) {
+            return recursiveNewSar(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random);
         }
-        return newSwadSet;
+        return newSarSet;
     }
 
     private DistanceDefinition calcTargetDefinition(
-            SortedSet<SchemaWithAdditionalData> existingSchemaSet, int sizeOfScenario
+            SortedSet<SchemaAsResult> existingSchemaSet, int sizeOfScenario
     ) {
         return new DistanceDefinition(
                 calcTargetDefinitionSingle(existingSchemaSet, sizeOfScenario, Distance::structural),
@@ -93,7 +91,7 @@ public class ScenarioCreator {
     }
 
     private DistanceDefinition.Target calcTargetDefinitionSingle(
-            SortedSet<SchemaWithAdditionalData> existingSchemaSet,
+            SortedSet<SchemaAsResult> existingSchemaSet,
             int sizeOfScenario,
             Function<Distance, Double> reduceDistance
     ) {
@@ -101,7 +99,7 @@ public class ScenarioCreator {
         final var validAvg = reduceDistance.apply(_validDefinition.avg());
         final var validMax = reduceDistance.apply(_validDefinition.max());
         final var alreadyReachedHeterogeneity = existingSchemaSet.stream()
-                .map(SchemaWithAdditionalData::distanceList)
+                .map(SchemaAsResult::distanceList)
                 .flatMap(Collection::stream)
                 .mapToDouble(reduceDistance::apply)
                 .sum();
@@ -126,5 +124,26 @@ public class ScenarioCreator {
         final var fullyMissingRelations = (missingSchemas * (missingSchemas - 1)) / 2;
         final var semiMissingRelations = missingSchemas * existingSchemas;
         return fullyMissingRelations + semiMissingRelations;
+    }
+
+
+    private Distance avgDistance(SortedSet<SchemaAsResult> sarSet) {
+        final var distanceList = sarSet.stream()
+                .map(SchemaAsResult::distanceList)
+                .flatMap(Collection::stream)
+                .toList();
+        return new Distance(
+                avgDistance(distanceList, Distance::structural),
+                avgDistance(distanceList, Distance::linguistic),
+                avgDistance(distanceList, Distance::constraintBased),
+                avgDistance(distanceList, Distance::contextual)
+        );
+    }
+
+    private double avgDistance(List<Distance> distanceList, Function<Distance, Double> reduceDistance) {
+        return distanceList.stream()
+                .mapToDouble(Distance::structural)
+                .average()
+                .orElse(Double.NaN);
     }
 }
