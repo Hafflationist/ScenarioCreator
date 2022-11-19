@@ -50,7 +50,7 @@ public final class Evaluation {
     private Evaluation() {
     }
 
-    public static Schema getInitSchema() {
+    public static Schema getInitSchema(UnifiedLanguageCorpus ulc) {
         final var initSchema = new Schema(
                 new IdSimple(0),
                 new StringPlusNaked("HotelEvent", Language.Mixed),
@@ -706,7 +706,10 @@ public final class Evaluation {
                 )
         );
         IntegrityChecker.assertValidSchema(initSchema);
-        return initSchema;
+        final var ss = new SemanticSaturation(ulc);
+        final var semanticInitSchema = ss.saturateSemantically(initSchema);
+        IntegrityChecker.assertValidSchema(semanticInitSchema);
+        return semanticInitSchema;
     }
 
     private static FunctionalDependency getFd(int left, int right) {
