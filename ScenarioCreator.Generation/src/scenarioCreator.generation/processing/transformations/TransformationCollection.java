@@ -47,7 +47,6 @@ public class TransformationCollection {
                 new ChangeDataType(),
                 new DeNullification(),
                 new GroupColumnLeafsToNodeNested(),
-                new RemoveColumn(),
                 new UngroupColumnNodeToColumnLeafs()
         );
     }
@@ -70,6 +69,7 @@ public class TransformationCollection {
                 new GroupColumnLeafsToNode(),
                 new NullableToHorizontalInheritance(),
                 new NullableToVerticalInheritance(),
+                new RemoveColumn(),
                 new RemoveTable()
         );
     }

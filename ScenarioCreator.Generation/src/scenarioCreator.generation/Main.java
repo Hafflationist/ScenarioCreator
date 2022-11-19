@@ -6,6 +6,8 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
+import scenarioCreator.generation.evaluation.Evaluation;
+import scenarioCreator.generation.evaluation.Init;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
@@ -258,11 +260,11 @@ public class Main {
 
             // calc
             final var ss = new SemanticSaturation(ulc);
-            final var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
-                    random, 3, 3, gni::pickRandomEnglishWord
-            );
-            assert !schemaNaked.tableSet().isEmpty();
-            final var schema = ss.saturateSemantically(schemaNaked);
+//            final var schemaNaked = RandomSchemaGenerator.generateRandomSchema(
+//                    random, 3, 3, gni::pickRandomEnglishWord
+//            );
+//            assert !schemaNaked.tableSet().isEmpty();
+            final var schema = Init.getInitSchema(ulc);
 
             final var allIdList = IdentificationNumberCalculator.getAllIds(schema, false).toList();
             final var nonUniqueIdSet = allIdList.stream()
@@ -325,15 +327,15 @@ public class Main {
     }
 
 
-    private static void testForester(String path) throws XMLStreamException, IOException {
+    private static void testForester(String path, int startIndex) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-        testForesterInner(path, 38, ulc, germanet);
-//        for (int i = 38; i < Integer.MAX_VALUE; i++) {
-//            System.out.println("Starte Anlauf " + i + "...");
-//            testForesterInner(path, i, ulc, germanet);
-//            System.out.println("Anlauf " + i + " vollständig");
-//        }
+//        testForesterInner(path, 38, ulc, germanet);
+        for (int i = startIndex; i < Integer.MAX_VALUE; i++) {
+            System.out.println("Starte Anlauf " + i + "...");
+            testForesterInner(path, i, ulc, germanet);
+            System.out.println("Anlauf " + i + " vollständig");
+        }
     }
 
     private static void testTreeEditDistance() {
@@ -356,15 +358,18 @@ public class Main {
     }
 
     public static void main(String[] args) throws XMLStreamException, IOException {
-        Evaluation.getInitSchema();
         final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-//        testForester(path);
+        testForester(path, 100);
 //        testTreeEditDistance();
+        final var config = new Evaluation.FullConfiguration(
+                DistanceDefinition.getDefault(0.2, 0.8), 5, 32, 2
+        );
+        Evaluation.transformationCount(config, path, 100, 12);
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {

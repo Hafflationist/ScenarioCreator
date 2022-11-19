@@ -137,7 +137,10 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         final var newFdSet = FunctionalDependencyManager.getValidFdSet(
                 ip.base.functionalDependencySet(), newColumnList
         );
-        final var newTable = ip.base().withColumnList(newColumnList).withFunctionalDependencySet(newFdSet);
+        final var newTable = ip.base()
+                    .withColumnList(newColumnList)
+                .withFunctionalDependencySet(newFdSet)
+                .withId(new IdMerge(ip.base.id(), ip.derivation.id(), MergeOrSplitType.Xor));
         // komplett falsch:
         final var idTranslationMap = mergeablePairList.stream()
                 .filter(pair -> pair.second().isPresent())
@@ -200,7 +203,8 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         final var derivingPartition = StreamExtensions
                 .partition(
                         ip.derivation().columnList().stream(),
-                        column -> column.containsConstraint(ColumnConstraintPrimaryKey.class));
+                        column -> column.containsConstraint(ColumnConstraintPrimaryKey.class)
+                );
 
         // Check whether both primary key column lists are equal
         final var basePrimaryKeyColumnList = basePartition.yes().toList();
@@ -234,6 +238,9 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     private boolean equalsColumnList(List<Column> columnListA, List<Column> columnListB) {
+        if(columnListA.size() != columnListB.size()){
+            return false;
+        }
         return StreamExtensions
                 .zip(columnListA.stream(), columnListB.stream(), this::equalsColumns)
                 .allMatch(x -> x);

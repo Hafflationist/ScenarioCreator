@@ -3,7 +3,7 @@ package scenarioCreator.generation.processing.transformations;
 import org.jetbrains.annotations.Contract;
 
 public sealed interface Transformation extends Comparable<Transformation>
-        permits ColumnTransformation, TableTransformation, SchemaTransformation {
+        permits ColumnTransformation, SchemaTransformation, TableTransformation {
 
     @Contract(pure = true)
     boolean conservesFlatRelations();

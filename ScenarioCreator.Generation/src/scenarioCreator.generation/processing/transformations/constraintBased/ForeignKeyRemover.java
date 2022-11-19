@@ -26,6 +26,15 @@ import java.util.stream.Stream;
 
 public class ForeignKeyRemover implements SchemaTransformation {
 
+    private static boolean isConstraintValid(
+            ColumnConstraint constraint, Id purgeId
+    ) {
+        if (constraint instanceof ColumnConstraintForeignKeyInverse ccfki) {
+            return !purgeId.equals(ccfki.foreignColumnId());
+        }
+        return true;
+    }
+
     @Override
     public boolean conservesFlatRelations() {
         return true;
@@ -89,15 +98,6 @@ public class ForeignKeyRemover implements SchemaTransformation {
                 )
                 .collect(Collectors.toCollection(TreeSet::new));
         return schema.withTableSet(newTableSet);
-    }
-
-    private static boolean isConstraintValid(
-            ColumnConstraint constraint, Id purgeId
-    ) {
-        if (constraint instanceof  ColumnConstraintForeignKeyInverse ccfki) {
-            return purgeId != ccfki.foreignColumnId();
-        }
-        return true;
     }
 
     @Override
