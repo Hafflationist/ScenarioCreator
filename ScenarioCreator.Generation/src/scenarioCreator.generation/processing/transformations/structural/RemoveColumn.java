@@ -5,6 +5,9 @@ import scenarioCreator.data.column.constraint.ColumnConstraintForeignKey;
 import scenarioCreator.data.column.constraint.ColumnConstraintForeignKeyInverse;
 import scenarioCreator.data.column.constraint.ColumnConstraintPrimaryKey;
 import scenarioCreator.data.column.nesting.Column;
+import scenarioCreator.data.column.nesting.ColumnCollection;
+import scenarioCreator.data.column.nesting.ColumnLeaf;
+import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.FunctionalDependency;
 import scenarioCreator.data.table.Table;
@@ -35,7 +38,7 @@ public class RemoveColumn implements TableTransformation {
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var rte = new RuntimeException("Could not find a valid column. This should not be possible!");
         final var candidateStream= table.columnList().stream()
-                .filter(this::freeOfCriticalConstraints);
+                .filter(this::isRemovable);
         final var chosenColumn = StreamExtensions.pickRandomOrThrow(candidateStream, rte, random);
         final var newColumnList = table.columnList().stream().filter(column -> column != chosenColumn).toList();
         final var newFdSet = table.functionalDependencySet().stream()
@@ -73,13 +76,18 @@ public class RemoveColumn implements TableTransformation {
             return false;
         }
        return table.columnList().stream()
-               .anyMatch(this::freeOfCriticalConstraints);
+               .anyMatch(this::isRemovable);
     }
 
-    private boolean freeOfCriticalConstraints(Column column) {
+    private boolean isRemovable(Column column) {
         final var hasPrimaryKeyConstraint = column.containsConstraint(ColumnConstraintPrimaryKey.class);
         final var hasForeignKeyConstraint = column.containsConstraint(ColumnConstraintForeignKey.class);
         final var hasForeignKeyInversConstraint = column.containsConstraint(ColumnConstraintForeignKeyInverse.class);
-        return !hasPrimaryKeyConstraint && !hasForeignKeyConstraint && !hasForeignKeyInversConstraint;
+        final var isContentRemovable = switch (column) {
+            case ColumnLeaf ignore -> true;
+            case ColumnNode node -> node.columnList().stream().allMatch(this::isRemovable);
+            case ColumnCollection col -> col.columnList().stream().allMatch(this::isRemovable);
+        };
+        return !hasPrimaryKeyConstraint && !hasForeignKeyConstraint && !hasForeignKeyInversConstraint && isContentRemovable;
     }
 }

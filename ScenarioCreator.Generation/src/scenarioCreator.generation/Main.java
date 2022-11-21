@@ -364,7 +364,7 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        testForester(path, 100);
+        testForester(path, 143);
 //        testTreeEditDistance();
         final var config = new Evaluation.FullConfiguration(
                 DistanceDefinition.getDefault(0.2, 0.8), 5, 32, 2
