@@ -57,9 +57,9 @@ class ChangeDataTypeTest {
         final var invalidColumn1 = new ColumnNode(new IdSimple(2), name, List.of(), SSet.of(), false);
         final var invalidColumn2 = validColumn.withDataType(new DataType(DataTypeEnum.NVARCHAR, true));
         final var invalidColumn3 = validColumn.withConstraintSet(
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2))));
         final var invalidColumn4 = validColumn.withConstraintSet(
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var columnList = List.of(validColumn, (Column) invalidColumn1, invalidColumn2, invalidColumn3, invalidColumn4);
         final var transformation = new ChangeDataType();
 

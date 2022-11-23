@@ -74,7 +74,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         assert newIdComplex.primaryKeyColumnToNewId().containsKey(column.id())
                 : "Map should contain an id for every primary key column!";
         final var newConstraint = new ColumnConstraintForeignKeyInverse(
-                newIdComplex.primaryKeyColumnToNewId().get(column.id()), SSet.of()
+                newIdComplex.primaryKeyColumnToNewId().get(column.id())
         );
         final var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
@@ -96,7 +96,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
             final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyConstraintGroupId()),
-                    new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId(), SSet.of())
+                    new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId())
             );
             final var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyColumnId(),
@@ -123,7 +123,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         if (!column.containsConstraint(ColumnConstraintPrimaryKey.class)) {
             return column;
         }
-        final var newConstraint = new ColumnConstraintForeignKey(column.id(), SSet.of());
+        final var newConstraint = new ColumnConstraintForeignKey(column.id());
         final var newConstraintSet = StreamExtensions
                 .prepend(column.constraintSet().stream(), newConstraint)
                 .filter(c -> !(c instanceof ColumnConstraintForeignKeyInverse))
@@ -161,7 +161,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
             // In this case a surrogate key and column must be generated
             final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyDerivingConstraintGroupId()),
-                    new ColumnConstraintForeignKey(newIdComplex.primaryKeyColumnId(), SSet.of())
+                    new ColumnConstraintForeignKey(newIdComplex.primaryKeyColumnId())
             );
             final var newPrimaryColumn = NewTableBase.createNewIdColumn(
                     newIdComplex.primaryKeyDerivingColumnId(),

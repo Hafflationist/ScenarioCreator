@@ -21,7 +21,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.BinaryValueToTable;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -135,9 +134,9 @@ class BinaryValueToTableTest {
         final var neutralColumn2 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var neutralColumn3 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var referencedColumn = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(3))));
         final var referencingColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(referencedColumn.id())));
         final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
@@ -188,9 +187,9 @@ class BinaryValueToTableTest {
         final var neutralColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var neutralColumn3 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var referencedColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var referencingColumn = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(referencedColumn.id(), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(referencedColumn.id())));
         final var validColumn = invalidColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
@@ -252,9 +251,9 @@ class BinaryValueToTableTest {
         final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2))));
         final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
@@ -289,9 +288,9 @@ class BinaryValueToTableTest {
         final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2))));
         final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
@@ -338,9 +337,9 @@ class BinaryValueToTableTest {
         final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2))));
         final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)
@@ -384,18 +383,12 @@ class BinaryValueToTableTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var valueSet = SSet.of(new Value("Männlein"), new Value("Weiblein"));
-        final var valueSetInvalid = SSet.of(
-                new Value("Männlein"),
-                new Value("Weiblein"),
-                new Value("Weiblein2"),
-                new Value("Weiblein3")
-        );
         final var primColumn = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));
         final var invalidColumn = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var neutralColumn = new ColumnLeaf(new IdSimple(55), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2), valueSetInvalid)));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(2))));
         final var validColumn = primColumn
                 .withConstraintSet(SSet.of())
                 .withValueSet(valueSet)

@@ -58,9 +58,9 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10000)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1031), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1040), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1050), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1031)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1040)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1050))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -86,8 +86,8 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10100)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1021), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1030), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1021)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1030))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -154,7 +154,7 @@ public final class Init {
                                                 new StringPlusNaked("Guest", Language.English),
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
-                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1010), SSet.of()))
+                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1010)))
                                         ),
                                         new ColumnLeaf(
                                                 new IdSimple(1022),
@@ -163,7 +163,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintUnique(new IdSimple(10220)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1132), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1132))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -173,7 +173,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintUnique(new IdSimple(10220)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1131), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1131))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -204,14 +204,14 @@ public final class Init {
                                                 new StringPlusNaked("Guest", Language.English),
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
-                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1010), SSet.of()))
+                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1010)))
                                         ),
                                         new ColumnLeaf(
                                                 new IdSimple(1031),
                                                 new StringPlusNaked("Event", Language.English),
                                                 new DataType(DataTypeEnum.NVARCHAR, false),
                                                 ColumnContext.getDefault(),
-                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1000), SSet.of()))
+                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1000)))
                                         ),
                                         new ColumnLeaf(
                                                 new IdSimple(1032),
@@ -236,8 +236,8 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10400)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1000), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1100), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1000)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1100))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -271,10 +271,10 @@ public final class Init {
                                                 new DataType(DataTypeEnum.NVARCHAR, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1000), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1060), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1140), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1150), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1000)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1060)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1140)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1150))
                                                 )
                                         )
                                 ),
@@ -291,7 +291,7 @@ public final class Init {
                                                 new StringPlusNaked("EveningProgram", Language.English),
                                                 new DataType(DataTypeEnum.NVARCHAR, false),
                                                 ColumnContext.getDefault(),
-                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1050), SSet.of()))
+                                                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1050)))
                                         ),
                                         new ColumnLeaf(
                                                 new IdSimple(1061),
@@ -316,9 +316,9 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10700)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1080), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1092), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1125), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1080)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1092)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1125))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -364,7 +364,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10800)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1070), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1070))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -392,9 +392,9 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(10900)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1101), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1111), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1112), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1101)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1111)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1112))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -412,7 +412,7 @@ public final class Init {
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1070), SSet.of()),
+                                                        new ColumnConstraintForeignKey(new IdSimple(1070)),
                                                         new ColumnConstraintUnique(new IdSimple(10910))
                                                 )
                                         ),
@@ -454,7 +454,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11000)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1040), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1040))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -463,7 +463,7 @@ public final class Init {
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1090), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1090))
                                                 )
                                         )
                                 ),
@@ -481,7 +481,7 @@ public final class Init {
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1090), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1090))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -490,7 +490,7 @@ public final class Init {
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1090), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1090))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -518,9 +518,9 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11210)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1132), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1141), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1151), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1132)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1141)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1151))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -550,7 +550,7 @@ public final class Init {
                                                 new DataType(DataTypeEnum.INT32, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1070), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1070))
                                                 )
                                         )
                                 ),
@@ -569,7 +569,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11310)),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1023), SSet.of())
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1023))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -578,8 +578,8 @@ public final class Init {
                                                 new DataType(DataTypeEnum.NVARCHAR, false),
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
-                                                        new ColumnConstraintForeignKey(new IdSimple(1121), SSet.of()),
-                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1022), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1121)),
+                                                        new ColumnConstraintForeignKeyInverse(new IdSimple(1022))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -617,7 +617,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11400)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1050), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1050))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -627,7 +627,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11400)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1121), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1121))
                                                 )
                                         )
                                 ),
@@ -646,7 +646,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11500)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1050), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1050))
                                                 )
                                         ),
                                         new ColumnLeaf(
@@ -656,7 +656,7 @@ public final class Init {
                                                 ColumnContext.getDefault(),
                                                 SSet.of(
                                                         new ColumnConstraintPrimaryKey(new IdSimple(11500)),
-                                                        new ColumnConstraintForeignKey(new IdSimple(1121), SSet.of())
+                                                        new ColumnConstraintForeignKey(new IdSimple(1121))
                                                 )
                                         ),
                                         new ColumnLeaf(

@@ -82,12 +82,12 @@ class FunctionalDependencyBasedDistanceMeasureTest {
         final var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(32), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
         final var invalidColumn0 = new ColumnLeaf(new IdSimple(21), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22))));
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(22), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(invalidColumn0.id(), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(invalidColumn1.id(), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(invalidColumn0.id()),
+                        new ColumnConstraintForeignKeyInverse(invalidColumn1.id())));
         final var validColumn = new ColumnLeaf(new IdSimple(33), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
         final var neutralColumn1 = new ColumnLeaf(new IdSimple(34), name, dataType, ColumnContext.getDefault(), SSet.of());

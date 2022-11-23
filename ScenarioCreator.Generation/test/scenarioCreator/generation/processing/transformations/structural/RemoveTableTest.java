@@ -14,7 +14,6 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.generation.processing.transformations.structural.RemoveTable;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -28,7 +27,7 @@ class RemoveTableTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8))));
         final var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
 
         final var invalidTable1 = new Table(new IdSimple(10), name, List.of(invalidColumn1),
@@ -50,9 +49,9 @@ class RemoveTableTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(8))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(9), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(9))));
         final var validColumn1 = new ColumnLeaf(new IdSimple(6), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var validColumn2 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(7))));

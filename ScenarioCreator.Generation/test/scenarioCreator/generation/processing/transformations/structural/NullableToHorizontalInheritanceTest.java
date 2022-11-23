@@ -17,7 +17,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.NullableToHorizontalInheritance;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -42,12 +41,12 @@ class NullableToHorizontalInheritanceTest {
         final var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(32), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
         final var invalidColumn0 = new ColumnLeaf(new IdSimple(21), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22))));
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(11), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(22))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(22), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(invalidColumn0.id(), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(invalidColumn1.id(), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(invalidColumn0.id()),
+                        new ColumnConstraintForeignKeyInverse(invalidColumn1.id())));
         final var validColumn = new ColumnLeaf(new IdSimple(33), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
 
@@ -94,9 +93,9 @@ class NullableToHorizontalInheritanceTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7))));
         final var validColumn1 = new ColumnLeaf(
                 new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(), SSet.of()
         );

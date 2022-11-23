@@ -53,10 +53,10 @@ public final class NewTableBase {
 
     private static ColumnLeaf createNewForeignKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
         final var constraintSetOneToOne = SSet.of(
-                new ColumnConstraintForeignKey(newIds.targetColumn, SSet.of()),
-                (ColumnConstraint) new ColumnConstraintForeignKeyInverse(newIds.targetColumn, SSet.of()));
+                new ColumnConstraintForeignKey(newIds.targetColumn),
+                (ColumnConstraint) new ColumnConstraintForeignKeyInverse(newIds.targetColumn));
         final var constraintSetOneToMany = SSet.of(
-                (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn, SSet.of()));
+                (ColumnConstraint) new ColumnConstraintForeignKey(newIds.targetColumn));
         final var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
         return createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
     }
@@ -76,11 +76,11 @@ public final class NewTableBase {
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
         final var constraintSetOneToOne = SSet.of(
                 new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
-                new ColumnConstraintForeignKey(newIds.sourceColumn(), SSet.of()),
-                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), SSet.of()));
+                new ColumnConstraintForeignKey(newIds.sourceColumn()),
+                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn()));
         final var constraintSetOneToMany = SSet.of(
                 new ColumnConstraintPrimaryKey(newIds.constraintGroupId()),
-                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn(), SSet.of()));
+                new ColumnConstraintForeignKeyInverse(newIds.sourceColumn()));
         final var newConstraintSet = oneToOne ? constraintSetOneToOne : constraintSetOneToMany;
         return createNewIdColumn(newIds.targetColumn, tableName, newConstraintSet);
     }

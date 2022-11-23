@@ -291,10 +291,10 @@ class StructuralDistanceMeasureTest {
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var ingestedColumn = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
-                ColumnContext.getDefault(), SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
+                ColumnContext.getDefault(), SSet.of(new ColumnConstraintForeignKey(new IdSimple(4))));
         final var ingestingColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of()))
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2)))
         );
         final var ingestingTable = new Table(
                 new IdSimple(10), name, List.of(ingestingColumn), Context.getDefault(), SSet.of(), SSet.of());

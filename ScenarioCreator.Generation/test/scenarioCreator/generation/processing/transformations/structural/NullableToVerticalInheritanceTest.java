@@ -16,7 +16,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.NullableToVerticalInheritance;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -33,13 +32,13 @@ class NullableToVerticalInheritanceTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(1))));
         final var invalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(4))));
         final var invalidColumn4 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var validColumn = new ColumnLeaf(new IdSimple(5), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());
 
@@ -86,12 +85,12 @@ class NullableToVerticalInheritanceTest {
         final var primaryKeyColumn2 = new ColumnLeaf(new IdSimple(0), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(5))));
         final var invalidColumn0 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1)),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var validColumn = new ColumnLeaf(new IdSimple(4), name,
                 dataType.withIsNullable(true), ColumnContext.getDefault(), SSet.of());
 
@@ -133,9 +132,9 @@ class NullableToVerticalInheritanceTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7))));
         final var validColumn = new ColumnLeaf(new IdSimple(4), name, dataType.withIsNullable(true), ColumnContext.getDefault(), SSet.of());
 
         final var invalidTable1 = new Table(new IdSimple(10), name,

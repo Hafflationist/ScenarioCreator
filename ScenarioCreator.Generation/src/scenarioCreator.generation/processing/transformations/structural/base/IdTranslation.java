@@ -52,10 +52,10 @@ public class IdTranslation {
         }
         return switch (constraint) {
             case ColumnConstraintForeignKey ccfk -> idTranslationMap.get(ccfk.foreignColumnId()).stream()
-                    .map(ccfk::withForeignColumnId)
+                    .map(ColumnConstraintForeignKey::new)
                     .collect(Collectors.toCollection(TreeSet::new));
             case ColumnConstraintForeignKeyInverse ccfki -> idTranslationMap.get(ccfki.foreignColumnId()).stream()
-                    .map(ccfki::withForeignColumnId)
+                    .map(ColumnConstraintForeignKeyInverse::new)
                     .collect(Collectors.toCollection(TreeSet::new));
             default -> throw new RuntimeException();
         };

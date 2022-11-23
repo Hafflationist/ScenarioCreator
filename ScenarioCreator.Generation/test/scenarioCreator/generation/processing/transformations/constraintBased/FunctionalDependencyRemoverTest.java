@@ -141,7 +141,7 @@ class FunctionalDependencyRemoverTest {
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var column2 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(4), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(4))));
         final var column3 = new ColumnLeaf(new IdSimple(13), name, dataType, ColumnContext.getDefault(), SSet.of());
         final var column4 = new ColumnLeaf(new IdSimple(14), name, dataType, ColumnContext.getDefault(), SSet.of());
 

@@ -20,7 +20,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.HorizontalInheritanceToNullable;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -70,9 +69,7 @@ class HorizontalInheritanceToNullableTest {
         IntegrityChecker.assertValidSchema(newSchema);
         Assertions.assertEquals(tableSet.size() - 1, newSchema.tableSet().size());
         final var newTable = newSchema.tableSet().stream().toList().get(0);
-        Assertions.assertEquals(baseTable.id(), newTable.id());
         Assertions.assertEquals(baseTable.name(), newTable.name());
-        Assertions.assertEquals(baseTable.id(), newTable.id());
         final var nullableExtraColumn = extraColumn.withDataType(extraColumn.dataType().withIsNullable(true));
         Assertions.assertTrue(newTable.columnList().contains(nullableExtraColumn));
         Assertions.assertEquals(baseTableColumnList.size(),
@@ -89,12 +86,12 @@ class HorizontalInheritanceToNullableTest {
         final var randomColumn = new ColumnLeaf(
                 new IdSimple(0), new StringPlusNaked("s", Language.Mixed),
                 dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(4), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1)),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(4))));
         final var commonColumn1 = new ColumnLeaf(
                 new IdSimple(1), new StringPlusNaked("Spalte1", Language.Mixed),
                 dataType,
-                ColumnContext.getDefault(), SSet.of(new ColumnConstraintForeignKey(new IdSimple(0), SSet.of()))
+                ColumnContext.getDefault(), SSet.of(new ColumnConstraintForeignKey(new IdSimple(0)))
         );
         final var commonColumn2 = new ColumnLeaf(
                 new IdSimple(2), new StringPlusNaked("Spalte2", Language.Mixed),

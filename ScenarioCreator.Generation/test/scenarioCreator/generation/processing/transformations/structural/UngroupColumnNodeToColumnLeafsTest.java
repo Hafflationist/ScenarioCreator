@@ -15,7 +15,6 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.structural.UngroupColumnNodeToColumnLeafs;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -30,10 +29,10 @@ class UngroupColumnNodeToColumnLeafsTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7))));
         final var columnNode = new ColumnNode(new IdSimple(5), name,
                 List.of(column1, column2), SSet.of(), isNodeNullable);
 
@@ -58,9 +57,9 @@ class UngroupColumnNodeToColumnLeafsTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var column1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var column2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7))));
         final var column3 = new ColumnLeaf(
                 new IdSimple(4), name, dataType.withIsNullable(true),
                 ColumnContext.getDefault(), SSet.of());

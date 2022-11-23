@@ -47,7 +47,7 @@ class ScenarioCreatorTest {
 
         // -- Assert
         // we don't really care about the scenario
-        Assertions.assertEquals(scenarioSize, scenario.size());
+        Assertions.assertEquals(scenarioSize, scenario.sarList().size());
         final var targetValues = ForesterCallLogger.ctorCalls().stream()
                 .map(params -> params.targetDefinition)
                 .toList();

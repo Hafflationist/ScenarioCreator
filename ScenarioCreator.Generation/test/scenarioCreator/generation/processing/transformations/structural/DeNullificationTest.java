@@ -11,7 +11,6 @@ import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.structural.DeNullification;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -52,7 +51,7 @@ class DeNullificationTest {
                 new IdSimple(1), name, invalidDataType, ColumnContext.getDefault(), SSet.of());
         final var invalidColumn2 = new ColumnLeaf(
                 new IdSimple(2), name, validDataType, ColumnContext.getDefault(), SSet.of(
-                new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())
+                new ColumnConstraintForeignKey(new IdSimple(3))
         ));
         final var validColumn = new ColumnLeaf(new IdSimple(4), name, validDataType, ColumnContext.getDefault(), SSet.of());
         final var columnList = List.of((Column) invalidColumn1, invalidColumn2, validColumn);

@@ -21,7 +21,6 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
-import scenarioCreator.generation.processing.transformations.structural.MergeColumns;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -44,12 +43,12 @@ class MergeColumnsTest {
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var validDataType = new DataType(DataTypeEnum.NVARCHAR, false);
         final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1)),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
@@ -101,12 +100,12 @@ class MergeColumnsTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(3))));
         final var semivalidColumn3 = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1), SSet.of()),
-                        new ColumnConstraintForeignKeyInverse(new IdSimple(2), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(1)),
+                        new ColumnConstraintForeignKeyInverse(new IdSimple(2))));
         final var invalidColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(20))));
         final var invalidColumn2 = new ColumnLeaf(new IdSimple(5), name, dataType, ColumnContext.getDefault(),
@@ -182,9 +181,9 @@ class MergeColumnsTest {
         final var name = new StringPlusNaked("Spalte", Language.Mixed);
         final var dataType = new DataType(DataTypeEnum.INT32, false);
         final var semivalidColumn1 = new ColumnLeaf(new IdSimple(1), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKeyInverse(new IdSimple(6))));
         final var semivalidColumn2 = new ColumnLeaf(new IdSimple(2), name, dataType, ColumnContext.getDefault(),
-                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7), SSet.of())));
+                SSet.of(new ColumnConstraintForeignKey(new IdSimple(7))));
         final var invalidColumn = new ColumnLeaf(new IdSimple(3), name, dataType, ColumnContext.getDefault(),
                 SSet.of(new ColumnConstraintPrimaryKey(new IdSimple(8))));
         final var validColumn1 = new ColumnLeaf(new IdSimple(4), name, dataType, ColumnContext.getDefault(), SSet.of());
