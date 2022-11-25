@@ -29,7 +29,7 @@ public class ScenarioCreator {
         _foresterInjection = foresterInjection;
     }
 
-    public Scenario create(Schema startSchema, int sizeOfScenario, int newChildren, Random random) {
+    public Scenario create(Schema startSchema, int sizeOfScenario, int newChildren, Random random, boolean debug) {
         final var swad = new SchemaWithAdditionalData(startSchema, List.of(), List.of());
         final var indexStream = Stream
                 .iterate(0, i -> i + 1)
@@ -55,7 +55,7 @@ public class ScenarioCreator {
                             .map(SchemaAsResult::schema)
                             .collect(Collectors.toCollection(TreeSet::new));
                     return recursiveNewSar(
-                            forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random
+                            forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random, debug
                     );
                 });
         return new Scenario(sarSet, avgDistance(sarSet));
@@ -68,13 +68,15 @@ public class ScenarioCreator {
             SortedSet<Schema> existingSchemaPureSet,
             SortedSet<SchemaAsResult> existingSchemaSet,
             int newChildren,
-            Random random) {
+            Random random,
+            boolean debug
+    ) {
         final var newSar = forester.createNext(
-                root, tgd, existingSchemaPureSet, newChildren, random
+                root, tgd, existingSchemaPureSet, newChildren, random, debug
         );
         final var newSarSet = SSet.prepend(newSar, existingSchemaSet);
         if (newSarSet.size() == existingSchemaSet.size()) {
-            return recursiveNewSar(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random);
+            return recursiveNewSar(forester, root, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random, debug);
         }
         return newSarSet;
     }
@@ -132,18 +134,6 @@ public class ScenarioCreator {
                 .map(SchemaAsResult::distanceList)
                 .flatMap(Collection::stream)
                 .toList();
-        return new Distance(
-                avgDistance(distanceList, Distance::structural),
-                avgDistance(distanceList, Distance::linguistic),
-                avgDistance(distanceList, Distance::constraintBased),
-                avgDistance(distanceList, Distance::contextual)
-        );
-    }
-
-    private double avgDistance(List<Distance> distanceList, Function<Distance, Double> reduceDistance) {
-        return distanceList.stream()
-                .mapToDouble(Distance::structural)
-                .average()
-                .orElse(Double.NaN);
+        return Distance.avg(distanceList);
     }
 }

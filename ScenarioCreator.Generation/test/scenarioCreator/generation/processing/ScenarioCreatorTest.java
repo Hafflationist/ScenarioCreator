@@ -43,7 +43,7 @@ class ScenarioCreatorTest {
         );
 
         // --- Act
-        final var scenario = creator.create(startSchema, scenarioSize, 1, new Random());
+        final var scenario = creator.create(startSchema, scenarioSize, 1, new Random(), false);
 
         // -- Assert
         // we don't really care about the scenario
@@ -116,7 +116,8 @@ class ScenarioCreatorTest {
                 TreeGenerationDefinition tgd,
                 SortedSet<Schema> oldSchemaSet,
                 int newChildren,
-                Random random
+                Random random,
+                boolean debug
         ) {
             final var newSchemaId = oldSchemaSet.size();
             final var newSchema = new Schema(

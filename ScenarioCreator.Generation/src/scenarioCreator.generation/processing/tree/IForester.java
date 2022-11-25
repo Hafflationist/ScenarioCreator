@@ -12,7 +12,8 @@ public interface IForester {
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
             int newChildren,
-            Random random
+            Random random,
+            boolean debug
     );
 
     @FunctionalInterface

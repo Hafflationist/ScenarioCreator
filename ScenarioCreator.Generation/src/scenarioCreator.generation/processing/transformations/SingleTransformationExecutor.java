@@ -34,16 +34,22 @@ public class SingleTransformationExecutor {
     public SingleTransformationExecutor(@Nullable SemanticSaturation semanticSaturation) {
         _semanticSaturation = semanticSaturation;
     }
+    public Schema executeTransformation(Schema schema, Transformation transformation, Random random)
+            throws NoTableFoundException, NoColumnFoundException {
+        return executeTransformation(schema, transformation, random, true);
+    }
 
     @Contract(pure = true)
     @NotNull
-    public Schema executeTransformation(Schema schema, Transformation transformation, Random random)
+    public Schema executeTransformation(Schema schema, Transformation transformation, Random random, boolean debug)
             throws NoTableFoundException, NoColumnFoundException {
         if (!SingleTransformationChecker.checkTransformation(schema, transformation)) {
             throw new NoTableFoundException("SingleTransformationChecker.checkTransformation dais \"no!\"");
         }
         final var transformationName = transformation.getClass().getName();
-        System.out.println("Executing " + transformationName.substring(38) + " (" + random.nextInt(1000) + ")");
+        if (debug) {
+            System.out.println("Executing " + transformationName.substring(54) + " (" + random.nextInt(1000) + ")");
+        }
         final var newSchema = switch (transformation) {
             case ColumnTransformation ct -> executeTransformationColumn(schema, ct, random);
             case TableTransformation tt -> executeTransformationTable(schema, tt, random);

@@ -84,7 +84,7 @@ class TedTree {
         List<Integer> keyroots2 = tree2.keyroots;
 
         // space complexity of the algorithm
-        TD = new int[l1.size() + 1][l2.size() + 1];
+        TD = new int[l1.size() + 10][l2.size() + 10];
 
         // solve subproblems
         for (int i1 = 1; i1 < keyroots1.size() + 1; i1++) {

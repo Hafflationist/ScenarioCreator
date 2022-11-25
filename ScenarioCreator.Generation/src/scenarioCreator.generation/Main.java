@@ -6,8 +6,8 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
-import scenarioCreator.generation.evaluation.Evaluation;
 import scenarioCreator.generation.evaluation.Init;
+import scenarioCreator.generation.evaluation.ReachableConfigurations;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
@@ -303,7 +303,7 @@ public class Main {
             )));
             System.out.println("Preparations finished (rnd: " + random.nextInt(1000) + ")");
             final var schemaList = creator
-                    .create(schema, 5, 1, random)
+                    .create(schema, 5, 1, random, false)
                     .sarList()
                     .stream()
                     .toList();
@@ -364,12 +364,15 @@ public class Main {
 //        testWordNetInterface();
 //        testUnifiedLanguageCorpus();
 //        testTranslation();
-        testForester(path, 143);
+//        testForester(path, 143);
 //        testTreeEditDistance();
-        final var config = new Evaluation.FullConfiguration(
-                DistanceDefinition.getDefault(0.2, 0.8), 5, 32, 2
-        );
-        Evaluation.transformationCount(config, path, 100, 12);
+
+
+//        final var config = new Evaluation.FullConfiguration(
+//                DistanceDefinition.getDefault(0.2, 0.8), 5, 32, 2
+//        );
+//        Evaluation.transformationCount(config, path, 100, 12);
+        ReachableConfigurations.printReachabilities(path, 1000, 4);
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {

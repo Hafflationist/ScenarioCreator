@@ -1,7 +1,6 @@
 package scenarioCreator.generation.evaluation;
 
 import org.apache.commons.io.FileUtils;
-import scenarioCreator.data.Language;
 import scenarioCreator.data.Schema;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
@@ -14,14 +13,11 @@ import scenarioCreator.generation.processing.preprocessing.SemanticSaturation;
 import scenarioCreator.generation.processing.transformations.SingleTransformationExecutor;
 import scenarioCreator.generation.processing.transformations.TransformationCollection;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.Translation;
-import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
-import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
 import scenarioCreator.generation.processing.tree.DistanceMeasures;
 import scenarioCreator.generation.processing.tree.Forester;
 
-import javax.xml.stream.XMLStreamException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -34,18 +30,18 @@ public final class Evaluation {
     private Evaluation() {
     }
 
-    public static void transformationCount(FullConfiguration config, String path, int startIndex, int rounds) {
-        final var allUsedTransformationList= Stream
+    public static void transformationCount(FullConfiguration config, UnifiedLanguageCorpus ulc, String path, int startIndex, int rounds) {
+        final var allUsedTransformationList = Stream
                 .iterate(startIndex, i -> i + 1)
                 .limit(rounds)
 //                .parallel()
-                .map(i -> runForester(config, path, i))
+                .map(i -> runForester(config, ulc, path, i, false))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .flatMap(scenario -> scenario.sarList().stream())
                 .flatMap(sar -> sar.executedTransformationList().stream())
                 .toList();
-        final var countPerTransformation= allUsedTransformationList.stream()
+        final var countPerTransformation = allUsedTransformationList.stream()
                 .distinct()
                 .collect(Collectors.toMap(
                         Function.identity(),
@@ -57,17 +53,17 @@ public final class Evaluation {
                 .sorted(Comparator.comparing(countPerTransformation::get))
                 .toList();
         System.out.println("Nach Häufigkeit");
-        for (final var t: transformationSortedByCount) {
-           System.out.println(t + "\t: " + countPerTransformation.get(t));
+        for (final var t : transformationSortedByCount) {
+            System.out.println(t + "\t: " + countPerTransformation.get(t));
         }
         System.out.println("\nAlphabetisch");
-        for (final var t: countPerTransformation.keySet().stream().sorted().toList()) {
+        for (final var t : countPerTransformation.keySet().stream().sorted().toList()) {
             System.out.println(t + "\t: " + countPerTransformation.get(t));
         }
     }
 
     private static Optional<Scenario> runForesterInner(
-            FullConfiguration config, String pathStr, Schema initSchema, int seed, UnifiedLanguageCorpus ulc
+            FullConfiguration config, String pathStr, Schema initSchema, int seed, UnifiedLanguageCorpus ulc, boolean debug
     ) {
         try {
             // clean directory
@@ -120,22 +116,19 @@ public final class Evaluation {
             )));
 //            System.out.println("Preparations finished (rnd: " + random.nextInt(1000) + ")");
 //            System.out.println("Scenario created!");
-            return Optional.of(creator.create(initSchema, config.scenarioSize, config.newChildren(), random));
+            return Optional.of(creator.create(initSchema, config.scenarioSize, config.newChildren(), random, debug));
         } catch (IOException e) {
             System.out.println(e.getMessage());
             return Optional.empty();
         }
     }
 
-    private static Optional<Scenario> runForester(FullConfiguration config, String path, int seed) {
-        try {
-            final var germanet = new GermaNetInterface();
-            final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-            final var initSchema = Init.getInitSchema(ulc);
-            return runForesterInner(config, path, initSchema, seed, ulc);
-        } catch (XMLStreamException | IOException e) {
-            return Optional.empty();
-        }
+
+    public static Optional<Scenario> runForester(
+            FullConfiguration config, UnifiedLanguageCorpus ulc, String path, int seed, boolean debug
+    ) {
+        final var initSchema = Init.getInitSchema(ulc);
+        return runForesterInner(config, path, initSchema, seed, ulc, debug);
     }
 
     public record FullConfiguration(DistanceDefinition dd, int scenarioSize, int treeSteps, int newChildren) {

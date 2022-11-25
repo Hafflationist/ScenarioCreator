@@ -50,11 +50,14 @@ public class Forester implements IForester {
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
             int newChildren,
-            Random random
+            Random random,
+            boolean debug
     ) {
         final var tree = new TreeLeaf<>(rootSchema);
         final var swadSet = Stream
-                .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(t, tgd, oldSchemaSet, newChildren, random))
+                .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(
+                        t, tgd, oldSchemaSet, newChildren, random, debug
+                ))
                 .limit(_numberOfSteps)
                 .flatMap(te -> TreeDataOperator.getAllTreeEntityList(te).stream())
                 .map(TreeEntity::content)
@@ -68,7 +71,8 @@ public class Forester implements IForester {
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
             int newChildren,
-            Random random
+            Random random,
+            boolean debug
     ) {
         final var chosenTe = chooseTreeEntityToExtend(oldTree, random);
         final var transformationSet = getChosenTransformations(
@@ -79,7 +83,7 @@ public class Forester implements IForester {
                 tgd.conservesFlatRelations()
         );
         final var newTe = extendTreeEntity(
-                chosenTe, transformationSet, oldSchemaSet, newChildren, random
+                chosenTe, transformationSet, oldSchemaSet, newChildren, random, debug
         );
         return TreeDataOperator.replaceTreeEntity(oldTree, chosenTe, newTe);
     }
@@ -153,11 +157,12 @@ public class Forester implements IForester {
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
             int newChildrenNum,
-            Random random
+            Random random,
+            boolean debug
     ) {
         final var newChildren = Stream
                 .iterate(0, o -> 0)
-                .map(o -> createNewChild(te, transformationSet, oldSchemaSet, random))
+                .map(o -> createNewChild(te, transformationSet, oldSchemaSet, random, debug))
                 .limit(newChildrenNum);
         final var oldChildList = switch (te) {
             case TreeNode<SchemaWithAdditionalData> tn -> tn.childList();
@@ -188,9 +193,10 @@ public class Forester implements IForester {
             TreeEntity<SchemaWithAdditionalData> te,
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
-            Random random
+            Random random,
+            boolean debug
     ) {
-        return createNewChildInner(te, transformationSet, oldSchemaSet, random, 10, 0);
+        return createNewChildInner(te, transformationSet, oldSchemaSet, random, 10, 0, debug);
     }
 
     private TreeLeaf<SchemaWithAdditionalData> createNewChildInner(
@@ -199,7 +205,8 @@ public class Forester implements IForester {
             SortedSet<Schema> oldSchemaSet,
             Random random,
             int max,
-            int acc
+            int acc,
+            boolean debug
     ) {
         if (acc >= max) throw new RuntimeException("No suitable transformation could be found and performed!");
         final var rte = new RuntimeException("Not enough transformations given!");
@@ -211,7 +218,7 @@ public class Forester implements IForester {
         );
         try {
             final var newSchema = _singleTransformationExecutor.executeTransformation(
-                    schema, chosenTransformation, random
+                    schema, chosenTransformation, random, debug
             );
             final var newDistanceList = DistanceHelper.distanceList(newSchema, oldSchemaSet, _measures);
             final var newExecutedTransformationList = Stream.concat(
@@ -223,7 +230,7 @@ public class Forester implements IForester {
             );
             return new TreeLeaf<>(newSchemaWithAdditionalData);
         } catch (NoTableFoundException | NoColumnFoundException e) {
-            return createNewChildInner(te, transformationSet, oldSchemaSet, random, max, acc + 1);
+            return createNewChildInner(te, transformationSet, oldSchemaSet, random, max, acc + 1, debug);
         }
     }
 }
