@@ -33,7 +33,7 @@ public final class Ted {
                 System.out.println("REEE!");
                 return calculateDistanceAbsoluteInner(schema1, schema2, num + 1);
             } else if (num > 12) {
-                return 1;
+                throw ex;
             }
 
             // https://i.kym-cdn.com/entries/icons/original/000/030/952/goofy.jpg

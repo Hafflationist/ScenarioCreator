@@ -74,10 +74,17 @@ public final class FunctionalDependencyManager {
     }
 
     private static SortedSet<Id> getValidRightHandSide(SortedSet<Id> rightHandSide, Set<Id> allColumnIdSet) {
-        final var predToIdPartMap = allColumnIdSet.stream()
+        final var idPartSet = allColumnIdSet.stream()
                 .filter(id -> id instanceof IdPart)
                 .map(id -> (IdPart) id)
-                .collect(Collectors.toMap(IdPart::predecessorId, idp -> (Id) idp));
+                .collect(Collectors.toCollection(TreeSet::new));
+        final var predToIdPartMap = idPartSet.stream()
+                .collect(Collectors.toMap(
+                        IdPart::predecessorId,
+                        idp -> idPartSet.stream()
+                                .filter(idp2 -> idp2.predecessorId().equals(idp.predecessorId()))
+                                .map(i -> (Id) i)
+                ));
 
         final var validIdMerge = allColumnIdSet.stream()
                 .filter(id -> id instanceof IdMerge)
@@ -87,7 +94,7 @@ public final class FunctionalDependencyManager {
 
         return SSet.concat(
                 rightHandSide.stream()
-                        .map(id -> predToIdPartMap.getOrDefault(id, id))
+                        .flatMap(id -> predToIdPartMap.getOrDefault(id, Stream.of(id)))
                         .filter(allColumnIdSet::contains)
                         .collect(Collectors.toCollection(TreeSet::new)),
                 validIdMerge

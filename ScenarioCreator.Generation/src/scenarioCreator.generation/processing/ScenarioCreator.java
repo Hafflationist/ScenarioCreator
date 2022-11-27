@@ -100,6 +100,9 @@ public class ScenarioCreator {
         final var validMin = reduceDistance.apply(_validDefinition.min());
         final var validAvg = reduceDistance.apply(_validDefinition.avg());
         final var validMax = reduceDistance.apply(_validDefinition.max());
+        if (validAvg.isNaN()) {
+            return new DistanceDefinition.Target(validMin, validAvg, validMax);
+        }
         final var alreadyReachedHeterogeneity = existingSchemaSet.stream()
                 .map(SchemaAsResult::distanceList)
                 .flatMap(Collection::stream)

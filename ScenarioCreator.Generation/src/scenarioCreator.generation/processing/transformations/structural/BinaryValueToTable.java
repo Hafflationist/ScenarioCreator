@@ -161,7 +161,7 @@ public class BinaryValueToTable implements SchemaTransformation {
         final var enoughColumns = table.columnList().size() >= 2;
 
         final var isReferenced = table.columnList().stream()
-                .anyMatch(column -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class));
+                .anyMatch(this::isColumnReferenced);
 
         final var splitColumnPresent = table.columnList().stream()
                 .filter(column -> !column.containsConstraint(ColumnConstraintPrimaryKey.class))
@@ -177,6 +177,14 @@ public class BinaryValueToTable implements SchemaTransformation {
                 && enoughColumns
                 && !isReferenced
                 && splitColumnPresent;
+    }
+
+    private boolean isColumnReferenced(Column column) {
+        return switch (column){
+            case ColumnLeaf ignored -> column.containsConstraint(ColumnConstraintForeignKeyInverse.class);
+            case ColumnNode node -> node.columnList().stream().anyMatch(this::isColumnReferenced);
+            case ColumnCollection col -> col.columnList().stream().anyMatch(this::isColumnReferenced);
+        };
     }
 
     @Override

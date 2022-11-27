@@ -1,0 +1,11 @@
+---
+target:
+  structural: 0.30000000000000004
+  linguistic: 0.5
+  constraintBased: 0.1
+  contextual: NaN
+error:
+  structural: 0.028434627442487176
+  linguistic: 0.27940179484062033
+  constraintBased: 0.0993914764099146
+  contextual: NaN

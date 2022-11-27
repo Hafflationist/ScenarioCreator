@@ -14,6 +14,7 @@ public class SchemaFileHandler {
         final var mapper = new ObjectMapper(new YAMLFactory());
         mapper.writeValue(path.toFile(), sar);
     }
+
     public static void save(Schema schema, Path path) throws IOException {
         final var mapper = new ObjectMapper(new YAMLFactory());
         mapper.writeValue(path.toFile(), schema);

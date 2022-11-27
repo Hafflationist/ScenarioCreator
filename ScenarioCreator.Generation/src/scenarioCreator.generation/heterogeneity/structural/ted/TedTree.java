@@ -7,14 +7,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 class TedTree {
-    static int[][] TD;
     private final TedNode root;
     // function l() which gives the leftmost child
-    List<Integer> l = new ArrayList<>();
+    private List<Integer> l = new ArrayList<>();
     // list of keyroots, i.e., nodes with a left child and the tree root
-    List<Integer> keyroots = new ArrayList<>();
+    private final List<Integer> keyroots = new ArrayList<>();
     // list of the labels of the nodes used for node comparison
-    List<String> labels = new ArrayList<>();
+    private final List<String> labels = new ArrayList<>();
 
     // the following constructor handles preorder notation. E.g., f(a b(c))
     TedTree(String s) throws IOException {
@@ -84,21 +83,21 @@ class TedTree {
         List<Integer> keyroots2 = tree2.keyroots;
 
         // space complexity of the algorithm
-        TD = new int[l1.size() + 10][l2.size() + 10];
+        final var TD = new int[l1.size() + 1][l2.size() + 1];
 
         // solve subproblems
         for (int i1 = 1; i1 < keyroots1.size() + 1; i1++) {
             for (int j1 = 1; j1 < keyroots2.size() + 1; j1++) {
                 int i = keyroots1.get(i1 - 1);
                 int j = keyroots2.get(j1 - 1);
-                TD[i][j] = treedist(l1, l2, i, j, tree1, tree2);
+                TD[i][j] = treedist(l1, l2, i, j, tree1, tree2, TD);
             }
         }
 
         return TD[l1.size()][l2.size()];
     }
 
-    private static int treedist(List<Integer> l1, List<Integer> l2, int i, int j, TedTree tree1, TedTree tree2) {
+    private static int treedist(List<Integer> l1, List<Integer> l2, int i, int j, TedTree tree1, TedTree tree2, int[][] td) {
         int[][] forestdist = new int[i + 1][j + 1];
 
         // costs of the three atomic operations
@@ -123,7 +122,7 @@ class TedTree {
                     forestdist[i1][j1] = Math.min(
                             Math.min(forestdist[i_temp][j1] + Delete, forestdist[i1][j_temp] + Insert),
                             forestdist[i_temp][j_temp] + Cost);
-                    TD[i1][j1] = forestdist[i1][j1];
+                    td[i1][j1] = forestdist[i1][j1];
                 } else {
                     int i1_temp = l1.get(i1 - 1) - 1;
                     int j1_temp = l2.get(j1 - 1) - 1;
@@ -133,7 +132,7 @@ class TedTree {
 
                     forestdist[i1][j1] = Math.min(
                             Math.min(forestdist[i_temp][j1] + Delete, forestdist[i1][j_temp] + Insert),
-                            forestdist[i_temp2][j_temp2] + TD[i1][j1]);
+                            forestdist[i_temp2][j_temp2] + td[i1][j1]);
                 }
             }
         }

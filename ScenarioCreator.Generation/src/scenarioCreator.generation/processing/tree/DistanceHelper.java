@@ -33,7 +33,6 @@ public final class DistanceHelper {
 
     public static boolean isValid(List<Distance> distanceList, DistanceDefinition dtd, AggregationMethod aggr) {
         if (aggr.equals(AggregationMethod.CONJUNCTION)) {
-
             return distanceList.stream().allMatch(dtd::isValid);
         }
         final var avgDist = new Distance(
