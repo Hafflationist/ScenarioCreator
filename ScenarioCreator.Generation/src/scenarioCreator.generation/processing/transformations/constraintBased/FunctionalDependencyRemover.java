@@ -37,6 +37,9 @@ public class FunctionalDependencyRemover implements TableTransformation {
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var rte = new TransformationCouldNotBeExecutedException("Table is missing functional dependencies!");
         final var fdSet = FunctionalDependencyManager.minimalCover(table.functionalDependencySet());
+        if(fdSet.isEmpty()) {
+            final var debugFdSet = FunctionalDependencyManager.minimalCover(table.functionalDependencySet());
+        }
         final var chosenFdSet = StreamExtensions.pickRandomOrThrow(fdSet.stream(), rte, random);
         final var newFdSet = StreamExtensions
                 .replaceInStream(fdSet.stream(), chosenFdSet, Stream.of())

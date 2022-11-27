@@ -9,6 +9,7 @@ import scenarioCreator.generation.processing.transformations.constraintBased.bas
 import scenarioCreator.utils.MMath;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
@@ -51,8 +52,10 @@ public final class FunctionalDependencyBasedDistanceMeasure {
                         .map(fd -> {
                             final var newLeft = translateIdSet(fd.left());
                             final var newRight = translateIdSet(fd.right());
-                            return new FunctionalDependency(newLeft, newRight);
+                            return FunctionalDependency.tryCreate(newLeft, newRight);
                         })
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
                         .collect(Collectors.toCollection(TreeSet::new))
         );
     }

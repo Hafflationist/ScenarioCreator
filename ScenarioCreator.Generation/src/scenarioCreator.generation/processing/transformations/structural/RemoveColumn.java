@@ -60,7 +60,7 @@ public class RemoveColumn implements TableTransformation {
             return Stream.of(fd);
         }
         final var newRight = fd.right().stream().filter(id -> !id.equals(removedId)).collect(Collectors.toCollection(TreeSet::new));
-        return Stream.of(new FunctionalDependency(fd.left(), newRight));
+        return FunctionalDependency.tryCreate(fd.left(), newRight).stream();
     }
 
     @Override

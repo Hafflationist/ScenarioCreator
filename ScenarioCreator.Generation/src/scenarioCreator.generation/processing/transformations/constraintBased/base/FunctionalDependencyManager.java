@@ -12,10 +12,7 @@ import scenarioCreator.generation.processing.integrity.IdentificationNumberCalcu
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
-import java.util.List;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -34,10 +31,10 @@ public final class FunctionalDependencyManager {
                 .map(fd -> {
                     final var newLeft = getValidLeftHandSide(fd.left(), allColumnIdSet);
                     final var newRight = getValidRightHandSide(fd.right(), allColumnIdSet);
-                    return new FunctionalDependency(newLeft, newRight);
+                    return FunctionalDependency.tryCreate(newLeft, newRight);
                 })
-                .filter(fd -> !fd.left().isEmpty())
-                .filter(fd -> !fd.right().isEmpty())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .collect(Collectors.toCollection(TreeSet::new));
     }
 
