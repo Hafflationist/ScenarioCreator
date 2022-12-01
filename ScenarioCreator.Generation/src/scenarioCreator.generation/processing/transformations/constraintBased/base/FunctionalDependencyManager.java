@@ -75,27 +75,36 @@ public final class FunctionalDependencyManager {
                 .filter(id -> id instanceof IdPart)
                 .map(id -> (IdPart) id)
                 .collect(Collectors.toCollection(TreeSet::new));
-        final var predToIdPartMap = idPartSet.stream()
-                .collect(Collectors.toMap(
-                        IdPart::predecessorId,
-                        idp -> idPartSet.stream()
-                                .filter(idp2 -> idp2.predecessorId().equals(idp.predecessorId()))
-                                .map(i -> (Id) i)
-                ));
+        try {
 
-        final var validIdMerge = allColumnIdSet.stream()
-                .filter(id -> id instanceof IdMerge)
-                .map(id -> (IdMerge) id)
-                .filter(idm -> rightHandSide.contains(idm.predecessorId1()) && rightHandSide.contains(idm.predecessorId2()))
-                .map(idm -> (Id) idm);
+            final var predToIdPartMap = idPartSet.stream()
+                    .distinct()
+                    .collect(Collectors.toMap(
+                            IdPart::predecessorId,
+                            idp -> idPartSet.stream()
+                                    .filter(idp2 -> idp2.predecessorId().equals(idp.predecessorId()))
+                                    .map(i -> (Id) i)
+                    ));
 
-        return SSet.concat(
-                rightHandSide.stream()
-                        .flatMap(id -> predToIdPartMap.getOrDefault(id, Stream.of(id)))
-                        .filter(allColumnIdSet::contains)
-                        .collect(Collectors.toCollection(TreeSet::new)),
-                validIdMerge
-        );
+            final var validIdMerge = allColumnIdSet.stream()
+                    .filter(id -> id instanceof IdMerge)
+                    .map(id -> (IdMerge) id)
+                    .filter(idm -> rightHandSide.contains(idm.predecessorId1()) && rightHandSide.contains(idm.predecessorId2()))
+                    .map(idm -> (Id) idm);
+
+            return SSet.concat(
+                    rightHandSide.stream()
+                            .flatMap(id -> predToIdPartMap.getOrDefault(id, Stream.of(id)))
+                            .filter(allColumnIdSet::contains)
+                            .collect(Collectors.toCollection(TreeSet::new)),
+                    validIdMerge
+            );
+        } catch (IllegalStateException ex) {
+            System.out.println("REEEEEEE!");
+            throw ex;
+//            return SSet.of();
+
+        }
     }
 
     public static Schema transClosure(Schema schema) {
@@ -119,7 +128,7 @@ public final class FunctionalDependencyManager {
      * @return for each fd the right-hand side is expanded to the attribute closure of the left-hand side
      */
     public static SortedSet<FunctionalDependency> transClosure(SortedSet<FunctionalDependency> fdSet) {
-        return transClosure(fdSet, true);
+        return transClosure(fdSet, false);
     }
 
     /**

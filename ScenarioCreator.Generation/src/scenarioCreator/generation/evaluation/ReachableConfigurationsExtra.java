@@ -9,6 +9,7 @@ import scenarioCreator.generation.processing.transformations.linguistic.helpers.
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
+import scenarioCreator.utils.Pair;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.File;
@@ -22,38 +23,46 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public final class ReachableConfigurations {
-    private static final String BASE_FOLDER = "./resultsOfEvaluation/reachability/";
+public final class ReachableConfigurationsExtra {
+    private static final String BASE_FOLDER = "./resultsOfEvaluation/reachabilityExtra/";
 
-    private ReachableConfigurations() {
+    private ReachableConfigurationsExtra() {
     }
 
     private static Stream<Reachability> reachability(String path, int startIndex, int rounds) {
-        final var possibleAverageList = Stream
-                .iterate(0.1, avg -> avg + 0.2)
-                .limit(16)
-                .filter(avg -> avg < 0.91)
+        final var possibleMoeList = Stream
+                .iterate(4, moe -> moe + 4)
+                .limit(32)
+                .filter(moe -> moe <= 64)
+                .toList();
+
+        final var possibleChildrenList = Stream
+                .iterate(1, c -> c + 1)
+                .limit(12)
+                .filter(c -> c <= 4)
                 .toList();
 
         try {
             final var germanet = new GermaNetInterface();
             final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
 
-            final var configurationList = possibleAverageList.stream()
-                    .flatMap(avgStructural -> possibleAverageList.stream()
-                            .flatMap(avgLinguistic -> possibleAverageList.stream()
-                                    .map(avgConstraintBased -> new Distance(avgStructural, avgLinguistic, avgConstraintBased, Double.NaN))
-                                    .filter(ReachableConfigurations::calculationMissing)
-                            )
-                    ).toList();
+            final var configurationList = possibleChildrenList.stream()
+                    .flatMap(children -> possibleMoeList.stream()
+                            .map(moe -> new Pair<>(children, moe))
+                    )
+                    .filter(ReachableConfigurationsExtra::calculationMissing)
+                    .toList();
             System.out.println("configuration list calculated!");
             return configurationList.stream()
+//                    .limit(12)
 //                    .parallel()
-                    .map(target -> {
+                    .map(pair -> {
+                                final var children = pair.first();
+                                final var maxExpansionSteps = pair.second();
                                 final var error = singleCaseMultipleSeeds(
-                                        ulc, path, startIndex, rounds, target
+                                        ulc, path, startIndex + 20, rounds, children, maxExpansionSteps
                                 );
-                                final var reachability = new Reachability(target, error);
+                                final var reachability = new Reachability(children, maxExpansionSteps, error);
                                 save(reachability);
                                 return reachability;
                             }
@@ -63,14 +72,21 @@ public final class ReachableConfigurations {
         }
     }
 
-    private static boolean calculationMissing(Distance target) {
-        final var path = targetToPath(target, "target");
+    private static boolean calculationMissing(Pair<Integer, Integer> pair) {
+        final var children = pair.first();
+        final var maxExpansionSteps = pair.second();
+        final var path = targetToPath(children, maxExpansionSteps, "config");
         final var file = new File(path.toUri());
         final var missing = !file.exists();
         if (missing) {
             return true;
         } else {
-            System.out.println("Configuration " + target + " already found! Skipping calculation.");
+            final var out = "Configuration "
+                    + String.format("%02d", children)
+                    + "-"
+                    + String.format("%02d", maxExpansionSteps)
+                    + " already found! Skipping calculation.";
+            System.out.println(out);
             return false;
         }
     }
@@ -83,15 +99,16 @@ public final class ReachableConfigurations {
     }
 
     private static Distance singleCaseMultipleSeeds(
-            UnifiedLanguageCorpus ulc, String path, int startIndex, int rounds, Distance target
+            UnifiedLanguageCorpus ulc, String path, int startIndex, int rounds, int children, int maxExpansionSteps
     ) {
+        final var target = new Distance(0.5, 0.3, 0.1, Double.NaN);
         // Die Distanzliste stellt den Fehler über Anläufe dar.
         // TODO: An genau dieser Stelle könnte man auch die Varianz bestimmen!
         final var distanceList = Stream
                 .iterate(startIndex, seed -> seed + 1)
                 .limit(rounds)
 //                .parallel()
-                .map(seed -> singleCase(ulc, path, seed, target))
+                .map(seed -> singleCase(ulc, path, seed, children, maxExpansionSteps))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(s -> rateScenario(s, target))
@@ -104,16 +121,16 @@ public final class ReachableConfigurations {
     }
 
     private static Optional<Scenario> singleCase(
-            UnifiedLanguageCorpus ulc, String path, int seed, Distance target
+            UnifiedLanguageCorpus ulc, String path, int seed, int children, int maxExpansionSteps
     ) {
-        System.out.println("ReachableConfigurations.singleCase with seed = " + seed + " and target = " + target);
+        System.out.println("ReachableConfigurations.singleCase with seed = " + seed + " and children = " + children + " and maxExpansionSteps = " + maxExpansionSteps);
         final var dd = new DistanceDefinition(
-                bufferize(target.structural()),
-                bufferize(target.linguistic()),
-                bufferize(target.constraintBased()),
+                bufferize(0.5),
+                bufferize(0.3),
+                bufferize(0.1),
                 new DistanceDefinition.Target(0.0, Double.NaN, 1.0)
         );
-        final var config = new Evaluation.FullConfiguration(dd, 5, 64, 1);
+        final var config = new Evaluation.FullConfiguration(dd, 5, maxExpansionSteps, children);
         return Evaluation.runForester(config, ulc, path, seed, false);
     }
 
@@ -121,15 +138,11 @@ public final class ReachableConfigurations {
         return new DistanceDefinition.Target(avg - 0.1, avg, avg + 0.1);
     }
 
-    private static Path targetToPath(Distance target, String prefix) {
+    private static Path targetToPath(int children, int maxExpansionSteps, String prefix) {
         final var filename = prefix
-                + str(target.structural(), 1)
+                + String.format("%02d", children)
                 + "-"
-                + str(target.linguistic(), 1)
-                + "-"
-                + str(target.constraintBased(), 1)
-                + "-"
-                + Double.toString(target.contextual()).substring(0, 3)
+                + String.format("%02d", maxExpansionSteps)
                 + ".yaml";
         return Path.of(BASE_FOLDER + filename);
     }
@@ -141,7 +154,7 @@ public final class ReachableConfigurations {
     }
 
     private static void save(Reachability reachability) {
-        final var path = targetToPath(reachability.target, "target");
+        final var path = targetToPath(reachability.children, reachability.maxExpansionSteps, "config");
         final var mapper = new ObjectMapper(new YAMLFactory());
         try {
             mapper.writeValue(path.toFile(), reachability);
@@ -154,7 +167,7 @@ public final class ReachableConfigurations {
 
     private static ReachabilityAggregated aggregate(Reachability r) {
         var aggrError = Math.sqrt(Math.pow(r.error.structural(), 2.0) + Math.pow(r.error.linguistic(), 2.0) + Math.pow(r.error.constraintBased(), 2.0));
-        return new ReachabilityAggregated(r.target, aggrError);
+        return new ReachabilityAggregated(r.children, r.maxExpansionSteps, aggrError);
     }
 
     public static void postprocessing() {
@@ -178,22 +191,14 @@ public final class ReachableConfigurations {
 
     private static void writeAggregatedError(Stream<Reachability> reachabilityStream) {
         final var content = reachabilityStream
-                .map(ReachableConfigurations::aggregate)
-                .map(ra -> {
-                    final var t = ra.target;
-                    return str(t.structural(), 1)
-                            + "-"
-                            + str(t.linguistic(), 1)
-                            + "-"
-                            + str(t.constraintBased(), 1)
-                            + " -> "
-                            + str(ra.error, 3)
-                            + "\n";
-                })
+                .map(ReachableConfigurationsExtra::aggregate)
+                .map(ra -> "children: " + ra.children + " | maxExpansionSteps: " + ra.maxExpansionSteps
+                        + " -->" + str(ra.error, 3)
+                        + "\n")
                 .sorted()
                 .collect(Collectors.joining());
 
-        final var file = new File(BASE_FOLDER + "aggrTarget.txt");
+        final var file = new File(BASE_FOLDER + "aggrConfig.txt");
         if (file.exists()) return;
 
         try {
@@ -208,9 +213,9 @@ public final class ReachableConfigurations {
     }
 
 
-    public record Reachability(Distance target, Distance error) {
+    public record Reachability(int children, int maxExpansionSteps, Distance error) {
     }
 
-    public record ReachabilityAggregated(Distance target, double error) {
+    public record ReachabilityAggregated(int children, int maxExpansionSteps, double error) {
     }
 }

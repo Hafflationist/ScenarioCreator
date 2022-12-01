@@ -7,7 +7,7 @@ import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
 import scenarioCreator.generation.evaluation.Init;
-import scenarioCreator.generation.evaluation.ReachableConfigurations;
+import scenarioCreator.generation.evaluation.ReachableConfigurationsExtra;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
@@ -245,9 +245,6 @@ public class Main {
 
     private static void testForesterInner(String pathStr, @Nullable Integer seedOpt, UnifiedLanguageCorpus ulc, GermaNetInterface gni) {
         try {
-            // clean directory
-            FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
-
             // Manage randomness and seed
             final var metaRandom = new Random();
             final var seed = (seedOpt == null) ? metaRandom.nextInt() : seedOpt;
@@ -309,6 +306,8 @@ public class Main {
                     .toList();
             System.out.println("Scenario created!");
             System.out.println("Working Directory = " + System.getProperty("user.dir"));
+            // clean directory
+            FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
             SchemaFileHandler.save(schema, Path.of(pathStr, "scenario/schemaRoot.yaml"));
             IntStream.range(0, schemaList.size())
                     .forEach(idx -> {
@@ -367,12 +366,14 @@ public class Main {
 //        testForester(path, 143);
 //        testTreeEditDistance();
 
-
 //        final var config = new Evaluation.FullConfiguration(
 //                DistanceDefinition.getDefault(0.2, 0.8), 5, 32, 2
 //        );
 //        Evaluation.transformationCount(config, path, 100, 12);
-        ReachableConfigurations.printReachabilities(path, 1000, 4);
+//        ReachableConfigurations.printReachabilities(path, 1000, 4);
+//        ReachableConfigurations.postprocessing();
+        ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
+        ReachableConfigurationsExtra.postprocessing();
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {
