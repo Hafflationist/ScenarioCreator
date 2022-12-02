@@ -15,6 +15,7 @@ import scenarioCreator.generation.processing.transformations.TableTransformation
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.Collection;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -37,29 +38,53 @@ public class RemoveColumn implements TableTransformation {
     @NotNull
     public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var rte = new RuntimeException("Could not find a valid column. This should not be possible!");
-        final var candidateStream= table.columnList().stream()
+        final var candidateStream = table.columnList().stream()
                 .filter(this::isRemovable);
         final var chosenColumn = StreamExtensions.pickRandomOrThrow(candidateStream, rte, random);
         final var newColumnList = table.columnList().stream().filter(column -> column != chosenColumn).toList();
+        final var removeIdSet = getAllIds(chosenColumn);
         final var newFdSet = table.functionalDependencySet().stream()
-                .flatMap(fd -> mapFunctionalDependency(chosenColumn.id(), fd))
+                .flatMap(fd -> mapFunctionalDependency(removeIdSet, fd))
                 .collect(Collectors.toCollection(TreeSet::new));
 
         return SSet.of(
                 table
-                .withColumnList(newColumnList)
-                .withFunctionalDependencySet(newFdSet)
+                        .withColumnList(newColumnList)
+                        .withFunctionalDependencySet(newFdSet)
         );
     }
 
-    private Stream<FunctionalDependency> mapFunctionalDependency(Id removedId, FunctionalDependency fd) {
-        if(fd.left().stream().anyMatch(id -> id.equals(removedId))) {
+    private SortedSet<Id> getAllIds(Column column) {
+        return switch (column) {
+            case ColumnLeaf leaf -> SSet.of(leaf.id());
+            case ColumnNode node -> SSet.prepend(
+                    node.id(),
+                    node.columnList().stream()
+                            .map(this::getAllIds)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toCollection(TreeSet::new))
+            );
+            case ColumnCollection col -> SSet.prepend(
+                    col.id(),
+                    col.columnList().stream()
+                            .map(this::getAllIds)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toCollection(TreeSet::new))
+
+            );
+        };
+    }
+
+    private Stream<FunctionalDependency> mapFunctionalDependency(SortedSet<Id> removedIdSet, FunctionalDependency fd) {
+        if (fd.left().stream().anyMatch(removedIdSet::contains)) {
             return Stream.of();
         }
-        if(fd.right().stream().noneMatch(id -> id.equals(removedId))) {
+        if (fd.right().stream().noneMatch(removedIdSet::contains)) {
             return Stream.of(fd);
         }
-        final var newRight = fd.right().stream().filter(id -> !id.equals(removedId)).collect(Collectors.toCollection(TreeSet::new));
+        final var newRight = fd.right().stream()
+                .filter(id -> !removedIdSet.contains(id))
+                .collect(Collectors.toCollection(TreeSet::new));
         return FunctionalDependency.tryCreate(fd.left(), newRight).stream();
     }
 
@@ -75,8 +100,8 @@ public class RemoveColumn implements TableTransformation {
         if (table.columnList().size() < 2) {
             return false;
         }
-       return table.columnList().stream()
-               .anyMatch(this::isRemovable);
+        return table.columnList().stream()
+                .anyMatch(this::isRemovable);
     }
 
     private boolean isRemovable(Column column) {
