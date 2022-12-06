@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -59,10 +60,9 @@ public final class ReachableConfigurationsExtra {
                     .map(pair -> {
                                 final var children = pair.first();
                                 final var maxExpansionSteps = pair.second();
-                                final var error = singleCaseMultipleSeeds(
-                                        ulc, path, startIndex + 20, rounds, children, maxExpansionSteps
+                                final var reachability = singleCaseMultipleSeeds(
+                                        ulc, path, startIndex, rounds, children, maxExpansionSteps
                                 );
-                                final var reachability = new Reachability(children, maxExpansionSteps, error);
                                 save(reachability);
                                 return reachability;
                             }
@@ -98,29 +98,38 @@ public final class ReachableConfigurationsExtra {
         }
     }
 
-    private static Distance singleCaseMultipleSeeds(
+    private static Reachability singleCaseMultipleSeeds(
             UnifiedLanguageCorpus ulc, String path, int startIndex, int rounds, int children, int maxExpansionSteps
     ) {
         final var target = new Distance(0.5, 0.3, 0.1, Double.NaN);
         // Die Distanzliste stellt den Fehler über Anläufe dar.
         // TODO: An genau dieser Stelle könnte man auch die Varianz bestimmen!
-        final var distanceList = Stream
+        final var pairList = Stream
                 .iterate(startIndex, seed -> seed + 1)
                 .limit(rounds)
 //                .parallel()
                 .map(seed -> singleCase(ulc, path, seed, children, maxExpansionSteps))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
-                .map(s -> rateScenario(s, target))
+                .map(pair -> new Pair<>(rateScenario(pair.first(), target), pair.second()))
                 .toList();
-        return Distance.avg(distanceList);
+        final var distanceList = pairList.stream()
+                .map(Pair::first)
+                .toList();
+
+        final var distance = Distance.avg(distanceList);
+        final var milli = (long) pairList.stream()
+                .mapToLong(Pair::second)
+                .average()
+                .orElse(-1);
+        return new Reachability(children, maxExpansionSteps, distance, milli);
     }
 
     private static Distance rateScenario(Scenario scenario, Distance avg) {
         return Distance.diff(avg, scenario.avgDistance());
     }
 
-    private static Optional<Scenario> singleCase(
+    private static Optional<Pair<Scenario, Long>> singleCase(
             UnifiedLanguageCorpus ulc, String path, int seed, int children, int maxExpansionSteps
     ) {
         System.out.println("ReachableConfigurations.singleCase with seed = " + seed + " and children = " + children + " and maxExpansionSteps = " + maxExpansionSteps);
@@ -131,7 +140,11 @@ public final class ReachableConfigurationsExtra {
                 new DistanceDefinition.Target(0.0, Double.NaN, 1.0)
         );
         final var config = new Evaluation.FullConfiguration(dd, 5, maxExpansionSteps, children);
-        return Evaluation.runForester(config, ulc, path, seed, false);
+        final var start = System.currentTimeMillis();
+        final var scenarioOpt = Evaluation.runForester(config, ulc, path, seed, true);
+        final var end = System.currentTimeMillis();
+        final var diff = end - start;
+        return scenarioOpt.map(scenario -> new Pair<>(scenario, diff));
     }
 
     private static DistanceDefinition.Target bufferize(double avg) {
@@ -149,8 +162,7 @@ public final class ReachableConfigurationsExtra {
 
     private static String str(double x, int n) {
         final var dec = Math.pow(10.0, n);
-        final var xStr = Double.toString(Math.round(x * dec) / dec);
-        return xStr.substring(0, Math.min(2 + n, xStr.length()));
+        return new DecimalFormat("0.000").format(Math.round(x * dec) / dec);
     }
 
     private static void save(Reachability reachability) {
@@ -167,7 +179,7 @@ public final class ReachableConfigurationsExtra {
 
     private static ReachabilityAggregated aggregate(Reachability r) {
         var aggrError = Math.sqrt(Math.pow(r.error.structural(), 2.0) + Math.pow(r.error.linguistic(), 2.0) + Math.pow(r.error.constraintBased(), 2.0));
-        return new ReachabilityAggregated(r.children, r.maxExpansionSteps, aggrError);
+        return new ReachabilityAggregated(r.children, r.maxExpansionSteps, aggrError, r.millis);
     }
 
     public static void postprocessing() {
@@ -192,14 +204,18 @@ public final class ReachableConfigurationsExtra {
     private static void writeAggregatedError(Stream<Reachability> reachabilityStream) {
         final var content = reachabilityStream
                 .map(ReachableConfigurationsExtra::aggregate)
-                .map(ra -> "children: " + ra.children + " | maxExpansionSteps: " + ra.maxExpansionSteps
-                        + " -->" + str(ra.error, 3)
+                .map(ra -> "children: " + ra.children
+                        + " | maxExpansionSteps: " + String.format("%02d", ra.maxExpansionSteps)
+                        + " | fehler: " + str(ra.error, 3)
+                        + " | laufzeit: " + ra.millis
                         + "\n")
                 .sorted()
                 .collect(Collectors.joining());
 
         final var file = new File(BASE_FOLDER + "aggrConfig.txt");
-        if (file.exists()) return;
+        if (file.exists()) {
+            file.delete();
+        }
 
         try {
             if (file.createNewFile()) {
@@ -213,9 +229,9 @@ public final class ReachableConfigurationsExtra {
     }
 
 
-    public record Reachability(int children, int maxExpansionSteps, Distance error) {
+    public record Reachability(int children, int maxExpansionSteps, Distance error, long millis) {
     }
 
-    public record ReachabilityAggregated(int children, int maxExpansionSteps, double error) {
+    public record ReachabilityAggregated(int children, int maxExpansionSteps, double error, long millis) {
     }
 }
