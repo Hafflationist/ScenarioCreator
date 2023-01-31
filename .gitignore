@@ -18,3 +18,7 @@
 /out/
 *.class
 resultsOfEvaluation/*
+*/project/*
+project/*
+*/target/*
+
