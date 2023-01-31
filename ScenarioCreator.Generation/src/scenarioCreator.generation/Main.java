@@ -6,8 +6,8 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
+import scenarioCreator.generation.evaluation.CountTransformations;
 import scenarioCreator.generation.evaluation.Init;
-import scenarioCreator.generation.evaluation.ReachableConfigurationsExtra;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
@@ -329,12 +329,12 @@ public class Main {
     private static void testForester(String path, int startIndex) throws XMLStreamException, IOException {
         final var germanet = new GermaNetInterface();
         final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
-//        testForesterInner(path, 38, ulc, germanet);
-        for (int i = startIndex; i < Integer.MAX_VALUE; i++) {
-            System.out.println("Starte Anlauf " + i + "...");
-            testForesterInner(path, i, ulc, germanet);
-            System.out.println("Anlauf " + i + " vollständig");
-        }
+        testForesterInner(path, 0, ulc, germanet);
+//        for (int i = startIndex; i < Integer.MAX_VALUE; i++) {
+//            System.out.println("Starte Anlauf " + i + "...");
+//            testForesterInner(path, i, ulc, germanet);
+//            System.out.println("Anlauf " + i + " vollständig");
+//        }
     }
 
     private static void testTreeEditDistance() {
@@ -372,8 +372,9 @@ public class Main {
 //        Evaluation.transformationCount(config, path, 100, 12);
 //        ReachableConfigurations.printReachabilities(path, 1000, 4);
 //        ReachableConfigurations.postprocessing();
-        ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
-        ReachableConfigurationsExtra.postprocessing();
+//        ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
+//        ReachableConfigurationsExtra.postprocessing();
+        CountTransformations.printCount(path, 1000, 4);
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {

@@ -223,7 +223,7 @@ public class Forester implements IForester {
             final var newDistanceList = DistanceHelper.distanceList(newSchema, oldSchemaSet, _measures);
             final var newExecutedTransformationList = Stream.concat(
                     te.content().executedTransformationList().stream(),
-                    Stream.of(chosenTransformation.toString())
+                    Arrays.stream(chosenTransformation.toString().split("@")).limit(1)
             ).toList();
             final var newSchemaWithAdditionalData = new SchemaWithAdditionalData(
                     newSchema, newDistanceList, newExecutedTransformationList
