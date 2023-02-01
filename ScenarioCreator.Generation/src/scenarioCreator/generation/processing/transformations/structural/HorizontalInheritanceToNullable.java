@@ -138,7 +138,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 ip.base.functionalDependencySet(), newColumnList
         );
         final var newTable = ip.base()
-                    .withColumnList(newColumnList)
+                .withColumnList(newColumnList)
                 .withFunctionalDependencySet(newFdSet)
                 .withId(new IdMerge(ip.base.id(), ip.derivation.id(), MergeOrSplitType.Xor));
         // komplett falsch:
@@ -165,9 +165,9 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         );
         final var conjunction1 = new CheckConjunction(
                 partition.yes()
-                .map(c -> (ColumnConstraintCheckNumerical) c)
-                .map(ColumnConstraintCheckNumerical::checkExpression)
-                .collect(Collectors.toCollection(TreeSet::new))
+                        .map(c -> (ColumnConstraintCheckNumerical) c)
+                        .map(ColumnConstraintCheckNumerical::checkExpression)
+                        .collect(Collectors.toCollection(TreeSet::new))
         );
         final var conjunction2 = new CheckConjunction(
                 constraintSet2.stream()
@@ -238,7 +238,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
     }
 
     private boolean equalsColumnList(List<Column> columnListA, List<Column> columnListB) {
-        if(columnListA.size() != columnListB.size()){
+        if (columnListA.size() != columnListB.size()) {
             return false;
         }
         return StreamExtensions
