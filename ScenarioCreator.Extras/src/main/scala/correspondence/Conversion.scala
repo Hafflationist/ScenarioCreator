@@ -24,8 +24,9 @@ object Conversion {
         rootIds.flatMap(rid => targetIds.find(tid => Extractor.intersect(rid, tid)).map(tid => (rid, tid)))
     }
 
-    def convert(rootSchema: Schema, targetSchem: Schema): Set[Correspondence] = {
-
-        throw new NotImplementedError()
+    def convert(rootSchema: Schema, targetSchema: Schema): List[Correspondence] = {
+        rootSchema.tableSet().asScala.toList
+            .map(table => getCorrespondingTables(table, targetSchema))
+            .map(Correspondence.of)
     }
 }

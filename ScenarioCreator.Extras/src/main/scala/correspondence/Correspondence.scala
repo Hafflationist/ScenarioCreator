@@ -15,8 +15,12 @@ case class Correspondence(
     exists: ExistsExpression[Table]
 )
 
-object Correspondence{
+object Correspondence {
     def prettyPrint(correspondence: Correspondence): String = {
+        throw new NotImplementedError()
+    }
+
+    def of(corrRaw: CorrespondenceRaw): Correspondence = {
         throw new NotImplementedError()
     }
 }
