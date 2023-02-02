@@ -1,4 +1,4 @@
-package scenarioCreator.extra.correspondence
+package correspondence
 
 trait ExistsExpression[T] {}
 case class ExistsDisjunction[T](parts: Set[ExistsExpression[T]]) extends ExistsExpression[T]

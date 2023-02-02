@@ -22,15 +22,27 @@ object Extractor {
         }
     }
 
-    def intersect(id1: Id, id2: Id) : Boolean = {
+    def intersect(id1: Id, id2: Id): Boolean = {
         flatten(id1).intersect(flatten(id2)).nonEmpty
     }
 
-    private def flatten(id: Id) : List[IdSimple] = {
+    private def flatten(id: Id): List[IdSimple] = {
         id match {
             case ids: IdSimple => ids :: Nil
             case idp: IdPart => flatten(idp.predecessorId())
             case idm: IdMerge => flatten(idm.predecessorId1()) ++ flatten(idm.predecessorId2())
+        }
+    }
+
+    def removeMerges(id: Id, rootId: Id): Id = {
+        id match {
+            case ids: IdSimple => ids
+            case idp: IdPart => new IdPart(removeMerges(idp.predecessorId(), rootId), idp.extensionNumber(), idp.splitType())
+            case idm: IdMerge =>
+                if (intersect(idm.predecessorId1(), rootId))
+                    removeMerges(idm.predecessorId1(), rootId)
+                else
+                    removeMerges(idm.predecessorId2(), rootId)
         }
     }
 }

@@ -2,7 +2,6 @@ package correspondence
 
 import scenarioCreator.data.identification.Id
 import scenarioCreator.data.table.Table
-import scenarioCreator.extra.correspondence.ExistsExpression
 
 
 case class CorrespondenceRaw(
