@@ -44,8 +44,8 @@ object Extractor {
 
     def idToExtensionNumbers(id: Id): List[Id] =
         id match {
-            case ids: IdSimple => Nil
+            case _: IdSimple => Nil
             case idp: IdPart => idp :: idToExtensionNumbers(idp.predecessorId())
-            case idm: IdMerge => throw new NotImplementedError()
+            case _: IdMerge => throw new NotImplementedError()
         }
 }

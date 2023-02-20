@@ -1,4 +1,5 @@
 /.idea/*
+*/.idea/*
 **/schema.yaml
 /scenario/**
 **/germanet/**
@@ -21,4 +22,5 @@ resultsOfEvaluation/*
 */project/*
 project/*
 */target/*
+.bsp/*
 

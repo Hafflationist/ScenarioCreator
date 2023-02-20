@@ -20,7 +20,7 @@ object Correspondence {
         throw new NotImplementedError()
     }
 
-    def of(corrRaw: CorrespondenceRaw): Option[Correspondence ]= {
+    def of(corrRaw: CorrespondenceRaw): Option[Correspondence] = {
         // Dieser Teil wird hoch-IQ:
         // Ich hab ein bisschen nachgedacht, was man hier überhaupt genau machen muss und bin zu folgenden
         // vereinfachenden Schlüssen gekommen:
@@ -36,8 +36,11 @@ object Correspondence {
         // 4.1. Man könnte eine Funktion bauen, die die Id-Struktur vereinfacht, indem IdMerge entfernt wird.
         // 4.2. Der Rest wird von einer rekursiven Funktion, die alles nach 3 umformt.
         convertIdsToExistExpression(corrRaw.targetTables.map(_._1), corrRaw.rootTable.id())
-            .map(exists =>       Correspondence(corrRaw.rootTable, exists))
+            .map(exists => Correspondence(corrRaw.rootTable, exists))
     }
+
+    def tablePrinter(table: Table): String = table.toString
+//    def tablePrinter(table: Table): String = table.id().toString
 
     def convertIdsToExistExpression(tables: List[Table], rootId: Id): Option[ExistsExpression[Table]] = {
         def convertIdsToExistExpressionInner(t2n: List[(Table, List[Id])]): Option[ExistsExpression[Table]] = {
@@ -49,7 +52,7 @@ object Correspondence {
                     if (idGroup.length > 1)
                         convertIdsToExistExpressionInner(idGroup.map(reduction))
                     else if (idGroup.nonEmpty)
-                        Some(ExistsTerminal[Table](idGroup.head._1))
+                        Some(ExistsTerminal[Table](idGroup.head._1, tablePrinter))
                     else
                         Some(ExistsNowhere[Table]())
                 }
@@ -61,15 +64,15 @@ object Correspondence {
             val expressionParts: Set[ExistsExpression[Table]] = optExpressionParts
                 .flatMap(opt => opt.toList)
                 .toSet
-            val splitType = Extractor.idToExtensionNumbers(t2n.head._1.id())
+            val splitType = t2n.map(pair => pair._2.head) //Extractor.idToExtensionNumbers(t2n.head._1.id())
                 .filter(id => id.isInstanceOf[IdPart])
                 .map(id => id.asInstanceOf[IdPart])
-                .last
+                .head
                 .splitType()
             if (splitType == MergeOrSplitType.And)
                 Some(ExistsConjunction(expressionParts))
             else if (splitType == MergeOrSplitType.Xor)
-                Some(ExistsConjunction(expressionParts))
+                Some(ExistsDisjunction(expressionParts))
             else
                 Option.empty[ExistsExpression[Table]]
         }

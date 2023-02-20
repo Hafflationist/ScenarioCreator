@@ -1,11 +1,11 @@
 package id
 
-import org.junit.jupiter.api.{Assertions, Test}
+import org.scalatest.funsuite.AnyFunSuite
 import scenarioCreator.data.identification._
 
-class ExtractorTest {
-    @Test
-    private[id] def removeMerges(): Unit = {
+class ExtractorTest extends AnyFunSuite {
+
+    test("should extract information correct (covering all cases I think)") {
         // --- Arrange
         val rootId = new IdSimple(0)
         val idWithMerge = new IdPart(
@@ -47,6 +47,6 @@ class ExtractorTest {
         val resultId = Extractor.removeMerges(idWithMerge, rootId)
 
         // --- Assert
-        Assertions.assertEquals(idWithoutMerge, resultId)
+        assert(idWithoutMerge == resultId)
     }
 }

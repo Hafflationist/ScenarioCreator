@@ -14,8 +14,8 @@ object Conversion {
         CorrespondenceRaw(
             rootTable,
             targetSchema.tableSet().asScala.toList
-            .map(targetTable => (targetTable, areIntersecting(rootIds, targetTable)))
-            .filter(pair => pair._2.nonEmpty)
+                .map(targetTable => (targetTable, areIntersecting(rootIds, targetTable)))
+                .filter(pair => pair._2.nonEmpty)
         )
     }
 
@@ -28,5 +28,6 @@ object Conversion {
         rootSchema.tableSet().asScala.toList
             .map(table => getCorrespondingTables(table, targetSchema))
             .map(Correspondence.of)
+            .flatMap(opt => opt.toList)
     }
 }
