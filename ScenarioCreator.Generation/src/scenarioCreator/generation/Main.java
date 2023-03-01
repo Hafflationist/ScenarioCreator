@@ -6,7 +6,6 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
-import scenarioCreator.generation.evaluation.CountTransformations;
 import scenarioCreator.generation.evaluation.Init;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
@@ -14,6 +13,7 @@ import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDepend
 import scenarioCreator.generation.heterogeneity.linguistic.LinguisticDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.structural.ted.Ted;
 import scenarioCreator.generation.inout.SchemaFileHandler;
+import scenarioCreator.generation.inout.SqlDdlParser;
 import scenarioCreator.generation.processing.ScenarioCreator;
 import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.generation.processing.preprocessing.SemanticSaturation;
@@ -357,6 +357,9 @@ public class Main {
     }
 
     public static void main(String[] args) throws XMLStreamException, IOException {
+
+
+        SqlDdlParser.tokenize(SqlDdlParser.testInput);
         final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();
@@ -374,7 +377,7 @@ public class Main {
 //        ReachableConfigurations.postprocessing();
 //        ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
 //        ReachableConfigurationsExtra.postprocessing();
-        CountTransformations.printCount(path, 1000, 4);
+//        CountTransformations.printCount(path, 1000, 4);
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {
