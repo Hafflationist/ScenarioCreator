@@ -17,6 +17,11 @@ public final class StreamExtensions {
 
     @Contract(pure = true)
     @NotNull
+    public static <T> Stream<T> postpend(Stream<T> init, T last) {
+        return Stream.concat(init, Stream.of(last));
+    }
+    @Contract(pure = true)
+    @NotNull
     public static <T> Stream<T> prepend(Stream<T> tail, T head) {
         return Stream.concat(Stream.of(head), tail);
     }
@@ -157,6 +162,14 @@ public final class StreamExtensions {
 //            result = folder.apply(result, element);
 //        }
 //        return result;
+    }
+    public static <T> Stream<List<T>> split(Stream<T> stream, T delimiter) {
+        final var list = stream.toList();
+        if (list.isEmpty()) return Stream.of();
+        final var head = list.stream().takeWhile(e -> !e.equals(delimiter)).toList();
+        final var tailStream = list.stream().skip(head.size() + 1);
+        final var tail = split(tailStream, delimiter);
+        return prepend(tail, head);
     }
 
     public record Partition<T>(Stream<T> yes, Stream<T> no) {

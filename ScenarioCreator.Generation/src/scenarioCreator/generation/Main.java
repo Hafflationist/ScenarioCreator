@@ -13,7 +13,7 @@ import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDepend
 import scenarioCreator.generation.heterogeneity.linguistic.LinguisticDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.structural.ted.Ted;
 import scenarioCreator.generation.inout.SchemaFileHandler;
-import scenarioCreator.generation.inout.SqlDdlParser;
+import scenarioCreator.generation.inout.SqlDdlLexer;
 import scenarioCreator.generation.processing.ScenarioCreator;
 import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.generation.processing.preprocessing.SemanticSaturation;
@@ -359,7 +359,7 @@ public class Main {
     public static void main(String[] args) throws XMLStreamException, IOException {
 
 
-        SqlDdlParser.tokenize(SqlDdlParser.testInput);
+        SqlDdlLexer.tokenize(SqlDdlLexer.testInputEinfach);
         final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();

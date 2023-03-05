@@ -1,6 +1,7 @@
 package scenarioCreator.generation.processing.transformations.structural;
 
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
@@ -37,10 +38,10 @@ public class GroupColumnLeafsToNode implements TableTransformation {
         final var newIds = idGenerator.apply(1);
         final var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
-        final var newColumnList = StreamExtensions.replaceInStream(
+        final var newColumnList = StreamExtensions.<Column>replaceInStream(
                 table.columnList().stream(),
                 groupableColumnList.stream(),
-                newColumn).toList();
+                (Column)newColumn).toList();
 
         return SSet.of(table.withColumnList(newColumnList));
     }
