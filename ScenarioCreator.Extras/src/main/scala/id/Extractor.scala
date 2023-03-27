@@ -42,6 +42,17 @@ object Extractor {
                     removeMerges(idm.predecessorId2(), rootId)
         }
 
+    def removePartsAndXorMerges(id: Id, rootId: Id): Id =
+        id match {
+            case ids: IdSimple => ids
+            case idp: IdPart => removePartsAndXorMerges(idp.predecessorId(), rootId)
+            case idm: IdMerge =>
+                if (intersect(idm.predecessorId1(), rootId))
+                    removePartsAndXorMerges(idm.predecessorId1(), rootId)
+                else
+                    removePartsAndXorMerges(idm.predecessorId2(), rootId)
+        }
+
     def idToExtensionNumbers(id: Id): List[Id] =
         id match {
             case _: IdSimple => Nil
