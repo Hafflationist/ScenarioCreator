@@ -1,5 +1,6 @@
 package id
 
+import chase._
 import org.utils.Correspondence
 import scenarioCreator.data.Schema
 import scenarioCreator.data.column.nesting.Column
