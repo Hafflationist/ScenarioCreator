@@ -24,7 +24,7 @@ object Extractor {
     def intersect(id1: Id, id2: Id): Boolean =
         flatten(id1).intersect(flatten(id2)).nonEmpty
 
-    private def flatten(id: Id): List[IdSimple] =
+    def flatten(id: Id): List[IdSimple] =
         id match {
             case ids: IdSimple => ids :: Nil
             case idp: IdPart => flatten(idp.predecessorId())
