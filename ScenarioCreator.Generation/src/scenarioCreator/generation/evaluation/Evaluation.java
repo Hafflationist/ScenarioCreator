@@ -20,6 +20,7 @@ import scenarioCreator.generation.processing.tree.Forester;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
@@ -67,7 +68,9 @@ public final class Evaluation {
     ) {
         try {
             // clean directory
-            FileUtils.cleanDirectory(Path.of(pathStr, "scenario").toFile());
+            final var path = Path.of(pathStr, "scenario");
+            Files.createDirectories(path);
+            FileUtils.cleanDirectory(path.toFile());
 
 //            System.out.println("Seed: " + seed);
             final var random = new Random(seed);

@@ -7,6 +7,7 @@ import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
 import scenarioCreator.generation.evaluation.Init;
+import scenarioCreator.generation.evaluation.KörnerkissenEvaluator;
 import scenarioCreator.generation.evaluation.ReachableConfigurationsExtra;
 import scenarioCreator.generation.heterogeneity.StringDistances;
 import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBasedDistanceMeasure;
@@ -33,6 +34,8 @@ import scenarioCreator.utils.SSet;
 import javax.xml.stream.XMLStreamException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -357,10 +360,29 @@ public class Main {
     }
 
     public static void main(String[] args) throws XMLStreamException, IOException {
+        final var isKörnerkissen = Arrays.asList(args).contains("--körnerkissen");
+        final var isNoTgd = Arrays.asList(args).contains("--no-tgd") || Arrays.asList(args).contains("--no-tgds");
+        final var argList = Arrays.asList(args);
+
+        if (isKörnerkissen) {
+            final var avIdx = Math.max(argList.indexOf("-av"), argList.indexOf("--ausgabeverzeichnis"));
+            if (avIdx == -1) {
+                System.out.println("REEE: Wenn --körnerkissen angegeben wurde, muss auch ein \"-av <PFAD>\" oder \"--ausgabeverzeichnis <PFAD>\" angegeben werden.");
+                return;
+            }
+            try {
+                final var ausgabeUri = new URI(args[avIdx + 1]);
+                System.out.println("Auskotzverzeichnis: " + ausgabeUri);
+                final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
+                KörnerkissenEvaluator.printScenario(ausgabeverzeichnis, 3, 0.5, 0.3);
+            } catch (URISyntaxException e) {
+                System.out.println("REEE: Kein gültiger Pfad angegeben!");
+            }
+        } else {
 
 
 //        SqlDdlLexer.tokenize(SqlDdlLexer.testInputEinfach);
-        final var path = args[0];
+            final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();
 //        testWordNetInterface();
@@ -375,9 +397,10 @@ public class Main {
 //        Evaluation.transformationCount(config, path, 100, 12);
 //        ReachableConfigurations.printReachabilities(path, 1000, 4);
 //        ReachableConfigurations.postprocessing();
-        ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
+            ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
 //        ReachableConfigurationsExtra.postprocessing();
 //        CountTransformations.printCount(path, 1000, 4);
+        }
     }
 
     record TestRecord(int id, SortedSet<Integer> things) {
