@@ -14,12 +14,13 @@ object Extractor {
         table.id() :: extractedIds
     }
 
-    private def extract(column: Column): List[Id] =
+    private def extract(column: Column): List[Id] = {
         column match {
             case leaf: ColumnLeaf => leaf.id() :: Nil
-            case node: ColumnNode => node.id() :: extract(node)
-            case col: ColumnCollection => col.id() :: extract(col)
+            case node: ColumnNode => node.id() :: node.columnList.asScala.flatMap(extract).toList
+            case col: ColumnCollection => col.id() :: col.columnList.asScala.flatMap(extract).toList
         }
+    }
 
     def intersect(id1: Id, id2: Id): Boolean =
         flatten(id1).intersect(flatten(id2)).nonEmpty
