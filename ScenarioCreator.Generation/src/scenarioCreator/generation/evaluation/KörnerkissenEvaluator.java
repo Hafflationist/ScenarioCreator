@@ -75,6 +75,15 @@ public class KörnerkissenEvaluator {
         return new DistanceDefinition.Target(avg - 0.1, avg, avg + 0.1);
     }
 
+
+    private static String idx2String(int idx) {
+        if (idx < 10) {
+            return "0" + idx;
+        } else {
+            return Integer.toString(idx);
+        }
+    }
+
     private static void save(Path path, Scenario scenario) throws IOException {
         final var schemaIndexedList = StreamExtensions.zip(
                 IntStream.iterate(1, i -> i + 1).boxed(),
@@ -85,7 +94,7 @@ public class KörnerkissenEvaluator {
         for (final var schemaWithIndex : schemaIndexedList) {
             final var schema = schemaWithIndex.second();
             final var idx = schemaWithIndex.first();
-            final var filename = idx + "-" + schema.name().rawString(LinguisticUtils::merge)+ ".yaml";
+            final var filename = idx2String(idx) + "-" + schema.name().rawString(LinguisticUtils::merge) + ".yaml";
             final var filePath = Path.of(path.toString(), filename);
             SchemaFileHandler.save(schema, filePath);
         }
