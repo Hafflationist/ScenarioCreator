@@ -71,5 +71,15 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../ScenarioCreator.Extras/lib/chateau-1.3-all-jar-with-dependencies.jar!/" />
+          <root url="jar://$MODULE_DIR$/../ScenarioCreator.Extras/lib/utils.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
