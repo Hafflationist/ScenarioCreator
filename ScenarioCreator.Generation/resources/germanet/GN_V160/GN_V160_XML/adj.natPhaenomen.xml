@@ -1,0 +1,1081 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE synsets SYSTEM "germanet_objects.dtd">
+<synsets>
+<synset id="s2184" category="adj" class="natPhaenomen">
+<lexUnit id="l3371" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>klimatisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2185" category="adj" class="natPhaenomen">
+<lexUnit id="l3372" sense="1" source="core" namedEntity="no" artificial="yes" styleMarking="no">
+<orthForm>landschaftsspezifisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2186" category="adj" class="natPhaenomen">
+<lexUnit id="l3373" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>landschaftlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2187" category="adj" class="natPhaenomen">
+<lexUnit id="l3374" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>gebirgig</orthForm>
+</lexUnit>
+<lexUnit id="l3375" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bergig</orthForm>
+</lexUnit>
+<lexUnit id="l106906" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bergreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2188" category="adj" class="natPhaenomen">
+<lexUnit id="l3376" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="yes">
+<orthForm>bergisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2189" category="adj" class="natPhaenomen">
+<lexUnit id="l3377" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>hügelig</orthForm>
+<orthVar>hüglig</orthVar>
+</lexUnit>
+</synset>
+<synset id="s2190" category="adj" class="natPhaenomen">
+<lexUnit id="l3379" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>flach</orthForm>
+</lexUnit>
+<lexUnit id="l3380" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>eben</orthForm>
+</lexUnit>
+<lexUnit id="l3381" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="yes">
+<orthForm>platt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2191" category="adj" class="natPhaenomen">
+<lexUnit id="l3382" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fruchtbar</orthForm>
+</lexUnit>
+<lexUnit id="l3383" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>urbar</orthForm>
+</lexUnit>
+<lexUnit id="l107454" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fertil</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2192" category="adj" class="natPhaenomen">
+<lexUnit id="l3385" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bewohnbar</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2193" category="adj" class="natPhaenomen">
+<lexUnit id="l3386" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unfruchtbar</orthForm>
+</lexUnit>
+<lexUnit id="l3387" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>öde</orthForm>
+<orthVar>öd</orthVar>
+</lexUnit>
+</synset>
+<synset id="s2194" category="adj" class="natPhaenomen">
+<lexUnit id="l3388" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>seenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2195" category="adj" class="natPhaenomen">
+<lexUnit id="l3389" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>karg</orthForm>
+</lexUnit>
+<lexUnit id="l3390" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>kahl</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2196" category="adj" class="natPhaenomen">
+<lexUnit id="l3391" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unbewohnbar</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2197" category="adj" class="natPhaenomen">
+<lexUnit id="l3392" sense="3" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>üppig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2198" category="adj" class="natPhaenomen">
+<lexUnit id="l3394" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>trocken</orthForm>
+</lexUnit>
+<lexUnit id="l106651" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>arid</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2199" category="adj" class="natPhaenomen">
+<lexUnit id="l3395" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>trocken-kalt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2200" category="adj" class="natPhaenomen">
+<lexUnit id="l3396" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>feucht</orthForm>
+</lexUnit>
+<lexUnit id="l107897" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>humid</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2201" category="adj" class="natPhaenomen">
+<lexUnit id="l3397" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nass</orthForm>
+<oldOrthForm>naß</oldOrthForm>
+</lexUnit>
+</synset>
+<synset id="s2202" category="adj" class="natPhaenomen">
+<lexUnit id="l3399" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>feuchtwarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2203" category="adj" class="natPhaenomen">
+<lexUnit id="l3400" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>regnerisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2204" category="adj" class="natPhaenomen">
+<lexUnit id="l3401" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>gewittrig</orthForm>
+</lexUnit>
+<lexUnit id="l3402" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>gewitterig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2205" category="adj" class="natPhaenomen">
+<lexUnit id="l3403" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wechselhaft-regnerisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2206" category="adj" class="natPhaenomen">
+<lexUnit id="l3404" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schwül</orthForm>
+</lexUnit>
+<lexUnit id="l3405" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schwülwarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2207" category="adj" class="natPhaenomen">
+<lexUnit id="l3406" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schwülheiß</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2208" category="adj" class="natPhaenomen">
+<lexUnit id="l3407" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>drückend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2209" category="adj" class="natPhaenomen">
+<lexUnit id="l3408" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>lau</orthForm>
+</lexUnit>
+<lexUnit id="l3409" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>mild</orthForm>
+</lexUnit>
+<lexUnit id="l3410" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>lind</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2210" category="adj" class="natPhaenomen">
+<lexUnit id="l3411" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2211" category="adj" class="natPhaenomen">
+<lexUnit id="l3412" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frostig</orthForm>
+</lexUnit>
+<lexUnit id="l132979" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frostkalt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2212" category="adj" class="natPhaenomen">
+<lexUnit id="l3413" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nasskalt</orthForm>
+<oldOrthForm>naßkalt</oldOrthForm>
+</lexUnit>
+</synset>
+<synset id="s2213" category="adj" class="natPhaenomen">
+<lexUnit id="l3415" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nasskühl</orthForm>
+<oldOrthForm>naßkühl</oldOrthForm>
+</lexUnit>
+</synset>
+<synset id="s2214" category="adj" class="natPhaenomen">
+<lexUnit id="l3417" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2215" category="adj" class="natPhaenomen">
+<lexUnit id="l3418" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>strahlend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2216" category="adj" class="natPhaenomen">
+<lexUnit id="l3419" sense="3" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>heiter</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2217" category="adj" class="natPhaenomen">
+<lexUnit id="l3420" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sommerlich-sonnig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2218" category="adj" class="natPhaenomen">
+<lexUnit id="l3421" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bewölkt</orthForm>
+</lexUnit>
+<lexUnit id="l3422" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2219" category="adj" class="natPhaenomen">
+<lexUnit id="l3423" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bedeckt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2220" category="adj" class="natPhaenomen">
+<lexUnit id="l3425" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>neblig</orthForm>
+</lexUnit>
+<lexUnit id="l159640" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nebelig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2221" category="adj" class="natPhaenomen">
+<lexUnit id="l3426" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nebelverhangen</orthForm>
+</lexUnit>
+<lexUnit id="l3428" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>verhangen</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2222" category="adj" class="natPhaenomen">
+<lexUnit id="l3429" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>trübe</orthForm>
+</lexUnit>
+<lexUnit id="l204782" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>trüb</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2223" category="adj" class="natPhaenomen">
+<lexUnit id="l3430" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>diesig</orthForm>
+</lexUnit>
+<lexUnit id="l3431" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dunstig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2224" category="adj" class="natPhaenomen">
+<lexUnit id="l3432" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>diesig-kalt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2225" category="adj" class="natPhaenomen">
+<lexUnit id="l3433" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nebligtrüb</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2226" category="adj" class="natPhaenomen">
+<lexUnit id="l3434" sense="3" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>klar</orthForm>
+</lexUnit>
+<lexUnit id="l3435" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkenlos</orthForm>
+</lexUnit>
+<lexUnit id="l4869" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkenfrei</orthForm>
+</lexUnit>
+<paraphrase>ohne Wolken</paraphrase>
+</synset>
+<synset id="s2227" category="adj" class="natPhaenomen">
+<lexUnit id="l3436" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>windig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2228" category="adj" class="natPhaenomen">
+<lexUnit id="l3437" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>stürmisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2229" category="adj" class="natPhaenomen">
+<lexUnit id="l3438" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>böig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2230" category="adj" class="natPhaenomen">
+<lexUnit id="l3439" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>windstill</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2231" category="adj" class="natPhaenomen">
+<lexUnit id="l3440" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frühlingshaft</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2232" category="adj" class="natPhaenomen">
+<lexUnit id="l3441" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>vorfrühlingshaft</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2233" category="adj" class="natPhaenomen">
+<lexUnit id="l3442" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sommerlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2234" category="adj" class="natPhaenomen">
+<lexUnit id="l3443" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>hochsommerlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2235" category="adj" class="natPhaenomen">
+<lexUnit id="l3444" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>spätsommerlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2236" category="adj" class="natPhaenomen">
+<lexUnit id="l3445" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>winterlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2237" category="adj" class="natPhaenomen">
+<lexUnit id="l3446" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>herbstlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2240" category="adj" class="natPhaenomen">
+<lexUnit id="l3449" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>föhnig</orthForm>
+</lexUnit>
+<paraphrase>vom Föhnwind beeinflusst</paraphrase>
+</synset>
+<synset id="s2241" category="adj" class="natPhaenomen">
+<lexUnit id="l3450" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>tropisch</orthForm>
+</lexUnit>
+<paraphrase>wie in den Tropen</paraphrase>
+</synset>
+<synset id="s2242" category="adj" class="natPhaenomen">
+<lexUnit id="l3451" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>subtropisch</orthForm>
+</lexUnit>
+<paraphrase>wie in den Subtropen</paraphrase>
+</synset>
+<synset id="s2243" category="adj" class="natPhaenomen">
+<lexUnit id="l3453" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>rau</orthForm>
+<oldOrthForm>rauh</oldOrthForm>
+</lexUnit>
+<lexUnit id="l3454" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unwirtlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s2521" category="adj" class="natPhaenomen">
+<lexUnit id="l3841" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>felsig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s3344" category="adj" class="natPhaenomen">
+<lexUnit id="l4874" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>baumlos</orthForm>
+</lexUnit>
+<paraphrase>ohne Bäume</paraphrase>
+</synset>
+<synset id="s4240" category="adj" class="natPhaenomen">
+<lexUnit id="l6239" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>krautig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s66409" category="adj" class="natPhaenomen">
+<lexUnit id="l92171" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>grasartig</orthForm>
+</lexUnit>
+<lexUnit id="l116145" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>grasig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s66773" category="adj" class="natPhaenomen">
+<lexUnit id="l92582" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>orkanartig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s66830" category="adj" class="natPhaenomen">
+<lexUnit id="l92643" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>steppenartig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s71741" category="adj" class="natPhaenomen">
+<lexUnit id="l98305" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>artenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s77467" category="adj" class="natPhaenomen">
+<lexUnit id="l105404" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>immergrün</orthForm>
+</lexUnit>
+</synset>
+<synset id="s77562" category="adj" class="natPhaenomen">
+<lexUnit id="l105510" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>waldreich</orthForm>
+</lexUnit>
+<lexUnit id="l108840" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>waldig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s77799" category="adj" class="natPhaenomen">
+<lexUnit id="l105783" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>eingeschlechtig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78272" category="adj" class="natPhaenomen">
+<lexUnit id="l106334" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>artenarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78296" category="adj" class="natPhaenomen">
+<lexUnit id="l106360" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>baumarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78271" category="adj" class="natPhaenomen">
+<lexUnit id="l106333" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>niederschlagsarm</orthForm>
+</lexUnit>
+<lexUnit id="l106336" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>regenarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78297" category="adj" class="natPhaenomen">
+<lexUnit id="l106361" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schneearm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78301" category="adj" class="natPhaenomen">
+<lexUnit id="l106365" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnenarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78382" category="adj" class="natPhaenomen">
+<lexUnit id="l106450" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>regengrün</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78313" category="adj" class="natPhaenomen">
+<lexUnit id="l106377" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fischarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78367" category="adj" class="natPhaenomen">
+<lexUnit id="l106435" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sommergrün</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78659" category="adj" class="natPhaenomen">
+<lexUnit id="l106766" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>regenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78671" category="adj" class="natPhaenomen">
+<lexUnit id="l106779" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schneereich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78664" category="adj" class="natPhaenomen">
+<lexUnit id="l106771" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fischreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78703" category="adj" class="natPhaenomen">
+<lexUnit id="l106820" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>buchtenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78773" category="adj" class="natPhaenomen">
+<lexUnit id="l106902" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>hügelreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78704" category="adj" class="natPhaenomen">
+<lexUnit id="l106821" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>baumreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78705" category="adj" class="natPhaenomen">
+<lexUnit id="l106822" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sandreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78780" category="adj" class="natPhaenomen">
+<lexUnit id="l106911" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78691" category="adj" class="natPhaenomen">
+<lexUnit id="l106803" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wildreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78784" category="adj" class="natPhaenomen">
+<lexUnit id="l106915" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>tierreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78697" category="adj" class="natPhaenomen">
+<lexUnit id="l106812" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>pflanzenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78777" category="adj" class="natPhaenomen">
+<lexUnit id="l106908" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fruchtreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78679" category="adj" class="natPhaenomen">
+<lexUnit id="l106789" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnenreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78699" category="adj" class="natPhaenomen">
+<lexUnit id="l106814" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blumenreich</orthForm>
+</lexUnit>
+<lexUnit id="l107418" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blumig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78820" category="adj" class="natPhaenomen">
+<lexUnit id="l106957" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>gegenständig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78877" category="adj" class="natPhaenomen">
+<lexUnit id="l107024" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>keimfähig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79263" category="adj" class="natPhaenomen">
+<lexUnit id="l107497" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>parkähnlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79559" category="adj" class="natPhaenomen">
+<lexUnit id="l107841" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>semiarid</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79503" category="adj" class="natPhaenomen">
+<lexUnit id="l107766" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dornig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79415" category="adj" class="natPhaenomen">
+<lexUnit id="l107668" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unterständig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79661" category="adj" class="natPhaenomen">
+<lexUnit id="l107954" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blühend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s79937" category="adj" class="natPhaenomen">
+<lexUnit id="l108268" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blattlos</orthForm>
+</lexUnit>
+</synset>
+<synset id="s80232" category="adj" class="natPhaenomen">
+<lexUnit id="l108630" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>heilklimatisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s82275" category="adj" class="natPhaenomen">
+<lexUnit id="l111037" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>kultivierbar</orthForm>
+</lexUnit>
+</synset>
+<synset id="s82879" category="adj" class="natPhaenomen">
+<lexUnit id="l111781" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>vegetationslos</orthForm>
+</lexUnit>
+</synset>
+<synset id="s86021" category="adj" class="natPhaenomen">
+<lexUnit id="l115870" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>orografisch</orthForm>
+<orthVar>orographisch</orthVar>
+</lexUnit>
+</synset>
+<synset id="s82868" category="adj" class="natPhaenomen">
+<lexUnit id="l111770" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unbewaldet</orthForm>
+</lexUnit>
+</synset>
+<synset id="s93918" category="adj" class="natPhaenomen">
+<lexUnit id="l125625" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>zerklüftet</orthForm>
+</lexUnit>
+</synset>
+<synset id="s93994" category="adj" class="natPhaenomen">
+<lexUnit id="l125714" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>baumartig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94060" category="adj" class="natPhaenomen">
+<lexUnit id="l125791" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>knorrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94222" category="adj" class="natPhaenomen">
+<lexUnit id="l125990" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>karstig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94163" category="adj" class="natPhaenomen">
+<lexUnit id="l125916" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schnellwüchsig</orthForm>
+</lexUnit>
+<lexUnit id="l129033" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schnell wachsend</orthForm>
+<orthVar>schnellwachsend</orthVar>
+</lexUnit>
+</synset>
+<synset id="s94356" category="adj" class="natPhaenomen">
+<lexUnit id="l126149" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bucklig</orthForm>
+<orthVar>buckelig</orthVar>
+</lexUnit>
+</synset>
+<synset id="s94401" category="adj" class="natPhaenomen">
+<lexUnit id="l116144" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>grasig</orthForm>
+</lexUnit>
+<lexUnit id="l126208" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>grasbewachsen</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94362" category="adj" class="natPhaenomen">
+<lexUnit id="l126155" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>welk</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94495" category="adj" class="natPhaenomen">
+<lexUnit id="l126317" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>feuchtkalt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94497" category="adj" class="natPhaenomen">
+<lexUnit id="l126319" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>strauchig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94516" category="adj" class="natPhaenomen">
+<lexUnit id="l126347" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>ästig</orthForm>
+</lexUnit>
+<lexUnit id="l126348" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>astig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94865" category="adj" class="natPhaenomen">
+<lexUnit id="l126784" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wechselfeucht</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94957" category="adj" class="natPhaenomen">
+<lexUnit id="l126894" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>winterhart</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95036" category="adj" class="natPhaenomen">
+<lexUnit id="l126987" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wüstenhaft</orthForm>
+</lexUnit>
+<lexUnit id="l147328" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wüstenartig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95012" category="adj" class="natPhaenomen">
+<lexUnit id="l126955" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>vierblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94953" category="adj" class="natPhaenomen">
+<lexUnit id="l126890" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dreiblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94937" category="adj" class="natPhaenomen">
+<lexUnit id="l126871" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fruchttragend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s94963" category="adj" class="natPhaenomen">
+<lexUnit id="l126902" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>begrannt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95314" category="adj" class="natPhaenomen">
+<lexUnit id="l127321" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nival</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95216" category="adj" class="natPhaenomen">
+<lexUnit id="l127207" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>moosig</orthForm>
+</lexUnit>
+<lexUnit id="l167656" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>moosbewachsen</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95248" category="adj" class="natPhaenomen">
+<lexUnit id="l127247" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>einkeimblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95329" category="adj" class="natPhaenomen">
+<lexUnit id="l127338" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>pluvial</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95543" category="adj" class="natPhaenomen">
+<lexUnit id="l127591" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>feuchtheiß</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95666" category="adj" class="natPhaenomen">
+<lexUnit id="l127741" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>periglazial</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95667" category="adj" class="natPhaenomen">
+<lexUnit id="l127742" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>alpinistisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95820" category="adj" class="natPhaenomen">
+<lexUnit id="l127912" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>hochwüchsig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95719" category="adj" class="natPhaenomen">
+<lexUnit id="l127802" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>vielblütig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95898" category="adj" class="natPhaenomen">
+<lexUnit id="l128000" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>zugig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s78665" category="adj" class="natPhaenomen">
+<lexUnit id="l106772" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>niederschlagsreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95980" category="adj" class="natPhaenomen">
+<lexUnit id="l128105" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>strauchartig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s95887" category="adj" class="natPhaenomen">
+<lexUnit id="l127988" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>zweikeimblättrig</orthForm>
+<orthVar>zweikeimblätterig</orthVar>
+</lexUnit>
+<lexUnit id="l127989" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dikotyl</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96302" category="adj" class="natPhaenomen">
+<lexUnit id="l128458" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>buschig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96319" category="adj" class="natPhaenomen">
+<lexUnit id="l128476" sense="3" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>steril</orthForm>
+</lexUnit>
+<paraphrase>nicht in der Lage Früchte zu tragen</paraphrase>
+</synset>
+<synset id="s96554" category="adj" class="natPhaenomen">
+<lexUnit id="l128739" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wüst</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96682" category="adj" class="natPhaenomen">
+<lexUnit id="l128885" sense="4" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>geil</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96741" category="adj" class="natPhaenomen">
+<lexUnit id="l128946" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dürr</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96818" category="adj" class="natPhaenomen">
+<lexUnit id="l129031" sense="1" source="core" namedEntity="no" artificial="yes" styleMarking="no">
+<orthForm>naturspezifisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96819" category="adj" class="natPhaenomen">
+<lexUnit id="l129032" sense="1" source="core" namedEntity="no" artificial="yes" styleMarking="no">
+<orthForm>pflanzenspezifisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96821" category="adj" class="natPhaenomen">
+<lexUnit id="l129034" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wild wachsend</orthForm>
+<orthVar>wildwachsend</orthVar>
+</lexUnit>
+</synset>
+<synset id="s96822" category="adj" class="natPhaenomen">
+<lexUnit id="l129035" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>früh blühend</orthForm>
+<orthVar>frühblühend</orthVar>
+</lexUnit>
+</synset>
+<synset id="s96823" category="adj" class="natPhaenomen">
+<lexUnit id="l129036" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blattreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s96824" category="adj" class="natPhaenomen">
+<lexUnit id="l129037" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>laubtragend</orthForm>
+<orthVar>Laub tragend</orthVar>
+</lexUnit>
+</synset>
+<synset id="s96825" category="adj" class="natPhaenomen">
+<lexUnit id="l129038" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dicht belaubt</orthForm>
+<orthVar>dichtbelaubt</orthVar>
+</lexUnit>
+</synset>
+<synset id="s99239" category="adj" class="natPhaenomen">
+<lexUnit id="l132043" sense="3" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>streng</orthForm>
+</lexUnit>
+</synset>
+<synset id="s99245" category="adj" class="natPhaenomen">
+<lexUnit id="l132049" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sukkulent</orthForm>
+</lexUnit>
+</synset>
+<synset id="s99392" category="adj" class="natPhaenomen">
+<lexUnit id="l132217" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>schneesicher</orthForm>
+</lexUnit>
+</synset>
+<synset id="s100060" category="adj" class="natPhaenomen">
+<lexUnit id="l133056" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>stängellos</orthForm>
+</lexUnit>
+</synset>
+<synset id="s100062" category="adj" class="natPhaenomen">
+<lexUnit id="l133058" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blütenlos</orthForm>
+</lexUnit>
+</synset>
+<synset id="s101093" category="adj" class="natPhaenomen">
+<lexUnit id="l134355" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>unbefruchtet</orthForm>
+</lexUnit>
+</synset>
+<synset id="s101200" category="adj" class="natPhaenomen">
+<lexUnit id="l134492" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>einhäusig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s101292" category="adj" class="natPhaenomen">
+<lexUnit id="l134610" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wüchsig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s104647" category="adj" class="natPhaenomen">
+<lexUnit id="l139014" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>dicht bewachsen</orthForm>
+<orthVar>dichtbewachsen</orthVar>
+</lexUnit>
+</synset>
+<synset id="s108582" category="adj" class="natPhaenomen">
+<lexUnit id="l144140" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fünfblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s108583" category="adj" class="natPhaenomen">
+<lexUnit id="l144141" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>breitblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s108588" category="adj" class="natPhaenomen">
+<lexUnit id="l144146" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>epiphytisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s109290" category="adj" class="natPhaenomen">
+<lexUnit id="l145022" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frosthart</orthForm>
+</lexUnit>
+</synset>
+<synset id="s110988" category="adj" class="natPhaenomen">
+<lexUnit id="l147299" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wildwuchernd</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111013" category="adj" class="natPhaenomen">
+<lexUnit id="l147329" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>steigungsreich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111092" category="adj" class="natPhaenomen">
+<lexUnit id="l147423" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>fungizid</orthForm>
+</lexUnit>
+<lexUnit id="l147424" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>pilztötend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111128" category="adj" class="natPhaenomen">
+<lexUnit id="l147467" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>kleinblütig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111182" category="adj" class="natPhaenomen">
+<lexUnit id="l147528" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>vegetationsarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111193" category="adj" class="natPhaenomen">
+<lexUnit id="l147539" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>trockenwarm</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111316" category="adj" class="natPhaenomen">
+<lexUnit id="l147675" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>achselständig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s111398" category="adj" class="natPhaenomen">
+<lexUnit id="l147773" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>blütentragend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s125187" category="adj" class="natPhaenomen">
+<lexUnit id="l164362" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>tief wurzelnd</orthForm>
+<orthVar>tiefwurzelnd</orthVar>
+</lexUnit>
+</synset>
+<synset id="s126847" category="adj" class="natPhaenomen">
+<lexUnit id="l166349" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>spät blühend</orthForm>
+<orthVar>spätblühend</orthVar>
+</lexUnit>
+</synset>
+<synset id="s126850" category="adj" class="natPhaenomen">
+<lexUnit id="l166352" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>spätherbstlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126869" category="adj" class="natPhaenomen">
+<lexUnit id="l166377" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>starkwüchsig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126872" category="adj" class="natPhaenomen">
+<lexUnit id="l166381" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sternenklar</orthForm>
+</lexUnit>
+<lexUnit id="l166382" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sternklar</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126873" category="adj" class="natPhaenomen">
+<lexUnit id="l166383" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sternenübersät</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126879" category="adj" class="natPhaenomen">
+<lexUnit id="l166389" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkenverhangen</orthForm>
+</lexUnit>
+<lexUnit id="l166392" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wolkenbedeckt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126883" category="adj" class="natPhaenomen">
+<lexUnit id="l166394" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>regenverhangen</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126885" category="adj" class="natPhaenomen">
+<lexUnit id="l166396" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnenüberflutet</orthForm>
+</lexUnit>
+</synset>
+<synset id="s126997" category="adj" class="natPhaenomen">
+<lexUnit id="l166514" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>frühsommerlich</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127066" category="adj" class="natPhaenomen">
+<lexUnit id="l166590" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>großblättrig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127067" category="adj" class="natPhaenomen">
+<lexUnit id="l166591" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>großblütig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127679" category="adj" class="natPhaenomen">
+<lexUnit id="l167294" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>höckerig</orthForm>
+<orthVar>höckrig</orthVar>
+</lexUnit>
+</synset>
+<synset id="s127913" category="adj" class="natPhaenomen">
+<lexUnit id="l167571" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>laubabwerfend</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127965" category="adj" class="natPhaenomen">
+<lexUnit id="l167632" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>mikroklimatisch</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127995" category="adj" class="natPhaenomen">
+<lexUnit id="l167669" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nacktsamig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s127996" category="adj" class="natPhaenomen">
+<lexUnit id="l167670" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>bedecktsamig</orthForm>
+</lexUnit>
+</synset>
+<synset id="s128004" category="adj" class="natPhaenomen">
+<lexUnit id="l167679" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>nebelhaft</orthForm>
+</lexUnit>
+</synset>
+<synset id="s128441" category="adj" class="natPhaenomen">
+<lexUnit id="l168169" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnenverbrannt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s128442" category="adj" class="natPhaenomen">
+<lexUnit id="l168170" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>sonnenverwöhnt</orthForm>
+</lexUnit>
+</synset>
+<synset id="s128823" category="adj" class="natPhaenomen">
+<lexUnit id="l168579" sense="2" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>wettersicher</orthForm>
+</lexUnit>
+</synset>
+<synset id="s128828" category="adj" class="natPhaenomen">
+<lexUnit id="l168584" sense="1" source="core" namedEntity="no" artificial="no" styleMarking="no">
+<orthForm>windreich</orthForm>
+</lexUnit>
+</synset>
+</synsets>

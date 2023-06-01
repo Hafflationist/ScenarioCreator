@@ -1,0 +1,1711 @@
+CREATE USER germanet WITH PASSWORD 'germanet';
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 10.15
+-- Dumped by pg_dump version 10.15
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+--
+-- Name: array_accum(anyelement); Type: AGGREGATE; Schema: public; Owner: germanet
+--
+
+CREATE AGGREGATE public.array_accum(anyelement) (
+    SFUNC = array_append,
+    STYPE = anyarray,
+    INITCOND = '{}'
+);
+
+
+ALTER AGGREGATE public.array_accum(anyelement) OWNER TO germanet;
+
+SET default_with_oids = false;
+
+--
+-- Name: compound_property_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.compound_property_table (
+    id integer NOT NULL,
+    property character varying(100)
+);
+
+
+ALTER TABLE public.compound_property_table OWNER TO germanet;
+
+--
+-- Name: comp_attr_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.comp_attr_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.comp_attr_table_id_seq OWNER TO germanet;
+
+--
+-- Name: comp_attr_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.comp_attr_table_id_seq OWNED BY public.compound_property_table.id;
+
+
+--
+-- Name: compound_category_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.compound_category_table (
+    id integer NOT NULL,
+    category character varying(100)
+);
+
+
+ALTER TABLE public.compound_category_table OWNER TO germanet;
+
+--
+-- Name: comp_cat_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.comp_cat_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.comp_cat_table_id_seq OWNER TO germanet;
+
+--
+-- Name: comp_cat_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.comp_cat_table_id_seq OWNED BY public.compound_category_table.id;
+
+
+--
+-- Name: compound_table2_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.compound_table2_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.compound_table2_id_seq OWNER TO germanet;
+
+--
+-- Name: con_rel_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.con_rel_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.con_rel_table_id_seq OWNER TO germanet;
+
+--
+-- Name: con_rel_type_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.con_rel_type_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.con_rel_type_table_id_seq OWNER TO germanet;
+
+--
+-- Name: ewn_rel_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.ewn_rel_table (
+    id integer NOT NULL,
+    name text NOT NULL
+);
+
+
+ALTER TABLE public.ewn_rel_table OWNER TO germanet;
+
+--
+-- Name: ewn_rel_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.ewn_rel_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ewn_rel_table_id_seq OWNER TO germanet;
+
+--
+-- Name: ewn_rel_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.ewn_rel_table_id_seq OWNED BY public.ewn_rel_table.id;
+
+
+--
+-- Name: example_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.example_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.example_table_id_seq OWNER TO germanet;
+
+--
+-- Name: compound_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.compound_table (
+    id integer DEFAULT nextval('public.compound_table2_id_seq'::regclass) NOT NULL,
+    comp_property integer,
+    comp_lex_unit_id integer NOT NULL,
+    mod1_property integer,
+    mod1_category integer,
+    modifier1 character varying(200),
+    mod1_lex_unit_id integer,
+    mod2_category integer,
+    modifier2 character varying(200),
+    mod2_lex_unit_id integer,
+    head_property integer,
+    head character varying(200),
+    head_lex_unit_id integer,
+    mod2_property integer,
+    mod1_lex_unit_id2 integer,
+    mod1_lex_unit_id3 integer,
+    mod2_lex_unit_id2 integer,
+    mod2_lex_unit_id3 integer,
+    not_splitted smallint DEFAULT 2 NOT NULL
+);
+
+
+ALTER TABLE public.compound_table OWNER TO germanet;
+
+--
+-- Name: con_rel_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.con_rel_table (
+    id integer DEFAULT nextval('public.con_rel_table_id_seq'::regclass) NOT NULL,
+    rel_type_id integer NOT NULL,
+    from_synset_id integer NOT NULL,
+    to_synset_id integer NOT NULL
+);
+
+
+ALTER TABLE public.con_rel_table OWNER TO germanet;
+
+--
+-- Name: con_rel_type_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.con_rel_type_table (
+    id integer DEFAULT nextval('public.con_rel_type_table_id_seq'::regclass) NOT NULL,
+    name text NOT NULL,
+    direction text NOT NULL,
+    inverse text,
+    transitive boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.con_rel_type_table OWNER TO germanet;
+
+--
+-- Name: example_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.example_table (
+    id integer DEFAULT nextval('public.example_table_id_seq'::regclass) NOT NULL,
+    lex_unit_id integer NOT NULL,
+    text text NOT NULL,
+    frame_type_id integer
+);
+
+
+ALTER TABLE public.example_table OWNER TO germanet;
+
+--
+-- Name: frame_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.frame_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.frame_table_id_seq OWNER TO germanet;
+
+--
+-- Name: frame_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.frame_table (
+    id integer DEFAULT nextval('public.frame_table_id_seq'::regclass) NOT NULL,
+    lex_unit_id integer NOT NULL,
+    frame_type_id integer NOT NULL
+);
+
+
+ALTER TABLE public.frame_table OWNER TO germanet;
+
+--
+-- Name: id_generation_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.id_generation_table (
+    generated_key character varying(50) NOT NULL,
+    generated_value integer NOT NULL
+);
+
+
+ALTER TABLE public.id_generation_table OWNER TO germanet;
+
+--
+-- Name: ili_pwn20_synonym_table2_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.ili_pwn20_synonym_table2_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ili_pwn20_synonym_table2_id_seq OWNER TO germanet;
+
+--
+-- Name: ili_pwn20_synonym_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.ili_pwn20_synonym_table (
+    id integer DEFAULT nextval('public.ili_pwn20_synonym_table2_id_seq'::regclass) NOT NULL,
+    ili_id integer NOT NULL,
+    pwn20_synonym text NOT NULL
+);
+
+
+ALTER TABLE public.ili_pwn20_synonym_table OWNER TO germanet;
+
+--
+-- Name: ili_table2_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.ili_table2_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.ili_table2_id_seq OWNER TO germanet;
+
+--
+-- Name: ili_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.ili_table (
+    id integer DEFAULT nextval('public.ili_table2_id_seq'::regclass) NOT NULL,
+    gn_lex_unit_id integer NOT NULL,
+    gn_old_sense integer,
+    ewn_relation integer NOT NULL,
+    pwn_word text,
+    pwn20_id text,
+    pwn30_id text,
+    source text,
+    pwn20_paraphrase character varying(1000)
+);
+
+
+ALTER TABLE public.ili_table OWNER TO germanet;
+
+--
+-- Name: lex_rel_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.lex_rel_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.lex_rel_table_id_seq OWNER TO germanet;
+
+--
+-- Name: lex_rel_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.lex_rel_table (
+    id integer DEFAULT nextval('public.lex_rel_table_id_seq'::regclass) NOT NULL,
+    rel_type_id integer NOT NULL,
+    from_lex_unit_id integer NOT NULL,
+    to_lex_unit_id integer NOT NULL
+);
+
+
+ALTER TABLE public.lex_rel_table OWNER TO germanet;
+
+--
+-- Name: lex_rel_type_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.lex_rel_type_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.lex_rel_type_table_id_seq OWNER TO germanet;
+
+--
+-- Name: lex_rel_type_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.lex_rel_type_table (
+    id integer DEFAULT nextval('public.lex_rel_type_table_id_seq'::regclass) NOT NULL,
+    name text NOT NULL,
+    direction text NOT NULL,
+    inverse text
+);
+
+
+ALTER TABLE public.lex_rel_type_table OWNER TO germanet;
+
+--
+-- Name: lex_unit_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.lex_unit_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.lex_unit_table_id_seq OWNER TO germanet;
+
+--
+-- Name: lex_unit_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.lex_unit_table (
+    id integer DEFAULT nextval('public.lex_unit_table_id_seq'::regclass) NOT NULL,
+    synset_id integer NOT NULL,
+    orth_form text NOT NULL,
+    source text NOT NULL,
+    named_entity boolean NOT NULL,
+    artificial boolean NOT NULL,
+    style_marking boolean NOT NULL,
+    old_orth_form text,
+    old_orth_var text,
+    orth_var text,
+    comment text
+);
+
+
+ALTER TABLE public.lex_unit_table OWNER TO germanet;
+
+--
+-- Name: log_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.log_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.log_table_id_seq OWNER TO germanet;
+
+--
+-- Name: log_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.log_table (
+    id integer DEFAULT nextval('public.log_table_id_seq'::regclass) NOT NULL,
+    modifier text DEFAULT "current_user"() NOT NULL,
+    mod_time timestamp without time zone DEFAULT ('now'::text)::timestamp without time zone NOT NULL,
+    modified_cell integer NOT NULL,
+    modified_object_id integer NOT NULL,
+    old_value text,
+    new_value text
+);
+
+
+ALTER TABLE public.log_table OWNER TO germanet;
+
+--
+-- Name: synset_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.synset_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.synset_table_id_seq OWNER TO germanet;
+
+--
+-- Name: synset_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.synset_table (
+    id integer DEFAULT nextval('public.synset_table_id_seq'::regclass) NOT NULL,
+    word_class_id integer,
+    word_category_id integer,
+    paraphrase text,
+    comment text
+);
+
+
+ALTER TABLE public.synset_table OWNER TO germanet;
+
+--
+-- Name: wkn_sense_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.wkn_sense_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.wkn_sense_table_id_seq OWNER TO germanet;
+
+--
+-- Name: wkn_sense_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.wkn_sense_table (
+    id integer DEFAULT nextval('public.wkn_sense_table_id_seq'::regclass) NOT NULL,
+    gn_lex_unit_id integer NOT NULL,
+    wkn_word_entry_id integer NOT NULL,
+    wkn_sense_id integer NOT NULL,
+    wkn_gloss text NOT NULL,
+    wkn_gloss_edited boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE public.wkn_sense_table OWNER TO germanet;
+
+--
+-- Name: frame_type_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.frame_type_table (
+    id integer NOT NULL,
+    frame text NOT NULL
+);
+
+
+ALTER TABLE public.frame_type_table OWNER TO germanet;
+
+--
+-- Name: frame_type_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.frame_type_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.frame_type_table_id_seq OWNER TO germanet;
+
+--
+-- Name: frame_type_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.frame_type_table_id_seq OWNED BY public.frame_type_table.id;
+
+
+--
+-- Name: log_cell_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.log_cell_table (
+    id integer NOT NULL,
+    table_name text NOT NULL,
+    cell_name text NOT NULL
+);
+
+
+ALTER TABLE public.log_cell_table OWNER TO germanet;
+
+--
+-- Name: log_cell_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.log_cell_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.log_cell_table_id_seq OWNER TO germanet;
+
+--
+-- Name: log_cell_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.log_cell_table_id_seq OWNED BY public.log_cell_table.id;
+
+
+--
+-- Name: word_category_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.word_category_table (
+    id integer NOT NULL,
+    word_category text NOT NULL
+);
+
+
+ALTER TABLE public.word_category_table OWNER TO germanet;
+
+--
+-- Name: word_category_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.word_category_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.word_category_table_id_seq OWNER TO germanet;
+
+--
+-- Name: word_category_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.word_category_table_id_seq OWNED BY public.word_category_table.id;
+
+
+--
+-- Name: word_class_table; Type: TABLE; Schema: public; Owner: germanet
+--
+
+CREATE TABLE public.word_class_table (
+    id integer NOT NULL,
+    word_class text NOT NULL
+);
+
+
+ALTER TABLE public.word_class_table OWNER TO germanet;
+
+--
+-- Name: word_class_table_id_seq; Type: SEQUENCE; Schema: public; Owner: germanet
+--
+
+CREATE SEQUENCE public.word_class_table_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.word_class_table_id_seq OWNER TO germanet;
+
+--
+-- Name: word_class_table_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: germanet
+--
+
+ALTER SEQUENCE public.word_class_table_id_seq OWNED BY public.word_class_table.id;
+
+
+--
+-- Name: compound_category_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_category_table ALTER COLUMN id SET DEFAULT nextval('public.comp_cat_table_id_seq'::regclass);
+
+
+--
+-- Name: compound_property_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_property_table ALTER COLUMN id SET DEFAULT nextval('public.comp_attr_table_id_seq'::regclass);
+
+
+--
+-- Name: ewn_rel_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.ewn_rel_table ALTER COLUMN id SET DEFAULT nextval('public.ewn_rel_table_id_seq'::regclass);
+
+
+--
+-- Name: frame_type_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.frame_type_table ALTER COLUMN id SET DEFAULT nextval('public.frame_type_table_id_seq'::regclass);
+
+
+--
+-- Name: log_cell_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.log_cell_table ALTER COLUMN id SET DEFAULT nextval('public.log_cell_table_id_seq'::regclass);
+
+
+--
+-- Name: word_category_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_category_table ALTER COLUMN id SET DEFAULT nextval('public.word_category_table_id_seq'::regclass);
+
+
+--
+-- Name: word_class_table id; Type: DEFAULT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_class_table ALTER COLUMN id SET DEFAULT nextval('public.word_class_table_id_seq'::regclass);
+
+
+--
+-- Data for Name: compound_category_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.compound_category_table (id, category) FROM stdin;
+0	Adjektiv
+1	Nomen
+2	Verb
+3	Adverb
+4	Präposition
+5	Partikel
+6	Pronomen
+7	Präfix
+8	Verbalpartikel
+\.
+
+
+--
+-- Data for Name: compound_property_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.compound_property_table (id, property) FROM stdin;
+0	Abkürzung
+1	Affixoid
+2	Fremdwort
+3	Konfix
+4	opaques Morphem
+5	virtuelle Bildung
+6	Wortgruppe
+7	Konversion
+8	Eigenname
+9	gebundenes Morphem
+10	freies Morphem
+\.
+
+
+--
+-- Data for Name: ewn_rel_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.ewn_rel_table (id, name) FROM stdin;
+1	synonym
+4	causes
+3	near_synonym
+5	role
+13	involved
+15	xpos_near_synonym
+7	has_hyponym
+8	has_holonym
+9	has_meronym
+12	be_in_state
+10	has_subevent
+6	is_subevent_of
+0	is_caused_by
+2	has_hypernym
+\.
+
+
+--
+-- Data for Name: compound_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.compound_table (id, comp_property, comp_lex_unit_id, mod1_property, mod1_category, modifier1, mod1_lex_unit_id, mod2_category, modifier2, mod2_lex_unit_id, head_property, head, head_lex_unit_id, mod2_property, mod1_lex_unit_id2, mod1_lex_unit_id3, mod2_lex_unit_id2, mod2_lex_unit_id3, not_splitted) FROM stdin;
+\.
+
+
+--
+-- Data for Name: con_rel_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.con_rel_table (id, rel_type_id, from_synset_id, to_synset_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: con_rel_type_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.con_rel_type_table (id, name, direction, inverse, transitive) FROM stdin;
+7	has_member_meronym	revert	has_member_holonym	f
+9	has_substance_meronym	revert	has_substance_holonym	f
+8	has_portion_meronym	revert	has_portion_holonym	f
+6	has_component_meronym	revert	has_component_holonym	f
+4	entails	revert	is_entailed_by	f
+5	causes	one	\N	f
+1	is_related_to	both	is_related_to	f
+0	has_hypernym	revert	has_hyponym	t
+\.
+
+
+--
+-- Data for Name: example_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.example_table (id, lex_unit_id, text, frame_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frame_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.frame_table (id, lex_unit_id, frame_type_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: id_generation_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.id_generation_table (generated_key, generated_value) FROM stdin;
+lex_rel_id	0
+example_id	0
+frame_id	0
+ili_id	0
+synset_id	1
+lex_unit_id	1
+con_rel_id	0
+log_id	0
+wiktionary_id	0
+\.
+
+
+--
+-- Data for Name: ili_pwn20_synonym_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.ili_pwn20_synonym_table (id, ili_id, pwn20_synonym) FROM stdin;
+\.
+
+
+--
+-- Data for Name: ili_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.ili_table (id, gn_lex_unit_id, gn_old_sense, ewn_relation, pwn_word, pwn20_id, pwn30_id, source, pwn20_paraphrase) FROM stdin;
+\.
+
+
+--
+-- Data for Name: lex_rel_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.lex_rel_table (id, rel_type_id, from_lex_unit_id, to_lex_unit_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: lex_rel_type_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.lex_rel_type_table (id, name, direction, inverse) FROM stdin;
+4	has_participle	one	\N
+0	has_antonym	both	has_antonym
+1	has_pertainym	one	\N
+5	has_active_usage	one	\N
+6	has_occasion	one	\N
+7	has_attribute	one	\N
+8	has_appearance	one	\N
+9	has_construction_method	one	\N
+10	has_container	one	\N
+11	is_container_for	one	\N
+12	has_consistency_of	one	\N
+13	has_component	one	\N
+14	has_owner	one	\N
+16	has_function	one	\N
+17	has_manner_of_functioning	one	\N
+18	has_origin	one	\N
+19	has_production_method	one	\N
+20	has_content	one	\N
+21	has_no_property	one	\N
+22	has_habitat	one	\N
+23	has_location	one	\N
+24	is_location_of	one	\N
+25	has_measure	one	\N
+26	is_measure_of	one	\N
+27	has_material	one	\N
+28	has_member	one	\N
+29	is_member_of	one	\N
+30	has_diet	one	\N
+31	is_diet_of	one	\N
+32	has_eponym	one	\N
+33	has_user	one	\N
+34	has_product	one	\N
+35	is_product_of	one	\N
+39	has_relation	one	\N
+40	has_raw_product	one	\N
+41	has_other_property	one	\N
+42	is_storage_for	one	\N
+43	has_specialization	one	\N
+44	has_part	one	\N
+45	is_part_of	one	\N
+46	has_topic	one	\N
+47	is_caused_by	one	\N
+48	is_cause_for	one	\N
+49	is_comparable_to	one	\N
+50	has_usage	one	\N
+51	has_result_of_usage	one	\N
+52	has_purpose_of_usage	one	\N
+53	has_goods	one	\N
+54	has_time	one	\N
+55	is_access_to	one	\N
+56	has_ingredient	one	\N
+57	is_ingredient_of	one	\N
+15	is_owner_of	one	\N
+38	has_prototypical_place_of_usage	one	\N
+36	has_prototypical_holder	one	\N
+37	is_prototypical_holder_for	one	\N
+\.
+
+
+--
+-- Data for Name: lex_unit_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.lex_unit_table (id, synset_id, orth_form, source, named_entity, artificial, style_marking, old_orth_form, old_orth_var, orth_var, comment) FROM stdin;
+0	0	ROOT	core	f	t	f	\N	\N	\N	This is a built-in Lexical-Unit
+\.
+
+
+--
+-- Data for Name: log_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.log_table (id, modifier, mod_time, modified_cell, modified_object_id, old_value, new_value) FROM stdin;
+\.
+
+
+--
+-- Data for Name: synset_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.synset_table (id, word_class_id, word_category_id, paraphrase, comment) FROM stdin;
+0	30	1	Root of the graph	This is a built-in Synset
+\.
+
+
+--
+-- Data for Name: wkn_sense_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.wkn_sense_table (id, gn_lex_unit_id, wkn_word_entry_id, wkn_sense_id, wkn_gloss, wkn_gloss_edited) FROM stdin;
+\.
+
+
+--
+-- Data for Name: frame_type_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.frame_type_table (id, frame) FROM stdin;
+0	NN
+1	NE
+2	NN.AN
+3	NN.BT
+4	NN.BL
+5	NN.BO
+6	NN.BM
+7	NN.PP
+8	NN.AN.BL
+9	NN.AR.PP
+11	NE.PP
+13	NN.BR
+14	NN.NG
+15	NN.AR.BM
+16	NN.PP.BL
+17	NN.AR.BL
+18	NN.Bt
+19	NN.AR.BT
+20	NN.AR
+21	NE.AN
+22	NN.DN
+24	NN.DR.BL
+25	NE.AR
+26	NN.AN.BM
+28	NN.PP.BM
+30	NE.DN
+31	NN.AZ
+32	NN.DR
+33	NN.DR.PP
+34	NN.DN.PP
+36	NN.AN.PP
+37	NN.PP.Pp
+38	NN.PP.PP
+39	NN.BC
+40	NN.AI
+41	NN.AN.AZ
+42	NN.AN.BT
+43	NN.AN.AI
+44	NE.DN.PP
+45	NN.GN
+46	NN.AN.Pp
+47	NN.AR.BO
+48	NN.DN.BM
+52	NN.Bl
+54	NN.AN.BS
+55	NN.AN.BO
+56	NN.BS
+60	NN.AN.Bl
+63	NN.AN.Bm
+64	NN.AR.BS
+65	NN.AR.Pp
+68	NN.AN.Bt
+69	NN.AR.Bl
+71	NN.An.Bm
+72	NN.DR.AN.PP
+75	NN.AR.BR
+76	NE.DN.BM
+77	NN.AR.AN
+79	NN.AN.Bs
+80	NN.AR.AZ
+81	NN.AR.BC
+83	NN.Pp
+84	NN.DN.BL
+85	NN.Bm
+86	NN.AN.BR
+89	NN.AN.Br
+92	NN.AN.AN
+93	NN.AN.Az
+95	NN.AN.Bo
+98	NN.Dn.PP
+102	NN.DN.Pp
+105	NN.DN.Bm
+107	NN.Dn.Bm
+108	NN.Dn
+112	NN.An
+113	NN.An.PP
+116	NN.PP.Bm
+117	NN.AN.Bc
+118	NN.Pp.Bm
+120	NE.PP.BL
+27	NN.Pp.Bd
+123	NN.Dr
+124	NN.An.Pp
+125	NN.AR.Az
+128	NN.AR.Bc
+129	NN.AR.PP.Bm
+131	NN.DN.AN
+135	NN.DS
+136	NN.FS
+137	NN.FSo
+138	NN.FSw
+139	NN.Ar
+142	NN.DN.DS
+143	NN.PP.Bs
+144	NN.Dn.AZ
+145	NN.Dn.DS
+146	NN.Ar.BL
+147	NN.An.AZ
+148	NE.AN.PP
+150	NN.AN.DS
+151	NN.PP.DS
+152	NN.AR.DS
+153	NN.AR.Bm
+35	NN.An.FS
+156	NN.Bc
+157	NN.AR.Bt
+158	NN.Bs
+159	NE.Bl
+160	NN.AR.Bo
+161	NN.AN.An
+163	NN.DR.AZ
+164	NN.DR.DS
+165	NN.DR.FS
+166	NN.DN.FS
+167	NE.AN.Pp
+168	NE.Pp
+169	NE.DS
+172	NN.AR.Pp.Pp
+173	NN.Dn.BL
+177	NN.Pp.Bl
+179	NN.An.BL
+23	NN.AR.Pp.Bc
+185	NN.Dn.FS
+186	NN.Bo
+187	NN.DN.Br
+188	NN.Dn.FSw
+189	NN.Pp.Bo
+162	NN.AN.Bd.Bs
+191	NE.AN.Bl
+61	NN.DN.AN.BL
+171	NN.DN.AN.Bs
+29	NN.DR.AN
+66	NN.DR.AN.BL
+109	NN.DR.AN.BM
+57	NN.Dn.AN
+140	NN.Dn.AN.BL
+182	NN.Dn.AN.Bs
+174	NN.Dn.AN.PP
+192	NN.Dn.AN.Pp
+67	NN.Dr.AN
+91	NN.GN.AN
+88	NN.Gn.AN
+87	NN.NG.AN
+53	NN.DN.AR
+130	NN.Dn.AR
+70	NN.GN.AR
+96	NN.NG.AR
+97	NN.DN.Ai
+198	NN.Dn.BM
+178	NN.An.Bl
+203	NN.DR.AN.Pp
+205	NN.DN.Bs
+206	NN.An.DS
+209	NE.FS
+212	NN.Ar.Pp
+213	NE.AZ
+214	NN.Pp.DS
+215	NN.AR.FS
+216	NN.PP.FS
+217	NN.Bl.Bt
+218	NN.Pp.BL
+219	NN.BD
+220	NN.AN.BD
+223	NN.AR.BD
+224	NN.Bd
+225	NN.AN.Bd
+228	NN.AR.Bd
+184	NN.PP.Bl
+49	NN.AN.Dr.BD
+233	NN.Dn.BD
+235	NN.DN.Bl
+236	NN.AR.Br
+237	NN.AN.Fs
+238	NN.Dn.Pp
+239	NN.Ds
+241	NN.AR.Pp.Bo
+190	NN.AR.Bs
+51	NN.PP.Az
+259	NE.BL
+12	NN.AR.Ng
+50	NE.AR.DS
+265	NN.DR.Pp
+266	NN.DN.FSw
+267	NN.AR.PP.Bo
+269	NE.BM
+278	NE.Dn.PP
+280	NN.AN.Pp.Bd
+281	NN.Br
+283	NN.Bo.DS
+284	NN.Bo.AZ
+103	NN.DN.AZ
+119	NN.PP.Bo
+229	NE.PP.DS
+243	NN.DR.BD
+242	NE.Pp.BM
+222	NN.DN.AN.BD
+227	NN.DN.AN.Bd
+279	NN.Dn.AN.Bd
+141	NN.Dn.AN.Bl
+204	NN.Dr.AN.Pp
+193	NN.AR.Bm.Bo
+10	NN.Gn.AR
+197	NN.Dn.An
+199	NN.Pp.BO
+200	NN.Pp.BS
+201	NN.BR.DS
+262	NN.Bl.DS
+210	NN.Bs.DS
+195	NN.PP.Ds
+263	NN.Bl.FSo
+196	NN.PP.Fs
+\.
+
+
+--
+-- Data for Name: log_cell_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.log_cell_table (id, table_name, cell_name) FROM stdin;
+0	lex_unit_table	all
+1	lex_unit_table	orth_form
+2	lex_unit_table	orth_var
+3	lex_unit_table	old_orth_form
+4	lex_unit_table	old_orth_var
+5	lex_unit_table	source
+6	lex_unit_table	named_entity
+7	lex_unit_table	artificial
+8	lex_unit_table	style_marking
+9	synset_table	all
+10	synset_table	word_category_id
+11	synset_table	word_class_id
+12	synset_table	paraphrase
+13	synset_table	comment
+14	lex_rel_table	all
+15	con_rel_table	all
+16	frame_table	all
+17	frame_table	frame_type_id
+18	example_table	all
+19	example_table	frame_type_id
+20	example_table	text
+21	lex_unit_table	comment
+22	wkn_sense_table	all
+23	wkn_sense_table	gn_lex_unit_id
+24	wkn_sense_table	wkn_word_entry_id
+25	wkn_sense_table	wkn_sense_id
+26	wkn_sense_table	wkn_gloss
+27	wkn_sense_table	wkn_gloss_edited
+28	ili_table	all
+29	ili_table	gn_lex_unit_id
+30	ili_table	ewn_relation
+31	ili_table	pwn_word
+32	ili_table	pwn20_id
+33	ili_table	pwn30_id
+34	ili_table	source
+35	ili_pwn20_synonym_table	all
+36	compound_table	all
+39	compound_table	modifier1
+40	compound_table	mod1_lu_id
+42	compound_table	modifier2
+43	compound_table	mod2_lu_id
+45	compound_table	head
+46	compound_table	head_lu_id
+38	compound_table	mod1_category
+41	compound_table	mod2_category
+44	compound_table	head_property
+48	compound_table	splitting
+37	compound_table	mod1_property
+49	compound_table	mod2_property
+50	compound_table	mod1_lu_id2
+51	compound_table	mod2_lu_id2
+52	compound_table	mod1_lu_id3
+53	compound_table	mod2_lu_id3
+\.
+
+
+--
+-- Data for Name: word_category_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.word_category_table (id, word_category) FROM stdin;
+0	adj
+1	nomen
+2	verben
+\.
+
+
+--
+-- Data for Name: word_class_table; Type: TABLE DATA; Schema: public; Owner: germanet
+--
+
+COPY public.word_class_table (id, word_class) FROM stdin;
+0	Allgemein
+1	Bewegung
+2	Gefuehl
+3	Geist
+4	Gesellschaft
+5	Koerper
+6	Menge
+7	natPhaenomen
+8	Ort
+9	Pertonym
+10	Perzeption
+11	privativ
+12	Relation
+13	Substanz
+14	Verhalten
+15	Zeit
+16	Artefakt
+17	Attribut
+18	Besitz
+19	Form
+20	Geschehen
+21	Gruppe
+22	Kognition
+23	Kommunikation
+24	Mensch
+25	Motiv
+26	Nahrung
+27	natGegenstand
+28	Pflanze
+29	Tier
+30	Tops
+31	Koerperfunktion
+32	Konkurrenz
+33	Kontakt
+34	Lokation
+35	Schoepfung
+36	Veraenderung
+37	Verbrauch
+\.
+
+
+--
+-- Name: comp_attr_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.comp_attr_table_id_seq', 9, true);
+
+
+--
+-- Name: comp_cat_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.comp_cat_table_id_seq', 8, true);
+
+
+--
+-- Name: compound_table2_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.compound_table2_id_seq', 251588, true);
+
+
+--
+-- Name: con_rel_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.con_rel_table_id_seq', 1, false);
+
+
+--
+-- Name: con_rel_type_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.con_rel_type_table_id_seq', 1, false);
+
+
+--
+-- Name: ewn_rel_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.ewn_rel_table_id_seq', 21, true);
+
+
+--
+-- Name: example_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.example_table_id_seq', 1, false);
+
+
+--
+-- Name: frame_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.frame_table_id_seq', 1, false);
+
+
+--
+-- Name: frame_type_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.frame_type_table_id_seq', 51, true);
+
+
+--
+-- Name: ili_pwn20_synonym_table2_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.ili_pwn20_synonym_table2_id_seq', 83439, true);
+
+
+--
+-- Name: ili_table2_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.ili_table2_id_seq', 73762, true);
+
+
+--
+-- Name: lex_rel_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.lex_rel_table_id_seq', 30657, true);
+
+
+--
+-- Name: lex_rel_type_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.lex_rel_type_table_id_seq', 1, true);
+
+
+--
+-- Name: lex_unit_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.lex_unit_table_id_seq', 4, true);
+
+
+--
+-- Name: log_cell_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.log_cell_table_id_seq', 29, true);
+
+
+--
+-- Name: log_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.log_table_id_seq', 1, false);
+
+
+--
+-- Name: synset_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.synset_table_id_seq', 4, true);
+
+
+--
+-- Name: wkn_sense_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.wkn_sense_table_id_seq', 54819, true);
+
+
+--
+-- Name: word_category_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.word_category_table_id_seq', 1, false);
+
+
+--
+-- Name: word_class_table_id_seq; Type: SEQUENCE SET; Schema: public; Owner: germanet
+--
+
+SELECT pg_catalog.setval('public.word_class_table_id_seq', 1, false);
+
+
+--
+-- Name: compound_property_table comp_attr_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_property_table
+    ADD CONSTRAINT comp_attr_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compound_category_table comp_cat_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_category_table
+    ADD CONSTRAINT comp_cat_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ewn_rel_table ewn_rel_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.ewn_rel_table
+    ADD CONSTRAINT ewn_rel_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: compound_table compound_table_comp_lex_unit_id_key; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_table
+    ADD CONSTRAINT compound_table_comp_lex_unit_id_key UNIQUE (comp_lex_unit_id);
+
+
+--
+-- Name: compound_table compound_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.compound_table
+    ADD CONSTRAINT compound_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: con_rel_table con_rel_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.con_rel_table
+    ADD CONSTRAINT con_rel_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: con_rel_type_table con_rel_type_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.con_rel_type_table
+    ADD CONSTRAINT con_rel_type_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: example_table example_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.example_table
+    ADD CONSTRAINT example_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frame_table frame_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.frame_table
+    ADD CONSTRAINT frame_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: id_generation_table id_generation_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.id_generation_table
+    ADD CONSTRAINT id_generation_table_pkey PRIMARY KEY (generated_key);
+
+
+--
+-- Name: ili_pwn20_synonym_table ili_pwn20_synonym_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.ili_pwn20_synonym_table
+    ADD CONSTRAINT ili_pwn20_synonym_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: ili_table ili_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.ili_table
+    ADD CONSTRAINT ili_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lex_rel_table lex_rel_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.lex_rel_table
+    ADD CONSTRAINT lex_rel_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lex_rel_type_table lex_rel_type_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.lex_rel_type_table
+    ADD CONSTRAINT lex_rel_type_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lex_unit_table lex_unit_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.lex_unit_table
+    ADD CONSTRAINT lex_unit_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_table log_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.log_table
+    ADD CONSTRAINT log_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: synset_table synset_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.synset_table
+    ADD CONSTRAINT synset_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: wkn_sense_table wkn_sense_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.wkn_sense_table
+    ADD CONSTRAINT wkn_sense_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: frame_type_table frame_type_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.frame_type_table
+    ADD CONSTRAINT frame_type_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: log_cell_table log_cell_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.log_cell_table
+    ADD CONSTRAINT log_cell_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: word_category_table word_category_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_category_table
+    ADD CONSTRAINT word_category_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: word_category_table word_category_table_word_category_key; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_category_table
+    ADD CONSTRAINT word_category_table_word_category_key UNIQUE (word_category);
+
+
+--
+-- Name: word_class_table word_class_table_pkey; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_class_table
+    ADD CONSTRAINT word_class_table_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: word_class_table word_class_table_word_class_key; Type: CONSTRAINT; Schema: public; Owner: germanet
+--
+
+ALTER TABLE ONLY public.word_class_table
+    ADD CONSTRAINT word_class_table_word_class_key UNIQUE (word_class);
+
+
+--
+-- Name: con_rel_table_from_synset_id_idx; Type: INDEX; Schema: public; Owner: germanet
+--
+
+CREATE INDEX con_rel_table_from_synset_id_idx ON public.con_rel_table USING btree (from_synset_id);
+
+
+--
+-- Name: con_rel_table_from_synset_id_to_synset_id_idx; Type: INDEX; Schema: public; Owner: germanet
+--
+
+CREATE INDEX con_rel_table_from_synset_id_to_synset_id_idx ON public.con_rel_table USING btree (from_synset_id, to_synset_id);
+
+
+--
+-- Name: con_rel_table_to_synset_id_idx; Type: INDEX; Schema: public; Owner: germanet
+--
+
+CREATE INDEX con_rel_table_to_synset_id_idx ON public.con_rel_table USING btree (to_synset_id);
+
+
+--
+-- Name: lex_unit_table_orth_form_idx; Type: INDEX; Schema: public; Owner: germanet
+--
+
+CREATE INDEX lex_unit_table_orth_form_idx ON public.lex_unit_table USING btree (orth_form);
+
+
+--
+-- Name: lex_unit_table_orth_form_orth_var_old_orth_form_old__idx; Type: INDEX; Schema: public; Owner: germanet
+--
+
+CREATE INDEX lex_unit_table_orth_form_orth_var_old_orth_form_old__idx ON public.lex_unit_table USING btree (orth_form, orth_var, old_orth_form, old_orth_var);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+GRANT ALL PRIVILEGES ON TABLE compound_category_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE con_rel_type_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE ewn_rel_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE frame_type_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE example_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE compound_property_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE lex_unit_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE log_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE word_category_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE wkn_sense_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE compound_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE synset_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE con_rel_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE ili_pwn20_synonym_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE ili_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE log_cell_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE word_class_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE frame_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE lex_rel_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE lex_rel_type_table TO germanet;
+GRANT ALL PRIVILEGES ON TABLE id_generation_table TO germanet;

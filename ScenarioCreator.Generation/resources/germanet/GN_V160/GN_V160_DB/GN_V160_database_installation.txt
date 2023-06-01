@@ -1,0 +1,40 @@
+﻿================================================
+Setting up the GermaNet 16.0 PostgreSQL Database
+================================================
+
+1. Requirements:
+
+- Install PostgreSQL 8.4 or later: http://www.postgresql.org/download/
+
+
+2. Installation (under Linux/MacOS):
+
+- Open a shell (command line) window
+
+- Before we import the data from the dump file, we must first create the database
+  into which the data will be imported. This can be done by executing the command:
+    createdb germanet16
+
+- To initiate the import process, run the command:
+    psql germanet16 -f GN_V160_database_dump.dump
+
+- To create statistics that optimize the operation of the database, it is
+  recommended (but not required) to run the command:
+    vacuumdb -z germanet16
+
+- As part of the import process a system user called 'germanet' is created, with
+  its password also set to 'germanet' (lower-case). With this user it is possible
+  to execute commands on the database tables. For example:
+    psql germanet16 -h localhost -U germanet -c "SELECT * FROM lex_unit_table;"
+  (Note that this user is not essential to the correct functionality of the system,
+  however it is set as the owner of the tables in the germanet16 database.)
+
+- For general information about PostgreSQL 8.4 please refer to:
+  http://www.postgresql.org/docs/8.4/static/index.html
+
+- For information about the GermaNet database format, please refer to the following
+  paper:
+    Verena Henrich and Erhard Hinrichs: GernEdiT - The GermaNet Editing Tool.
+    In Proceedings of the Seventh Conference on International Language Resources
+    and Evaluation (LREC 2010), Valletta, Malta, pp. 2228-2235.
+  or website: http://www.sfs.uni-tuebingen.de/GermaNet/database.shtml

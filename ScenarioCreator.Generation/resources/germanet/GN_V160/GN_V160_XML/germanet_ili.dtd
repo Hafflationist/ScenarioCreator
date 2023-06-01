@@ -1,0 +1,22 @@
+<!-- DTD for GermaNet ili files -->
+<!-- Version 1.0, May 2012 -->
+<!-- Updates: April 2014, April 2019 -->
+<!-- Copyright: Department of General and Computational Linguistics, Tuebingen University -->
+
+<!ELEMENT interLingualIndex (iliRecord*)>
+
+<!ELEMENT iliRecord (pwn20Synonyms?)>
+<!ATTLIST iliRecord lexUnitId   	CDATA #REQUIRED
+                    ewnRelation 	(be_in_state|causes|has_holonym|has_hypernym
+                                      |has_hyponym|has_meronym|has_subevent|involved
+                                      |is_caused_by|is_subevent_of|near_synonym
+                                      |role|synonym|xpos_near_synonym) #REQUIRED
+                    pwnWord     	CDATA #REQUIRED
+                    pwn20Id     	CDATA #REQUIRED
+                    pwn30Id     	CDATA #REQUIRED
+                    pwn20paraphrase	CDATA #IMPLIED
+                    source      	(initial|extension1|extension2) #REQUIRED>
+
+<!ELEMENT pwn20Synonyms (pwn20Synonym+)>
+<!ELEMENT pwn20Synonym  (#PCDATA)>
+
