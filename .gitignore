@@ -2,8 +2,6 @@
 */.idea/*
 **/schema.yaml
 /scenario/**
-**/germanet/**
-**/wordnet.dict/**
 /src/main/resources
 /target/**
 /lib/**

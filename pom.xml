@@ -7,6 +7,11 @@
     <groupId>groupId</groupId>
     <artifactId>scenario-creator</artifactId>
     <version>1.0</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>ScenarioCreator.Data</module>
+        <module>ScenarioCreator.Generation</module>
+    </modules>
     <build>
         <plugins>
             <plugin>
@@ -14,12 +19,14 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
-                    <source>18</source>
-                    <target>18</target>
+                    <source>19</source>
+                    <target>19</target>
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
             </plugin>
         </plugins>
+<!--        <directory>ScenarioCreator.Data/src</directory>-->
+<!--        <testSourceDirectory>ScenarioCreator.Data/test</testSourceDirectory>-->
     </build>
     <distributionManagement>
         <repository>
