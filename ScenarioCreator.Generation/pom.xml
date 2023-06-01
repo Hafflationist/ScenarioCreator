@@ -50,5 +50,12 @@
             <artifactId>scenario-creator-data</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.utils</groupId>
+            <artifactId>utils</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/utils.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
