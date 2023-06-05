@@ -51,6 +51,11 @@
         <outputDirectory>out</outputDirectory>
         <sourceDirectory>src</sourceDirectory>
         <testSourceDirectory>test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>resources</directory>
+            </resource>
+        </resources>
     </build>
     <repositories>
         <repository>
