@@ -65,7 +65,7 @@ class FunctionalDependencyRemoverTest {
         final var transformation = new FunctionalDependencyRemover();
 
         // --- Act
-        final var newTableSet = transformation.transform(table, idGenerator, random);
+        final var newTableSet = transformation.transform(table, idGenerator, random).first();
 
         // --- Assert
         final var newSchema = new Schema(new IdSimple(1001), name, Context.getDefault(), newTableSet);
@@ -119,7 +119,7 @@ class FunctionalDependencyRemoverTest {
         final var transformation = new FunctionalDependencyRemover();
 
         // --- Act
-        final var newTableSet = transformation.transform(table, idGenerator, random);
+        final var newTableSet = transformation.transform(table, idGenerator, random).first();
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());

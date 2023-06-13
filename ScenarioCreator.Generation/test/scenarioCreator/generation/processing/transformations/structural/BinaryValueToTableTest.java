@@ -51,7 +51,7 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(2, newSchema.tableSet().size());
@@ -95,7 +95,7 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(3, newSchema.tableSet().size());
@@ -153,7 +153,7 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(3, newSchema.tableSet().size());
@@ -206,7 +206,7 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(4, newSchema.tableSet().size());

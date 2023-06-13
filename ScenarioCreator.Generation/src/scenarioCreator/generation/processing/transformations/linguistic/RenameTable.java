@@ -6,10 +6,13 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.function.Function;
@@ -35,9 +38,11 @@ public class RenameTable implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var newName = getNewName(table.name(), random);
-        return SSet.of(table.withName(newName));
+        final var newTableSet = SSet.of(table.withName(newName));
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     @NotNull

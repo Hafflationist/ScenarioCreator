@@ -30,7 +30,7 @@ public class ScenarioCreator {
     }
 
     public Scenario create(Schema startSchema, int sizeOfScenario, int newChildren, Random random, boolean debug) {
-        final var swad = new SchemaWithAdditionalData(startSchema, List.of(), List.of());
+        final var swad = new SchemaWithAdditionalData(null, List.of(), startSchema, List.of(), List.of());
         final var indexStream = Stream
                 .iterate(0, i -> i + 1)
                 .limit(sizeOfScenario);

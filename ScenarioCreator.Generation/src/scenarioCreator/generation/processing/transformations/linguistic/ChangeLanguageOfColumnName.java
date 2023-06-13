@@ -6,9 +6,11 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.Translation;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -34,18 +36,19 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(column)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
         final var newNameOpt = _translation.translate(column.name(), random);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
         if (newNameOpt.isEmpty()) {
-            return List.of(column);
+            return new Pair<>(List.of(column), tgdList);
         }
         return switch (column) {
-            case ColumnLeaf c -> List.of(c.withName(newNameOpt.get()));
-            case ColumnNode c -> List.of(c.withName(newNameOpt.get()));
-            case ColumnCollection c -> List.of(c.withName(newNameOpt.get()));
+            case ColumnLeaf c -> new Pair<>(List.of(c.withName(newNameOpt.get())), tgdList);
+            case ColumnNode c -> new Pair<>(List.of(c.withName(newNameOpt.get())), tgdList);
+            case ColumnCollection c -> new Pair<>(List.of(c.withName(newNameOpt.get())), tgdList);
         };
     }
 

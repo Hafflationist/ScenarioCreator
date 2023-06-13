@@ -14,6 +14,7 @@ import scenarioCreator.data.dataset.Value;
 import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
@@ -48,7 +49,7 @@ public final class MergeColumns implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("2 columns could not be found! This exception is an indicator of bad checking. This should be stopped by <isExecutable>!");
         final var validTableStream = schema.tableSet().stream().filter(this::checkTable);
         final var table = StreamExtensions.pickRandomOrThrow(validTableStream, exception, random);
@@ -76,7 +77,9 @@ public final class MergeColumns implements SchemaTransformation {
                     return t.withColumnList(ncl);
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
-        return schema.withTableSet(newTableSet);
+        final var newSchema = schema.withTableSet(newTableSet);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private Stream<Column> getNewColumnStream(Table table, Pair<ColumnLeaf, ColumnLeaf> mergedColumns) {

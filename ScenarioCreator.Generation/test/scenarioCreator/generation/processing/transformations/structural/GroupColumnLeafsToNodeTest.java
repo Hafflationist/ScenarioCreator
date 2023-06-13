@@ -45,7 +45,7 @@ class GroupColumnLeafsToNodeTest {
         final var transformation = new GroupColumnLeafsToNode();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());

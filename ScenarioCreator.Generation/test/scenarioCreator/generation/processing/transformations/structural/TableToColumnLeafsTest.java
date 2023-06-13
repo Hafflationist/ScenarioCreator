@@ -61,7 +61,7 @@ class TableToColumnLeafsTest {
         final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
@@ -102,7 +102,7 @@ class TableToColumnLeafsTest {
         final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);

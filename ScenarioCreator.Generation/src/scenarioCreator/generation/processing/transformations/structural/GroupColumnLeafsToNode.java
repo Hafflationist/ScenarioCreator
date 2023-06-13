@@ -4,12 +4,15 @@ import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.structural.base.GroupingColumnsBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,7 +32,7 @@ public class GroupColumnLeafsToNode implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(GroupingColumnsBase.containsGroupableColumns(table.columnList()))) {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
@@ -43,7 +46,9 @@ public class GroupColumnLeafsToNode implements TableTransformation {
                 groupableColumnList.stream(),
                 (Column)newColumn).toList();
 
-        return SSet.of(table.withColumnList(newColumnList));
+        final var newTableSet = SSet.of(table.withColumnList(newColumnList));
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     @Override

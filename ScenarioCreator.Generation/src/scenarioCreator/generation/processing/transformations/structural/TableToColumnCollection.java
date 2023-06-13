@@ -5,10 +5,13 @@ import scenarioCreator.data.Schema;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.structural.base.IngestionBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -33,8 +36,10 @@ public class TableToColumnCollection implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
-        return IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, random);
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
+        final var newSchema = IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, random);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {

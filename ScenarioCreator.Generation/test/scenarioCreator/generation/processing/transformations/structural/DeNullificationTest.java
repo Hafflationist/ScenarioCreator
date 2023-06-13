@@ -28,7 +28,7 @@ class DeNullificationTest {
         final var transformation = new DeNullification();
 
         // --- Act
-        final var newColumnList = transformation.transform(column, idGenerator, new Random());
+        final var newColumnList = transformation.transform(column, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());

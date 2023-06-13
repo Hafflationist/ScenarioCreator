@@ -11,6 +11,7 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.ConstraintUtils;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
@@ -47,7 +48,7 @@ public class ForeignKeyRemover implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var rte = new TransformationCouldNotBeExecutedException(
                 "No foreign key constraint found! Expected a column with a foreign key constraint!"
         );
@@ -75,7 +76,9 @@ public class ForeignKeyRemover implements SchemaTransformation {
         final var newTableSet = schema.tableSet().stream()
                 .map(t -> (t.equals(chosenTable) ? newTable : t))
                 .collect(Collectors.toCollection(TreeSet::new));
-        return removeForeignKeyInverse(schema.withTableSet(newTableSet), chosenColumn.id());
+        final var newSchema = removeForeignKeyInverse(schema.withTableSet(newTableSet), chosenColumn.id());
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private Pair<Table, Column> chooseColumn(

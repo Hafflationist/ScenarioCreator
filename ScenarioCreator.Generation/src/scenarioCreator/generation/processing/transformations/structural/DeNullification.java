@@ -7,8 +7,10 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -27,18 +29,19 @@ public class DeNullification implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!isValid(column)) {
             throw new TransformationCouldNotBeExecutedException("Column is not valid!");
         }
 
-        final var newColumn = switch (column) {
+        final var newColumn = (Column) switch (column) {
             case ColumnLeaf leaf -> leaf.withDataType(leaf.dataType().withIsNullable(false));
             case ColumnCollection col -> col.withIsNullable(false);
             default -> throw new TransformationCouldNotBeExecutedException("Column is not valid!");
         };
-
-        return List.of(newColumn);
+        final var newColumnList = List.of(newColumn);
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newColumnList, tgdList);
     }
 
     @Override

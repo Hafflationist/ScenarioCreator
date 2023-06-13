@@ -3,12 +3,15 @@ package scenarioCreator.generation.processing.transformations.structural;
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.structural.base.GroupingColumnsBase;
 import scenarioCreator.generation.processing.transformations.structural.base.NewTableBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,7 +32,7 @@ public class ColumnLeafsToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(GroupingColumnsBase.containsGroupableColumns(table.columnList()))) {
             throw new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         }
@@ -41,7 +44,9 @@ public class ColumnLeafsToTable implements TableTransformation {
         final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
         final var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
         final var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
-        return SSet.of(newTable, modifiedTable);
+        final var newTableSet = SSet.of(newTable, modifiedTable);
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
 

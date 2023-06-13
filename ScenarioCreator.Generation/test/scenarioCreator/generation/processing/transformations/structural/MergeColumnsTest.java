@@ -74,7 +74,7 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(true);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         final var newTableSet = newSchema.tableSet();
@@ -123,7 +123,7 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         final var newTableSet = newSchema.tableSet();
@@ -161,7 +161,7 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         final var newTableSet = newSchema.tableSet();

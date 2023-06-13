@@ -24,7 +24,7 @@ class AddTypoToTableNameTest {
         final var transformation = new AddTypoToTableName();
 
         // --- Act
-        final var newTableSet = transformation.transform(table, idGenerator, new Random());
+        final var newTableSet = transformation.transform(table, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newTableSet.size());

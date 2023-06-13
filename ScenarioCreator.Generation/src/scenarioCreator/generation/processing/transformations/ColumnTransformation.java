@@ -4,6 +4,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -14,7 +16,7 @@ public non-sealed interface ColumnTransformation extends Transformation {
 
     @Contract(pure = true)
     @NotNull
-    List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random);
+    Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random);
 
 
     @Contract(pure = true)

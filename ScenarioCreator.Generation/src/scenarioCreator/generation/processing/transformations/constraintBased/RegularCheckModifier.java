@@ -8,8 +8,10 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -35,7 +37,7 @@ public class RegularCheckModifier implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!hasCheckRegexConstraint(column)) {
             throw new TransformationCouldNotBeExecutedException("No check regular constraint found! Expected a column with a check regular constraint!");
         }
@@ -44,11 +46,13 @@ public class RegularCheckModifier implements ColumnTransformation {
                 .map(c -> c instanceof ColumnConstraintCheckRegex cccr ? modify(cccr, random) : c)
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        return switch (column) {
-            case ColumnCollection c -> List.of(c.withConstraintSet(newConstraintSet));
-            case ColumnLeaf c -> List.of(c.withConstraintSet(newConstraintSet));
-            case ColumnNode c -> List.of(c.withConstraintSet(newConstraintSet));
-        };
+        final var newColumnList = List.of((Column) switch (column) {
+            case ColumnCollection c -> c.withConstraintSet(newConstraintSet);
+            case ColumnLeaf c -> c.withConstraintSet(newConstraintSet);
+            case ColumnNode c -> c.withConstraintSet(newConstraintSet);
+        });
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newColumnList, tgdList);
     }
 
     private ColumnConstraintCheckRegex modify(ColumnConstraintCheckRegex cccr, Random random) {

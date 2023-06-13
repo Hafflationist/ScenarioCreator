@@ -44,7 +44,7 @@ class ColumnCollectionToTableTest {
         final var transformation = new ColumnCollectionToTable();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());

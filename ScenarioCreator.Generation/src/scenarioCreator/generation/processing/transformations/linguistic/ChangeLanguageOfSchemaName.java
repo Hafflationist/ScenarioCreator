@@ -2,10 +2,13 @@ package scenarioCreator.generation.processing.transformations.linguistic;
 
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.Schema;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.Translation;
+import scenarioCreator.utils.Pair;
 
+import java.util.List;
 import java.util.Random;
 
 public class ChangeLanguageOfSchemaName implements SchemaTransformation {
@@ -29,13 +32,15 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         if (!isExecutable(schema)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        return _translation.translate(schema.name(), random)
+        final var newSchema = _translation.translate(schema.name(), random)
                 .map(schema::withName)
                 .orElse(schema);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     @Override

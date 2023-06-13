@@ -57,7 +57,7 @@ class FunctionalDependencyBasedDistanceMeasureTest {
         IntegrityChecker.assertValidSchema(schema);
         final var idGenerator = StructuralTestingUtils.getIdGenerator(600);
         final var transformation = new FunctionalDependencyRemover();
-        final var newTableSet = transformation.transform(table, idGenerator, random);
+        final var newTableSet = transformation.transform(table, idGenerator, random).first();
         final var newSchema = new Schema(new IdSimple(1001), name, Context.getDefault(), newTableSet);
 
         // --- Act
@@ -110,7 +110,7 @@ class FunctionalDependencyBasedDistanceMeasureTest {
         IntegrityChecker.assertValidSchema(schema);
         final var idGenerator = StructuralTestingUtils.getIdGenerator(1200);
         final var transformation = new NullableToHorizontalInheritance();
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
         final var fullNewTableSet = StreamExtensions
                 .replaceInStream(tableSet.stream(), targetTable, newTableSet.stream())
                 .collect(Collectors.toCollection(TreeSet::new));

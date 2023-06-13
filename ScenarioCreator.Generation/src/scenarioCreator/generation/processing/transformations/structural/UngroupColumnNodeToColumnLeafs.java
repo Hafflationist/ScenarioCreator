@@ -6,8 +6,10 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -26,12 +28,13 @@ public class UngroupColumnNodeToColumnLeafs implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(column instanceof ColumnNode node)) {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnNode!");
         }
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
         if (node.isNullable()) {
-            return node.columnList().stream().map(co -> {
+            final var newColumnList = node.columnList().stream().map(co -> {
                if(co.isNullable()) {
                    return co;
                }
@@ -41,8 +44,10 @@ public class UngroupColumnNodeToColumnLeafs implements ColumnTransformation {
                     case ColumnCollection c -> c.withIsNullable(true);
                };
             }).toList();
+            return new Pair<>(newColumnList, tgdList);
         }
-        return node.columnList();
+        final var newColumnList = node.columnList();
+        return new Pair<>(newColumnList, tgdList);
     }
 
     @Override

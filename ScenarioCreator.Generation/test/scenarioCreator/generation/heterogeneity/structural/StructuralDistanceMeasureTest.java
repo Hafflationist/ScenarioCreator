@@ -57,7 +57,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
         final var transformation = new BinaryValueToTable();
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
@@ -92,7 +92,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table));
         final var transformation = new RemoveColumn();
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
@@ -127,7 +127,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(table1, table2));
         final var transformation = new RemoveTable();
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
@@ -209,7 +209,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
         final var transformation = new ColumnCollectionToTable();
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
         IntegrityChecker.assertValidSchema(rootSchema);
         IntegrityChecker.assertValidSchema(newSchema);
 
@@ -240,7 +240,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
         final var transformation = new GroupColumnLeafsToNode();
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
@@ -270,7 +270,7 @@ class StructuralDistanceMeasureTest {
         final var rootSchema = new Schema(new IdSimple(301), name, Context.getDefault(), SSet.of(rootTable));
         final var transformation = new MergeColumns(true);
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);
@@ -305,7 +305,7 @@ class StructuralDistanceMeasureTest {
         IntegrityChecker.assertValidSchema(rootSchema);
         final var transformation = new TableToColumnCollection(false);
         final var ste = new SingleTransformationExecutor(null);
-        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed));
+        final var newSchema = ste.executeTransformation(rootSchema, transformation, new Random(seed)).first();
 
         // --- Act
         final var diffElementary = StructuralDistanceMeasureElementary.calculateDistanceToRootAbsolute(rootSchema, newSchema);

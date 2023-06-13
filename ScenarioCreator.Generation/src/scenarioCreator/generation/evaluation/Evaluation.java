@@ -87,6 +87,7 @@ public final class Evaluation {
                     .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
                     .collect(Collectors.toCollection(TreeSet::new));
             if (!nonUniqueIdSet.isEmpty()) {
+                System.out.println("Anfangsschema war fehlerhaft! Starte neuen Versuch...");
                 return Optional.empty(); // Generation of start schema broken... (skip and forget)
             }
 

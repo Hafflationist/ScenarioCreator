@@ -65,7 +65,7 @@ class TableToColumnNodeTest {
         final var transformation = new TableToColumnNode(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
@@ -113,7 +113,7 @@ class TableToColumnNodeTest {
         final var transformation = new TableToColumnNode(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);

@@ -35,7 +35,7 @@ class ChangeDataTypeTest {
         final var transformation = new ChangeDataType();
 
         // --- Act
-        final var newColumnList = transformation.transform(column, idGenerator, new Random());
+        final var newColumnList = transformation.transform(column, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());

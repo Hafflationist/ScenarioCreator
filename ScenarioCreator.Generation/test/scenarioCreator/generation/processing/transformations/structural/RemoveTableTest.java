@@ -37,7 +37,7 @@ class RemoveTableTest {
         final var transformation = new RemoveTable();
 
         // --- Act
-        final var candidates = transformation.transform(validTable, idGenerator, new Random());
+        final var candidates = transformation.transform(validTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(0, candidates.size());

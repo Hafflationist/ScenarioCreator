@@ -7,9 +7,12 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.structural.base.IngestionBase;
+import scenarioCreator.utils.Pair;
 
+import java.util.List;
 import java.util.Random;
 import java.util.stream.Stream;
 
@@ -36,11 +39,13 @@ public class TableToColumnLeafs implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         // table name could be updated...
-        return IngestionBase.fullRandomIngestion(
+        final var newSchema = IngestionBase.fullRandomIngestion(
                 schema, this::columnGenerator, _flags, random
         );
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {

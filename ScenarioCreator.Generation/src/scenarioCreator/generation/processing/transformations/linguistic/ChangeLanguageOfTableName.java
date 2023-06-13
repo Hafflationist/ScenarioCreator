@@ -3,11 +3,14 @@ package scenarioCreator.generation.processing.transformations.linguistic;
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.Translation;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -35,13 +38,15 @@ public class ChangeLanguageOfTableName implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         if (!canBeTranslated(table)) {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
-        return _translation.translate(table.name(), random)
+        final var tableSet = _translation.translate(table.name(), random)
                 .map(newName -> SSet.of(table.withName(newName)))
                 .orElse(SSet.of(table));
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(tableSet, tgdList);
     }
 
     @Override

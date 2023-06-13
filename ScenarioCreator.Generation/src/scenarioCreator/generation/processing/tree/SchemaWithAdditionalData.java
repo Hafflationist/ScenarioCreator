@@ -2,11 +2,14 @@ package scenarioCreator.generation.processing.tree;
 
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.Schema;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.heterogeneity.Distance;
 
 import java.util.List;
 
 public record SchemaWithAdditionalData(
+        Schema predecessor,
+        List<TupleGeneratingDependency> tgdList,
         Schema schema,
         List<Distance> distanceList,
         List<String> executedTransformationList

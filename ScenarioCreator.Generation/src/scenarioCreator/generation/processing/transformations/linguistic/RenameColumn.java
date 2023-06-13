@@ -9,9 +9,11 @@ import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -39,16 +41,18 @@ public class RenameColumn implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!hasMeaningfulName(column)) {
             throw TRANSFORMATION_EXCEPTION;
         }
         final var newName = getNewName(column.name(), random);
-        return switch (column) {
-            case ColumnLeaf c -> List.of(c.withName(newName));
-            case ColumnNode c -> List.of(c.withName(newName));
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final var newColumnList = switch (column) {
+            case ColumnLeaf c -> List.of((Column) c.withName(newName));
+            case ColumnNode c -> List.of((Column) c.withName(newName));
             default -> throw new IllegalStateException("Unexpected value: " + column);
         };
+        return new Pair<>(newColumnList, tgdList);
     }
 
     @NotNull

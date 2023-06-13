@@ -6,8 +6,10 @@ import scenarioCreator.data.column.context.UnitOfMeasure;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -32,14 +34,16 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("Column invalid! This exception is an indicator of bad checking. This should be stopped by <getCandidates>!");
         if (!(column instanceof ColumnLeaf columnLeaf)) {
             throw exception;
         }
         final var newUnitOfMeasure = transformUnitOfMeasure(columnLeaf.context().unitOfMeasure(), random);
-        final var newColumn = columnLeaf.withContext(columnLeaf.context().withUnitOfMeasure(newUnitOfMeasure));
-        return Collections.singletonList(newColumn);
+        final var newColumn = (Column) columnLeaf.withContext(columnLeaf.context().withUnitOfMeasure(newUnitOfMeasure));
+        final var newColumnList = Collections.singletonList(newColumn);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newColumnList, tgdList);
     }
 
     @NotNull

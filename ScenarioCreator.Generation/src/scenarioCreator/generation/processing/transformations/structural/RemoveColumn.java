@@ -11,14 +11,13 @@ import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.FunctionalDependency;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
-import java.util.Collection;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -36,7 +35,7 @@ public class RemoveColumn implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var rte = new RuntimeException("Could not find a valid column. This should not be possible!");
         final var candidateStream = table.columnList().stream()
                 .filter(this::isRemovable);
@@ -47,11 +46,13 @@ public class RemoveColumn implements TableTransformation {
                 .flatMap(fd -> mapFunctionalDependency(removeIdSet, fd))
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        return SSet.of(
+        final var newTableSet = SSet.of(
                 table
                         .withColumnList(newColumnList)
                         .withFunctionalDependencySet(newFdSet)
         );
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     private SortedSet<Id> getAllIds(Column column) {

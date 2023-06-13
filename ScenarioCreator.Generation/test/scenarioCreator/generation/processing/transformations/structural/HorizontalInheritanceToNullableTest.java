@@ -63,7 +63,7 @@ class HorizontalInheritanceToNullableTest {
         final var transformation = new HorizontalInheritanceToNullable(1, 0.5);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
@@ -122,7 +122,7 @@ class HorizontalInheritanceToNullableTest {
         final var transformation = new HorizontalInheritanceToNullable(1, 0.5);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);

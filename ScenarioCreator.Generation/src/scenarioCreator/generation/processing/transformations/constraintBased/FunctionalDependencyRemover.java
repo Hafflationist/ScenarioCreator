@@ -3,12 +3,15 @@ package scenarioCreator.generation.processing.transformations.constraintBased;
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -34,14 +37,16 @@ public class FunctionalDependencyRemover implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var rte = new TransformationCouldNotBeExecutedException("Table is missing functional dependencies!");
         final var fdSet = FunctionalDependencyManager.minimalCover(table.functionalDependencySet());
         final var chosenFdSet = StreamExtensions.pickRandomOrThrow(fdSet.stream(), rte, random);
         final var newFdSet = StreamExtensions
                 .replaceInStream(fdSet.stream(), chosenFdSet, Stream.of())
                 .collect(Collectors.toCollection(TreeSet::new));
-        return SSet.of(table.withFunctionalDependencySet(newFdSet));
+        final var newTableSet = SSet.of(table.withFunctionalDependencySet(newFdSet));
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     @Override

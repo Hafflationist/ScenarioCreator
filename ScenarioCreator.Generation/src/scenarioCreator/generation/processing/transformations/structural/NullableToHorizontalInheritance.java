@@ -12,11 +12,13 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
 import scenarioCreator.generation.processing.transformations.structural.base.GroupingColumnsBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -40,7 +42,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a nullable column or is referenced by another column!");
         if (!hasNullableColumnsAndNoInverseConstraints(table)) {
             throw exception;
@@ -58,7 +60,9 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         );
         final var newBaseTable = createBaseTable(table, extractableColumnList);
         final var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
-        return SSet.of(newBaseTable, newDerivingTable);
+        final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList) {

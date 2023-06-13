@@ -65,7 +65,7 @@ class NullableToHorizontalInheritanceTest {
         final var transformation = new NullableToHorizontalInheritance();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());

@@ -4,12 +4,15 @@ import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.structural.base.NewTableBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -29,7 +32,7 @@ public class ColumnCollectionToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a collection as column!");
 
         final var columnCollectionList = table.columnList().stream()
@@ -46,7 +49,9 @@ public class ColumnCollectionToTable implements TableTransformation {
                 table, column.name(), collection.columnList(), newIds, false
         );
         final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
-        return SSet.of(newTable, modifiedTable);
+        final var newTableSet = SSet.of(newTable, modifiedTable);
+        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     @Override

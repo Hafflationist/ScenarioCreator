@@ -10,8 +10,10 @@ import scenarioCreator.data.column.context.NumericalDistribution;
 import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 
 import java.util.List;
 import java.util.Random;
@@ -31,17 +33,19 @@ public class ChangeDataType implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         if (!(column instanceof ColumnLeaf leaf)) {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnLeaf!");
         }
 
         final var newDataType = generateNewDataType(leaf.dataType(), random);
-        return List.of(
-                leaf
+        final var newColumnList = List.of(
+                (Column) leaf
                         .withDataType(newDataType)
                         .withContext(leaf.context().withNumericalDistribution(NumericalDistribution.getDefault()))
         );
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newColumnList, tgdList);
     }
 
     private DataType generateNewDataType(DataType dt, Random random) {

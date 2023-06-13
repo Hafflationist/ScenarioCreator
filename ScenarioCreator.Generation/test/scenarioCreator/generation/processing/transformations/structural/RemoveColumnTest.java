@@ -36,7 +36,7 @@ class RemoveColumnTest {
         final var transformation = new RemoveColumn();
 
         // --- Act
-        final var newTableList = transformation.transform(validTable, idGenerator, new Random());
+        final var newTableList = transformation.transform(validTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newTableList.size());

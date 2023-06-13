@@ -40,7 +40,7 @@ class UngroupColumnNodeToColumnLeafsTest {
         final var transformation = new UngroupColumnNodeToColumnLeafs();
 
         // --- Act
-        final var newColumnList = transformation.transform(columnNode, idGenerator, new Random());
+        final var newColumnList = transformation.transform(columnNode, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertTrue(

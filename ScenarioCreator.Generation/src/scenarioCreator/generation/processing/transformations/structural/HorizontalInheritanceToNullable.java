@@ -13,6 +13,7 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.CheckNumericalManager;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
@@ -57,7 +58,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("Given schema did not include horizontal inheritance");
         if (!isExecutable(schema)) {
             throw exception;
@@ -71,11 +72,13 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 .replaceInStream(schema.tableSet().stream(), oldTableStream, derivationIntegrationResult.newTable())
                 .collect(Collectors.toCollection(TreeSet::new));
 
-        return IdTranslation.translateConstraints(
+        final var newSchema = IdTranslation.translateConstraints(
                 schema.withTableSet(newTableSet),
                 derivationIntegrationResult.idTranslationMap(),
                 Set.of()
         );
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private InheritancePair findDerivingTable(SortedSet<Table> tableSet, Random random) {

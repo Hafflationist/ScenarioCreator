@@ -6,9 +6,11 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.ColumnTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.structural.base.GroupingColumnsBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
 
 import java.util.List;
@@ -29,7 +31,7 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
 
     @Override
     @NotNull
-    public List<Column> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<List<Column>, List<TupleGeneratingDependency>> transform(Column column, Function<Integer, Id[]> idGenerator, Random random) {
         final var transEx = new TransformationCouldNotBeExecutedException("Table did not have groupable columns!!");
         if (!(hasColumnNodeOrCollectionGroupableColumns(column))) {
             throw transEx;
@@ -45,16 +47,18 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
         final var newIds = idGenerator.apply(1);
         final var newColumn = GroupingColumnsBase.createNewColumnNode(newIds[0], groupableColumnList, random);
 
-        final var newColumnList = StreamExtensions.replaceInStream(
+        final var newInnerColumnList = StreamExtensions.replaceInStream(
                 columnList.stream(),
                 groupableColumnList.stream(),
                 newColumn).toList();
 
-        return List.of(switch (column) {
-            case ColumnNode node -> node.withColumnList(newColumnList);
-            case ColumnCollection collection -> collection.withColumnList(newColumnList);
+        final var newColumnList = List.of((Column) switch (column) {
+            case ColumnNode node -> node.withColumnList(newInnerColumnList);
+            case ColumnCollection collection -> collection.withColumnList(newInnerColumnList);
             default -> throw transEx;
         });
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newColumnList, tgdList);
     }
 
     @Override

@@ -64,7 +64,7 @@ class TableToColumnCollectionTest {
         final var transformation = new TableToColumnCollection(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random(1));
+        final var newSchema = transformation.transform(schema, new Random(1)).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);
@@ -117,7 +117,7 @@ class TableToColumnCollectionTest {
         final var transformation = new TableToColumnCollection(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(newSchema);

@@ -66,6 +66,20 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>scenarioCreator.generation.Main</mainClass>
+                    <arguments>
+                        <argument>--körnerkissen</argument>
+                        <argument>--no-tgds</argument>
+                        <argument>-av</argument>
+                        <argument>/home/mrobohm/panse</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
         </plugins>
 
         <outputDirectory>out</outputDirectory>

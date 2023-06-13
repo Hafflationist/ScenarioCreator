@@ -5,9 +5,12 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.Schema;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
+import scenarioCreator.utils.Pair;
 
+import java.util.List;
 import java.util.Random;
 
 public class RenameSchema implements SchemaTransformation {
@@ -30,9 +33,11 @@ public class RenameSchema implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var newName = getNewName(schema.name(), random);
-        return schema.withName(newName);
+        final var newSchema = schema.withName(newName);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     @NotNull

@@ -4,12 +4,15 @@ import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.structural.base.NewTableBase;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
+import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -30,7 +33,7 @@ public class ColumnNodeToTable implements TableTransformation {
 
     @Override
     @NotNull
-    public SortedSet<Table> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
+    public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var exception = new TransformationCouldNotBeExecutedException("Given table does not contain a node as column!");
 
         final var columnNodeStream = table.columnList().stream()
@@ -44,7 +47,9 @@ public class ColumnNodeToTable implements TableTransformation {
         final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
         final var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
         final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
-        return SSet.of(newTable, modifiedTable);
+        final var newTableSet = SSet.of(newTable, modifiedTable);
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newTableSet, tgdList);
     }
 
     @Override

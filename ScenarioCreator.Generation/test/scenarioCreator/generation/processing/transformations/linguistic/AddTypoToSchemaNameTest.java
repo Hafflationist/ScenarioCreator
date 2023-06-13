@@ -7,7 +7,6 @@ import scenarioCreator.data.Language;
 import scenarioCreator.data.Schema;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.linguistic.AddTypoToSchemaName;
 import scenarioCreator.utils.SSet;
 
 import java.util.Random;
@@ -22,7 +21,7 @@ class AddTypoToSchemaNameTest {
         final var transformation = new AddTypoToSchemaName();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random());
+        final var newSchema = transformation.transform(schema, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(schema.id(), newSchema.id());

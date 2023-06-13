@@ -14,12 +14,14 @@ import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
 import scenarioCreator.generation.processing.transformations.structural.base.IdTranslation;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
 
 import java.util.*;
@@ -41,7 +43,7 @@ public class BinaryValueToTable implements SchemaTransformation {
 
     @Override
     @NotNull
-    public Schema transform(Schema schema, Random random) {
+    public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var tcnbee = new TransformationCouldNotBeExecutedException("Table did not have columns with two or three values!!");
         final var validTableStream = schema.tableSet().stream().filter(this::isTableValid);
         final var table = StreamExtensions.pickRandomOrThrow(validTableStream, tcnbee, random);
@@ -67,11 +69,13 @@ public class BinaryValueToTable implements SchemaTransformation {
                 table,
                 addTableStream
         ).collect(Collectors.toCollection(TreeSet::new));
-        return IdTranslation.translateConstraints(
+        final var newSchema = IdTranslation.translateConstraints(
                 schema.withTableSet(newTableSet),
                 tableSplitResult.idMap,
                 Set.of(chosenSplitLeaf.id())
         );
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        return new Pair<>(newSchema, tgdList);
     }
 
     private TableSplitResult splitTable(Table table, int n) {

@@ -13,7 +13,6 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
-import scenarioCreator.generation.processing.transformations.structural.GroupColumnLeafsToNodeNested;
 import scenarioCreator.utils.SSet;
 
 import java.util.HashSet;
@@ -42,7 +41,7 @@ class GroupColumnLeafsToNodeNestedTest {
         final var transformation = new GroupColumnLeafsToNodeNested();
 
         // --- Act
-        final var newColumnList = transformation.transform(targetColumn, idGenerator, new Random());
+        final var newColumnList = transformation.transform(targetColumn, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(1, newColumnList.size());

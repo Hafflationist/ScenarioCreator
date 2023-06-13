@@ -54,7 +54,7 @@ class NullableToVerticalInheritanceTest {
         final var transformation = new NullableToVerticalInheritance();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());
@@ -109,7 +109,7 @@ class NullableToVerticalInheritanceTest {
         final var transformation = new NullableToVerticalInheritance();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random());
+        final var newTableSet = transformation.transform(targetTable, idGenerator, new Random()).first();
 
         // --- Assert
         Assertions.assertEquals(2, newTableSet.size());
