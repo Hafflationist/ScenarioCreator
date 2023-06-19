@@ -72,7 +72,7 @@ public class SingleTransformationExecutor {
         final var newSchemaWithTgds = transformation.transform(schema, random);
         final var newSchema = newSchemaWithTgds.first();
         IntegrityChecker.assertValidSchema(newSchema);
-        final var trivialTgdList = TgdHelper.calculateTrivialTgds(schema, newSchema);
+        final var trivialTgdList = TgdHelper.calculateTgdsForUnchangedTables(schema, newSchema);
         final var allTgdList = Stream
                 .concat(trivialTgdList.stream(), newSchemaWithTgds.second().stream())
                 .toList();
@@ -108,7 +108,7 @@ public class SingleTransformationExecutor {
         final var newTableSetWithTgds = transformation.transform(targetTable, idGenerator, random);
         final var newSchema = executeTransformationTable(schema, targetTable, newTableSetWithTgds.first());
         IntegrityChecker.assertValidSchema(newSchema);
-        final var trivialTgdList = TgdHelper.calculateTrivialTgds(schema, newSchema);
+        final var trivialTgdList = TgdHelper.calculateTgdsForUnchangedTables(schema, newSchema);
         final var allTgdList = Stream
                 .concat(trivialTgdList.stream(), newTableSetWithTgds.second().stream())
                 .toList();
@@ -135,7 +135,7 @@ public class SingleTransformationExecutor {
         final var newTableSet = SSet.of(targetTable.withColumnList(newColumnList));
         final var newSchema = executeTransformationTable(schema, target.first(), newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
-        final var trivialTgdList = TgdHelper.calculateTrivialTgds(schema, newSchema);
+        final var trivialTgdList = TgdHelper.calculateTgdsForUnchangedTables(schema, newSchema);
         final var allTgdList = Stream
                 .concat(trivialTgdList.stream(), newPartialColumnListWithTgds.second().stream())
                 .toList();
