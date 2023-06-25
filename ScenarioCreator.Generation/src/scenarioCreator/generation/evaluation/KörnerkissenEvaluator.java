@@ -11,6 +11,7 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.IdSimple;
+import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.generation.heterogeneity.Distance;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.Scenario;
@@ -105,7 +106,7 @@ public class KörnerkissenEvaluator {
     }
 
     private static KörnerkissenColumn columnToKörnerkissenColumn(Column col) {
-        return new KörnerkissenColumn(col.name().rawString(LinguisticUtils::merge), col.id());
+        return new KörnerkissenColumn(col.name(), col.id());
     }
 
     private static List<Correspondence<KörnerkissenColumn>> getCorrs(Schema s1, Schema s2) {
@@ -165,6 +166,6 @@ public class KörnerkissenEvaluator {
         }
     }
 
-    public record KörnerkissenColumn(String name, Id id) {
+    public record KörnerkissenColumn(StringPlus name, Id id) {
     }
 }
