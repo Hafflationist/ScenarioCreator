@@ -72,7 +72,7 @@ public final class Evaluation {
             Files.createDirectories(path);
             FileUtils.cleanDirectory(path.toFile());
 
-//            System.out.println("Seed: " + seed);
+            System.out.println("Samen schreiben: " + seed);
             final var random = new Random(seed);
             final var seedFile = Path.of(pathStr, "scenario/seed.txt").toFile();
             try (final var writer = new FileWriter(seedFile)) {
@@ -86,6 +86,7 @@ public final class Evaluation {
             final var nonUniqueIdSet = allIdList.stream()
                     .filter(id -> allIdList.stream().filter(id2 -> Objects.equals(id2, id)).count() >= 2)
                     .collect(Collectors.toCollection(TreeSet::new));
+            System.out.println("Prüfung des Anfangsschemas...");
             if (!nonUniqueIdSet.isEmpty()) {
                 System.out.println("Anfangsschema war fehlerhaft! Starte neuen Versuch...");
                 return Optional.empty(); // Generation of start schema broken... (skip and forget)
@@ -110,6 +111,7 @@ public final class Evaluation {
             );
 
             final var translation = new Translation(ulc);
+            System.out.println("Kreator kreiert!!!");
             final var creator = new ScenarioCreator(config.dd, ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
                     new TransformationCollection(ulc, translation),
@@ -131,7 +133,9 @@ public final class Evaluation {
     public static Optional<Scenario> runForester(
             FullConfiguration config, UnifiedLanguageCorpus ulc, String path, int seed, boolean debug
     ) {
+        System.out.println("Anfangsschema laden");
         final var initSchema = Init.getInitSchema(ulc);
+        System.out.println("Anfangsschema geladen!");
         return runForesterInner(config, path, initSchema, seed, ulc, debug);
     }
 
