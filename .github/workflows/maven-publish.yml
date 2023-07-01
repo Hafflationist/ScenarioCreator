@@ -27,11 +27,11 @@ jobs:
       id: bump
       uses: mickem/gh-action-bump-maven-version@v1
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
-
     - name: Test with Maven
       run: mvn test --file pom.xml
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml -Dmaven.test.skip
 
     - name: Publish to GitHub Packages Apache Maven
       run: mvn deploy -s $GITHUB_WORKSPACE/settings.xml
