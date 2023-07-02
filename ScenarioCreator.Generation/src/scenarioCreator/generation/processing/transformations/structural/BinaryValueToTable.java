@@ -8,12 +8,16 @@ import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
+import scenarioCreator.data.dataset.Value;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.ReducedRelation;
+import scenarioCreator.data.tgds.RelationConstraint;
+import scenarioCreator.data.tgds.RelationConstraintConstant;
 import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
@@ -58,24 +62,53 @@ public class BinaryValueToTable implements SchemaTransformation {
         final var tableWithoutChosenSplitLeaf = table.withColumnList(newColumnList);
         final var valueList = chosenSplitLeaf.valueSet().stream().toList();
         final var tableSplitResult = splitTable(tableWithoutChosenSplitLeaf, valueList.size());
-        final var addTableStream = StreamExtensions
+        final var addTableList = StreamExtensions
                 .zip(
                         tableSplitResult.tableSet.stream(),
                         valueList.stream(),
                         (t, value) -> appendToName(t, value.content(), random)
-                );
+                ).toList();
         final var newTableSet = StreamExtensions.replaceInStream(
                 schema.tableSet().stream(),
                 table,
-                addTableStream
+                addTableList.stream()
         ).collect(Collectors.toCollection(TreeSet::new));
         final var newSchema = IdTranslation.translateConstraints(
                 schema.withTableSet(newTableSet),
                 tableSplitResult.idMap,
                 Set.of(chosenSplitLeaf.id())
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = tgds(table, addTableList, chosenSplitLeaf);
         return new Pair<>(newSchema, tgdList);
+    }
+
+    private List<TupleGeneratingDependency> tgds(Table sourceTable, List<Table> addedTableList, ColumnLeaf splitLeaf) {
+        final var sourceRelation = ReducedRelation.fromTable(sourceTable);
+        return addedTableList.stream()
+                .map(destinationTable -> {
+                    final var forallRows = List.of(sourceRelation);
+                    final var existRows = List.of(ReducedRelation.fromTable(destinationTable));
+
+                    final var splitValueOfThisTable = splitLeaf.valueSet().stream()
+                            .filter(value -> destinationTable.name()
+                                    .rawString(LinguisticUtils::merge)
+                                    .toLowerCase()
+                                    .contains(value.content().toLowerCase())
+                            )
+                            .findFirst()
+                            .map(Value::content);
+                    if(splitValueOfThisTable.isEmpty()){
+                        return Optional.<TupleGeneratingDependency>empty();
+                    }
+
+                    final var relationConstraintList = List.of(
+                            (RelationConstraint) new RelationConstraintConstant(splitLeaf.id(), splitValueOfThisTable.get())
+                    );
+                    return Optional.of(new TupleGeneratingDependency(forallRows, existRows, relationConstraintList));
+                })
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .toList();
     }
 
     private TableSplitResult splitTable(Table table, int n) {

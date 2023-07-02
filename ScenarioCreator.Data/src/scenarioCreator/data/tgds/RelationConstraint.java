@@ -1,4 +1,4 @@
 package scenarioCreator.data.tgds;
 
-public sealed interface RelationConstraint permits RelationConstraintConcatenation, RelationConstraintEquality {
+public sealed interface RelationConstraint permits RelationConstraintConcatenation, RelationConstraintEquality, RelationConstraintConstant {
 }
