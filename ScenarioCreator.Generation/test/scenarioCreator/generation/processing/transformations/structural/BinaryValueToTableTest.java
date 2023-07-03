@@ -51,9 +51,12 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         Assertions.assertEquals(2, newSchema.tableSet().size());
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
         final var tableList = newSchema.tableSet().stream().toList();
@@ -95,9 +98,12 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         Assertions.assertEquals(3, newSchema.tableSet().size());
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
         final var tableList = newSchema.tableSet().stream().toList();
@@ -153,9 +159,12 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         Assertions.assertEquals(3, newSchema.tableSet().size());
         Assertions.assertTrue(newSchema.tableSet().stream().anyMatch(t -> t.id().equals(referencedTable.id())));
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
@@ -206,9 +215,12 @@ class BinaryValueToTableTest {
         final var transformation = new BinaryValueToTable();
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         Assertions.assertEquals(4, newSchema.tableSet().size());
         Assertions.assertTrue(newSchema.tableSet().stream().anyMatch(t -> t.id().equals(referencedTable.id())));
         Assertions.assertFalse(newSchema.tableSet().contains(targetTable));
