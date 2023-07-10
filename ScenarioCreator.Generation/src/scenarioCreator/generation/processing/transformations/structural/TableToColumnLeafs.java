@@ -7,6 +7,9 @@ import scenarioCreator.data.column.nesting.ColumnCollection;
 import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.ReducedRelation;
+import scenarioCreator.data.tgds.RelationConstraint;
+import scenarioCreator.data.tgds.RelationConstraintConstant;
 import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.structural.base.IngestionBase;
@@ -41,11 +44,9 @@ public class TableToColumnLeafs implements SchemaTransformation {
     @NotNull
     public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         // table name could be updated...
-        final var newSchema = IngestionBase.fullRandomIngestion(
+        return IngestionBase.fullRandomIngestion(
                 schema, this::columnGenerator, _flags, random
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
-        return new Pair<>(newSchema, tgdList);
     }
 
     private Stream<Column> columnGenerator(Table ingestedTable, boolean isNullable) {

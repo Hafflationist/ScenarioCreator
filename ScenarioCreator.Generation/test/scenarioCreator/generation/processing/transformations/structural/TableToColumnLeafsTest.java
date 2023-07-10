@@ -61,9 +61,12 @@ class TableToColumnLeafsTest {
         final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         IntegrityChecker.assertValidSchema(newSchema);
         final var oldIdSet = schema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())
@@ -102,9 +105,12 @@ class TableToColumnLeafsTest {
         final var transformation = new TableToColumnLeafs(false, false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         IntegrityChecker.assertValidSchema(newSchema);
         final var newIdSet = newSchema.tableSet().stream()
                 .flatMap(t -> t.columnList().stream())

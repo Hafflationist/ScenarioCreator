@@ -39,7 +39,7 @@ public class TableToColumnNode implements SchemaTransformation {
     public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var newSchema = IngestionBase.fullRandomIngestion(
                 schema, this::columnGenerator, _flags, random
-        );
+        ).first();
         final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
         return new Pair<>(newSchema, tgdList);
     }

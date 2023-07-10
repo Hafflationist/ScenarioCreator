@@ -10,8 +10,13 @@ import scenarioCreator.data.column.nesting.ColumnLeaf;
 import scenarioCreator.data.column.nesting.ColumnNode;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.ReducedRelation;
+import scenarioCreator.data.tgds.RelationConstraint;
+import scenarioCreator.data.tgds.RelationConstraintEquality;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -25,11 +30,12 @@ public final class IngestionBase {
     private IngestionBase() {
     }
 
-    public static Schema fullRandomIngestion(
+    public static Pair<Schema, List<TupleGeneratingDependency>> fullRandomIngestion(
             Schema schema,
             BiFunction<Table, Boolean, Stream<Column>> columnGenerator,
             IngestionFlags flags,
-            Random random) {
+            Random random
+    ) {
         final var ex = new TransformationCouldNotBeExecutedException("Given schema does not contain suitable tables!");
         final var expandableTableStream = schema.tableSet().stream()
                 .filter(t -> IngestionBase.canIngest(t, schema.tableSet(), flags));
@@ -41,14 +47,44 @@ public final class IngestionBase {
         final var chosenColumn = StreamExtensions.pickRandomOrThrow(ingestingColumnStream, ex, random);
         final var ingestableTableStream = ingestionCandidates.get(chosenColumn).stream();
         final var chosenIngestableTable = StreamExtensions.pickRandomOrThrow(ingestableTableStream, ex, random);
-        final var newTable = ingest(chosenTable, chosenColumn, chosenIngestableTable, columnGenerator);
+        final var pair = ingest(chosenTable, chosenColumn, chosenIngestableTable, columnGenerator);
+        final var newTable = pair.first();
+        final var ingestedColumn = pair.second(); 
         final var newTableSet = StreamExtensions
                 .replaceInStream(schema.tableSet().stream(), Stream.of(chosenTable, chosenIngestableTable), newTable)
                 .collect(Collectors.toCollection(TreeSet::new));
-        return schema.withTableSet(newTableSet);
+        final var tgdList = tgds(chosenTable, chosenColumn, chosenIngestableTable, ingestedColumn, newTable);
+        return new Pair<>(schema.withTableSet(newTableSet), tgdList);
     }
 
-    public static Table ingest(
+    private static List<TupleGeneratingDependency> tgds(
+            Table ingestingTable,
+            Column ingestingColumn,
+            Table ingestedTable,
+            Column ingestedColumn,
+            Table newTable
+    ) {
+        final var ingestingRelation = ReducedRelation.fromTable(ingestingTable);
+        final var ingestedRelation = ReducedRelation.fromTable(ingestedTable);
+        final var newRelation = ReducedRelation.fromTable(newTable);
+        final var forallRows = List.of(
+            ingestingRelation, ingestedRelation
+        );
+        final var existRows = List.of(
+            newRelation
+        );
+        final var relationConstraintList = List.of(
+                (RelationConstraint) new RelationConstraintEquality(ingestingColumn.id(), ingestedColumn.id())
+        );
+        return List.of(
+            new TupleGeneratingDependency(forallRows, existRows, relationConstraintList)
+        );
+    }
+
+    /*
+     * Returns a pair consisting of the created new table and the ingested column.
+     */
+    public static Pair<Table, Column> ingest(
             Table ingestingTable,
             Column ingestingColumn,
             Table ingestedTable,
@@ -91,9 +127,12 @@ public final class IngestionBase {
                 ingestedTable.functionalDependencySet().stream()
         ).collect(Collectors.toCollection(TreeSet::new));
         final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(allFdSet, newIngestingColumnList);
-        return ingestingTable
+        return new Pair<>(
+            ingestingTable
                 .withColumnList(newIngestingColumnList)
-                .withFunctionalDependencySet(newFunctionalDependencySet);
+                .withFunctionalDependencySet(newFunctionalDependencySet),
+            ingestedColumnOptional.get()
+        );
     }
 
     private static Column fuseColumnWithIngestedTable(Column column, Table ingestedTable) {
