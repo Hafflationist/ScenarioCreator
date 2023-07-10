@@ -3,6 +3,9 @@ package scenarioCreator.generation.processing.transformations.structural;
 import org.jetbrains.annotations.NotNull;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.ReducedRelation;
+import scenarioCreator.data.tgds.RelationConstraint;
+import scenarioCreator.data.tgds.RelationConstraintEquality;
 import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
@@ -45,10 +48,22 @@ public class ColumnLeafsToTable implements TableTransformation {
         final var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
         final var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
         final var newTableSet = SSet.of(newTable, modifiedTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = tgds(table, modifiedTable, newTable, newIds);
         return new Pair<>(newTableSet, tgdList);
     }
 
+    private List<TupleGeneratingDependency> tgds(Table sourceTable, Table modifiedTable, Table newTable, NewTableBase.NewIds newIds) {
+       final var sourceRelation = ReducedRelation.fromTable(sourceTable);
+       final var modifiedRelation = ReducedRelation.fromTable(modifiedTable);
+       final var newRelation = ReducedRelation.fromTable(newTable);
+       // TODO(80:20): Im folgenden fehlt die Einzigartigkeit des Primärschlüssels
+       final var constraints = List.of(
+            new RelationConstraintEquality(newIds.sourceColumn(), newIds.targetColumn())
+       );
+       return List.of(
+           new TupleGeneratingDependency(List.of(sourceRelation), List.of(modifiedRelation, newRelation), List.of())
+       );
+    }
 
     @Override
     @NotNull

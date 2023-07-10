@@ -17,6 +17,7 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.integrity.IntegrityChecker;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -42,9 +43,12 @@ class ColumnLeafsToTableTest {
         final var transformation = new ColumnLeafsToTable();
 
         // --- Act
-        final var newTableSet = transformation.transform(targetTable, idGenerator, random).first();
+        final var pair = transformation.transform(targetTable, idGenerator, random);
+        final var newTableSet = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         Assertions.assertEquals(2, newTableSet.size());
         Assertions.assertFalse(newTableSet.contains(targetTable));
         final var newTableList = newTableSet.stream()
