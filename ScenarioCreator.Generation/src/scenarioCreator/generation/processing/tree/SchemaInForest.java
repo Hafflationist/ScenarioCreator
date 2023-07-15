@@ -7,15 +7,15 @@ import scenarioCreator.generation.heterogeneity.Distance;
 
 import java.util.List;
 
-public record SchemaWithAdditionalData(
+public record SchemaInForest (
         Schema predecessor,
         List<TupleGeneratingDependency> tgdList,
         Schema schema,
         List<Distance> distanceList,
         List<String> executedTransformationList
-) implements Comparable<SchemaWithAdditionalData> {
+) implements Comparable<SchemaInForest> {
     @Override
-    public int compareTo(@NotNull SchemaWithAdditionalData o) {
+    public int compareTo(@NotNull SchemaInForest o) {
         return schema.compareTo(o.schema);
     }
 }

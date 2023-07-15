@@ -8,6 +8,7 @@ import java.util.List;
 
 public record SchemaAsResult(
         Schema schema,
+    
         List<Distance> distanceList,
         List<String> executedTransformationList,
         boolean wasTargetSchema,

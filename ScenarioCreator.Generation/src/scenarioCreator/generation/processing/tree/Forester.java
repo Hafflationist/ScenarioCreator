@@ -46,7 +46,7 @@ public class Forester implements IForester {
     }
 
     public SchemaAsResult createNext(
-            SchemaWithAdditionalData rootSchema,
+            SchemaInForest rootSchema,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
             int newChildren,
@@ -54,20 +54,20 @@ public class Forester implements IForester {
             boolean debug
     ) {
         final var tree = new TreeLeaf<>(rootSchema);
-        final var swadSet = Stream
-                .iterate((TreeEntity<SchemaWithAdditionalData>) tree, t -> step(
+        final var sifSet = Stream
+                .iterate((TreeEntity<SchemaInForest>) tree, t -> step(
                         t, tgd, oldSchemaSet, newChildren, random, debug
                 ))
                 .limit(_numberOfSteps)
                 .flatMap(te -> TreeDataOperator.getAllTreeEntityList(te).stream())
                 .map(TreeEntity::content)
-                .filter(swad -> !swad.equals(rootSchema))
+                .filter(sif -> !sif.equals(rootSchema))
                 .collect(Collectors.toCollection(TreeSet::new));
-        return chooseBestChild(swadSet, random);
+        return chooseBestChild(sifSet, random);
     }
 
-    private TreeEntity<SchemaWithAdditionalData> step(
-            TreeEntity<SchemaWithAdditionalData> oldTree,
+    private TreeEntity<SchemaInForest> step(
+            TreeEntity<SchemaInForest> oldTree,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> oldSchemaSet,
             int newChildren,
@@ -88,14 +88,14 @@ public class Forester implements IForester {
         return TreeDataOperator.replaceTreeEntity(oldTree, chosenTe, newTe);
     }
 
-    private TreeEntity<SchemaWithAdditionalData> chooseTreeEntityToExtend(
-            TreeEntity<SchemaWithAdditionalData> te, Random random
+    private TreeEntity<SchemaInForest> chooseTreeEntityToExtend(
+            TreeEntity<SchemaInForest> te, Random random
     ) {
         // Falls ein Knoten bereits das Ziel erfüllt, soll ein zufälliger Knoten erweitert werden
         final var possibilityList = TreeDataOperator.getAllTreeEntityList(te);
         final var targetNodeExists = possibilityList.parallelStream()
                 .map(TreeEntity::content)
-                .map(SchemaWithAdditionalData::distanceList)
+                .map(SchemaInForest::distanceList)
                 .allMatch(dl -> DistanceHelper.isValid(dl, _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE));
         final var rte = new RuntimeException("This cannot happen. Probably there is a bug in <getAllTreeEntityList>!");
         if (targetNodeExists) {
@@ -112,10 +112,10 @@ public class Forester implements IForester {
         return chosenNodeOpt.get();
     }
 
-    private SchemaAsResult chooseBestChild(SortedSet<SchemaWithAdditionalData> swadSet, Random random) {
-        final var targetNodeStream = swadSet.stream()
-                .filter(swad -> DistanceHelper.isValid(
-                        swad.distanceList(), _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE
+    private SchemaAsResult chooseBestChild(SortedSet<SchemaInForest> sifSet, Random random) {
+        final var targetNodeStream = sifSet.stream()
+                .filter(sif -> DistanceHelper.isValid(
+                        sif.distanceList(), _targetDefinition, DistanceHelper.AggregationMethod.AVERAGE
                 ));
         final var targetNodeOpt = StreamExtensions.tryPickRandom(targetNodeStream, random);
         if (targetNodeOpt.isPresent()) {
@@ -127,9 +127,9 @@ public class Forester implements IForester {
                     true
             );
         }
-        final var validNodeStream = swadSet.stream()
-                .filter(swad -> DistanceHelper.isValid(
-                        swad.distanceList(), _validDefinition, DistanceHelper.AggregationMethod.CONJUNCTION
+        final var validNodeStream = sifSet.stream()
+                .filter(sif -> DistanceHelper.isValid(
+                        sif.distanceList(), _validDefinition, DistanceHelper.AggregationMethod.CONJUNCTION
                 ));
         final var validNodeOpt = StreamExtensions.tryPickRandom(validNodeStream, random);
         if (validNodeOpt.isPresent()) {
@@ -142,7 +142,7 @@ public class Forester implements IForester {
             );
         }
         final var rte = new RuntimeException("No children generated!");
-        final var randomNode = StreamExtensions.pickRandomOrThrow(swadSet.stream(), rte, random);
+        final var randomNode = StreamExtensions.pickRandomOrThrow(sifSet.stream(), rte, random);
         return new SchemaAsResult(
                 randomNode.schema(),
                 randomNode.distanceList(),
@@ -152,8 +152,8 @@ public class Forester implements IForester {
         );
     }
 
-    private TreeEntity<SchemaWithAdditionalData> extendTreeEntity(
-            TreeEntity<SchemaWithAdditionalData> te,
+    private TreeEntity<SchemaInForest> extendTreeEntity(
+            TreeEntity<SchemaInForest> te,
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
             int newChildrenNum,
@@ -165,8 +165,8 @@ public class Forester implements IForester {
                 .map(o -> createNewChild(te, transformationSet, oldSchemaSet, random, debug))
                 .limit(newChildrenNum);
         final var oldChildList = switch (te) {
-            case TreeNode<SchemaWithAdditionalData> tn -> tn.childList();
-            case TreeLeaf ignore -> List.<TreeEntity<SchemaWithAdditionalData>>of();
+            case TreeNode<SchemaInForest> tn -> tn.childList();
+            case TreeLeaf ignore -> List.<TreeEntity<SchemaInForest>>of();
         };
         final var newChildList = Stream
                 .concat(oldChildList.stream(), newChildren)
@@ -189,8 +189,8 @@ public class Forester implements IForester {
         );
     }
 
-    private TreeLeaf<SchemaWithAdditionalData> createNewChild(
-            TreeEntity<SchemaWithAdditionalData> te,
+    private TreeLeaf<SchemaInForest> createNewChild(
+            TreeEntity<SchemaInForest> te,
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
             Random random,
@@ -199,8 +199,8 @@ public class Forester implements IForester {
         return createNewChildInner(te, transformationSet, oldSchemaSet, random, 10, 0, debug);
     }
 
-    private TreeLeaf<SchemaWithAdditionalData> createNewChildInner(
-            TreeEntity<SchemaWithAdditionalData> te,
+    private TreeLeaf<SchemaInForest> createNewChildInner(
+            TreeEntity<SchemaInForest> te,
             SortedSet<Transformation> transformationSet,
             SortedSet<Schema> oldSchemaSet,
             Random random,
@@ -226,10 +226,10 @@ public class Forester implements IForester {
                     te.content().executedTransformationList().stream(),
                     Arrays.stream(chosenTransformation.toString().split("@")).limit(1)
             ).toList();
-            final var newSchemaWithAdditionalData = new SchemaWithAdditionalData(
+            final var newSchemaInForest = new SchemaInForest(
                     schema, newSchemaWithTgds.second(), newSchema, newDistanceList, newExecutedTransformationList
             );
-            return new TreeLeaf<>(newSchemaWithAdditionalData);
+            return new TreeLeaf<>(newSchemaInForest);
         } catch (NoTableFoundException | NoColumnFoundException e) {
             return createNewChildInner(te, transformationSet, oldSchemaSet, random, max, acc + 1, debug);
         }

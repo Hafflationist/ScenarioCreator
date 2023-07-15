@@ -30,7 +30,7 @@ public class ScenarioCreator {
     }
 
     public Scenario create(Schema startSchema, int sizeOfScenario, int newChildren, Random random, boolean debug) {
-        final var swad = new SchemaWithAdditionalData(null, List.of(), startSchema, List.of(), List.of());
+        final var sif = new SchemaInForest(null, List.of(), startSchema, List.of(), List.of());
         final var indexStream = Stream
                 .iterate(0, i -> i + 1)
                 .limit(sizeOfScenario);
@@ -55,7 +55,7 @@ public class ScenarioCreator {
                             .map(SchemaAsResult::schema)
                             .collect(Collectors.toCollection(TreeSet::new));
                     return recursiveNewSar(
-                            forester, swad, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random, debug
+                            forester, sif, tgd, existingSchemaPureSet, existingSchemaSet, newChildren, random, debug
                     );
                 });
         return new Scenario(sarSet, avgDistance(sarSet));
@@ -63,7 +63,7 @@ public class ScenarioCreator {
 
     private SortedSet<SchemaAsResult> recursiveNewSar(
             IForester forester,
-            SchemaWithAdditionalData root,
+            SchemaInForest root,
             TreeGenerationDefinition tgd,
             SortedSet<Schema> existingSchemaPureSet,
             SortedSet<SchemaAsResult> existingSchemaSet,

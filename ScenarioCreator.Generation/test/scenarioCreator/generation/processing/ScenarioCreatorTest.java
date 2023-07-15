@@ -112,7 +112,7 @@ class ScenarioCreatorTest {
 
         @Override
         public SchemaAsResult createNext(
-                SchemaWithAdditionalData rootSchema,
+                SchemaInForest rootSchema,
                 TreeGenerationDefinition tgd,
                 SortedSet<Schema> oldSchemaSet,
                 int newChildren,
