@@ -74,9 +74,12 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(true);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(3, newTableSet.size());
         final var newInvalidTable = getTable(invalidTable.id(), newTableSet);
@@ -123,9 +126,12 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(2, newTableSet.size());
         final var newInvalidTable = getTable(invalidTable.id(), newTableSet);
@@ -161,9 +167,12 @@ class MergeColumnsTest {
         final var transformation = new MergeColumns(false);
 
         // --- Act
-        final var newSchema = transformation.transform(schema, new Random()).first();
+        final var pair = transformation.transform(schema, new Random());
+        final var newSchema = pair.first();
+        final var tgdList = pair.second();
 
         // --- Assert
+        Assertions.assertFalse(tgdList.isEmpty());
         final var newTableSet = newSchema.tableSet();
         Assertions.assertEquals(1, newTableSet.size());
         final var newTable = getTable(table.id(), newTableSet);

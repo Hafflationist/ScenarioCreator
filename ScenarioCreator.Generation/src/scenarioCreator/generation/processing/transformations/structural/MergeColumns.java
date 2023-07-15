@@ -14,6 +14,9 @@ import scenarioCreator.data.dataset.Value;
 import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.ReducedRelation;
+import scenarioCreator.data.tgds.RelationConstraint;
+import scenarioCreator.data.tgds.RelationConstraintConcatenation;
 import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
@@ -61,13 +64,14 @@ public final class MergeColumns implements SchemaTransformation {
         final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 table.functionalDependencySet(), newColumnList
         );
+        final var newTable = table
+                                .withColumnList(newColumnList)
+                                .withFunctionalDependencySet(newFunctionalDependencySet);
         final var newTableSet = StreamExtensions
                 .replaceInStream(
                         schema.tableSet().stream(),
                         table,
-                        table
-                                .withColumnList(newColumnList)
-                                .withFunctionalDependencySet(newFunctionalDependencySet)
+                        newTable
                 )
                 .map(t -> {
                     final var ncl = getNewColumnStream(t, pair).toList();
@@ -78,8 +82,28 @@ public final class MergeColumns implements SchemaTransformation {
                 })
                 .collect(Collectors.toCollection(TreeSet::new));
         final var newSchema = schema.withTableSet(newTableSet);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+
+        final var tgdList = tgds(table, newTable, pair, newColumn);
         return new Pair<>(newSchema, tgdList);
+    }
+
+    private List<TupleGeneratingDependency> tgds(
+            Table sourceTable,
+            Table destinationTable,
+            Pair<ColumnLeaf, ColumnLeaf> sourceColumnPair,
+            Column destinationColumn
+    ) {
+        final var sourceRelation = ReducedRelation.fromTable(sourceTable);
+        final var forallRows = List.of(sourceRelation);
+        final var existRows = List.of(ReducedRelation.fromTable(destinationTable));
+        final var relationConstraintList = List.of(
+            (RelationConstraint) new RelationConstraintConcatenation(
+                sourceColumnPair.first().id(),
+                sourceColumnPair.second().id(),
+                destinationColumn.id()
+            )
+        );
+        return List.of(new TupleGeneratingDependency(forallRows, existRows, relationConstraintList));
     }
 
     private Stream<Column> getNewColumnStream(Table table, Pair<ColumnLeaf, ColumnLeaf> mergedColumns) {
