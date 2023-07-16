@@ -11,6 +11,7 @@ import scenarioCreator.generation.processing.tree.generic.TreeDataOperator;
 import scenarioCreator.generation.processing.tree.generic.TreeEntity;
 import scenarioCreator.generation.processing.tree.generic.TreeLeaf;
 import scenarioCreator.generation.processing.tree.generic.TreeNode;
+import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.StreamExtensions;
 
 import java.util.*;
@@ -112,6 +113,19 @@ public class Forester implements IForester {
         return chosenNodeOpt.get();
     }
 
+    private List<TgdChainElement> sifToChain(SchemaInForest sif) {
+        if (sif.predecessorOpt().isEmpty()) {
+            return List.of();
+        }
+        final var preSif = sif.predecessorOpt().get();
+        final var preTgdChain = sifToChain(preSif);
+        final var tgdChainElement = new TgdChainElement(preSif.schema(), sif.tgdList(), sif.schema());
+        return Stream.concat(
+                preTgdChain.stream(),
+                Stream.of(tgdChainElement)
+        ).toList();
+    }
+
     private SchemaAsResult chooseBestChild(SortedSet<SchemaInForest> sifSet, Random random) {
         final var targetNodeStream = sifSet.stream()
                 .filter(sif -> DistanceHelper.isValid(
@@ -121,6 +135,7 @@ public class Forester implements IForester {
         if (targetNodeOpt.isPresent()) {
             return new SchemaAsResult(
                     targetNodeOpt.get().schema(),
+                    sifToChain(targetNodeOpt.get()),
                     targetNodeOpt.get().distanceList(),
                     targetNodeOpt.get().executedTransformationList(),
                     true,
@@ -135,6 +150,7 @@ public class Forester implements IForester {
         if (validNodeOpt.isPresent()) {
             return new SchemaAsResult(
                     validNodeOpt.get().schema(),
+                    sifToChain(validNodeOpt.get()),
                     validNodeOpt.get().distanceList(),
                     validNodeOpt.get().executedTransformationList(),
                     false,
@@ -145,6 +161,7 @@ public class Forester implements IForester {
         final var randomNode = StreamExtensions.pickRandomOrThrow(sifSet.stream(), rte, random);
         return new SchemaAsResult(
                 randomNode.schema(),
+                sifToChain(randomNode),
                 randomNode.distanceList(),
                 randomNode.executedTransformationList(),
                 false,
@@ -227,7 +244,7 @@ public class Forester implements IForester {
                     Arrays.stream(chosenTransformation.toString().split("@")).limit(1)
             ).toList();
             final var newSchemaInForest = new SchemaInForest(
-                    schema, newSchemaWithTgds.second(), newSchema, newDistanceList, newExecutedTransformationList
+                    Optional.of(te.content()), newSchemaWithTgds.second(), newSchema, newDistanceList, newExecutedTransformationList
             );
             return new TreeLeaf<>(newSchemaInForest);
         } catch (NoTableFoundException | NoColumnFoundException e) {

@@ -130,7 +130,8 @@ class ScenarioCreatorTest {
             final var distanceList = oldSchemaSet.stream()
                     .map(s -> new Distance(0.2, 0.2, 0.2, 0.2))
                     .toList();
-            return new SchemaAsResult(newSchema, distanceList, List.of(), false, false);
+            final List<TgdChainElement> tgdChain = List.of();
+            return new SchemaAsResult(newSchema, tgdChain, distanceList, List.of(), false, false);
         }
 
         record CtorCallArguments(

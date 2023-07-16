@@ -6,9 +6,10 @@ import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.heterogeneity.Distance;
 
 import java.util.List;
+import java.util.Optional;
 
 public record SchemaInForest (
-        Schema predecessor,
+        Optional<SchemaInForest> predecessorOpt,
         List<TupleGeneratingDependency> tgdList,
         Schema schema,
         List<Distance> distanceList,
