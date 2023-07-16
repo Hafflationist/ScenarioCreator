@@ -12,6 +12,7 @@ import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlus;
+import scenarioCreator.data.table.InstancesOfTable;
 import scenarioCreator.generation.heterogeneity.Distance;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.Scenario;
@@ -21,6 +22,7 @@ import scenarioCreator.generation.processing.transformations.linguistic.helpers.
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
 import scenarioCreator.generation.processing.tree.SchemaAsResult;
+import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
 
@@ -46,7 +48,8 @@ public class KörnerkissenEvaluator {
             final var scenario = getRealScenario(
                     ulc, path, startIndex, target, numberOfSchemas
             );
-            save(path, scenario);
+            final List<InstancesOfTable> initialInstancesOfTableList = List.of(); // TODO: get instances out of input path
+            save(path, scenario, initialInstancesOfTableList);
         } catch (XMLStreamException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -134,29 +137,38 @@ public class KörnerkissenEvaluator {
         }
     }
 
-    private static void save(Path path, Scenario scenario) throws IOException {
-        final var schemaIndexedList = StreamExtensions.zip(
+    private static Path stdPath(Path path, int idx, StringPlus name) {
+        final var filename = idx2String(idx) + "-" + name.rawString(LinguisticUtils::merge) + ".yaml";
+        return Path.of(path.toString(), filename);
+    }
+
+    private static void save(Path path, Scenario scenario, List<InstancesOfTable> initialInstancesOfTableList) throws IOException {
+        final var sarIndexedList = StreamExtensions.zip(
                 IntStream.iterate(1, i -> i + 1).boxed(),
-                scenario.sarList().stream()
-                        .map(SchemaAsResult::schema),
+                scenario.sarList().stream(),
                 Pair::new
         ).toList();
-        for (final var schemaWithIndex : schemaIndexedList) {
-            final var schema = schemaWithIndex.second();
-            final var idx = schemaWithIndex.first();
-            final var filename = idx2String(idx) + "-" + schema.name().rawString(LinguisticUtils::merge) + ".yaml";
-            final var filePath = Path.of(path.toString(), filename);
+        for (final var sarWithIndex : sarIndexedList) {
+            final var idx = sarWithIndex.first();
+            final var sar = sarWithIndex.second();
+            final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
+            for (final var newInstance : newInstances) {
+                final var instancePath = stdPath(path, idx, newInstance.table().name());
+                saveInstance(instancePath, newInstance);
+            }
+            final var schema = sar.schema();
+            final var filePath = stdPath(path, idx, schema.name());
             SchemaFileHandler.save(schema, filePath);
         }
-        final var schemaPairList = schemaIndexedList.stream()
-                .flatMap(swi -> schemaIndexedList.stream().map(swi2 -> new Pair<>(swi, swi2)))
+        final var sarPairList = sarIndexedList.stream()
+                .flatMap(swi -> sarIndexedList.stream().map(swi2 -> new Pair<>(swi, swi2)))
                 .filter(pair -> pair.first().first() < pair.second().first())
                 .toList();
-        for (final var schemaPair : schemaPairList) {
-            final var corrList = getCorrs(schemaPair.first().second(), schemaPair.second().second());
-            final var filename = idx2String(schemaPair.first().first())
+        for (final var sarPair : sarPairList) {
+            final var corrList = getCorrs(sarPair.first().second().schema(), sarPair.second().second().schema());
+            final var filename = idx2String(sarPair.first().first())
                     + "-"
-                    + idx2String(schemaPair.second().first())
+                    + idx2String(sarPair.second().first())
                     + "-correspondences.yaml";
             final var filePath = Path.of(path.toString(), filename);
             final var mapper = new ObjectMapper(new YAMLFactory());
@@ -164,6 +176,15 @@ public class KörnerkissenEvaluator {
                     .withFieldVisibility(JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC));
             mapper.writeValue(filePath.toFile(), corrList);
         }
+    }
+
+    private static List<InstancesOfTable> calculateInstances(List<TgdChainElement> tgdChain, List<InstancesOfTable> initialInstancesOfTableList) {
+        // TODO: implement me! (use Chateau)
+        return List.of();
+    }
+
+    private static void saveInstance(Path filePath, InstancesOfTable iot) {
+        // TODO: implement me!
     }
 
     public record KörnerkissenColumn(StringPlus name, Id id) {
