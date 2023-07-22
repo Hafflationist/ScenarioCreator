@@ -370,6 +370,11 @@ public class Main {
                 System.out.println("REEE: Wenn --körnerkissen angegeben wurde, muss auch ein \"-av <PFAD>\" oder \"--ausgabeverzeichnis <PFAD>\" angegeben werden.");
                 return;
             }
+            final var evIdx = Math.max(argList.indexOf("-ev"), argList.indexOf("--eingabeverzeichnis"));
+            if (evIdx == -1 && !isNoTgd) {
+                System.out.println("REEE: Wenn --körnerkissen und nicht --no-tgd(s) angegeben wurde, muss auch ein \"-ev <PFAD>\" oder \"--eingabeverzeichnis <PFAD>\" angegeben werden.");
+                return;
+            }
             try {
                 final var ausgabeUri = new URI(args[avIdx + 1]);
                 System.out.println("Auskotzverzeichnis: " + ausgabeUri);
