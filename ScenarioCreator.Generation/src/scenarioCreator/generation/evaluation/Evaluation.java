@@ -125,7 +125,7 @@ public final class Evaluation {
 //            System.out.println("Scenario created!");
             return Optional.of(creator.create(initSchema, config.scenarioSize, config.newChildren(), random, debug));
         } catch (IOException e) {
-            System.err.println("REEEEE!! Du hast ein ungültiges (nicht existent oder nicht schreibbar) Verzeichnis angegeben. Folgend die Eingabe:");
+            System.err.println("REEE!! Du hast ein ungültiges (nicht existent oder nicht schreibbar) Verzeichnis angegeben. Folgend die Eingabe:");
             System.err.println(e.getMessage());
             return Optional.empty();
         }

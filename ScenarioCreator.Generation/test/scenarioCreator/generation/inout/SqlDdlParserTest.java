@@ -64,7 +64,7 @@ class SqlDdlParserTest {
         final var tokenBlock = SqlDdlLexer.groupTokensInner(SqlDdlLexer.tokenize(testStr)).first();
 
         // --- Act
-        final var schema = SqlDdlParser.parse(tokenBlock);
+        final var schema = SqlDdlParser.parse(tokenBlock).get();
 
         // --- Assert
         IntegrityChecker.assertValidSchema(schema);

@@ -39,7 +39,7 @@ public class KörnerkissenEvaluator {
     private KörnerkissenEvaluator() {
     }
 
-    public static void printScenario(Path path, int startIndex, int numberOfSchemas, double hetStructural, double hetLinguistig) {
+    public static void printScenario(Path eingabeverzeichnis, Path path, int startIndex, int numberOfSchemas, double hetStructural, double hetLinguistig) {
         try {
             final var germanet = new GermaNetInterface();
             final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));

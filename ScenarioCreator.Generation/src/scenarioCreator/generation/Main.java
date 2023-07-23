@@ -3,9 +3,11 @@ package scenarioCreator.generation;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 import scenarioCreator.data.Language;
+import scenarioCreator.data.Schema;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.primitives.synset.GermanSynset;
+import scenarioCreator.data.table.InstancesOfTable;
 import scenarioCreator.generation.evaluation.Init;
 import scenarioCreator.generation.evaluation.KörnerkissenEvaluator;
 import scenarioCreator.generation.evaluation.ReachableConfigurationsExtra;
@@ -14,6 +16,7 @@ import scenarioCreator.generation.heterogeneity.constraintBased.CheckNumericalBa
 import scenarioCreator.generation.heterogeneity.constraintBased.FunctionalDependencyBasedDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.linguistic.LinguisticDistanceMeasure;
 import scenarioCreator.generation.heterogeneity.structural.ted.Ted;
+import scenarioCreator.generation.inout.Eingabeverzeichnis;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.ScenarioCreator;
 import scenarioCreator.generation.processing.integrity.IdentificationNumberCalculator;
@@ -37,6 +40,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
+import java.security.InvalidParameterException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -359,6 +363,23 @@ public class Main {
         }
     }
 
+    private static String fasseZusammen(Schema schema, List<InstancesOfTable> instanzdaten) {
+        final var tablesWithInstanzdaten = instanzdaten.stream().map(InstancesOfTable::table).collect(Collectors.toSet());
+        return "Zusammenfassung des Schemas: \n"
+                + schema.tableSet().stream()
+                .map(table -> {
+                    final var hasInstances =tablesWithInstanzdaten.contains(table);
+                    return table.name().rawString(LinguisticUtils::merge)
+                            + (hasInstances ? " (mit Instanzdaten)\n" : "(OHNE Instanzdaten)\n")
+                            + table.columnList().stream()
+                            .map(column -> "  - " + column.name().rawString(LinguisticUtils::merge))
+                            .collect(Collectors.joining("\n"));
+                })
+                .collect(Collectors.joining("\n"))
+                + "\n\n"
+                + "Instanzdaten gefunden für die Tabellen: ";
+    }
+
     public static void main(String[] args) throws XMLStreamException, IOException {
         final var isKörnerkissen = Arrays.asList(args).contains("--körnerkissen");
         final var isNoTgd = Arrays.asList(args).contains("--no-tgd") || Arrays.asList(args).contains("--no-tgds");
@@ -376,17 +397,27 @@ public class Main {
                 return;
             }
             try {
+                final var eingabeUri = new URI(args[evIdx + 1]);
+                System.out.println("Eingabeverzeichnis: " + eingabeUri);
+                final var eingabeverzeichnis = Path.of(new URI("file:///" + args[evIdx + 1]));
+                final var anfangsschemaOpt = Eingabeverzeichnis.readWholeSchema(eingabeverzeichnis);
+                if (anfangsschemaOpt.isEmpty())
+                {
+                    System.err.println("REEE: Konnte Eingabeverzeichnis nicht laden!");
+                    throw new InvalidParameterException();
+                }
+                System.out.println("Anfangsschema inklusive Instanzdaten geladen.");
+                System.out.println(fasseZusammen(anfangsschemaOpt.get().first(), anfangsschemaOpt.get().second()));
                 final var ausgabeUri = new URI(args[avIdx + 1]);
                 System.out.println("Auskotzverzeichnis: " + ausgabeUri);
                 final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
-                KörnerkissenEvaluator.printScenario(ausgabeverzeichnis, 3, 2, 0.5, 0.3);
+                KörnerkissenEvaluator.printScenario(eingabeverzeichnis, ausgabeverzeichnis, 3, 2, 0.5, 0.3);
             } catch (URISyntaxException e) {
                 System.out.println("REEE: Kein gültiger Pfad angegeben!");
             }
         } else {
 
 
-//        SqlDdlLexer.tokenize(SqlDdlLexer.testInputEinfach);
             final var path = args[0];
 //        writeRandomSchema(path);
 //        testGermaNetInterface();

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 
 public class SqlDdlParser {
 
-    public static Schema parse(SqlTokenBlock tokenBlock) {
+    public static Optional<Schema> parse(SqlTokenBlock tokenBlock) {
         return tokensToSchema("MeinSchema", tokenBlock);
     }
 
@@ -197,7 +197,7 @@ public class SqlDdlParser {
         return Optional.of(new Table(tableId, spn, columnList, Context.getDefault(), SSet.of(), SSet.of()));
     }
 
-    private static Schema tokensToSchema(String name, SqlTokenBlock hollisticBlock) {
+    private static Optional<Schema> tokensToSchema(String name, SqlTokenBlock hollisticBlock) {
         final var blocks = StreamExtensions.split(hollisticBlock.block().stream(), new TokenSemicolon());
         final var spn = new StringPlusNaked(name, Language.Mixed);
         final var id = new IdSimple(0);
@@ -207,6 +207,9 @@ public class SqlDdlParser {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toCollection(TreeSet::new));
-        return new Schema(id, spn, Context.getDefault(), tables);
+        if (tables.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(new Schema(id, spn, Context.getDefault(), tables));
     }
 }
