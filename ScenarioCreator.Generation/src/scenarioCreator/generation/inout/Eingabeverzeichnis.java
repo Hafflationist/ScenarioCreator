@@ -84,7 +84,7 @@ public class Eingabeverzeichnis {
                 .toList();
         final var valueListList = lineList.stream()
                 .skip(1)
-                .map(line -> Arrays.stream(line.split(","))
+                .map(line -> Arrays.stream(line.split("\",\""))
                         .map(value -> value.replace("\"", ""))
                         .toList()
                 ).toList();
