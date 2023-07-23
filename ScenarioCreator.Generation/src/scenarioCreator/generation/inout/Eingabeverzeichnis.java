@@ -80,7 +80,7 @@ public class Eingabeverzeichnis {
             return Optional.empty();
         }
         final var idList = Arrays.stream(firstLineOpt.get().split(","))
-                .map(name -> matchNameToColumnId(name, schema))
+                .map(name -> matchNameToColumnId(name, table))
                 .toList();
         final var valueListList = lineList.stream()
                 .skip(1)
@@ -139,12 +139,9 @@ public class Eingabeverzeichnis {
         return tableOpt.get();
     }
 
-    private static Id matchNameToColumnId(String columnName, Schema schema) {
+    private static Id matchNameToColumnId(String columnName, Table table) {
         final var reducedColumnName = reduceName(columnName);
-        final var totalColumnList = schema.tableSet().stream()
-                .flatMap(table -> table.columnList().stream())
-                .toList();
-        final var columnOpt = totalColumnList.stream()
+        final var columnOpt = table.columnList().stream()
                 .filter(column -> reduceName(column.name().rawString(LinguisticUtils::merge))
                         .equals(reducedColumnName)
                 )
@@ -153,8 +150,7 @@ public class Eingabeverzeichnis {
             System.err.println("REEE: Konnte kein SQL-DDL parsen für die korrespondierende Spalte" + columnName);
             System.err.println("REEE: Gesucht wurde nach der Zeichenfolge \"" + reducedColumnName + "\"");
             System.err.println("REEE: Gefunden wurde nur:");
-            final var names = schema.tableSet().stream()
-                    .flatMap(table -> table.columnList().stream())
+            final var names = table.columnList().stream()
                     .map(Column::name)
                     .map(name -> name.rawString(LinguisticUtils::merge))
                     .map(Eingabeverzeichnis::reduceName)
