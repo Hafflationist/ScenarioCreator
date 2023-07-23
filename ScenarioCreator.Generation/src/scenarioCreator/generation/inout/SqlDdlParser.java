@@ -105,6 +105,7 @@ public class SqlDdlParser {
             case "smallint" -> DataTypeEnum.INT16;
             case "int" -> DataTypeEnum.INT32;
             case "bigint" -> DataTypeEnum.INT64;
+            case "float" -> DataTypeEnum.FLOAT32;
             case "timestamp", "date" -> DataTypeEnum.DATETIME;
             case "varchar", "nvarchar" -> DataTypeEnum.NVARCHAR;
             default -> DataTypeEnum.DECIMAL;
@@ -184,6 +185,9 @@ public class SqlDdlParser {
             return Optional.empty();
         }
         final var lines = StreamExtensions.split(blockOpt.get().block().stream(), new TokenComma()).toList();
+        System.out.println();
+        System.out.println("Detected lines: " + lines);
+        System.out.println();
         final var pks = lines.stream()
                 .filter(line -> line.stream().noneMatch(t -> t instanceof TokenPrimary))
                 .map(SqlDdlParser::tokensToPrimaryKeyConstraint)
