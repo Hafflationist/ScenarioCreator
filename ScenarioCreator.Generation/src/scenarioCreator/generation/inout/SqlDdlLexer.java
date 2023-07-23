@@ -94,6 +94,7 @@ public class SqlDdlLexer {
     private static SqlToken word2Token(String word) {
         final var dataTypes = Set.of(
                 "bit", "tiny", "tinyint", "smallint", "int", "bigint",
+                "float",
                 "timestamp", "date", "char", "varchar", "nvarchar"
         );
         if (dataTypes.contains(word)) {
