@@ -10,7 +10,9 @@ public class Sql2Schema {
     }
 
     public static Optional<Schema> convert(String input) {
+        System.out.println("Aggregiertes SQL: " + input);
         final var tokens = SqlDdlLexer.tokenize(input);
+        System.out.println("Lexierte Tokens: " + tokens);
         final var tokenBlock = SqlDdlLexer.groupTokensInner(tokens).first();
         return SqlDdlParser.parse(tokenBlock);
     }
