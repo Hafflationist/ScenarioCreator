@@ -49,7 +49,7 @@ public class Eingabeverzeichnis {
                         System.err.println("REEE: Fehlerhafte Datei: " + file.getName());
                         throw new RuntimeException(e);
                     }
-                }).collect(Collectors.joining("\n"));
+                }).collect(Collectors.joining(";\n"));
         return Sql2Schema.convert(sqlString);
     }
 
