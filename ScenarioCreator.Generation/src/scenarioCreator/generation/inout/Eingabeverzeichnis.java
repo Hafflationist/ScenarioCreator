@@ -27,6 +27,7 @@ public class Eingabeverzeichnis {
 
     public static Optional<Pair<Schema, List<InstancesOfTable>>> readWholeSchema(Path eingabeverzeichnis) {
         final var fileArray = new File(eingabeverzeichnis.toUri()).listFiles();
+        System.out.println("Folgende Dateien wurden gefunden: " + Arrays.stream(fileArray).toList());
         final var schemaOpt = filesToSchema(fileArray);
         return schemaOpt.map(schema ->
                 new Pair<>(
@@ -41,13 +42,14 @@ public class Eingabeverzeichnis {
                 .filter(file -> file.getName().endsWith(".sql"))
                 .flatMap(file -> {
                     try {
+                        System.out.println("Lese " + file.getName());
                         return Files.readAllLines(file.toPath()).stream();
                     } catch (IOException e) {
                         System.err.println("REEE: Fehler beim Lesen der .sql-Dateien!");
                         System.err.println("REEE: Fehlerhafte Datei: " + file.getName());
                         throw new RuntimeException(e);
                     }
-                }).collect(Collectors.joining());
+                }).collect(Collectors.joining("\n"));
         return Sql2Schema.convert(sqlString);
     }
 
