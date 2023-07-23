@@ -40,10 +40,10 @@ public class Eingabeverzeichnis {
     private static Optional<Schema> filesToSchema(File[] fileArray) {
         final var sqlString = Arrays.stream(fileArray)
                 .filter(file -> file.getName().endsWith(".sql"))
-                .flatMap(file -> {
+                .map(file -> {
                     try {
                         System.out.println("Lese " + file.getName());
-                        return Files.readAllLines(file.toPath()).stream();
+                        return Files.readAllLines(file.toPath()).stream().collect(Collectors.joining());
                     } catch (IOException e) {
                         System.err.println("REEE: Fehler beim Lesen der .sql-Dateien!");
                         System.err.println("REEE: Fehlerhafte Datei: " + file.getName());
