@@ -36,7 +36,7 @@ public final class Evaluation {
                 .iterate(startIndex, i -> i + 1)
                 .limit(rounds)
 //                .parallel()
-                .map(i -> runForester(config, ulc, path, i, false))
+                .map(i -> runForester(Init.getInitSchema(ulc), config, ulc, path, i, false))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .flatMap(scenario -> scenario.sarList().stream())
@@ -64,7 +64,7 @@ public final class Evaluation {
     }
 
     private static Optional<Scenario> runForesterInner(
-            FullConfiguration config, String pathStr, Schema initSchema, int seed, UnifiedLanguageCorpus ulc, boolean debug
+            Schema initSchema, FullConfiguration config, String pathStr, int seed, UnifiedLanguageCorpus ulc, boolean debug
     ) {
         try {
             // clean directory
@@ -133,12 +133,14 @@ public final class Evaluation {
 
 
     public static Optional<Scenario> runForester(
-            FullConfiguration config, UnifiedLanguageCorpus ulc, String path, int seed, boolean debug
+            Schema anfangsschema,
+            FullConfiguration config,
+            UnifiedLanguageCorpus ulc,
+            String path,
+            int seed,
+            boolean debug
     ) {
-        System.out.println("Anfangsschema laden");
-        final var initSchema = Init.getInitSchema(ulc);
-        System.out.println("Anfangsschema geladen!");
-        return runForesterInner(config, path, initSchema, seed, ulc, debug);
+        return runForesterInner(anfangsschema, config, path, seed, ulc, debug);
     }
 
     public record FullConfiguration(DistanceDefinition dd, int scenarioSize, int treeSteps, int newChildren) {

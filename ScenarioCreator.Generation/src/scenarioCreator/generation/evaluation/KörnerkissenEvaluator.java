@@ -16,12 +16,13 @@ import scenarioCreator.data.table.InstancesOfTable;
 import scenarioCreator.generation.heterogeneity.Distance;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.Scenario;
+import scenarioCreator.generation.processing.integrity.IntegrityChecker;
+import scenarioCreator.generation.processing.preprocessing.SemanticSaturation;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.GermaNetInterface;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
-import scenarioCreator.generation.processing.tree.SchemaAsResult;
 import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
@@ -39,14 +40,26 @@ public class KörnerkissenEvaluator {
     private KörnerkissenEvaluator() {
     }
 
-    public static void printScenario(Path eingabeverzeichnis, Path path, int startIndex, int numberOfSchemas, double hetStructural, double hetLinguistig) {
+    public static void printScenario(
+            Pair<Schema, List<InstancesOfTable>> anfangsschema,
+            Path path,
+            int startIndex,
+            int numberOfSchemas,
+            double hetStructural,
+            double hetLinguistig
+    ) {
         try {
             final var germanet = new GermaNetInterface();
             final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
+            // Anreichern des Startschemas:
+            IntegrityChecker.assertValidSchema(anfangsschema.first());
+            final var ss = new SemanticSaturation(ulc);
+            final var semanticInitSchema = ss.saturateSemantically(anfangsschema.first());
+            IntegrityChecker.assertValidSchema(semanticInitSchema);
 
             final var target = new Distance(hetStructural, hetLinguistig, 0.1, Double.NaN);
             final var scenario = getRealScenario(
-                    ulc, path, startIndex, target, numberOfSchemas
+                    semanticInitSchema, ulc, path, startIndex, target, numberOfSchemas
             );
             final List<InstancesOfTable> initialInstancesOfTableList = List.of(); // TODO: get instances out of input path
             save(path, scenario, initialInstancesOfTableList);
@@ -56,13 +69,14 @@ public class KörnerkissenEvaluator {
     }
 
     private static Scenario getRealScenario(
+            Schema anfangsschema,
             UnifiedLanguageCorpus ulc, Path path, int startIndex, Distance target, int numberOfSchemas
     ) {
         // Da die Kreation manchmal fehlschlägt, wird hier am laufenden Band neu berechnet bis es klappt.
         final var scenarioOpt = Stream
                 .iterate(startIndex, seed -> seed + 1)
                 .limit(100)
-                .map(seed -> getScenarioOpt(ulc, path, seed, target, numberOfSchemas))
+                .map(seed -> getScenarioOpt(anfangsschema, ulc, path, seed, target, numberOfSchemas))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .findFirst();
@@ -73,6 +87,7 @@ public class KörnerkissenEvaluator {
     }
 
     private static Optional<Scenario> getScenarioOpt(
+            Schema anfangsschema,
             UnifiedLanguageCorpus ulc, Path path, int seed, Distance target, int numberOfSchemas
     ) {
         System.out.println("Körnerkissen.Evaluation.getScenarioOpt with seed = " + seed + " and target = " + target);
@@ -83,7 +98,7 @@ public class KörnerkissenEvaluator {
                 new DistanceDefinition.Target(0.0, Double.NaN, 1.0)
         );
         final var config = new Evaluation.FullConfiguration(dd, numberOfSchemas, 64, 1);
-        return Evaluation.runForester(config, ulc, path.toString(), seed, false);
+        return Evaluation.runForester(anfangsschema, config, ulc, path.toString(), seed, false);
     }
 
     private static DistanceDefinition.Target bufferize(double avg) {

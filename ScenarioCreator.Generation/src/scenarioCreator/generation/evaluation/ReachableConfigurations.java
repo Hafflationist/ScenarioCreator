@@ -114,7 +114,7 @@ public final class ReachableConfigurations {
                 new DistanceDefinition.Target(0.0, Double.NaN, 1.0)
         );
         final var config = new Evaluation.FullConfiguration(dd, 5, 64, 1);
-        return Evaluation.runForester(config, ulc, path, seed, false);
+        return Evaluation.runForester(Init.getInitSchema(ulc), config, ulc, path, seed, false);
     }
 
     private static DistanceDefinition.Target bufferize(double avg) {

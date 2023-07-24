@@ -141,7 +141,7 @@ public final class ReachableConfigurationsExtra {
         );
         final var config = new Evaluation.FullConfiguration(dd, 5, maxExpansionSteps, children);
         final var start = System.currentTimeMillis();
-        final var scenarioOpt = Evaluation.runForester(config, ulc, path, seed, true);
+        final var scenarioOpt = Evaluation.runForester(Init.getInitSchema(ulc), config, ulc, path, seed, true);
         final var end = System.currentTimeMillis();
         final var diff = end - start;
         return scenarioOpt.map(scenario -> new Pair<>(scenario, diff));
