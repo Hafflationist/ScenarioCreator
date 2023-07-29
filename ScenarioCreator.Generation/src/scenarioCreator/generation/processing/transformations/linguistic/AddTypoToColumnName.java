@@ -38,7 +38,7 @@ public class AddTypoToColumnName implements ColumnTransformation {
             case ColumnCollection col -> col.withName(newName);
         };
         final var newColumnList = List.of(newColumn);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         return new Pair<>(newColumnList, tgdList);
     }
 

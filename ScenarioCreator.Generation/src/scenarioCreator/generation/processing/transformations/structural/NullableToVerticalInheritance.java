@@ -67,7 +67,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
         );
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 
@@ -157,7 +157,6 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 baseTableIdPart.extensionNumber() + 1,
                 MergeOrSplitType.Other
         );
-        // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
         final var newName = LinguisticUtils.merge(
                 baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random
         );
@@ -228,7 +227,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
     }
 
     private boolean hasNullableColumns(Table table) {
-        // TODO: handling of foreign keys could be added
+        // TODO(80:20): handling of foreign keys could be added
         final var primaryKeyIsNotForeignKeyOrInverseForeignKey =
                 table.columnList().stream()
                         .filter(column -> column.containsConstraint(ColumnConstraintPrimaryKey.class))

@@ -61,7 +61,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         final var newBaseTable = createBaseTable(table, extractableColumnList);
         final var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 
@@ -114,7 +114,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
 
     private Table createDerivingTable(Table baseTable, List<Column> extractableColumnList,
                                       NewIdComplex newIdComplex, Random random) {
-        // TODO: Vielleicht könnte man hier nen besseren Namen generieren:
         final var newName = LinguisticUtils.merge(baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random);
 
         final var newColumnList = baseTable.columnList().stream()
@@ -152,7 +151,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
     private boolean hasNullableColumnsAndNoInverseConstraints(Table table) {
         final var hasNullableColumns = table.columnList().stream().anyMatch(Column::isNullable);
         final var hasEnoughColumns = table.columnList().size() >= 2;
-        // TODO: Das Problem bei ausgehenden Fremdschlüsselbeziehungen ist die notwendige Duplikation der Beziehung, falls die Fremdschlüsselspalte keine Primärschlüsselspalte ist.
+        // TODO(80:20): Das Problem bei ausgehenden Fremdschlüsselbeziehungen ist die notwendige Duplikation der Beziehung, falls die Fremdschlüsselspalte keine Primärschlüsselspalte ist.
         // So eine Beziehung würde eine schemaweite Transformation erfordern.
         // Die Lösung wirkt anstrengend :(
         final var hasNoForeignKeyConstraints = table.columnList().stream()

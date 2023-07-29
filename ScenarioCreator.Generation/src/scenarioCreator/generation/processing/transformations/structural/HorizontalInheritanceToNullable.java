@@ -77,7 +77,7 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 derivationIntegrationResult.idTranslationMap(),
                 Set.of()
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
         return new Pair<>(newSchema, tgdList);
     }
 
@@ -181,7 +181,6 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
         );
         final var newCheckExpression = new CheckDisjunction(SSet.of(conjunction1, conjunction2));
         final var newNumericalConstraint = new ColumnConstraintCheckNumerical(newCheckExpression);
-        // TODO: maybe (don't!) simplify checkExpression
         return SSet.prepend(newNumericalConstraint, partition.no().collect(Collectors.toCollection(TreeSet::new)));
     }
 

@@ -146,7 +146,6 @@ public final class MergeColumns implements SchemaTransformation {
     }
 
     private Column generateNewColumn(ColumnLeaf columnA, ColumnLeaf columnB, Random random) {
-        // TODO this method can be improved dramatically!
         // Sobald die Kontexteigenschaft eine Bedeutung bekommt, müsste diese auch verschmolzen werden.
         final var newId = new IdMerge(columnA.id(), columnB.id(), MergeOrSplitType.And);
         final var newName = LinguisticUtils.merge(columnA.name(), columnB.name(), random);

@@ -38,7 +38,7 @@ public class TableToColumnCollection implements SchemaTransformation {
     @NotNull
     public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var newSchema = IngestionBase.fullRandomIngestion(schema, this::columnGenerator, _flags, random).first();
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newSchema, tgdList);
     }
 

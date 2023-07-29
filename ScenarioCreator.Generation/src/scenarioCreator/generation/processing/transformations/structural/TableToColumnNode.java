@@ -40,7 +40,7 @@ public class TableToColumnNode implements SchemaTransformation {
         final var newSchema = IngestionBase.fullRandomIngestion(
                 schema, this::columnGenerator, _flags, random
         ).first();
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newSchema, tgdList);
     }
 

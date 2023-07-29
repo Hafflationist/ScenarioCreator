@@ -36,7 +36,7 @@ public class RenameSchema implements SchemaTransformation {
     public Pair<Schema, List<TupleGeneratingDependency>> transform(Schema schema, Random random) {
         final var newName = getNewName(schema.name(), random);
         final var newSchema = schema.withName(newName);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+    final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         return new Pair<>(newSchema, tgdList);
     }
 

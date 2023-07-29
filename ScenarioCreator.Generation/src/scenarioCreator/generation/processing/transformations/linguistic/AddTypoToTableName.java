@@ -34,7 +34,7 @@ public class AddTypoToTableName implements TableTransformation {
     public Pair<SortedSet<Table>, List<TupleGeneratingDependency>> transform(Table table, Function<Integer, Id[]> idGenerator, Random random) {
         final var newName = CharBase.introduceTypo(table.name(), random);
         final var newTableSet = SSet.of(table.withName(newName));
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         return new Pair<>(newTableSet, tgdList);
     }
 

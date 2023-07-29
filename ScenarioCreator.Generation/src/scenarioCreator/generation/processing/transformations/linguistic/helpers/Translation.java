@@ -85,20 +85,13 @@ public class Translation {
         return switch (name.language()) {
             case English:
                 final var germanRawString = translate(name.rawString(), Language.German, random);
-                // TODO: get translation
                 yield new StringPlusNaked(germanRawString, Language.German);
-
             case German:
                 final var englishRawString = translate(name.rawString(), Language.English, random);
-                // TODO: get translation
                 yield new StringPlusNaked(englishRawString, Language.English);
-
             case Mixed:
                 final var newLanguage = (random.nextInt() % 2 == 0) ? Language.German : Language.English;
                 final var newRawString = name.rawString();
-                // TODO: get translation
-                yield new StringPlusNaked(newRawString, newLanguage);
-
             default:
                 throw new IllegalStateException("Unexpected value: " + name.language());
         };
@@ -106,7 +99,7 @@ public class Translation {
 
     @NotNull
     public String translate(String string, Language targetLanguage, Random random) {
-        // TODO: Use a lib
+        // TODO(80:20): Use a lib
         return string;
     }
 

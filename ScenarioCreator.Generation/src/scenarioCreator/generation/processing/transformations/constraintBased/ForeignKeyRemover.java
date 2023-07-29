@@ -77,7 +77,7 @@ public class ForeignKeyRemover implements SchemaTransformation {
                 .map(t -> (t.equals(chosenTable) ? newTable : t))
                 .collect(Collectors.toCollection(TreeSet::new));
         final var newSchema = removeForeignKeyInverse(schema.withTableSet(newTableSet), chosenColumn.id());
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(80:20): tgds
         return new Pair<>(newSchema, tgdList);
     }
 

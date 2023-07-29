@@ -86,7 +86,6 @@ public final class ReachableConfigurations {
             UnifiedLanguageCorpus ulc, String path, int startIndex, int rounds, Distance target
     ) {
         // Die Distanzliste stellt den Fehler über Anläufe dar.
-        // TODO: An genau dieser Stelle könnte man auch die Varianz bestimmen!
         final var distanceList = Stream
                 .iterate(startIndex, seed -> seed + 1)
                 .limit(rounds)

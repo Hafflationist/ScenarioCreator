@@ -16,7 +16,6 @@ public enum DataTypeEnum {
     INT64,
     DATETIME,
     NVARCHAR;
-    // TODO: Add more
 
     public static DataTypeEnum getRandom(Random random) {
         final var rnd = random.nextInt(0, 10);

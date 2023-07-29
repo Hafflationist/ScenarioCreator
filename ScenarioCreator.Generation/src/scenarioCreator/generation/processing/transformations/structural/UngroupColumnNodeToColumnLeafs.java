@@ -32,7 +32,7 @@ public class UngroupColumnNodeToColumnLeafs implements ColumnTransformation {
         if (!(column instanceof ColumnNode node)) {
             throw new TransformationCouldNotBeExecutedException("Type of column wasn't ColumnNode!");
         }
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         if (node.isNullable()) {
             final var newColumnList = node.columnList().stream().map(co -> {
                if(co.isNullable()) {

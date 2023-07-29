@@ -47,7 +47,7 @@ public class GroupColumnLeafsToNode implements TableTransformation {
                 (Column)newColumn).toList();
 
         final var newTableSet = SSet.of(table.withColumnList(newColumnList));
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 

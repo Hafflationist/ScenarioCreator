@@ -41,7 +41,7 @@ public class ChangeLanguageOfColumnName implements ColumnTransformation {
             throw new TransformationCouldNotBeExecutedException("Name of column cannot be translated!");
         }
         final var newNameOpt = _translation.translate(column.name(), random);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         if (newNameOpt.isEmpty()) {
             return new Pair<>(List.of(column), tgdList);
         }

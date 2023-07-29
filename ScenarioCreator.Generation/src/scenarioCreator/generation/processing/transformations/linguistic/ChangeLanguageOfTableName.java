@@ -45,7 +45,7 @@ public class ChangeLanguageOfTableName implements TableTransformation {
         final var tableSet = _translation.translate(table.name(), random)
                 .map(newName -> SSet.of(table.withName(newName)))
                 .orElse(SSet.of(table));
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         return new Pair<>(tableSet, tgdList);
     }
 

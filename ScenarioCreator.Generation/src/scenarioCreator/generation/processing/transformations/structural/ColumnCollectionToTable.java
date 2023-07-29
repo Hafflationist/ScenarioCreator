@@ -50,7 +50,7 @@ public class ColumnCollectionToTable implements TableTransformation {
         );
         final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
         final var newTableSet = SSet.of(newTable, modifiedTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 

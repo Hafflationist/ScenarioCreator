@@ -45,7 +45,7 @@ public class FunctionalDependencyRemover implements TableTransformation {
                 .replaceInStream(fdSet.stream(), chosenFdSet, Stream.of())
                 .collect(Collectors.toCollection(TreeSet::new));
         final var newTableSet = SSet.of(table.withFunctionalDependencySet(newFdSet));
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(80:20): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 

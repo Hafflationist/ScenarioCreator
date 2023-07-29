@@ -42,7 +42,7 @@ public class ChangeUnitOfMeasure implements ColumnTransformation {
         final var newUnitOfMeasure = transformUnitOfMeasure(columnLeaf.context().unitOfMeasure(), random);
         final var newColumn = (Column) columnLeaf.withContext(columnLeaf.context().withUnitOfMeasure(newUnitOfMeasure));
         final var newColumnList = Collections.singletonList(newColumn);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Hier werden keine benötigt, da keine strukturelle Veränderung vorliegt.
         return new Pair<>(newColumnList, tgdList);
     }
 

@@ -46,7 +46,7 @@ public class RenameColumn implements ColumnTransformation {
             throw TRANSFORMATION_EXCEPTION;
         }
         final var newName = getNewName(column.name(), random);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         final var newColumnList = switch (column) {
             case ColumnLeaf c -> List.of((Column) c.withName(newName));
             case ColumnNode c -> List.of((Column) c.withName(newName));

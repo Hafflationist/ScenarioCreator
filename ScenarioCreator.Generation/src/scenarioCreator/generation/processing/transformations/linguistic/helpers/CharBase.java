@@ -45,7 +45,6 @@ public final class CharBase {
     }
 
     private static char generateAuthenticRandomChar(char contextChar, Random random) {
-        // TODO: Hier böte sich die Möglichkeit, anhand von QWERTZ wahrscheinliche Kandidaten zu finden.
         final var startCharacter = Character.isUpperCase(contextChar) ? 'A' : 'a';
         return (char)(random.nextInt(26) + startCharacter);
     }

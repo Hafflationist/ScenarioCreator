@@ -44,7 +44,7 @@ public class ChangeDataType implements ColumnTransformation {
                         .withDataType(newDataType)
                         .withContext(leaf.context().withNumericalDistribution(NumericalDistribution.getDefault()))
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Hier findet keine relevante Änderung statt für die Instanzdaten
         return new Pair<>(newColumnList, tgdList);
     }
 

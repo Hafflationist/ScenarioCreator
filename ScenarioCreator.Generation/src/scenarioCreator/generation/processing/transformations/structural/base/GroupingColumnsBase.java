@@ -33,7 +33,6 @@ public class GroupingColumnsBase {
     }
 
     public static StringPlus mergeNames(List<Column> columnList, Random random) {
-        // TODO: Vllt könnte man hier ein besseren neuen Namen finden...
         final var allNames = columnList.stream().map(Column::name).toList();
         return allNames.stream()
                 .reduce((a, b) -> LinguisticUtils.merge(a, b, random))

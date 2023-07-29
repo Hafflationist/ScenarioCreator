@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 
-// TODO: Zurzeit werden hier nur auf der obersten Ebene Spalten zusammengefasst. Theoretisch wäre dies auf beliebigen Ebenen möglich.
+// TODO(80:20): Zurzeit werden hier nur auf der obersten Ebene Spalten zusammengefasst. Theoretisch wäre dies auf beliebigen Ebenen möglich.
 public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
     @Override
     public boolean conservesFlatRelations() {
@@ -57,7 +57,7 @@ public class GroupColumnLeafsToNodeNested implements ColumnTransformation {
             case ColumnCollection collection -> collection.withColumnList(newInnerColumnList);
             default -> throw transEx;
         });
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newColumnList, tgdList);
     }
 

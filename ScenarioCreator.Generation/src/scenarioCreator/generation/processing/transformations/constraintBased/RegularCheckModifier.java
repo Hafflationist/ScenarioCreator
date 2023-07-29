@@ -51,7 +51,7 @@ public class RegularCheckModifier implements ColumnTransformation {
             case ColumnLeaf c -> c.withConstraintSet(newConstraintSet);
             case ColumnNode c -> c.withConstraintSet(newConstraintSet);
         });
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Keine strukturelle Änderung und somit keine TGDs
         return new Pair<>(newColumnList, tgdList);
     }
 

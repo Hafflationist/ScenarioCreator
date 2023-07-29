@@ -39,7 +39,7 @@ public class ChangeLanguageOfSchemaName implements SchemaTransformation {
         final var newSchema = _translation.translate(schema.name(), random)
                 .map(schema::withName)
                 .orElse(schema);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Namen werden nach dem Parsen der Instanzdaten eh vergessen
         return new Pair<>(newSchema, tgdList);
     }
 

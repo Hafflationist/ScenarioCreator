@@ -103,7 +103,6 @@ public final class ReachableConfigurationsExtra {
     ) {
         final var target = new Distance(0.5, 0.3, 0.1, Double.NaN);
         // Die Distanzliste stellt den Fehler über Anläufe dar.
-        // TODO: An genau dieser Stelle könnte man auch die Varianz bestimmen!
         final var pairList = Stream
                 .iterate(startIndex, seed -> seed + 1)
                 .limit(rounds)

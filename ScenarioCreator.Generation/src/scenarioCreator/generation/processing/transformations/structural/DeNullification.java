@@ -40,7 +40,7 @@ public class DeNullification implements ColumnTransformation {
             default -> throw new TransformationCouldNotBeExecutedException("Column is not valid!");
         };
         final var newColumnList = List.of(newColumn);
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Hier wird keine tgd-relevante Änderung ausgeführt
         return new Pair<>(newColumnList, tgdList);
     }
 

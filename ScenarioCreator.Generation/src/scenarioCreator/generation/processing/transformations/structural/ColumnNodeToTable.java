@@ -48,7 +48,7 @@ public class ColumnNodeToTable implements TableTransformation {
         final var newTable = NewTableBase.createNewTable(table, column.name(), node.columnList(), newIds, true);
         final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, true);
         final var newTableSet = SSet.of(newTable, modifiedTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newTableSet, tgdList);
     }
 

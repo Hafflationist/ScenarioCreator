@@ -80,7 +80,7 @@ public class WordNetInterface implements LanguageCorpus {
 
     @Override
     public SortedSet<GlobalSynset> estimateSynset(String word, SortedSet<String> otherWordSet) {
-        // TODO: Diese Methode funktioniert zurzeit nicht richtig.
+        // TODO(80:20): Diese Methode funktioniert zurzeit nicht richtig.
         if (_dict.getIndexWord(word, POS.NOUN) == null) {
             return SSet.of();
         }

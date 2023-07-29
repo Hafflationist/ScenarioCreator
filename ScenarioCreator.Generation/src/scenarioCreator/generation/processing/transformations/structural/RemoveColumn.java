@@ -51,7 +51,7 @@ public class RemoveColumn implements TableTransformation {
                         .withColumnList(newColumnList)
                         .withFunctionalDependencySet(newFdSet)
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); //TODO: tgds
+        final List<TupleGeneratingDependency> tgdList = List.of(); // Eine Löschung wird durch fehlende TGDs dargestellt
         return new Pair<>(newTableSet, tgdList);
     }
 
