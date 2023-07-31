@@ -1,6 +1,7 @@
 package scenarioCreator.generation.evaluation;
 
 import atom.ProvenanceInformation;
+import atom.RelationalAtom;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
@@ -202,6 +203,8 @@ public class KörnerkissenEvaluator {
     }
 
     private static List<InstancesOfTable> chaseOneStep(TgdChainElement tgdChainElement, List<InstancesOfTable> instancesOfTableList) {
+        // Falls es keinen Vorgänger gibt, befinden wir uns beim Anfangsschema
+        if (tgdChainElement.predecessor() == null) return instancesOfTableList;
         final var chateauSchema = getChateauSchema(tgdChainElement.predecessor(), tgdChainElement.schema());
         final var chateauAtoms = new LinkedHashSet<>(instancesOfTableList.stream()
                 .flatMap(KörnerkissenEvaluator::getChateauInstance)
@@ -211,11 +214,30 @@ public class KörnerkissenEvaluator {
                 .map(KörnerkissenEvaluator::getChateauConstraint)
                 .toList());
         final var chateauInstanceNew = chase.Chase.chase(chateauInstance, chateauConstraintSet);
-        return reconvertInstances(chateauInstanceNew);
+        return reconvertInstances(tgdChainElement.schema(), chateauInstanceNew);
     }
 
-    private static List<InstancesOfTable> reconvertInstances(instance.Instance chateauInstance) {
-        // TODO Chateaudatenstrukturen zu ScenarioCretor-Datenstrukturen umformen
+    private static List<InstancesOfTable> reconvertInstances(Schema schema, instance.Instance chateauInstance) {
+        final var raGrouping = chateauInstance.getRelationalAtoms().stream()
+                .collect(Collectors.groupingBy(RelationalAtom::getName));
+        return raGrouping.keySet().stream()
+                .map(tableName -> schema.tableSet().stream()
+                        .filter(t -> prependNeu(t.name().rawString(LinguisticUtils::merge)).equals(tableName))
+                        .findFirst())
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(foundTable -> {
+                    final var tableName = prependNeu(foundTable.name().rawString(LinguisticUtils::merge));
+                    final var entryList = raGrouping.get(tableName).stream()
+                            .map(ra -> reconvertEntries(ra, foundTable.columnList()))
+                            .toList();
+                    return new InstancesOfTable(foundTable, entryList);
+                })
+                .toList();
+    }
+
+    private static Map<Column, String> reconvertEntries(atom.RelationalAtom ra, List<Column> columnList) {
+        // TODO Chateaudatenstrukturen zu ScenarioCreator-Datenstrukturen umformen
         throw new NotImplementedException("implement me!");
     }
 
