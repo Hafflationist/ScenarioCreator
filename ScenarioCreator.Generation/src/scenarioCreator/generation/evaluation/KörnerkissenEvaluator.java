@@ -1,8 +1,10 @@
 package scenarioCreator.generation.evaluation;
 
+import atom.ProvenanceInformation;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import org.apache.commons.lang3.NotImplementedException;
 import org.utils.Correspondence;
 import scenarioCreator.data.Language;
 import scenarioCreator.data.Schema;
@@ -13,6 +15,8 @@ import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.table.InstancesOfTable;
+import scenarioCreator.data.table.Table;
+import scenarioCreator.data.tgds.TupleGeneratingDependency;
 import scenarioCreator.generation.heterogeneity.Distance;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.Scenario;
@@ -26,13 +30,13 @@ import scenarioCreator.generation.processing.tree.DistanceDefinition;
 import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
+import term.VariableType;
 
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -41,28 +45,25 @@ public class KörnerkissenEvaluator {
     }
 
     public static void printScenario(
-            Pair<Schema, List<InstancesOfTable>> anfangsschema,
-            Path path,
+            Pair<Schema, List<InstancesOfTable>> anfangsschemaUndInstanzen, Path path,
             int startIndex,
             int numberOfSchemas,
-            double hetStructural,
-            double hetLinguistig
+            double hetStructural, double hetLinguistig
     ) {
         try {
             final var germanet = new GermaNetInterface();
             final var ulc = new UnifiedLanguageCorpus(Map.of(Language.German, germanet, Language.English, new WordNetInterface()));
             // Anreichern des Startschemas:
-            IntegrityChecker.assertValidSchema(anfangsschema.first());
+            IntegrityChecker.assertValidSchema(anfangsschemaUndInstanzen.first());
             final var ss = new SemanticSaturation(ulc);
-            final var semanticInitSchema = ss.saturateSemantically(anfangsschema.first());
+            final var semanticInitSchema = ss.saturateSemantically(anfangsschemaUndInstanzen.first());
             IntegrityChecker.assertValidSchema(semanticInitSchema);
 
             final var target = new Distance(hetStructural, hetLinguistig, 0.1, Double.NaN);
             final var scenario = getRealScenario(
                     semanticInitSchema, ulc, path, startIndex, target, numberOfSchemas
             );
-            final List<InstancesOfTable> initialInstancesOfTableList = List.of(); // TODO: get instances out of input path
-            save(path, scenario, initialInstancesOfTableList);
+            save(path, scenario, anfangsschemaUndInstanzen.second());
         } catch (XMLStreamException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -161,8 +162,7 @@ public class KörnerkissenEvaluator {
         final var sarIndexedList = StreamExtensions.zip(
                 IntStream.iterate(1, i -> i + 1).boxed(),
                 scenario.sarList().stream(),
-                Pair::new
-        ).toList();
+                Pair::new).toList();
         for (final var sarWithIndex : sarIndexedList) {
             final var idx = sarWithIndex.first();
             final var sar = sarWithIndex.second();
@@ -193,13 +193,116 @@ public class KörnerkissenEvaluator {
         }
     }
 
-    private static List<InstancesOfTable> calculateInstances(List<TgdChainElement> tgdChain, List<InstancesOfTable> initialInstancesOfTableList) {
-        // TODO: implement me! (use Chateau)
-        return List.of();
+    private static List<InstancesOfTable> calculateInstances(List<TgdChainElement> tgdChain, List<InstancesOfTable> instancesOfTableList) {
+        if (tgdChain.isEmpty()) return instancesOfTableList;
+        final var firstTgdChainElement = tgdChain.get(0);
+        final var tailTgdChain = tgdChain.stream().skip(1).toList();
+        final var nextInstancesOfTableList = chaseOneStep(firstTgdChainElement, instancesOfTableList);
+        return calculateInstances(tailTgdChain, nextInstancesOfTableList);
+    }
+
+    private static List<InstancesOfTable> chaseOneStep(TgdChainElement tgdChainElement, List<InstancesOfTable> instancesOfTableList) {
+        final var chateauSchema = getChateauSchema(tgdChainElement.predecessor(), tgdChainElement.schema());
+        final var chateauAtoms = new LinkedHashSet<>(instancesOfTableList.stream()
+                .flatMap(KörnerkissenEvaluator::getChateauInstance)
+                .toList());
+        final var chateauInstance = new instance.Instance(chateauAtoms, chateauSchema, instance.OriginTag.INSTANCE);
+        final var chateauConstraintSet = new LinkedHashSet<>(tgdChainElement.tgdList().stream()
+                .map(KörnerkissenEvaluator::getChateauConstraint)
+                .toList());
+        final var chateauInstanceNew = chase.Chase.chase(chateauInstance, chateauConstraintSet);
+        return reconvertInstances(chateauInstanceNew);
+    }
+
+    private static List<InstancesOfTable> reconvertInstances(instance.Instance chateauInstance) {
+        // TODO Chateaudatenstrukturen zu ScenarioCretor-Datenstrukturen umformen
+        throw new NotImplementedException("implement me!");
+    }
+
+    private static constraints.Constraint getChateauConstraint(TupleGeneratingDependency tgd) {
+        if (tgd.constraints().isEmpty()) {
+            // Das ist der einfachste Fall, weil man hier 0 auf Einschränkungen achten muss:
+            final var head = new LinkedHashSet<>(tgd.forallRows().stream().map(rr -> {
+                final var name = prependAlt(rr.name().rawString(LinguisticUtils::merge));
+                final var termArray = new ArrayList<>(rr.columnList().stream()
+                        .map(column -> {
+                            final var columnName = prependAlt(column.name().rawString(LinguisticUtils::merge));
+                            return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
+                        })
+                        .toList());
+                return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
+            }).toList());
+            final var body = new LinkedHashSet<>(tgd.existRows().stream().map(rr -> {
+                final var name = prependAlt(rr.name().rawString(LinguisticUtils::merge));
+                final var termArray = new ArrayList<>(rr.columnList().stream()
+                        .map(column -> {
+                            final var columnName = prependNeu(column.name().rawString(LinguisticUtils::merge));
+                            return (term.Term) new term.Variable(VariableType.EXISTS, columnName, 1);
+                        })
+                        .toList());
+                return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
+            }).toList());
+            return new constraints.Tgd(head, body);
+        }
+        throw new NotImplementedException("implement me!"); // TODO: Hier sollten die TGDs erstellt werden. Ansonsten werden alle nicht-trivialen TGDs nicht funktionieren!
+    }
+
+
+    private static Stream<atom.RelationalAtom> getChateauInstance(InstancesOfTable instancesOfTable) {
+        final var table = instancesOfTable.table();
+        return instancesOfTable.entries().stream()
+                .map(entry -> getChateauEntry(table, entry));
+    }
+
+    private static atom.RelationalAtom getChateauEntry(Table table, Map<Column, String> entry) {
+        final var name = prependAlt(table.name().rawString(LinguisticUtils::merge));
+
+        final var termArray = new ArrayList<>(entry.keySet().stream()
+                .map(column -> {
+                    final var columnName = prependAlt(column.name().rawString(LinguisticUtils::merge));
+                    final var value = entry.get(column);
+                    return (term.Term) term.Constant.fromString(columnName, value);
+                })
+                .toList());
+        return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
+    }
+
+    private static HashMap<String, LinkedHashMap<String, String>> getChateauSchema(
+            Schema oldSchema,
+            Schema newSchema
+    ) {
+        final var tableStream = Stream.concat(
+                oldSchema.tableSet().stream(),
+                newSchema.tableSet().stream()
+        );
+        return new HashMap<>(tableStream
+                .collect(Collectors.toMap(
+                        table -> (oldSchema.tableSet().contains(table)
+                                ? prependAlt(table.name().rawString(LinguisticUtils::merge))
+                                : prependNeu(table.name().rawString(LinguisticUtils::merge))),
+                        table ->
+                                new LinkedHashMap<>(table.columnList().stream()
+                                        .map(c -> (oldSchema.tableSet().contains(table)
+                                                ? prependAlt(c.name().rawString(LinguisticUtils::merge))
+                                                : prependNeu(c.name().rawString(LinguisticUtils::merge)))
+                                        )
+                                        .collect(Collectors.toMap(
+                                                x -> x,
+                                                ignore -> "string"
+                                        )))
+                )));
+    }
+
+    private static String prependAlt(String name) {
+        return "alt-" + name;
+    }
+
+    private static String prependNeu(String name) {
+        return "neu-" + name;
     }
 
     private static void saveInstance(Path filePath, InstancesOfTable iot) {
-        // TODO: implement me!
+        // implement me!
     }
 
     public record KörnerkissenColumn(StringPlus name, Id id) {

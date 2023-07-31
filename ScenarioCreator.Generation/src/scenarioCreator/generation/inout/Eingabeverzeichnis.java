@@ -79,8 +79,8 @@ public class Eingabeverzeichnis {
         if (firstLineOpt.isEmpty()) {
             return Optional.empty();
         }
-        final var idList = Arrays.stream(firstLineOpt.get().split(","))
-                .map(name -> matchNameToColumnId(name, table))
+        final var columnList = Arrays.stream(firstLineOpt.get().split(","))
+                .map(name -> matchNameToColumn(name, table))
                 .toList();
         final var valueListList = lineList.stream()
                 .skip(1)
@@ -90,14 +90,14 @@ public class Eingabeverzeichnis {
                 ).toList();
         // Assert correct length:
         final var hasCorrectLength = valueListList.stream()
-                .allMatch(valueList -> (long) valueList.size() == idList.size());
+                .allMatch(valueList -> (long) valueList.size() == columnList.size());
         if (!hasCorrectLength) {
             System.err.println("REEE: Eine CSV-Datei enthält Datensätze, die nicht die gleiche Anzahl an Werten haben wie die erste Zeile!");
             return Optional.empty();
         }
         // Assertion finished
         final var valueMapList = valueListList.stream().map(valueList -> StreamExtensions
-                .zip(idList.stream(), valueList.stream(), Pair::new)
+                .zip(columnList.stream(), valueList.stream(), Pair::new)
                 .collect(Collectors.toMap(
                         Pair::first,
                         Pair::second
@@ -139,7 +139,7 @@ public class Eingabeverzeichnis {
         return tableOpt.get();
     }
 
-    private static Id matchNameToColumnId(String columnName, Table table) {
+    private static Column matchNameToColumn(String columnName, Table table) {
         final var reducedColumnName = reduceName(columnName);
         final var columnOpt = table.columnList().stream()
                 .filter(column -> reduceName(column.name().rawString(LinguisticUtils::merge))
@@ -158,6 +158,6 @@ public class Eingabeverzeichnis {
             System.err.println(names);
             throw new InvalidParameterException("REEE");
         }
-        return columnOpt.get().id();
+        return columnOpt.get();
     }
 }
