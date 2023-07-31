@@ -237,8 +237,21 @@ public class KörnerkissenEvaluator {
     }
 
     private static Map<Column, String> reconvertEntries(atom.RelationalAtom ra, List<Column> columnList) {
-        // TODO Chateaudatenstrukturen zu ScenarioCreator-Datenstrukturen umformen
-        throw new NotImplementedException("implement me!");
+        return ra.getTerms().stream()
+                .filter(term -> term instanceof term.Constant)
+                .map(term -> (term.Constant) term)
+                .map(constant -> columnList.stream()
+                        .filter(column ->
+                                prependNeu(
+                                        column.name().rawString(LinguisticUtils::merge)
+                                ).equals(constant.getName())
+                        )
+                        .findFirst()
+                        .map(foundColumn -> new Pair<>(foundColumn, constant.getValue().toString()))
+                )
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toMap(Pair::first, Pair::second));
     }
 
     private static constraints.Constraint getChateauConstraint(TupleGeneratingDependency tgd) {
