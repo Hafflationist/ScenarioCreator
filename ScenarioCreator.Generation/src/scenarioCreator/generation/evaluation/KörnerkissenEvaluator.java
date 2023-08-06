@@ -356,9 +356,11 @@ public class KörnerkissenEvaluator {
                 .collect(Collectors.joining("\n"));
         final var csvString = csvHeader + "\n" + csvValues;
         try {
+            System.out.println("Writing file " + filePath + "...");
             FileWriter f2 = new FileWriter(filePath.toFile(), false);
             f2.write(csvString);
             f2.close();
+            System.out.println(".... written!");
         } catch (IOException e) {
             e.printStackTrace();
         }
