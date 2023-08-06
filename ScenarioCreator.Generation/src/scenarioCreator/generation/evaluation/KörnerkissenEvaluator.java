@@ -215,13 +215,18 @@ public class KörnerkissenEvaluator {
                 .map(KörnerkissenEvaluator::getChateauConstraint)
                 .toList());
         final var chateauInstanceNew = chase.Chase.chase(chateauInstance, chateauConstraintSet);
+        System.out.println();
+        System.out.println("AFTER CHASE");
+        System.out.println("AFTER CHASE");
+        System.out.println("AFTER CHASE");
+        System.out.println();
         return reconvertInstances(tgdChainElement.schema(), chateauInstanceNew);
     }
 
     private static List<InstancesOfTable> reconvertInstances(Schema schema, instance.Instance chateauInstance) {
         final var raGrouping = chateauInstance.getRelationalAtoms().stream()
                 .collect(Collectors.groupingBy(RelationalAtom::getName));
-        return raGrouping.keySet().stream()
+        final var hugo = raGrouping.keySet().stream()
                 .map(tableName -> schema.tableSet().stream()
                         .filter(t -> prependNeu(t.name()).equals(tableName))
                         .findFirst())
@@ -235,6 +240,8 @@ public class KörnerkissenEvaluator {
                     return new InstancesOfTable(foundTable, entryList);
                 })
                 .toList();
+        System.out.println("reconvertInstances - iot.count = " + hugo.size());
+        return hugo;
     }
 
     private static Map<Column, String> reconvertEntries(atom.RelationalAtom ra, List<Column> columnList) {
@@ -244,6 +251,7 @@ public class KörnerkissenEvaluator {
                 .map(constant -> columnList.stream()
                         .filter(column ->
                                 prependNeu(column.name()).equals(constant.getName())
+                                || prependAlt(column.name()).equals(constant.getName())
                         )
                         .findFirst()
                         .map(foundColumn -> new Pair<>(foundColumn, constant.getValue().toString()))
@@ -267,11 +275,11 @@ public class KörnerkissenEvaluator {
                 return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
             }).toList());
             final var body = new LinkedHashSet<>(tgd.existRows().stream().map(rr -> {
-                final var name = prependAlt(rr.name());
+                final var name = prependNeu(rr.name());
                 final var termArray = new ArrayList<>(rr.columnList().stream()
                         .map(column -> {
-                            final var columnName = prependNeu(column.name());
-                            return (term.Term) new term.Variable(VariableType.EXISTS, columnName, 1);
+                            final var columnName = prependAlt(column.name());
+                            return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
                         })
                         .toList());
                 return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
@@ -305,28 +313,19 @@ public class KörnerkissenEvaluator {
             Schema oldSchema,
             Schema newSchema
     ) {
-        IntegrityChecker.assertValidSchema(oldSchema);
-        IntegrityChecker.assertValidSchema(newSchema);
         final var t2nStream = Stream.concat(
                 oldSchema.tableSet().stream().map(t -> new Pair<>(t, prependAlt(t.name()))),
                 newSchema.tableSet().stream().map(t -> new Pair<>(t, prependNeu(t.name())))
         ).toList();
-
-        System.out.println("all tables:");
-        for (final var table : t2nStream) {
-            System.out.println(table);
-        }
 
         return new HashMap<>(t2nStream.stream()
                 .collect(Collectors.toMap(
                         Pair::second,
                         pair ->
                                 new LinkedHashMap<>(pair.first().columnList().stream()
-                                        .map(c -> {
-                                                    return oldSchema.tableSet().stream().anyMatch(oldT -> prependAlt(oldT.name()).equals(pair.second()))
-                                                            ? prependAlt(c.name())
-                                                            : prependNeu(c.name());
-                                                }
+                                        .map(c -> oldSchema.tableSet().stream().anyMatch(oldT -> prependAlt(oldT.name()).equals(pair.second()))
+                                                ? prependAlt(c.name())
+                                                : prependNeu(c.name())
                                         )
                                         .collect(Collectors.toMap(
                                                 x -> x,
