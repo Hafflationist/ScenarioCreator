@@ -306,11 +306,30 @@ public class KörnerkissenEvaluator {
             Schema oldSchema,
             Schema newSchema
     ) {
+        IntegrityChecker.assertValidSchema(oldSchema);
+        IntegrityChecker.assertValidSchema(newSchema);
         final var tableStream = Stream.concat(
                 oldSchema.tableSet().stream(),
                 newSchema.tableSet().stream()
-        );
-        return new HashMap<>(tableStream
+        ).toList();
+
+        System.out.println("all tables:");
+        for (final var table : tableStream) {
+            System.out.println(table.name().rawString(LinguisticUtils::merge));
+        }
+
+        final var hugo = tableStream.stream()
+                .map(table -> (oldSchema.tableSet().contains(table)
+                        ? prependAlt(table.name().rawString(LinguisticUtils::merge))
+                        : prependNeu(table.name().rawString(LinguisticUtils::merge))))
+                .toList();
+
+        System.out.println("transformed-tables");
+        for (final var name : hugo) {
+            System.out.println(name);
+        }
+
+        return new HashMap<>(tableStream.stream()
                 .collect(Collectors.toMap(
                         table -> (oldSchema.tableSet().contains(table)
                                 ? prependAlt(table.name().rawString(LinguisticUtils::merge))
