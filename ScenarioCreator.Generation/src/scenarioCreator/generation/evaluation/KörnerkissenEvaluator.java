@@ -222,12 +222,12 @@ public class KörnerkissenEvaluator {
                 .collect(Collectors.groupingBy(RelationalAtom::getName));
         return raGrouping.keySet().stream()
                 .map(tableName -> schema.tableSet().stream()
-                        .filter(t -> prependNeu(t.name().rawString(LinguisticUtils::merge)).equals(tableName))
+                        .filter(t -> prependNeu(t.name()).equals(tableName))
                         .findFirst())
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .map(foundTable -> {
-                    final var tableName = prependNeu(foundTable.name().rawString(LinguisticUtils::merge));
+                    final var tableName = prependNeu(foundTable.name());
                     final var entryList = raGrouping.get(tableName).stream()
                             .map(ra -> reconvertEntries(ra, foundTable.columnList()))
                             .toList();
@@ -242,9 +242,7 @@ public class KörnerkissenEvaluator {
                 .map(term -> (term.Constant) term)
                 .map(constant -> columnList.stream()
                         .filter(column ->
-                                prependNeu(
-                                        column.name().rawString(LinguisticUtils::merge)
-                                ).equals(constant.getName())
+                                prependNeu(column.name()).equals(constant.getName())
                         )
                         .findFirst()
                         .map(foundColumn -> new Pair<>(foundColumn, constant.getValue().toString()))
@@ -258,20 +256,20 @@ public class KörnerkissenEvaluator {
         if (tgd.constraints().isEmpty()) {
             // Das ist der einfachste Fall, weil man hier 0 auf Einschränkungen achten muss:
             final var head = new LinkedHashSet<>(tgd.forallRows().stream().map(rr -> {
-                final var name = prependAlt(rr.name().rawString(LinguisticUtils::merge));
+                final var name = prependAlt(rr.name());
                 final var termArray = new ArrayList<>(rr.columnList().stream()
                         .map(column -> {
-                            final var columnName = prependAlt(column.name().rawString(LinguisticUtils::merge));
+                            final var columnName = prependAlt(column.name());
                             return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
                         })
                         .toList());
                 return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
             }).toList());
             final var body = new LinkedHashSet<>(tgd.existRows().stream().map(rr -> {
-                final var name = prependAlt(rr.name().rawString(LinguisticUtils::merge));
+                final var name = prependAlt(rr.name());
                 final var termArray = new ArrayList<>(rr.columnList().stream()
                         .map(column -> {
-                            final var columnName = prependNeu(column.name().rawString(LinguisticUtils::merge));
+                            final var columnName = prependNeu(column.name());
                             return (term.Term) new term.Variable(VariableType.EXISTS, columnName, 1);
                         })
                         .toList());
@@ -290,11 +288,11 @@ public class KörnerkissenEvaluator {
     }
 
     private static atom.RelationalAtom getChateauEntry(Table table, Map<Column, String> entry) {
-        final var name = prependAlt(table.name().rawString(LinguisticUtils::merge));
+        final var name = prependAlt(table.name());
 
         final var termArray = new ArrayList<>(entry.keySet().stream()
                 .map(column -> {
-                    final var columnName = prependAlt(column.name().rawString(LinguisticUtils::merge));
+                    final var columnName = prependAlt(column.name());
                     final var value = entry.get(column);
                     return (term.Term) term.Constant.fromString(columnName, value);
                 })
@@ -308,37 +306,26 @@ public class KörnerkissenEvaluator {
     ) {
         IntegrityChecker.assertValidSchema(oldSchema);
         IntegrityChecker.assertValidSchema(newSchema);
-        final var tableStream = Stream.concat(
-                oldSchema.tableSet().stream(),
-                newSchema.tableSet().stream()
+        final var t2nStream = Stream.concat(
+                oldSchema.tableSet().stream().map(t -> new Pair<>(t, prependAlt(t.name()))),
+                newSchema.tableSet().stream().map(t -> new Pair<>(t, prependNeu(t.name())))
         ).toList();
 
         System.out.println("all tables:");
-        for (final var table : tableStream) {
-            System.out.println(table.name().rawString(LinguisticUtils::merge));
+        for (final var table : t2nStream) {
+            System.out.println(table);
         }
 
-        final var hugo = tableStream.stream()
-                .map(table -> (oldSchema.tableSet().contains(table)
-                        ? prependAlt(table.name().rawString(LinguisticUtils::merge))
-                        : prependNeu(table.name().rawString(LinguisticUtils::merge))))
-                .toList();
-
-        System.out.println("transformed-tables");
-        for (final var name : hugo) {
-            System.out.println(name);
-        }
-
-        return new HashMap<>(tableStream.stream()
+        return new HashMap<>(t2nStream.stream()
                 .collect(Collectors.toMap(
-                        table -> (oldSchema.tableSet().contains(table)
-                                ? prependAlt(table.name().rawString(LinguisticUtils::merge))
-                                : prependNeu(table.name().rawString(LinguisticUtils::merge))),
-                        table ->
-                                new LinkedHashMap<>(table.columnList().stream()
-                                        .map(c -> (oldSchema.tableSet().contains(table)
-                                                ? prependAlt(c.name().rawString(LinguisticUtils::merge))
-                                                : prependNeu(c.name().rawString(LinguisticUtils::merge)))
+                        Pair::second,
+                        pair ->
+                                new LinkedHashMap<>(pair.first().columnList().stream()
+                                        .map(c -> {
+                                                    return oldSchema.tableSet().stream().anyMatch(oldT -> prependAlt(oldT.name()).equals(pair.second()))
+                                                            ? prependAlt(c.name())
+                                                            : prependNeu(c.name());
+                                                }
                                         )
                                         .collect(Collectors.toMap(
                                                 x -> x,
@@ -347,12 +334,12 @@ public class KörnerkissenEvaluator {
                 )));
     }
 
-    private static String prependAlt(String name) {
-        return "alt-" + name;
+    private static String prependAlt(StringPlus name) {
+        return "alt-" + name.rawString(LinguisticUtils::merge);
     }
 
-    private static String prependNeu(String name) {
-        return "neu-" + name;
+    private static String prependNeu(StringPlus name) {
+        return "neu-" + name.rawString(LinguisticUtils::merge);
     }
 
     private static void saveInstance(Path filePath, InstancesOfTable iot) {
