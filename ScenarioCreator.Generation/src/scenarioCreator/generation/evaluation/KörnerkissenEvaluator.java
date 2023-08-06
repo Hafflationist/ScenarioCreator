@@ -34,6 +34,7 @@ import scenarioCreator.utils.StreamExtensions;
 import term.VariableType;
 
 import javax.xml.stream.XMLStreamException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
@@ -154,8 +155,8 @@ public class KörnerkissenEvaluator {
         }
     }
 
-    private static Path stdPath(Path path, int idx, StringPlus name) {
-        final var filename = idx2String(idx) + "-" + name.rawString(LinguisticUtils::merge) + ".yaml";
+    private static Path stdPath(Path path, int idx, StringPlus name, String suffix) {
+        final var filename = idx2String(idx) + "-" + name.rawString(LinguisticUtils::merge) + "." + suffix;
         return Path.of(path.toString(), filename);
     }
 
@@ -169,11 +170,11 @@ public class KörnerkissenEvaluator {
             final var sar = sarWithIndex.second();
             final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
             for (final var newInstance : newInstances) {
-                final var instancePath = stdPath(path, idx, newInstance.table().name());
+                final var instancePath = stdPath(path, idx, newInstance.table().name(), "csv");
                 saveInstance(instancePath, newInstance);
             }
             final var schema = sar.schema();
-            final var filePath = stdPath(path, idx, schema.name());
+            final var filePath = stdPath(path, idx, schema.name(), "yaml");
             SchemaFileHandler.save(schema, filePath);
         }
         final var sarPairList = sarIndexedList.stream()
@@ -343,7 +344,24 @@ public class KörnerkissenEvaluator {
     }
 
     private static void saveInstance(Path filePath, InstancesOfTable iot) {
-        // implement me!
+        //creating header line:
+        final var csvHeader = "\"" + iot.table().columnList().stream()
+                .map(column -> column.name().rawString(LinguisticUtils::merge))
+                .collect(Collectors.joining("\",\"")) + "\"";
+        final var csvValues = iot.entries().stream()
+                .map(entry -> "\"" + iot.table().columnList().stream()
+                        .map(entry::get)
+                        .map(value -> value == null ? "" : value)
+                        .collect(Collectors.joining("\",\"")) + "\"")
+                .collect(Collectors.joining("\n"));
+        final var csvString = csvHeader + "\n" + csvValues;
+        try {
+            FileWriter f2 = new FileWriter(filePath.toFile(), false);
+            f2.write(csvString);
+            f2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public record KörnerkissenColumn(StringPlus name, Id id) {
