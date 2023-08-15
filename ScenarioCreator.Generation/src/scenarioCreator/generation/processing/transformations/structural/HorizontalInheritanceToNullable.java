@@ -13,7 +13,7 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdMerge;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.data.tgds.TupleGeneratingDependency;
+import scenarioCreator.data.tgds.*;
 import scenarioCreator.generation.processing.transformations.SchemaTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.CheckNumericalManager;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
@@ -77,8 +77,32 @@ public class HorizontalInheritanceToNullable implements SchemaTransformation {
                 derivationIntegrationResult.idTranslationMap(),
                 Set.of()
         );
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
+        final List<TupleGeneratingDependency> tgdList = tgds(
+                ip.base(),
+                ip.derivation(),
+                derivationIntegrationResult.newTable
+        );
         return new Pair<>(newSchema, tgdList);
+    }
+
+    private static List<TupleGeneratingDependency> tgds(
+            Table baseTable,
+            Table derivedTable,
+            Table newTable
+    ) {
+        final var baseRelation = ReducedRelation.fromTable(baseTable);
+        final var derivedRelation = ReducedRelation.fromTable(derivedTable);
+        final var newRelation = ReducedRelation.fromTable(newTable);
+        final var forAllRows = List.of(
+                baseRelation, derivedRelation
+        );
+        final var existRows = List.of(
+                newRelation
+        );
+
+        return List.of(
+                new TupleGeneratingDependency(forAllRows, existRows, List.of())
+        );
     }
 
     private InheritancePair findDerivingTable(SortedSet<Table> tableSet, Random random) {

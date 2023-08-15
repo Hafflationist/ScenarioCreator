@@ -12,7 +12,7 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.data.tgds.TupleGeneratingDependency;
+import scenarioCreator.data.tgds.*;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
@@ -22,10 +22,7 @@ import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 import scenarioCreator.utils.StreamExtensions;
 
-import java.util.List;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -61,9 +58,51 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         final var newBaseTable = createBaseTable(table, extractableColumnList);
         final var newDerivingTable = createDerivingTable(table, extractableColumnList, newIdComplex, random);
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
+        final List<TupleGeneratingDependency> tgdList = tgds(
+                table,
+                newIdComplex.derivingTableId(), //TODO(F): ist das korrekt?
+                newBaseTable,
+                newDerivingTable
+        );
         return new Pair<>(newTableSet, tgdList);
     }
+
+    private List<TupleGeneratingDependency> tgds(
+            Table oldTable,
+            Id formerlyNullableColumnId,
+            Table newBaseTable,
+            Table newDerivingTable
+    ) {
+        final var oldRelation = ReducedRelation.fromTable(oldTable);
+        final var newBaseRelation = ReducedRelation.fromTable(newBaseTable);
+        final var newDerivingRelation = ReducedRelation.fromTable(newDerivingTable);
+
+        //TODO(F) jeweils einschränken. Wie geht das? Ich hab doch keinen Filter auf die Instanzdaten.
+        //Unterscheidung, ob Column in oldTable NULL war oder nicht.
+        final var forAllNullRows = List.of(
+                oldRelation
+        );
+        final var forAllNonNullRows = List.of(
+                oldRelation
+        );
+
+        final var existRows = List.of(
+                newBaseRelation, newDerivingRelation
+        );
+
+        //TODO(80/20): Hier fehlen TGDS für Nullability.
+        final var nullRelationConstraintList = List.of(
+                (RelationConstraint) new RelationConstraintConstant(formerlyNullableColumnId, "")
+        );
+        final var nonNullRelationConstraintList = List.of(
+                (RelationConstraint) new RelationConstraintNotConstant(formerlyNullableColumnId, "")
+        );
+        return List.of(
+                new TupleGeneratingDependency(forAllNullRows, existRows, nullRelationConstraintList),
+                new TupleGeneratingDependency(forAllNonNullRows, existRows, nonNullRelationConstraintList)
+        );
+    }
+
 
     private Table createBaseTable(Table originalTable, List<Column> extractableColumnList) {
         final var newColumnList = originalTable.columnList().stream()
