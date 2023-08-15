@@ -58,10 +58,10 @@ public class ColumnLeafsToTable implements TableTransformation {
        final var newRelation = ReducedRelation.fromTable(newTable);
        // TODO(80:20): Im folgenden fehlt die Einzigartigkeit des Primärschlüssels
        final var constraints = List.of(
-            new RelationConstraintEquality(newIds.sourceColumn(), newIds.targetColumn())
+               (RelationConstraint) new RelationConstraintEquality(newIds.sourceColumn(), newIds.targetColumn())
        );
        return List.of(
-           new TupleGeneratingDependency(List.of(sourceRelation), List.of(modifiedRelation, newRelation), List.of())
+           new TupleGeneratingDependency(List.of(sourceRelation), List.of(modifiedRelation, newRelation), constraints)
        );
     }
 
