@@ -88,7 +88,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 newBaseRelation, newDerivingRelation
         );
 
-        //TODO(80/20): Hier fehlen TGDS für Nullability.
         final var nullRelationConstraintList = List.of(
                 (RelationConstraint) new RelationConstraintConstant(formerlyNullableColumnId, "")
         );
