@@ -77,8 +77,6 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         final var newBaseRelation = ReducedRelation.fromTable(newBaseTable);
         final var newDerivingRelation = ReducedRelation.fromTable(newDerivingTable);
 
-        //TODO(F) jeweils einschränken. Wie geht das? Ich hab doch keinen Filter auf die Instanzdaten.
-        //Unterscheidung, ob Column in oldTable NULL war oder nicht.
         final var forAllNullRows = List.of(
                 oldRelation
         );
