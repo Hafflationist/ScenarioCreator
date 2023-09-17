@@ -12,7 +12,7 @@ import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.identification.IdPart;
 import scenarioCreator.data.identification.MergeOrSplitType;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.data.tgds.TupleGeneratingDependency;
+import scenarioCreator.data.tgds.*;
 import scenarioCreator.generation.processing.transformations.TableTransformation;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.exceptions.TransformationCouldNotBeExecutedException;
@@ -67,8 +67,43 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
         );
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
-        final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(F): tgds
+
+        final List<TupleGeneratingDependency> tgdList = tgds(
+                table,
+                newBaseTable,
+                newIdComplex.primaryKeyColumnId,
+                newDerivingTable,
+                newIdComplex.primaryKeyDerivingColumnId
+        );
+
         return new Pair<>(newTableSet, tgdList);
+    }
+
+    private List<TupleGeneratingDependency> tgds(
+            Table oldTable,
+            Table newBaseTable,
+            Id newBaseColumnId,
+            Table newDerivingTable,
+            Id newDerivingColumnId
+    ) {
+        final var oldRelation = ReducedRelation.fromTable(oldTable);
+        final var newBaseRelation = ReducedRelation.fromTable(newBaseTable);
+        final var newDerivingRelation = ReducedRelation.fromTable(newDerivingTable);
+
+        final var forAllRows = List.of(
+                oldRelation
+        );
+        final var existRows = List.of(
+                newBaseRelation, newDerivingRelation
+        );
+
+        //TODO(80/20): Hier fehlen TGDS für: Uniqueness des Primary Keys der abgeleiteten Tabelle UND Nullability.
+        final var relationConstraintList = List.of(
+                (RelationConstraint) new RelationConstraintEquality(newBaseColumnId, newDerivingColumnId)
+        );
+        return List.of(
+                new TupleGeneratingDependency(forAllRows, existRows, relationConstraintList)
+        );
     }
 
     private Column addForeignIfPrimaryKey(Column column, NewIdComplex newIdComplex) {
