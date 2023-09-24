@@ -368,7 +368,7 @@ public class Main {
         return "Zusammenfassung des Schemas: \n"
                 + schema.tableSet().stream()
                 .map(table -> {
-                    final var hasInstances =tablesWithInstanzdaten.contains(table);
+                    final var hasInstances = tablesWithInstanzdaten.contains(table);
                     return table.name().rawString(LinguisticUtils::merge)
                             + (hasInstances ? " (mit Instanzdaten)\n" : "(OHNE Instanzdaten)\n")
                             + table.columnList().stream()
@@ -385,37 +385,7 @@ public class Main {
         final var isNoTgd = Arrays.asList(args).contains("--no-tgd") || Arrays.asList(args).contains("--no-tgds");
         final var argList = Arrays.asList(args);
 
-        if (isKörnerkissen) {
-            final var avIdx = Math.max(argList.indexOf("-av"), argList.indexOf("--ausgabeverzeichnis"));
-            if (avIdx == -1) {
-                System.out.println("REEE: Wenn --körnerkissen angegeben wurde, muss auch ein \"-av <PFAD>\" oder \"--ausgabeverzeichnis <PFAD>\" angegeben werden.");
-                return;
-            }
-            final var evIdx = Math.max(argList.indexOf("-ev"), argList.indexOf("--eingabeverzeichnis"));
-            if (evIdx == -1 && !isNoTgd) {
-                System.out.println("REEE: Wenn --körnerkissen und nicht --no-tgd(s) angegeben wurde, muss auch ein \"-ev <PFAD>\" oder \"--eingabeverzeichnis <PFAD>\" angegeben werden.");
-                return;
-            }
-            try {
-                final var eingabeUri = new URI(args[evIdx + 1]);
-                System.out.println("Eingabeverzeichnis: " + eingabeUri);
-                final var eingabeverzeichnis = Path.of(new URI("file:///" + args[evIdx + 1]));
-                final var anfangsschemaOpt = Eingabeverzeichnis.readWholeSchema(eingabeverzeichnis);
-                if (anfangsschemaOpt.isEmpty())
-                {
-                    System.err.println("REEE: Konnte Eingabeverzeichnis nicht laden!");
-                    throw new InvalidParameterException();
-                }
-                System.out.println("Anfangsschema inklusive Instanzdaten geladen.");
-                System.out.println(fasseZusammen(anfangsschemaOpt.get().first(), anfangsschemaOpt.get().second()));
-                final var ausgabeUri = new URI(args[avIdx + 1]);
-                System.out.println("Auskotzverzeichnis: " + ausgabeUri);
-                final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
-                KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, 3, 2, 0.5, 0.3);
-            } catch (URISyntaxException e) {
-                System.out.println("REEE: Kein gültiger Pfad angegeben!");
-            }
-        } else {
+        if (!isKörnerkissen) {
 
 
             final var path = args[0];
@@ -436,6 +406,42 @@ public class Main {
             ReachableConfigurationsExtra.printReachabilities(path, 1000, 4);
 //        ReachableConfigurationsExtra.postprocessing();
 //        CountTransformations.printCount(path, 1000, 4);
+            return;
+        }
+
+        final var avIdx = Math.max(argList.indexOf("-av"), argList.indexOf("--ausgabeverzeichnis"));
+        if (avIdx == -1) {
+            System.out.println("REEE: Wenn --körnerkissen angegeben wurde, muss auch ein \"-av <PFAD>\" oder \"--ausgabeverzeichnis <PFAD>\" angegeben werden.");
+            return;
+        }
+        final var evIdx = Math.max(argList.indexOf("-ev"), argList.indexOf("--eingabeverzeichnis"));
+        if (evIdx == -1 && !isNoTgd) {
+            System.out.println("REEE: Wenn --körnerkissen und nicht --no-tgd(s) angegeben wurde, muss auch ein \"-ev <PFAD>\" oder \"--eingabeverzeichnis <PFAD>\" angegeben werden.");
+            return;
+        }
+        final var hetStructuralIdx = argList.indexOf("--hetStructural");
+        final var hetStructural = (hetStructuralIdx == -1) ? 0.3 : Double.parseDouble(args[hetStructuralIdx + 1]);
+        final var hetLinguisticIdx = argList.indexOf("--hetLinguistic");
+        final var hetLinguistic = (hetLinguisticIdx == -1) ? 0.3 : Double.parseDouble(args[hetLinguisticIdx + 1]);
+        System.out.println("Linguistische Heterogenität: " + hetLinguistic);
+        System.out.println("Strukturelle Heterogenität: " + hetStructural);
+        try {
+            final var eingabeUri = new URI(args[evIdx + 1]);
+            System.out.println("Eingabeverzeichnis: " + eingabeUri);
+            final var eingabeverzeichnis = Path.of(new URI("file:///" + args[evIdx + 1]));
+            final var anfangsschemaOpt = Eingabeverzeichnis.readWholeSchema(eingabeverzeichnis);
+            if (anfangsschemaOpt.isEmpty()) {
+                System.err.println("REEE: Konnte Eingabeverzeichnis nicht laden!");
+                throw new InvalidParameterException();
+            }
+            System.out.println("Anfangsschema inklusive Instanzdaten geladen.");
+            System.out.println(fasseZusammen(anfangsschemaOpt.get().first(), anfangsschemaOpt.get().second()));
+            final var ausgabeUri = new URI(args[avIdx + 1]);
+            System.out.println("Auskotzverzeichnis: " + ausgabeUri);
+            final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
+            KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, 3, 2, hetStructural, hetLinguistic);
+        } catch (URISyntaxException e) {
+            System.out.println("REEE: Kein gültiger Pfad angegeben!");
         }
     }
 
