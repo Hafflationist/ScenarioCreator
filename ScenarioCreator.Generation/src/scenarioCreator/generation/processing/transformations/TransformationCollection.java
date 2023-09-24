@@ -67,7 +67,7 @@ public class TransformationCollection {
                 new ColumnLeafsToTable(),
                 new ColumnNodeToTable(),
                 new GroupColumnLeafsToNode(),
-                new NullableToHorizontalInheritance(),
+                //new NullableToHorizontalInheritance(), // TODO(80:20): Es können erstmal keine TGDs dazu generiert werden
                 new NullableToVerticalInheritance(),
                 new RemoveColumn(),
                 new RemoveTable()

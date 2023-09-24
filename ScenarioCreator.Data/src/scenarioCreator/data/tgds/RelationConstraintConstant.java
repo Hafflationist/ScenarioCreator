@@ -1,6 +1,6 @@
 package scenarioCreator.data.tgds;
 
-import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.column.nesting.Column;
 
-public record RelationConstraintConstant (Id columnId, String constantValue) implements RelationConstraint {
+public record RelationConstraintConstant(Column column, String constantValue) implements RelationConstraint {
 }

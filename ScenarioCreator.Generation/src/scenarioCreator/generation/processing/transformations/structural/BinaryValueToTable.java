@@ -102,7 +102,7 @@ public class BinaryValueToTable implements SchemaTransformation {
                     }
 
                     final var relationConstraintList = List.of(
-                            (RelationConstraint) new RelationConstraintConstant(splitLeaf.id(), splitValueOfThisTable.get())
+                            (RelationConstraint) new RelationConstraintConstant(splitLeaf, splitValueOfThisTable.get())
                     );
                     return Optional.of(new TupleGeneratingDependency(forallRows, existRows, relationConstraintList));
                 })

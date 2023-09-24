@@ -1,4 +1,4 @@
-package scenarioCreator.generation.processing.tree;
+package scenarioCreator.generation.tree;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

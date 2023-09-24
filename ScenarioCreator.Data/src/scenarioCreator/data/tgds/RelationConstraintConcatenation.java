@@ -1,6 +1,6 @@
 package scenarioCreator.data.tgds;
 
-import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.column.nesting.Column;
 
-public record RelationConstraintConcatenation(Id columnId1, Id columnId2, Id columnId12) implements RelationConstraint {
+public record RelationConstraintConcatenation(Column column1, Column column2, Column column12) implements RelationConstraint {
 }

@@ -1,7 +1,6 @@
 package scenarioCreator.data.tgds;
 
-import scenarioCreator.data.identification.Id;
+import scenarioCreator.data.column.nesting.Column;
 
-//TODO(F) Wie binde ich das in die Chateau-Schnittstelle ein?
-public record RelationConstraintNotConstant (Id columnId, String constantValue) implements RelationConstraint {
+public record RelationConstraintNotConstant(Column column, String constantValue) implements RelationConstraint {
 }

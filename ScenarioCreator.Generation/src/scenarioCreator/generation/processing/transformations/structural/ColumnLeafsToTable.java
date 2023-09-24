@@ -1,6 +1,7 @@
 package scenarioCreator.generation.processing.transformations.structural;
 
 import org.jetbrains.annotations.NotNull;
+import scenarioCreator.data.column.nesting.Column;
 import scenarioCreator.data.identification.Id;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.data.tgds.ReducedRelation;
@@ -45,20 +46,22 @@ public class ColumnLeafsToTable implements TableTransformation {
         final var newName = GroupingColumnsBase.mergeNames(newColumnList, random);
         final var newIdArray = idGenerator.apply(3);
         final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
-        final var newTable = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
-        final var modifiedTable = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
+        final var newTableInPair = NewTableBase.createNewTable(table, newName, newColumnList, newIds, true);
+        final var newTable = newTableInPair.second();
+        final var modifiedTableInPair = NewTableBase.createModifiedTable(table, newName, newColumnList, newIds, true);
+        final var modifiedTable = modifiedTableInPair.second();
         final var newTableSet = SSet.of(newTable, modifiedTable);
-        final List<TupleGeneratingDependency> tgdList = tgds(table, modifiedTable, newTable, newIds);
+        final List<TupleGeneratingDependency> tgdList = tgds(table, modifiedTable, newTable, newTableInPair.first(), modifiedTableInPair.first());
         return new Pair<>(newTableSet, tgdList);
     }
 
-    private List<TupleGeneratingDependency> tgds(Table sourceTable, Table modifiedTable, Table newTable, NewTableBase.NewIds newIds) {
+    private List<TupleGeneratingDependency> tgds(Table sourceTable, Table modifiedTable, Table newTable, Column sourceColumn, Column targetColumn) {
        final var sourceRelation = ReducedRelation.fromTable(sourceTable);
        final var modifiedRelation = ReducedRelation.fromTable(modifiedTable);
        final var newRelation = ReducedRelation.fromTable(newTable);
        // TODO(80:20): Im folgenden fehlt die Einzigartigkeit des Primärschlüssels
        final var constraints = List.of(
-               (RelationConstraint) new RelationConstraintEquality(newIds.sourceColumn(), newIds.targetColumn())
+               (RelationConstraint) new RelationConstraintEquality(sourceColumn, targetColumn)
        );
        return List.of(
            new TupleGeneratingDependency(List.of(sourceRelation), List.of(modifiedRelation, newRelation), constraints)

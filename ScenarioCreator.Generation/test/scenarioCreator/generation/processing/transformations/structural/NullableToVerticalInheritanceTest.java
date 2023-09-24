@@ -122,7 +122,7 @@ class NullableToVerticalInheritanceTest {
         final var fullNewTableSet = StreamExtensions
                 .replaceInStream(tableSet.stream(), targetTable, newTableSet.stream())
                 .collect(Collectors.toCollection(TreeSet::new));
-        final var newSchema = new Schema(new IdSimple(-100), name, Context.getDefault(), fullNewTableSet);
+        final var newSchema = new Schema(new IdSimple(-100), name, Context.getDefault(), newTableSet);
         IntegrityChecker.assertValidSchema(newSchema);
     }
 

@@ -5,6 +5,8 @@ import atom.RelationalAtom;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import comparisons.Comparison;
+import comparisons.ComparisonType;
 import org.apache.commons.lang3.NotImplementedException;
 import org.utils.Correspondence;
 import scenarioCreator.data.Language;
@@ -17,7 +19,7 @@ import scenarioCreator.data.identification.IdSimple;
 import scenarioCreator.data.primitives.StringPlus;
 import scenarioCreator.data.table.InstancesOfTable;
 import scenarioCreator.data.table.Table;
-import scenarioCreator.data.tgds.TupleGeneratingDependency;
+import scenarioCreator.data.tgds.*;
 import scenarioCreator.generation.heterogeneity.Distance;
 import scenarioCreator.generation.inout.SchemaFileHandler;
 import scenarioCreator.generation.processing.Scenario;
@@ -251,7 +253,7 @@ public class KörnerkissenEvaluator {
                 .map(constant -> columnList.stream()
                         .filter(column ->
                                 prependNeu(column.name()).equals(constant.getName())
-                                || prependAlt(column.name()).equals(constant.getName())
+                                        || prependAlt(column.name()).equals(constant.getName())
                         )
                         .findFirst()
                         .map(foundColumn -> new Pair<>(foundColumn, constant.getValue().toString()))
@@ -262,31 +264,63 @@ public class KörnerkissenEvaluator {
     }
 
     private static constraints.Constraint getChateauConstraint(TupleGeneratingDependency tgd) {
-        if (tgd.constraints().isEmpty()) {
-            // Das ist der einfachste Fall, weil man hier 0 auf Einschränkungen achten muss:
-            final var head = new LinkedHashSet<>(tgd.forallRows().stream().map(rr -> {
-                final var name = prependAlt(rr.name());
-                final var termArray = new ArrayList<>(rr.columnList().stream()
-                        .map(column -> {
-                            final var columnName = prependAlt(column.name());
-                            return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
-                        })
-                        .toList());
-                return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
-            }).toList());
-            final var body = new LinkedHashSet<>(tgd.existRows().stream().map(rr -> {
-                final var name = prependNeu(rr.name());
-                final var termArray = new ArrayList<>(rr.columnList().stream()
-                        .map(column -> {
-                            final var columnName = prependAlt(column.name());
-                            return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
-                        })
-                        .toList());
-                return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
-            }).toList());
-            return new constraints.Tgd(head, body);
-        }
-        throw new NotImplementedException("implement me!"); // TODO: Hier sollten die TGDs erstellt werden. Ansonsten werden alle nicht-trivialen TGDs nicht funktionieren!
+        final Object comparisons = new LinkedHashSet<>(tgd.constraints().stream()
+                .map(KörnerkissenEvaluator::getChateauComparison)
+                .toList());
+        // Das ist der einfachste Fall, weil man hier 0 auf Einschränkungen achten muss:
+        final var head = new LinkedHashSet<>(tgd.forallRows().stream().map(rr -> {
+            final var name = prependAlt(rr.name());
+            final var termArray = new ArrayList<>(rr.columnList().stream()
+                    .map(column -> {
+                        final var columnName = prependAlt(column.name());
+                        return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
+                    })
+                    .toList());
+            return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
+        }).toList());
+        final var body = new LinkedHashSet<>(tgd.existRows().stream().map(rr -> {
+            final var name = prependNeu(rr.name());
+            final var termArray = new ArrayList<>(rr.columnList().stream()
+                    .map(column -> {
+                        final var columnName = prependAlt(column.name());
+                        return (term.Term) new term.Variable(VariableType.FOR_ALL, columnName, 1);
+                    })
+                    .toList());
+            return new atom.RelationalAtom(name, termArray, false, false, new ProvenanceInformation(""));
+        }).toList());
+        return new constraints.Tgd(head, body, (LinkedHashSet<Comparison<?>>) comparisons, (LinkedHashSet<Comparison<?>>) comparisons);
+    }
+
+    private static comparisons.Comparison<?> getChateauComparison(RelationConstraint rc) {
+        return switch (rc) {
+            case RelationConstraintConcatenation rcConcat -> {
+                final var columnName1 = prependAlt(rcConcat.column1().name());
+                final var term1 = new term.Variable(VariableType.FOR_ALL, columnName1, 1);
+                final var columnName2 = prependAlt(rcConcat.column2().name());
+                final var term2 = new term.Variable(VariableType.FOR_ALL, columnName2, 1);
+                final var columnName12 = prependAlt(rcConcat.column12().name());
+                final var term12 = new term.Variable(VariableType.EXISTS, columnName12, 1);
+                final var concatFunc = new functions.Concatenation<term.Variable>(term1, term2);
+                yield new comparisons.EqualsComparison<>(ComparisonType.FUNCTION, term12, concatFunc);
+            }
+            case RelationConstraintConstant rcConst -> {
+                final var columnName = prependAlt(rcConst.column().name());
+                final var term1 = new term.Variable(VariableType.FOR_ALL, columnName, 1);
+                final var term2 = term.Constant.fromString(columnName + "Konst", rcConst.constantValue());
+                yield new comparisons.EqualsComparison<>(ComparisonType.CONSTANT, term1, term2);
+            }
+            case RelationConstraintEquality rcEq -> {
+                final var columnName1 = prependAlt(rcEq.column1().name());
+                final var term1 = new term.Variable(VariableType.FOR_ALL, columnName1, 1);
+                final var columnName2 = prependAlt(rcEq.column2().name());
+                final var term2 = new term.Variable(VariableType.EXISTS, columnName2, 1);
+                yield new comparisons.EqualsComparison<>(ComparisonType.VARIABLE, term1, term2);
+            }
+            case RelationConstraintNotConstant rcNotConst -> {
+                // wird aktuell nicht benötigt. (siehe Kommentar in Datei NullableToHorizontalInheritance
+                throw new NotImplementedException("RelationConstraintNotConstant wird noch nicht unterstützt!");
+            }
+        };
     }
 
 

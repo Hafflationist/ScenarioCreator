@@ -98,9 +98,9 @@ public final class MergeColumns implements SchemaTransformation {
         final var existRows = List.of(ReducedRelation.fromTable(destinationTable));
         final var relationConstraintList = List.of(
             (RelationConstraint) new RelationConstraintConcatenation(
-                sourceColumnPair.first().id(),
-                sourceColumnPair.second().id(),
-                destinationColumn.id()
+                sourceColumnPair.first(),
+                sourceColumnPair.second(),
+                destinationColumn
             )
         );
         return List.of(new TupleGeneratingDependency(forallRows, existRows, relationConstraintList));

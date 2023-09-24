@@ -22,6 +22,7 @@ import scenarioCreator.data.primitives.StringPlusNaked;
 import scenarioCreator.data.table.Table;
 import scenarioCreator.generation.processing.transformations.constraintBased.base.FunctionalDependencyManager;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.LinguisticUtils;
+import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.SSet;
 
 import java.util.List;
@@ -32,11 +33,11 @@ public final class NewTableBase {
     private NewTableBase() {
     }
 
-    public static Table createModifiedTable(Table oldTable, Column oldColumn, NewIds newIds, boolean oneToOne) {
+    public static Pair<Column, Table> createModifiedTable(Table oldTable, Column oldColumn, NewIds newIds, boolean oneToOne) {
         return createModifiedTable(oldTable, oldColumn.name(), List.of(oldColumn), newIds, oneToOne);
     }
 
-    public static Table createModifiedTable(Table oldTable, StringPlus otherTablesName,
+    public static Pair<Column, Table>  createModifiedTable(Table oldTable, StringPlus otherTablesName,
                                             List<Column> extractedColumnList, NewIds newIds, boolean oneToOne) {
         final var reducedColumnStream = oldTable.columnList().stream().filter(c -> !extractedColumnList.contains(c));
         final var newForeignKeyColumn = createNewForeignKeyColumn(newIds, otherTablesName, oneToOne);
@@ -45,10 +46,12 @@ public final class NewTableBase {
         final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 oldTable.functionalDependencySet(), newColumnList
         );
-        return oldTable
+        return new Pair<>(newForeignKeyColumn,
+                oldTable
                 .withColumnList(newColumnList)
                 .withFunctionalDependencySet(newFunctionalDependencySet)
-                .withId(new IdPart(oldTable.id(), 0, MergeOrSplitType.And));
+                .withId(new IdPart(oldTable.id(), 0, MergeOrSplitType.And))
+        );
     }
 
     private static ColumnLeaf createNewForeignKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {
@@ -61,8 +64,8 @@ public final class NewTableBase {
         return createNewIdColumn(newIds.sourceColumn, tableName, newConstraintSet);
     }
 
-    public static Table createNewTable(Table oldTable, StringPlus tableName, List<Column> columnList,
-                                       NewIds newIds, boolean oneToOne) {
+    public static Pair<Column, Table> createNewTable(Table oldTable, StringPlus tableName, List<Column> columnList,
+                                                     NewIds newIds, boolean oneToOne) {
         final var primaryKeyColumn = createNewPrimaryKeyColumn(newIds, tableName, oneToOne);
         final var newColumnList = Stream.concat(Stream.of(primaryKeyColumn), columnList.stream()).toList();
         final var newContext = Context.getDefault();
@@ -70,7 +73,10 @@ public final class NewTableBase {
         final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                 oldTable.functionalDependencySet(), columnList
         );
-        return new Table(newId, tableName, newColumnList, newContext, SSet.of(), newFunctionalDependencySet);
+        return new Pair<>(
+                primaryKeyColumn,
+                new Table(newId, tableName, newColumnList, newContext, SSet.of(), newFunctionalDependencySet)
+        );
     }
 
     private static ColumnLeaf createNewPrimaryKeyColumn(NewIds newIds, StringPlus tableName, boolean oneToOne) {

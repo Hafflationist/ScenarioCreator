@@ -74,7 +74,7 @@ public final class IngestionBase {
             newRelation
         );
         final var relationConstraintList = List.of(
-                (RelationConstraint) new RelationConstraintEquality(ingestingColumn.id(), ingestedColumn.id())
+                (RelationConstraint) new RelationConstraintEquality(ingestingColumn, ingestedColumn)
         );
         return List.of(
             new TupleGeneratingDependency(forallRows, existRows, relationConstraintList)

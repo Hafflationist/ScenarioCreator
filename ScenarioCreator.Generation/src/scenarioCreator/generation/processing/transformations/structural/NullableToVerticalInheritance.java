@@ -49,6 +49,8 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
         final var extractableColumnList = chooseExtendingColumns(table.columnList(), random);
         final var primaryKeyColumnList = getPrimaryKeyColumns(table.columnList()).stream().map(Column::id).toList();
+        // TODO(80:20): Berücksichtigung des Falls, wo kein Surrogatschlüssel generiert wird, aktuell wird überall true angenommen
+        //final var generateSurrogateKeys = primaryKeyColumnList.isEmpty();
         final var newIds = idGenerator.apply(primaryKeyColumnList.size() + 4);
         final var primaryKeyColumnToNewId = Stream
                 .iterate(0, x -> x + 1)
@@ -62,18 +64,24 @@ public class NullableToVerticalInheritance implements TableTransformation {
                 newIds[newIds.length - 1],
                 primaryKeyColumnToNewId
         );
-        final var newBaseTable = createBaseTable(table, extractableColumnList, newIdComplex);
-        final var newDerivingTable = createDerivingTable(
-                newBaseTable, extractableColumnList, newIdComplex, primaryKeyColumnList.isEmpty(), random
+        //final var basePair = createBaseTable(table, extractableColumnList, newIdComplex, generateSurrogateKeys);
+        final var basePair = createBaseTable(table, extractableColumnList, newIdComplex);
+        final var newBaseTable = basePair.second();
+        final var newPrimaryKeyColumn = basePair.first();
+        final var derivingPair = createDerivingTable(
+                //newBaseTable, extractableColumnList, newIdComplex, generateSurrogateKeys, random
+                newBaseTable, extractableColumnList, newIdComplex, random
         );
+        final var newDerivingTable = derivingPair.second();
+        final var newPrimaryKeyColumnDeriving = derivingPair.first();
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
 
         final List<TupleGeneratingDependency> tgdList = tgds(
                 table,
                 newBaseTable,
-                newIdComplex.primaryKeyColumnId,
+                newPrimaryKeyColumn,
                 newDerivingTable,
-                newIdComplex.primaryKeyDerivingColumnId
+                newPrimaryKeyColumnDeriving
         );
 
         return new Pair<>(newTableSet, tgdList);
@@ -82,9 +90,9 @@ public class NullableToVerticalInheritance implements TableTransformation {
     private List<TupleGeneratingDependency> tgds(
             Table oldTable,
             Table newBaseTable,
-            Id newBaseColumnId,
+            Column newBaseColumn,
             Table newDerivingTable,
-            Id newDerivingColumnId
+            Column newDerivingColumn
     ) {
         final var oldRelation = ReducedRelation.fromTable(oldTable);
         final var newBaseRelation = ReducedRelation.fromTable(newBaseTable);
@@ -99,7 +107,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
 
         //TODO(80/20): Hier fehlen TGDS für: Uniqueness des Primary Keys der abgeleiteten Tabelle UND Nullability.
         final var relationConstraintList = List.of(
-                (RelationConstraint) new RelationConstraintEquality(newBaseColumnId, newDerivingColumnId)
+                (RelationConstraint) new RelationConstraintEquality(newBaseColumn, newDerivingColumn)
         );
         return List.of(
                 new TupleGeneratingDependency(forAllRows, existRows, relationConstraintList)
@@ -125,14 +133,15 @@ public class NullableToVerticalInheritance implements TableTransformation {
         };
     }
 
-    private Table createBaseTable(Table originalTable, List<Column> extractableColumnList, NewIdComplex newIdComplex) {
+    //private Pair<Optional<Column>, Table> createBaseTable(Table originalTable, List<Column> extractableColumnList, NewIdComplex newIdComplex, boolean generateSurrogateKeys) {
+    private Pair<Column, Table> createBaseTable(Table originalTable, List<Column> extractableColumnList, NewIdComplex newIdComplex) {
         final var newColumnList = originalTable.columnList().stream()
                 .filter(c -> !extractableColumnList.contains(c))
-                .map(c -> addForeignIfPrimaryKey(c, newIdComplex))
+                //.map(c -> addForeignIfPrimaryKey(c, newIdComplex))
                 .toList();
         final var newId = new IdPart(originalTable.id(), 0, MergeOrSplitType.Other);
 
-        if (getPrimaryKeyColumns(originalTable.columnList()).isEmpty()) {
+        //if (generateSurrogateKeys) {
             final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyConstraintGroupId()),
                     new ColumnConstraintForeignKeyInverse(newIdComplex.primaryKeyDerivingColumnId())
@@ -144,18 +153,24 @@ public class NullableToVerticalInheritance implements TableTransformation {
             final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                     originalTable.functionalDependencySet(), newColumnList
             );
-            return originalTable
-                    .withId(newId)
-                    .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList())
-                    .withFunctionalDependencySet(newFunctionalDependencySet);
-        }
-        final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
-                originalTable.functionalDependencySet(), newColumnList
-        );
-        return originalTable
-                .withId(newId)
-                .withColumnList(newColumnList)
-                .withFunctionalDependencySet(newFunctionalDependencySet);
+            return new Pair<>(
+                    newPrimaryColumn,
+                    originalTable
+                        .withId(newId)
+                        .withColumnList(StreamExtensions.prepend(newColumnList.stream(), newPrimaryColumn).toList())
+                        .withFunctionalDependencySet(newFunctionalDependencySet)
+            );
+        //}
+        //final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        //        originalTable.functionalDependencySet(), newColumnList
+        //);
+        //return new Pair<>(
+        //        Optional.empty(),
+        //        originalTable
+        //            .withId(newId)
+        //            .withColumnList(newColumnList)
+        //            .withFunctionalDependencySet(newFunctionalDependencySet)
+        //);
     }
 
     private Column modifyPrimaryKeyColumnsForDerivation(Column column, NewIdComplex newIdComplex) {
@@ -182,8 +197,10 @@ public class NullableToVerticalInheritance implements TableTransformation {
         };
     }
 
-    private Table createDerivingTable(Table baseTable, List<Column> extractableColumnList,
-                                      NewIdComplex newIdComplex, boolean generateSurrogateKeys, Random random) {
+    // TODO: Paar zurückgeben mit neu erstellter Spalte
+    private Pair<Column, Table> createDerivingTable(Table baseTable, List<Column> extractableColumnList,
+                                      //NewIdComplex newIdComplex, boolean generateSurrogateKeys, Random random) {
+                                      NewIdComplex newIdComplex, Random random) {
         if (!(baseTable.id() instanceof IdPart baseTableIdPart)) {
             throw new RuntimeException();
         }
@@ -195,7 +212,7 @@ public class NullableToVerticalInheritance implements TableTransformation {
         final var newName = LinguisticUtils.merge(
                 baseTable.name(), GroupingColumnsBase.mergeNames(extractableColumnList, random), random
         );
-        if (generateSurrogateKeys) {
+        //if (generateSurrogateKeys) {
             // In this case a surrogate key and column must be generated
             final var newPrimaryColumnConstraintSet = SSet.of(
                     new ColumnConstraintPrimaryKey(newIdComplex.primaryKeyDerivingConstraintGroupId()),
@@ -211,27 +228,29 @@ public class NullableToVerticalInheritance implements TableTransformation {
             final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
                     baseTable.functionalDependencySet(), newColumnList
             );
-            return baseTable
+            return new Pair<>(newPrimaryColumn,
+                    baseTable
                     .withId(newId)
                     .withName(newName)
                     .withColumnList(newColumnList)
-                    .withFunctionalDependencySet(newFunctionalDependencySet);
-        } else {
-            // otherwise we take the primary key columns (with reassigned id and modified constraints)
-            final var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
-                    .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex));
-            final var newColumnList = Stream
-                    .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
-                    .toList();
-            final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
-                    baseTable.functionalDependencySet(), newColumnList
+                    .withFunctionalDependencySet(newFunctionalDependencySet)
             );
-            return baseTable
-                    .withId(newId)
-                    .withName(newName)
-                    .withColumnList(newColumnList)
-                    .withFunctionalDependencySet(newFunctionalDependencySet);
-        }
+        //} else {
+        //    // otherwise we take the primary key columns (with reassigned id and modified constraints)
+        //    final var newPrimaryKeyColumnList = getPrimaryKeyColumns(baseTable.columnList()).stream()
+        //            .map(c -> modifyPrimaryKeyColumnsForDerivation(c, newIdComplex));
+        //    final var newColumnList = Stream
+        //            .concat(newPrimaryKeyColumnList, extractableColumnList.stream())
+        //            .toList();
+        //    final var newFunctionalDependencySet = FunctionalDependencyManager.getValidFdSet(
+        //            baseTable.functionalDependencySet(), newColumnList
+        //    );
+        //    return baseTable
+        //            .withId(newId)
+        //            .withName(newName)
+        //            .withColumnList(newColumnList)
+        //            .withFunctionalDependencySet(newFunctionalDependencySet);
+        //}
     }
 
     private List<Column> getPrimaryKeyColumns(List<Column> columnList) {

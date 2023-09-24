@@ -47,8 +47,8 @@ public class ColumnCollectionToTable implements TableTransformation {
         final var newIds = new NewTableBase.NewIds(newIdArray[0], newIdArray[1], newIdArray[2]);
         final var newTable = NewTableBase.createNewTable(
                 table, column.name(), collection.columnList(), newIds, false
-        );
-        final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false);
+        ).second();
+        final var modifiedTable = NewTableBase.createModifiedTable(table, column, newIds, false).second();
         final var newTableSet = SSet.of(newTable, modifiedTable);
         final List<TupleGeneratingDependency> tgdList = List.of(); // TODO(nosql): tgds
         return new Pair<>(newTableSet, tgdList);

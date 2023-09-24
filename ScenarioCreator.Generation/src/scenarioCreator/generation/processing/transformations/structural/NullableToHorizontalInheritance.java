@@ -60,7 +60,7 @@ public class NullableToHorizontalInheritance implements TableTransformation {
         final var newTableSet = SSet.of(newBaseTable, newDerivingTable);
         final List<TupleGeneratingDependency> tgdList = tgds(
                 table,
-                newIdComplex.derivingTableId(), //TODO(F): ist das korrekt?
+                newIdComplex.derivingTableId(),
                 newBaseTable,
                 newDerivingTable
         );
@@ -88,16 +88,18 @@ public class NullableToHorizontalInheritance implements TableTransformation {
                 newBaseRelation, newDerivingRelation
         );
 
-        final var nullRelationConstraintList = List.of(
-                (RelationConstraint) new RelationConstraintConstant(formerlyNullableColumnId, "")
-        );
-        final var nonNullRelationConstraintList = List.of(
-                (RelationConstraint) new RelationConstraintNotConstant(formerlyNullableColumnId, "")
-        );
-        return List.of(
-                new TupleGeneratingDependency(forAllNullRows, existRows, nullRelationConstraintList),
-                new TupleGeneratingDependency(forAllNonNullRows, existRows, nonNullRelationConstraintList)
-        );
+//        final var nullRelationConstraintList = List.of(
+//                (RelationConstraint) new RelationConstraintConstant(formerlyNullableColumnId, "")
+//        );
+//        final var nonNullRelationConstraintList = List.of(
+//                (RelationConstraint) new RelationConstraintNotConstant(formerlyNullableColumnId, "")
+//        );
+//        return List.of(
+//                new TupleGeneratingDependency(forAllNullRows, existRows, nullRelationConstraintList),
+//                new TupleGeneratingDependency(forAllNonNullRows, existRows, nonNullRelationConstraintList)
+//        );
+        // TODO(80:20): aktuell schwierig umsetzbar wegen variabler Menge an Primärschlüsseln in Methode createBaseTable
+        return List.of();
     }
 
 
