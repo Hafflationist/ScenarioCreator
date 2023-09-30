@@ -30,6 +30,7 @@ import scenarioCreator.generation.processing.transformations.linguistic.helpers.
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.UnifiedLanguageCorpus;
 import scenarioCreator.generation.processing.transformations.linguistic.helpers.biglingo.WordNetInterface;
 import scenarioCreator.generation.processing.tree.DistanceDefinition;
+import scenarioCreator.generation.processing.tree.SchemaAsResult;
 import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.Pair;
 import scenarioCreator.utils.StreamExtensions;
@@ -50,7 +51,7 @@ public class KörnerkissenEvaluator {
 
     public static void printScenario(
             Pair<Schema, List<InstancesOfTable>> anfangsschemaUndInstanzen, Path path,
-            int startIndex,
+            int seed,
             int numberOfSchemas,
             double hetStructural, double hetLinguistig
     ) {
@@ -65,7 +66,7 @@ public class KörnerkissenEvaluator {
 
             final var target = new Distance(hetStructural, hetLinguistig, 0.1, Double.NaN);
             final var scenario = getRealScenario(
-                    semanticInitSchema, ulc, path, startIndex, target, numberOfSchemas
+                    semanticInitSchema, ulc, path, seed, target, numberOfSchemas
             );
             save(path, scenario, anfangsschemaUndInstanzen.second());
         } catch (XMLStreamException | IOException e) {
@@ -75,11 +76,11 @@ public class KörnerkissenEvaluator {
 
     private static Scenario getRealScenario(
             Schema anfangsschema,
-            UnifiedLanguageCorpus ulc, Path path, int startIndex, Distance target, int numberOfSchemas
+            UnifiedLanguageCorpus ulc, Path path, int startSeed, Distance target, int numberOfSchemas
     ) {
         // Da die Kreation manchmal fehlschlägt, wird hier am laufenden Band neu berechnet bis es klappt.
         final var scenarioOpt = Stream
-                .iterate(startIndex, seed -> seed + 1)
+                .iterate(startSeed, seed -> seed + 1)
                 .limit(100)
                 .map(seed -> getScenarioOpt(anfangsschema, ulc, path, seed, target, numberOfSchemas))
                 .filter(Optional::isPresent)
@@ -168,6 +169,7 @@ public class KörnerkissenEvaluator {
                 scenario.sarList().stream(),
                 Pair::new).toList();
         for (final var sarWithIndex : sarIndexedList) {
+            saveListOfExecutedTransformations(path, sarWithIndex.first(), sarWithIndex.second());
             final var idx = sarWithIndex.first();
             final var sar = sarWithIndex.second();
             final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
@@ -195,6 +197,19 @@ public class KörnerkissenEvaluator {
                     .withFieldVisibility(JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC));
             mapper.writeValue(filePath.toFile(), corrList);
         }
+    }
+
+    private static void saveListOfExecutedTransformations(Path path, int idx, SchemaAsResult sar) throws IOException {
+        final var filename = idx2String(idx)
+                    + "-ausgeführtetransformationen.txt";
+        final var filePath = Path.of(path.toString(), filename);
+        final var executedTransformationString = sar
+            .executedTransformationList()
+            .stream()
+            .collect(Collectors.joining("\n"));
+        final var f2 = new FileWriter(filePath.toFile(), false);
+        f2.write(executedTransformationString);
+        f2.close();
     }
 
     private static List<InstancesOfTable> calculateInstances(List<TgdChainElement> tgdChain, List<InstancesOfTable> instancesOfTableList) {

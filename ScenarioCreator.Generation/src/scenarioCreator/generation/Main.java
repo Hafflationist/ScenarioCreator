@@ -423,6 +423,8 @@ public class Main {
         final var hetStructural = (hetStructuralIdx == -1) ? 0.3 : Double.parseDouble(args[hetStructuralIdx + 1]);
         final var hetLinguisticIdx = argList.indexOf("--hetLinguistic");
         final var hetLinguistic = (hetLinguisticIdx == -1) ? 0.3 : Double.parseDouble(args[hetLinguisticIdx + 1]);
+        final var seedIdx = argList.indexOf("--seed");
+        final var seed = (hetLinguisticIdx == -1) ? 3 : Integer.parseInt(args[seedIdx + 1]);
         System.out.println("Linguistische Heterogenität: " + hetLinguistic);
         System.out.println("Strukturelle Heterogenität: " + hetStructural);
         try {
@@ -439,7 +441,7 @@ public class Main {
             final var ausgabeUri = new URI(args[avIdx + 1]);
             System.out.println("Auskotzverzeichnis: " + ausgabeUri);
             final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
-            KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, 3, 2, hetStructural, hetLinguistic);
+            KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, seed, 2, hetStructural, hetLinguistic);
         } catch (URISyntaxException e) {
             System.out.println("REEE: Kein gültiger Pfad angegeben!");
         }
