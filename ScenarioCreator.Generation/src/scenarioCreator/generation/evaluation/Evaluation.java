@@ -140,6 +140,7 @@ public final class Evaluation {
             int seed,
             boolean debug
     ) {
+        System.out.println("ENTKÄFERUNG: Running Forester with the following configuration: " + config.toString());
         return runForesterInner(anfangsschema, config, path, seed, ulc, debug);
     }
 

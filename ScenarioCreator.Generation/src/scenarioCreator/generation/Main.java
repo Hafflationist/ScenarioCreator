@@ -420,7 +420,7 @@ public class Main {
             return;
         }
         final var hetStructuralIdx = argList.indexOf("--hetStructural");
-        final var hetStructural = (hetStructuralIdx == -1) ? 0.3 : Double.parseDouble(args[hetStructuralIdx + 1]);
+        final var hetStructural = (hetStructuralIdx == -1) ? 0.5 : Double.parseDouble(args[hetStructuralIdx + 1]);
         final var hetLinguisticIdx = argList.indexOf("--hetLinguistic");
         final var hetLinguistic = (hetLinguisticIdx == -1) ? 0.3 : Double.parseDouble(args[hetLinguisticIdx + 1]);
         final var seedIdx = argList.indexOf("--samen");

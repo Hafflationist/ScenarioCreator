@@ -233,6 +233,7 @@ public class Forester implements IForester {
         final var chosenTransformation = StreamExtensions.pickRandomOrThrow(
                 validTransformationStream, rte, random
         );
+        System.out.println("ENTKÄFERUNG: Forester: ChosenTransformation = " + chosenTransformation.toString());
         try {
             final var newSchemaWithTgds = _singleTransformationExecutor.executeTransformation(
                     schema, chosenTransformation, random, debug
