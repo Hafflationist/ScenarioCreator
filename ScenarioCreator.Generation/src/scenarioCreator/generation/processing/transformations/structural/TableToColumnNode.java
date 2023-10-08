@@ -26,7 +26,7 @@ public class TableToColumnNode implements SchemaTransformation {
 
     @Override
     public boolean conservesFlatRelations() {
-        return true;
+        return false;
     }
 
     @Override
