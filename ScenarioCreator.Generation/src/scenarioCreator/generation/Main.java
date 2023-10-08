@@ -424,7 +424,7 @@ public class Main {
         final var hetLinguisticIdx = argList.indexOf("--hetLinguistic");
         final var hetLinguistic = (hetLinguisticIdx == -1) ? 0.3 : Double.parseDouble(args[hetLinguisticIdx + 1]);
         final var seedIdx = argList.indexOf("--samen");
-        final var seed = (hetLinguisticIdx == -1) ? 3 : Integer.parseInt(args[seedIdx + 1]);
+        final var seed = (seedIdx == -1) ? 3 : Integer.parseInt(args[seedIdx + 1]);
         System.out.println("Linguistische Heterogenität: " + hetLinguistic);
         System.out.println("Strukturelle Heterogenität: " + hetStructural);
         try {
