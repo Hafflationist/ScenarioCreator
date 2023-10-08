@@ -35,7 +35,7 @@ public class ScenarioCreator {
                 .iterate(0, i -> i + 1)
                 .limit(sizeOfScenario);
         final var tgd = new TreeGenerationDefinition(
-                true, true, true, true
+                true, false, false, true
         );
         final var sarSet = StreamExtensions.<SortedSet<SchemaAsResult>, Integer>foldLeft(indexStream, SSet.of(),
                 (existingSchemaSet, existingSchemas) -> {
