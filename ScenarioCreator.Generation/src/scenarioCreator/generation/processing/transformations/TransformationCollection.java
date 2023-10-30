@@ -148,9 +148,8 @@ public class TransformationCollection {
                         )
                 )
                 .filter(t -> t.conservesFlatRelations() || !conservesFlatRelations)
+                .filter(t -> !_shouldOnlyReturnOneTransformation || t.toString().split("@")[0].toLowerCase().equals(_singleName.toLowerCase()))
                 .collect(Collectors.toCollection(TreeSet::new));
-            .filter(t -> t.toString().split("@")[0].toLowerCase().equals(singleName.toLowerCase()))
-            .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private record TransformationParams(
