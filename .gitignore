@@ -22,3 +22,5 @@ project/*
 */target/*
 .bsp/*
 .vim/*
+*.jar
+*output*

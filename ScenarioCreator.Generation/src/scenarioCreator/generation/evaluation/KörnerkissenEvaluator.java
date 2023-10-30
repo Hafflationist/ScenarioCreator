@@ -53,7 +53,8 @@ public class KörnerkissenEvaluator {
             Pair<Schema, List<InstancesOfTable>> anfangsschemaUndInstanzen, Path path,
             int seed,
             int numberOfSchemas,
-            double hetStructural, double hetLinguistig
+            double hetStructural, double hetLinguistic,
+            String singleName
     ) {
         try {
             final var germanet = new GermaNetInterface();
@@ -64,14 +65,54 @@ public class KörnerkissenEvaluator {
             final var semanticInitSchema = ss.saturateSemantically(anfangsschemaUndInstanzen.first());
             IntegrityChecker.assertValidSchema(semanticInitSchema);
 
-            final var target = new Distance(hetStructural, hetLinguistig, 0.1, Double.NaN);
-            final var scenario = getRealScenario(
+            final var target = new Distance(hetStructural, hetLinguistic, 0.1, Double.NaN);
+            if (singleName != null) {
+                final var scenario = getRealScenario(
                     semanticInitSchema, ulc, path, seed, target, numberOfSchemas
-            );
-            save(path, scenario, anfangsschemaUndInstanzen.second());
+                );
+                save(path, scenario, anfangsschemaUndInstanzen.second());
+            } else {
+                final var scenario = singleTransformationToScenario(
+                    semanticInitSchema, ulc, path, seed, singleName
+                );
+                save(path, scenario, anfangsschemaUndInstanzen.second());
+
+            }
         } catch (XMLStreamException | IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static Scenario singleTransformationToScenario(
+            Schema anfangsschema,
+            UnifiedLanguageCorpus ulc, Path path, int startSeed, String singleName
+    ) {
+        final var scenarioOpt = Stream
+                .iterate(startSeed, seed -> seed + 1)
+                .limit(100)
+                .map(seed -> singleTransformationToScenarioOpt(anfangsschema, ulc, path, seed, singleName))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .findFirst();
+        if (scenarioOpt.isEmpty()) {
+            throw new RuntimeException("REEE: Kann kein Schema generieren! Manchmal hilft das umstellen des Samens.");
+        }
+        return scenarioOpt.get();
+    }
+
+    private static Optional<Scenario> singleTransformationToScenarioOpt(
+            Schema anfangsschema,
+            UnifiedLanguageCorpus ulc, Path path, int seed, String singleName
+    ) {
+        System.out.println("Körnerkissen.Evaluation.singleTransformationToScenarioOpt with seed = " + seed);
+        final var dd = new DistanceDefinition(
+                bufferize(1.0),
+                bufferize(1.0),
+                bufferize(1.0),
+                new DistanceDefinition.Target(0.0, Double.NaN, 1.0)
+        );
+        final var config = new Evaluation.FullConfiguration(dd, 1, 64, 1);
+        return Evaluation.runForesterWithSingleName(anfangsschema, config, ulc, path.toString(), seed, singleName, false);
     }
 
     private static Scenario getRealScenario(

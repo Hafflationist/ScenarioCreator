@@ -64,7 +64,13 @@ public final class Evaluation {
     }
 
     private static Optional<Scenario> runForesterInner(
-            Schema initSchema, FullConfiguration config, String pathStr, int seed, UnifiedLanguageCorpus ulc, boolean debug
+            Schema initSchema, 
+            FullConfiguration config,
+            String pathStr,
+            int seed,
+            UnifiedLanguageCorpus ulc,
+            String singleName,
+            boolean debug
     ) {
         try {
             // clean directory
@@ -115,7 +121,7 @@ public final class Evaluation {
             System.out.println("Kreator kreiert!!!");
             final var creator = new ScenarioCreator(config.dd, ((validDefinition, targetDefinition) -> new Forester(
                     new SingleTransformationExecutor(ss),
-                    new TransformationCollection(ulc, translation),
+                    (singleName == null) ? new TransformationCollection(ulc, translation) : new TransformationCollection(ulc, translation, singleName),
                     distanceMeasures,
                     validDefinition,
                     targetDefinition,
@@ -141,7 +147,20 @@ public final class Evaluation {
             boolean debug
     ) {
         System.out.println("ENTKÄFERUNG: Running Forester with the following configuration: " + config.toString());
-        return runForesterInner(anfangsschema, config, path, seed, ulc, debug);
+        return runForesterInner(anfangsschema, config, path, seed, ulc, null, debug);
+    }
+
+    public static Optional<Scenario> runForesterWithSingleName(
+            Schema anfangsschema,
+            FullConfiguration config,
+            UnifiedLanguageCorpus ulc,
+            String path,
+            int seed,
+            String singleName,
+            boolean debug
+    ) {
+        System.out.println("ENTKÄFERUNG: Running Forester with the following configuration: " + config.toString());
+        return runForesterInner(anfangsschema, config, path, seed, ulc, singleName, debug);
     }
 
     public record FullConfiguration(DistanceDefinition dd, int scenarioSize, int treeSteps, int newChildren) {

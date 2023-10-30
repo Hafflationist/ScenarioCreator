@@ -15,12 +15,27 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.*;
 
 public class TransformationCollection {
 
     private final SortedSet<ColumnTransformation> _allColumnTransformationSet;
     private final SortedSet<TableTransformation> _allTableTransformationSet;
     private final Map<TransformationParams, SortedSet<SchemaTransformation>> _allSchemaTransformationSet;
+    private final boolean _shouldOnlyReturnOneTransformation;
+    private final String _singleName;
+
+    public TransformationCollection(
+            UnifiedLanguageCorpus unifiedLanguageCorpus,
+            Translation translation,
+            String singleName
+    ) {
+        _allColumnTransformationSet = generateAllColumnTransformationSet(unifiedLanguageCorpus, translation);
+        _allTableTransformationSet = generateAllTableTransformationSet(unifiedLanguageCorpus, translation);
+        _allSchemaTransformationSet = generateAllSchemaTransformationSet(unifiedLanguageCorpus, translation);
+        _shouldOnlyReturnOneTransformation = true;
+        _singleName = singleName;
+    }
 
     public TransformationCollection(
             UnifiedLanguageCorpus unifiedLanguageCorpus,
@@ -29,6 +44,8 @@ public class TransformationCollection {
         _allColumnTransformationSet = generateAllColumnTransformationSet(unifiedLanguageCorpus, translation);
         _allTableTransformationSet = generateAllTableTransformationSet(unifiedLanguageCorpus, translation);
         _allSchemaTransformationSet = generateAllSchemaTransformationSet(unifiedLanguageCorpus, translation);
+        _shouldOnlyReturnOneTransformation = false;
+        _singleName = "";
     }
 
     private SortedSet<ColumnTransformation> generateAllColumnTransformationSet(
@@ -132,6 +149,8 @@ public class TransformationCollection {
                 )
                 .filter(t -> t.conservesFlatRelations() || !conservesFlatRelations)
                 .collect(Collectors.toCollection(TreeSet::new));
+            .filter(t -> t.toString().split("@")[0].toLowerCase().equals(singleName.toLowerCase()))
+            .collect(Collectors.toCollection(TreeSet::new));
     }
 
     private record TransformationParams(

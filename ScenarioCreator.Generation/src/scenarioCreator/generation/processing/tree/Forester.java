@@ -11,7 +11,6 @@ import scenarioCreator.generation.processing.tree.generic.TreeDataOperator;
 import scenarioCreator.generation.processing.tree.generic.TreeEntity;
 import scenarioCreator.generation.processing.tree.generic.TreeLeaf;
 import scenarioCreator.generation.processing.tree.generic.TreeNode;
-import scenarioCreator.generation.processing.tree.TgdChainElement;
 import scenarioCreator.utils.StreamExtensions;
 
 import java.util.*;
