@@ -66,7 +66,7 @@ public class KörnerkissenEvaluator {
             IntegrityChecker.assertValidSchema(semanticInitSchema);
 
             final var target = new Distance(hetStructural, hetLinguistic, 0.1, Double.NaN);
-            if (singleName != null) {
+            if (singleName == null) {
                 final var scenario = getRealScenario(
                     semanticInitSchema, ulc, path, seed, target, numberOfSchemas
                 );

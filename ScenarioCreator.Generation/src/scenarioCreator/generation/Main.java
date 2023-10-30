@@ -443,6 +443,7 @@ public class Main {
             final var ausgabeUri = new URI(args[avIdx + 1]);
             System.out.println("Auskotzverzeichnis: " + ausgabeUri);
             final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
+            System.out.println("HUGO: " + singleName);
             KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, seed, 2, hetStructural, hetLinguistic, singleName);
 
         } catch (URISyntaxException e) {

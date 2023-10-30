@@ -35,6 +35,7 @@ public class TransformationCollection {
         _allSchemaTransformationSet = generateAllSchemaTransformationSet(unifiedLanguageCorpus, translation);
         _shouldOnlyReturnOneTransformation = true;
         _singleName = singleName;
+        System.out.println("Ich laufe im beschränkten Modus!");
     }
 
     public TransformationCollection(
@@ -46,6 +47,7 @@ public class TransformationCollection {
         _allSchemaTransformationSet = generateAllSchemaTransformationSet(unifiedLanguageCorpus, translation);
         _shouldOnlyReturnOneTransformation = false;
         _singleName = "";
+        System.out.println("Ich laufe im normalen Modus!");
     }
 
     private SortedSet<ColumnTransformation> generateAllColumnTransformationSet(
@@ -139,17 +141,36 @@ public class TransformationCollection {
             boolean conservesFlatRelations
     ) {
         final var params = new TransformationParams(keepForeignKeyIntegrity, shouldConserveAllRecords, shouldStayNormalized);
-        return Stream
-                .concat(
-                        _allColumnTransformationSet.stream(),
-                        Stream.concat(
-                                _allTableTransformationSet.stream(),
-                                _allSchemaTransformationSet.get(params).stream()
-                        )
-                )
-                .filter(t -> t.conservesFlatRelations() || !conservesFlatRelations)
-                .filter(t -> !_shouldOnlyReturnOneTransformation || t.toString().split("@")[0].toLowerCase().equals(_singleName.toLowerCase()))
-                .collect(Collectors.toCollection(TreeSet::new));
+        final var allTransformationStream = Stream
+                    .concat(
+                            _allColumnTransformationSet.stream(),
+                            Stream.concat(
+                                    _allTableTransformationSet.stream(),
+                                    _allSchemaTransformationSet.get(params).stream()
+                            )
+                    )
+                    .toList();
+        if (_shouldOnlyReturnOneTransformation) {
+            final var transformationNameList = allTransformationStream.stream().map(t -> {
+                final var interArray = t.toString().split("@")[0].split("\\.");
+                return interArray[interArray.length - 1].toLowerCase();
+            }).toList();
+            final var transformationSet = allTransformationStream.stream()
+                    .filter(t -> {
+                        final var interArray = t.toString().split("@")[0].split("\\.");
+                        final var tName = interArray[interArray.length - 1].toLowerCase();
+                        return !_shouldOnlyReturnOneTransformation || tName.equals(_singleName.toLowerCase());
+                    })
+                    .collect(Collectors.toCollection(TreeSet::new));
+            System.out.println("Die Liste (" + transformationNameList.toString() + ") wird beschränkt auf den Namen: " + _singleName);
+            System.out.println("Menge an Transformationen:");
+            System.out.println(transformationSet);
+            return transformationSet;
+        } else {
+            return allTransformationStream.stream()
+                    .filter(t -> t.conservesFlatRelations() || !conservesFlatRelations)
+                    .collect(Collectors.toCollection(TreeSet::new));
+        }
     }
 
     private record TransformationParams(
