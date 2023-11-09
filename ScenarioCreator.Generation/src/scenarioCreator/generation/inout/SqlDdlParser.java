@@ -106,6 +106,7 @@ public class SqlDdlParser {
             case "int" -> DataTypeEnum.INT32;
             case "bigint" -> DataTypeEnum.INT64;
             case "float" -> DataTypeEnum.FLOAT32;
+            case "decimal" -> DataTypeEnum.DECIMAL;
             case "timestamp", "date" -> DataTypeEnum.DATETIME;
             case "varchar", "nvarchar" -> DataTypeEnum.NVARCHAR;
             default -> DataTypeEnum.DECIMAL;
