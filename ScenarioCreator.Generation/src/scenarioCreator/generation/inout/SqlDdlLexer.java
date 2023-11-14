@@ -95,7 +95,8 @@ public class SqlDdlLexer {
         final var dataTypes = Set.of(
                 "bit", "tiny", "tinyint", "smallint", "int", "bigint",
                 "float", "decimal",
-                "timestamp", "date", "char", "varchar", "nvarchar"
+                "time", "timestamp", "date", "year",
+                "char", "varchar", "nvarchar", "text", "enum", "varbinary", "binary", "blob", "set"
         );
         if (dataTypes.contains(word)) {
             return new TokenDataType(word);

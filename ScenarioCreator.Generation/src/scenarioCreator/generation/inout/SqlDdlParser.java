@@ -107,8 +107,8 @@ public class SqlDdlParser {
             case "bigint" -> DataTypeEnum.INT64;
             case "float" -> DataTypeEnum.FLOAT32;
             case "decimal" -> DataTypeEnum.DECIMAL;
-            case "timestamp", "date" -> DataTypeEnum.DATETIME;
-            case "varchar", "nvarchar" -> DataTypeEnum.NVARCHAR;
+            case "time", "timestamp", "date", "year" -> DataTypeEnum.DATETIME;
+            case "varchar", "nvarchar", "text", "enum", "varbinary", "binary", "blob", "set" -> DataTypeEnum.NVARCHAR;
             default -> DataTypeEnum.DECIMAL;
         };
         return new DataType(dte, isNullable);
