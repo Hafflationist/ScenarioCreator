@@ -54,7 +54,8 @@ public class KörnerkissenEvaluator {
             int seed,
             int numberOfSchemas,
             double hetStructural, double hetLinguistic,
-            String singleName
+            String singleName,
+            boolean isNoTgd
     ) {
         try {
             final var germanet = new GermaNetInterface();
@@ -70,12 +71,12 @@ public class KörnerkissenEvaluator {
                 final var scenario = getRealScenario(
                     semanticInitSchema, ulc, path, seed, target, numberOfSchemas
                 );
-                save(path, scenario, anfangsschemaUndInstanzen.second());
+                save(path, scenario, anfangsschemaUndInstanzen.second(), isNoTgd);
             } else {
                 final var scenario = singleTransformationToScenario(
                     semanticInitSchema, ulc, path, seed, singleName
                 );
-                save(path, scenario, anfangsschemaUndInstanzen.second());
+                save(path, scenario, anfangsschemaUndInstanzen.second(), isNoTgd);
 
             }
         } catch (XMLStreamException | IOException e) {
@@ -204,7 +205,7 @@ public class KörnerkissenEvaluator {
         return Path.of(path.toString(), filename);
     }
 
-    private static void save(Path path, Scenario scenario, List<InstancesOfTable> initialInstancesOfTableList) throws IOException {
+    private static void save(Path path, Scenario scenario, List<InstancesOfTable> initialInstancesOfTableList, boolean isNoTgd) throws IOException {
         final var sarIndexedList = StreamExtensions.zip(
                 IntStream.iterate(1, i -> i + 1).boxed(),
                 scenario.sarList().stream(),
@@ -213,10 +214,12 @@ public class KörnerkissenEvaluator {
             saveListOfExecutedTransformations(path, sarWithIndex.first(), sarWithIndex.second());
             final var idx = sarWithIndex.first();
             final var sar = sarWithIndex.second();
-            final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
-            for (final var newInstance : newInstances) {
-                final var instancePath = stdPath(path, idx, newInstance.table().name(), "csv");
-                saveInstance(instancePath, newInstance);
+            if (!isNoTgd) {
+                final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
+                for (final var newInstance : newInstances) {
+                    final var instancePath = stdPath(path, idx, newInstance.table().name(), "csv");
+                    saveInstance(instancePath, newInstance);
+                }
             }
             final var schema = sar.schema();
             final var filePath = stdPath(path, idx, schema.name(), "yaml");

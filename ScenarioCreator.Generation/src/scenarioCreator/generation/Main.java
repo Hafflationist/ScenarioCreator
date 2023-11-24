@@ -444,7 +444,7 @@ public class Main {
             System.out.println("Auskotzverzeichnis: " + ausgabeUri);
             final var ausgabeverzeichnis = Path.of(new URI("file:///" + args[avIdx + 1]));
             System.out.println("HUGO: " + singleName);
-            KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, seed, 2, hetStructural, hetLinguistic, singleName);
+            KörnerkissenEvaluator.printScenario(anfangsschemaOpt.get(), ausgabeverzeichnis, seed, 2, hetStructural, hetLinguistic, singleName, isNoTgd);
 
         } catch (URISyntaxException e) {
             System.out.println("REEE: Kein gültiger Pfad angegeben!");
