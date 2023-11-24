@@ -6,7 +6,7 @@
 
     <groupId>groupId</groupId>
     <artifactId>scenario-creator</artifactId>
-    <version>1.17.4</version>
+    <version>1.18.0</version>
     <packaging>pom</packaging>
     <modules>
         <module>ScenarioCreator.Data</module>
