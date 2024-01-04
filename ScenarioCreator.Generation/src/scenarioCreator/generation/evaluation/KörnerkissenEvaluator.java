@@ -76,7 +76,7 @@ public class KörnerkissenEvaluator {
                 final var scenario = singleTransformationToScenario(
                     semanticInitSchema, ulc, path, seed, singleName
                 );
-                save(path, scenario, anfangsschemaUndInstanzen.second(), isNoTgd);
+                saveWithInitialSchema(path, scenario, anfangsschemaUndInstanzen, isNoTgd);
 
             }
         } catch (XMLStreamException | IOException e) {
@@ -234,6 +234,61 @@ public class KörnerkissenEvaluator {
             final var filename = idx2String(sarPair.first().first())
                     + "-"
                     + idx2String(sarPair.second().first())
+                    + "-correspondences.yaml";
+            final var filePath = Path.of(path.toString(), filename);
+            final var mapper = new ObjectMapper(new YAMLFactory());
+            mapper.setVisibility(mapper.getSerializationConfig().getDefaultVisibilityChecker()
+                    .withFieldVisibility(JsonAutoDetect.Visibility.PROTECTED_AND_PUBLIC));
+            mapper.writeValue(filePath.toFile(), corrList);
+        }
+    }
+
+    private static void saveWithInitialSchema(
+            Path path,
+            Scenario scenario,
+            Pair<Schema, List<InstancesOfTable>> anfangsschemaUndInstanzen,
+            boolean isNoTgd
+    ) throws IOException {
+        final var initialInstancesOfTableList = anfangsschemaUndInstanzen.second();
+        final var sarIndexedList = StreamExtensions.zip(
+                IntStream.iterate(1, i -> i + 1).boxed(),
+                scenario.sarList().stream(),
+                Pair::new).toList();
+        for (final var sarWithIndex : sarIndexedList) {
+            saveListOfExecutedTransformations(path, sarWithIndex.first(), sarWithIndex.second());
+            final var idx = sarWithIndex.first();
+            final var sar = sarWithIndex.second();
+            if (!isNoTgd) {
+                final var newInstances = calculateInstances(sar.tgdChain(), initialInstancesOfTableList);
+                for (final var newInstance : newInstances) {
+                    final var instancePath = stdPath(path, idx, newInstance.table().name(), "csv");
+                    saveInstance(instancePath, newInstance);
+                }
+            }
+            final var schema = sar.schema();
+            final var filePath = stdPath(path, idx, schema.name(), "yaml");
+            SchemaFileHandler.save(schema, filePath);
+        }
+        // Hier wird zusätzlich das Anfangsschema geschrieben:
+        final var initialSchemaFilePath = stdPath(path, 0, anfangsschemaUndInstanzen.first().name(), "yaml");
+        SchemaFileHandler.save(anfangsschemaUndInstanzen.first(), initialSchemaFilePath);
+
+        // Hier muss für die Berücksichtigung des Anfangsschemas die Liste erweitert werden:
+        final var schemaIndexedList = StreamExtensions.prepend(
+                sarIndexedList.stream()
+                    .map(swi -> new Pair<>(swi.first(), swi.second().schema())),
+                new Pair<>(0, anfangsschemaUndInstanzen.first())
+        ).toList();
+
+        final var schemaPairList = schemaIndexedList.stream()
+                .flatMap(swi -> schemaIndexedList.stream().map(swi2 -> new Pair<>(swi, swi2)))
+                .filter(pair -> pair.first().first() < pair.second().first())
+                .toList();
+        for (final var schemaPair : schemaPairList) {
+            final var corrList = getCorrs(schemaPair.first().second(), schemaPair.second().second());
+            final var filename = idx2String(schemaPair.first().first())
+                    + "-"
+                    + idx2String(schemaPair.second().first())
                     + "-correspondences.yaml";
             final var filePath = Path.of(path.toString(), filename);
             final var mapper = new ObjectMapper(new YAMLFactory());
